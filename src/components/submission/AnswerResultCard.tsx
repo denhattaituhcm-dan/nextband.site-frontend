@@ -1,0 +1,613 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+import {
+  CheckCircle,
+  XCircle,
+  Minus,
+  MessageSquare,
+  Clock,
+} from "lucide-react";
+import { FillBlankResultRenderer } from "@/components/exam/FillBlankResultRenderer";
+import { hasFillBlankPlaceholders } from "@/components/exam/FillBlankHtmlRenderer";
+import { RichContent } from "@/components/exam/RichContent";
+import { ReviewAudioPlayer } from "@/components/exam/ReviewAudioPlayer";
+import {
+  getFillBlankBlankCount,
+  parseFillBlankCorrectAnswers,
+} from "@/lib/fillBlank";
+
+interface AnswerResultCardProps {
+  questionIndex: number;
+  questionText: string;
+  questionType: string;
+  correctAnswer: string | null;
+  points: number;
+  options?: string[] | null;
+  showCorrectAnswers?: boolean;
+  answerText: string | null;
+  audioUrl: string | null;
+  score: number | null;
+  feedback: string | null;
+  isGraded: boolean;
+  isSubmitted?: boolean;
+  sectionType?: string;
+}
+
+const questionTypeLabels: Record<string, string> = {
+  multiple_choice: "Trắc nghiệm",
+  fill_blank: "Điền đáp án",
+  matching: "Nối",
+  essay: "Tự luận",
+  speaking: "Nói",
+  short_answer: "Trả lời ngắn",
+  true_false_not_given: "True/False/Not Given",
+  yes_no_not_given: "Yes/No/Not Given",
+};
+
+export function AnswerResultCard({
+  questionIndex,
+  questionText,
+  questionType,
+  correctAnswer,
+  points,
+  options,
+  showCorrectAnswers = false,
+  answerText,
+  audioUrl,
+  score,
+  feedback,
+  isGraded,
+  isSubmitted = false,
+  sectionType,
+}: AnswerResultCardProps) {
+  const isManualGradeOnly = ["speaking", "writing"].includes(sectionType || "");
+  const shouldHideCorrectAnswerForStudent =
+    sectionType === "speaking" || questionType === "speaking";
+  const isAutoGradable = ["listening", "reading", "general"].includes(sectionType || "");
+  const isFillBlankWithPlaceholders =
+    questionType === "fill_blank" && hasFillBlankPlaceholders(questionText);
+  const fillBlankPointCount = getFillBlankBlankCount(correctAnswer);
+  const effectivePoints =
+    questionType === "fill_blank" && fillBlankPointCount > 0
+      ? fillBlankPointCount
+      : points;
+  const isMultiSelectQuestion =
+    (questionType === "multiple_choice" || questionType === "listening") &&
+    !!correctAnswer &&
+    correctAnswer
+      .split("|")
+      .map((item) => item.trim())
+      .filter(Boolean).length > 1;
+  const choiceOptions = Array.isArray(options)
+    ? options.map((option) => String(option).trim()).filter(Boolean)
+    : [];
+
+  // For auto-gradable sections that have been submitted, always show results
+  const shouldShowAutoResult = isAutoGradable && (isSubmitted || isGraded);
+
+  // Frontend-side auto-comparison for auto-gradable sections when score is null
+  const computedScore = (() => {
+    // If backend already provided a score, use it
+    if (score != null) return score;
+    // If not auto-gradable or no correct answer, we can't determine
+    if (!isAutoGradable || !correctAnswer || !answerText) return null;
+
+    const autoGradableTypes = [
+      "multiple_choice", "true_false_not_given", "yes_no_not_given",
+      "short_answer", "fill_blank", "listening",
+    ];
+    if (!autoGradableTypes.includes(questionType)) return null;
+
+    // Handle fill_blank with JSON answers
+    if (questionType === "fill_blank") {
+      try {
+        const parsedStudent = JSON.parse(answerText);
+        const parsedCorrect = parseFillBlankCorrectAnswers(correctAnswer);
+        if (
+          typeof parsedStudent === "object" &&
+          parsedStudent !== null &&
+          parsedCorrect.length > 0
+        ) {
+          const orderedStudentKeys = Object.keys(parsedStudent).sort(
+            (a, b) => Number(a) - Number(b),
+          );
+          const blankCount = parsedCorrect.length;
+          if (blankCount === 0) return 0;
+
+          let correctBlanks = 0;
+          for (const key of orderedStudentKeys) {
+            const idx = Number(key);
+            const correctVal = parsedCorrect[idx] || "";
+            const studentVal = String(parsedStudent[key] || "").trim();
+            const alternatives = correctVal.split("|").map((a: string) => a.trim().toLowerCase());
+            if (alternatives.includes(studentVal.toLowerCase())) correctBlanks++;
+          }
+          return Math.min(correctBlanks, blankCount);
+        }
+      } catch {
+        // Not JSON, fall through to string comparison
+      }
+    }
+
+    // Handle matching with JSON answers
+    if (questionType === "matching") {
+      try {
+        const parsedStudent = JSON.parse(answerText);
+        const parsedCorrect = JSON.parse(correctAnswer);
+        if (
+          typeof parsedStudent === "object" && typeof parsedCorrect === "object" &&
+          parsedStudent !== null && parsedCorrect !== null && parsedCorrect.pairs
+        ) {
+          const keys = Object.keys(parsedCorrect.pairs);
+          const pairsCount = keys.length;
+          if (pairsCount === 0) return 0;
+
+          let correctPairs = 0;
+          for (const key of keys) {
+            const correctVal = String(parsedCorrect.pairs[key] || "").trim();
+            const studentVal = String(parsedStudent[key] || "").trim();
+            if (correctVal === studentVal) correctPairs++;
+          }
+          return (correctPairs / pairsCount) * points;
+        }
+      } catch {
+        // Not JSON
+      }
+    }
+
+    const alternatives = correctAnswer
+      .trim()
+      .split("|")
+      .map((a: string) => a.trim())
+      .filter(Boolean);
+
+    if (isMultiSelectQuestion) {
+      let studentSelections: string[] = [];
+      try {
+        const parsed = JSON.parse(answerText);
+        if (Array.isArray(parsed)) {
+          studentSelections = parsed.map((v) => String(v).trim());
+        }
+      } catch {
+        studentSelections = answerText
+          .split("|")
+          .flatMap((part) => part.split(","))
+          .map((v: string) => v.trim())
+          .filter(Boolean);
+      }
+
+      const normalizedStudent = Array.from(
+        new Set(studentSelections.map((v) => v.toLowerCase())),
+      ).sort();
+      const normalizedCorrect = Array.from(
+        new Set(alternatives.map((v) => v.toLowerCase())),
+      ).sort();
+      const isExactMatch =
+        normalizedStudent.length === normalizedCorrect.length &&
+        normalizedStudent.every((value, idx) => value === normalizedCorrect[idx]);
+      return isExactMatch ? points : 0;
+    }
+
+    const normalizedAlternatives = alternatives.map((a) => a.toLowerCase());
+    return normalizedAlternatives.includes(answerText.trim().toLowerCase())
+      ? points
+      : 0;
+  })();
+
+  // Can show result: graded, or auto-gradable section that's been submitted
+  const canShowResult = isGraded || shouldShowAutoResult;
+  const shouldRevealCorrectAnswers = canShowResult && showCorrectAnswers;
+  const canRenderChoiceOptions =
+    choiceOptions.length > 0 &&
+    [
+      "multiple_choice",
+      "listening",
+      "true_false_not_given",
+      "yes_no_not_given",
+    ].includes(questionType);
+
+  const getStatusIcon = () => {
+    if (isManualGradeOnly && (!isGraded || score == null))
+      return <Clock className="h-4 w-4 text-amber-500" />;
+    if (!canShowResult)
+      return <Minus className="h-4 w-4 text-muted-foreground" />;
+
+    const rawScore = score != null ? score : computedScore;
+    
+    if (rawScore != null) {
+      const effectiveScore = Number(rawScore);
+      const numPoints = Number(effectivePoints);
+      if (effectiveScore >= numPoints) return <CheckCircle className="h-4 w-4 text-green-600" />;
+      if (effectiveScore === 0) return <XCircle className="h-4 w-4 text-destructive" />;
+      return <Minus className="h-4 w-4 text-yellow-600" />;
+    }
+
+    // No answer provided - show neutral
+    if (!answerText) return <XCircle className="h-4 w-4 text-destructive" />;
+    return <Minus className="h-4 w-4 text-muted-foreground" />;
+  };
+
+  const getScoreBadge = () => {
+    if (isManualGradeOnly && (!isGraded || score == null)) {
+      return (
+        <Badge
+          variant="secondary"
+          className="text-xs bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+        >
+          Chờ giáo viên chấm
+        </Badge>
+      );
+    }
+    if (!canShowResult) return null;
+    
+    const rawScore = score != null ? score : computedScore;
+
+    if (rawScore != null) {
+      const effectiveScore = Number(rawScore);
+      const numPoints = Number(effectivePoints);
+      const ratio = numPoints > 0 ? effectiveScore / numPoints : 0;
+      const variant =
+        ratio >= 1 ? "default" : ratio > 0 ? "secondary" : "destructive";
+      return (
+        <Badge variant={variant} className="text-xs">
+          {Number(effectiveScore.toFixed(2))}/{numPoints}
+        </Badge>
+      );
+    }
+
+    // No answer
+    if (!answerText && shouldShowAutoResult) {
+      return <Badge variant="destructive" className="text-xs">Chưa trả lời</Badge>;
+    }
+    return null;
+  };
+
+  const parseJsonAnswer = (text: string | null) => {
+    if (!text) return {};
+    try {
+      const parsed = JSON.parse(text);
+      return typeof parsed === "object" && parsed !== null ? parsed : {};
+    } catch {
+      return {};
+    }
+  };
+
+  const parseStudentSelections = (text: string | null) => {
+    if (!text) return [];
+
+    try {
+      const parsed = JSON.parse(text);
+      if (Array.isArray(parsed)) {
+        return parsed.map((value) => String(value).trim()).filter(Boolean);
+      }
+    } catch {
+      // Fall back to plain text parsing below.
+    }
+
+    return text
+      .split("|")
+      .flatMap((part) => part.split(","))
+      .map((value) => String(value).trim())
+      .filter(Boolean);
+  };
+
+  const normalizeOptionValue = (value: string) => value.trim().toLowerCase();
+  const studentSelections = parseStudentSelections(answerText);
+  const normalizedStudentSelections = new Set(
+    studentSelections.map(normalizeOptionValue),
+  );
+  const correctSelections = correctAnswer
+    ? correctAnswer
+        .split("|")
+        .map((value) => value.trim())
+        .filter(Boolean)
+    : [];
+  const normalizedCorrectSelections = new Set(
+    correctSelections.map(normalizeOptionValue),
+  );
+
+  return (
+    <Card>
+      <CardContent className="pt-4 space-y-3">
+        {/* Question header */}
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 space-y-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              {getStatusIcon()}
+              <span className="font-semibold text-sm">Câu {questionIndex}</span>
+              <Badge variant="outline" className="text-xs">
+              {questionTypeLabels[questionType] || questionType}
+              </Badge>
+              {getScoreBadge()}
+            </div>
+
+            {isFillBlankWithPlaceholders ? (
+              <div className="pl-6 pt-1">
+                <FillBlankResultRenderer
+                  html={questionText}
+                  studentAnswers={parseJsonAnswer(answerText)}
+                  correctAnswersValue={correctAnswer}
+                  showCorrectAnswers={shouldRevealCorrectAnswers}
+                />
+              </div>
+            ) : (
+              <RichContent html={questionText} className="text-sm pl-6" />
+            )}
+          </div>
+        </div>
+
+        <div className="pl-6 space-y-2">
+          {canRenderChoiceOptions && (
+            <div className="space-y-2">
+              {isMultiSelectQuestion && (
+                <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/8 px-3 py-1.5 text-xs font-semibold text-primary">
+                  <span>Chọn {correctSelections.length} đáp án phù hợp</span>
+                  <span className="ml-auto font-normal text-muted-foreground">
+                    Đã chọn: {studentSelections.length}/{correctSelections.length}
+                  </span>
+                </div>
+              )}
+
+              <div className="grid gap-2">
+                {choiceOptions.map((option, index) => {
+                  const normalizedOption = normalizeOptionValue(option);
+                  const isSelected =
+                    normalizedStudentSelections.has(normalizedOption);
+                  const isCorrect =
+                    normalizedCorrectSelections.has(normalizedOption);
+
+                  const stateClass = canShowResult
+                    ? isSelected && isCorrect
+                      ? "border-green-300 bg-green-50 ring-1 ring-green-200 dark:border-green-800 dark:bg-green-950/30 dark:ring-green-900"
+                      : isSelected
+                        ? "border-destructive/40 bg-destructive/10 ring-1 ring-destructive/20 dark:border-destructive/50 dark:bg-destructive/10"
+                        : shouldRevealCorrectAnswers && isCorrect
+                          ? "border-green-200 bg-green-50/70 dark:border-green-900 dark:bg-green-950/15"
+                          : "border-border/60 bg-background"
+                    : isSelected
+                      ? "border-primary/30 bg-primary/5 ring-1 ring-primary/20"
+                      : "border-border/60 bg-background";
+
+                  return (
+                    <div
+                      key={`${option}-${index}`}
+                      className={cn(
+                        "flex items-center gap-3 rounded-xl border p-3 transition-all",
+                        stateClass,
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-bold",
+                          canShowResult
+                            ? isSelected && isCorrect
+                              ? "border-green-600 bg-white text-green-700 dark:border-green-500 dark:bg-green-950/40 dark:text-green-400"
+                              : isSelected
+                                ? "border-destructive bg-white text-destructive dark:bg-destructive/10"
+                                : shouldRevealCorrectAnswers && isCorrect
+                                  ? "border-green-500/60 bg-white text-green-700 dark:bg-green-950/20 dark:text-green-400"
+                                : "border-muted-foreground/30 text-muted-foreground"
+                            : isSelected
+                              ? "border-primary bg-white text-primary"
+                              : "border-muted-foreground/30 text-muted-foreground",
+                        )}
+                      >
+                        {String.fromCharCode(65 + index)}
+                      </div>
+
+                      <div className="flex-1 text-sm font-medium">
+                        {option}
+                      </div>
+
+                      {canShowResult && (isSelected || shouldRevealCorrectAnswers) && isCorrect && (
+                        <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                          <CheckCircle className="h-4 w-4" />
+                        </div>
+                      )}
+
+                      {canShowResult && !isCorrect && isSelected && (
+                        <div className="flex items-center gap-1 text-destructive">
+                          <XCircle className="h-4 w-4" />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Multi-select per-option visual review */}
+          {isMultiSelectQuestion && canShowResult && correctAnswer && !isFillBlankWithPlaceholders && !canRenderChoiceOptions && (() => {
+            const correctOptions = correctAnswer.split("|").map((v) => v.trim()).filter(Boolean);
+            let studentSelections: string[] = [];
+            try {
+              const parsed = JSON.parse(answerText || "[]");
+              if (Array.isArray(parsed)) studentSelections = parsed.map((v) => String(v).trim());
+            } catch {
+              studentSelections = (answerText || "").split("|").flatMap((p) => p.split(",")).map((v) => v.trim()).filter(Boolean);
+            }
+
+            const allOptions = shouldRevealCorrectAnswers
+              ? Array.from(new Set([...correctOptions, ...studentSelections]))
+              : Array.from(new Set(studentSelections));
+
+            return (
+              <div className="space-y-2 mt-1">
+                <Label className="text-xs text-muted-foreground block">Chi tiết đáp án</Label>
+                <div className="rounded-md border divide-y overflow-hidden">
+                  {allOptions.map((opt, i) => {
+                    const isCorrect = correctOptions.includes(opt);
+                    const isSelected = studentSelections.includes(opt);
+                    // ✅ correct + selected | ❌ wrong + selected | ⬜ correct but missed
+                    const status = isCorrect && isSelected ? "hit" : !isCorrect && isSelected ? "wrong" : "missed";
+                    return (
+                      <div
+                        key={i}
+                        className={`flex items-center gap-3 px-3 py-2 text-sm ${
+                          status === "hit" ? "bg-green-50 dark:bg-green-950/20" :
+                          status === "wrong" ? "bg-red-50 dark:bg-red-950/20" :
+                          "bg-yellow-50/60 dark:bg-yellow-950/10"
+                        }`}
+                      >
+                        <span className="text-base">
+                          {status === "hit" ? "✅" : status === "wrong" ? "❌" : "⬜"}
+                        </span>
+                        <span className={`flex-1 ${status === "wrong" ? "line-through text-muted-foreground" : ""}`}>
+                          {opt}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {status === "hit" ? "Đúng ✓" : status === "wrong" ? "Sai ✗" : "Đáp án đúng"}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Student answer (non-multi-select) */}
+          {!isFillBlankWithPlaceholders && questionType !== "matching" && !isMultiSelectQuestion && !canRenderChoiceOptions && (
+            <div className="rounded-md border bg-muted/40 p-3">
+              <Label className="text-xs text-muted-foreground mb-1 block">
+                Câu trả lời của bạn
+              </Label>
+              {(() => {
+                let trimmedAnswer = (answerText || "").trim();
+                if (trimmedAnswer.startsWith('"') && trimmedAnswer.endsWith('"')) {
+                  trimmedAnswer = trimmedAnswer.slice(1, -1);
+                }
+                const isUrl = trimmedAnswer.startsWith("http") ||
+                              trimmedAnswer.startsWith("blob:") ||
+                              trimmedAnswer.startsWith("/") ||
+                              (trimmedAnswer.includes(".") && !trimmedAnswer.includes(" ") && !trimmedAnswer.includes("<"));
+                if (isUrl) return <ReviewAudioPlayer src={trimmedAnswer} />;
+                if (trimmedAnswer) return <p className="text-sm whitespace-pre-wrap">{trimmedAnswer}</p>;
+                if (audioUrl) return <ReviewAudioPlayer src={audioUrl} />;
+                return <p className="text-sm text-muted-foreground italic">Chưa trả lời</p>;
+              })()}
+            </div>
+          )}
+
+          {/* Multi-select student answer (non-result mode — show as text) */}
+          {!isFillBlankWithPlaceholders && questionType !== "matching" && isMultiSelectQuestion && !canShowResult && !canRenderChoiceOptions && (
+            <div className="rounded-md border bg-muted/40 p-3">
+              <Label className="text-xs text-muted-foreground mb-1 block">Câu trả lời của bạn</Label>
+              {(() => {
+                let parsedArrayAnswer: string[] = [];
+                try {
+                  const parsed = JSON.parse(answerText || "[]");
+                  if (Array.isArray(parsed)) parsedArrayAnswer = parsed.map((v) => String(v).trim()).filter(Boolean);
+                } catch {
+                  parsedArrayAnswer = (answerText || "").split("|").flatMap((p) => p.split(",")).map((v) => v.trim()).filter(Boolean);
+                }
+                return parsedArrayAnswer.length > 0
+                  ? <p className="text-sm">{parsedArrayAnswer.join(", ")}</p>
+                  : <p className="text-sm text-muted-foreground italic">Chưa trả lời</p>;
+              })()}
+            </div>
+          )}
+
+
+
+          {/* Matching result visualizer */}
+          {questionType === "matching" && canShowResult && correctAnswer && (() => {
+            try {
+              const parsedCorrect = JSON.parse(correctAnswer);
+              const items = parsedCorrect.items || [];
+              const pairs = parsedCorrect.pairs || {};
+              const parsedStudent = answerText ? JSON.parse(answerText) : {};
+              
+              return (
+                <div className="space-y-3 mt-4">
+                  <Label className="text-xs text-muted-foreground mb-2 block">
+                    {shouldRevealCorrectAnswers ? "Chi tiết ghép nối" : "Câu trả lời của bạn"}
+                  </Label>
+                  <div className="rounded-md border bg-card divide-y">
+                    {items.map((item: string, idx: number) => {
+                      const correctOpt = pairs[String(idx)];
+                      const studentOpt = parsedStudent[String(idx)];
+                      const isCorrect = correctOpt === studentOpt;
+                      
+                      return (
+                        <div key={idx} className="p-3 flex items-start gap-4">
+                          <div className="flex-1 text-sm pt-0.5">
+                            <span className="font-bold mr-2 text-primary">{idx + 1}.</span>
+                            {item}
+                          </div>
+                          <div className="flex flex-col gap-1 items-end min-w-[100px]">
+                            {studentOpt && !isCorrect && (
+                              <div className="flex items-center gap-1.5 text-xs text-destructive line-through opacity-80 decoration-destructive/50">
+                                <span>{studentOpt}</span>
+                                <XCircle className="w-3 h-3" />
+                              </div>
+                            )}
+                            {isCorrect ? (
+                              <div className="flex items-center gap-1.5 text-sm font-medium text-green-600 dark:text-green-500">
+                                <span>{studentOpt || correctOpt || "—"}</span>
+                                <CheckCircle className="w-4 h-4" />
+                              </div>
+                            ) : shouldRevealCorrectAnswers ? (
+                              <div className="flex items-center gap-1.5 text-sm font-medium">
+                                <span>{correctOpt || "—"}</span>
+                              </div>
+                            ) : !studentOpt ? (
+                              <div className="text-xs italic text-muted-foreground">
+                                Chưa chọn
+                              </div>
+                            ) : null}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            } catch (e) {
+              return null; // Fallback to normal display if parsing fails
+            }
+          })()}
+
+          {/* Correct answer - show for auto-gradable or graded */}
+          {shouldRevealCorrectAnswers &&
+            correctAnswer &&
+            !isFillBlankWithPlaceholders &&
+            questionType !== "matching" &&
+            !canRenderChoiceOptions &&
+            !shouldHideCorrectAnswerForStudent && (
+            <div className="rounded-md border border-green-200 bg-green-50 dark:bg-green-950/20 dark:border-green-900 p-3">
+              <Label className="text-xs text-green-700 dark:text-green-400 mb-1 block">
+                Đáp án đúng
+              </Label>
+              <p className="text-sm whitespace-pre-wrap">
+                {isMultiSelectQuestion
+                  ? correctAnswer
+                      .split("|")
+                      .map((v) => v.trim())
+                      .filter(Boolean)
+                      .join(", ")
+                  : correctAnswer}
+              </p>
+            </div>
+          )}
+
+          {/* Feedback */}
+          {isGraded && feedback && (
+            <div className="rounded-md border border-blue-200 bg-blue-50 dark:bg-blue-950/20 dark:border-blue-900 p-3">
+              <div className="flex items-center gap-1.5 mb-1">
+                <MessageSquare className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                <Label className="text-xs text-blue-700 dark:text-blue-400">
+                  Nhận xét từ giáo viên
+                </Label>
+              </div>
+              <p className="text-sm whitespace-pre-wrap">{feedback}</p>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

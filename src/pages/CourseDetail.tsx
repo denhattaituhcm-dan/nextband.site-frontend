@@ -1,0 +1,733 @@
+import { useMemo, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useQuery, useQueryClient, useQueries } from "@tanstack/react-query";
+import {
+  coursesApi,
+  examsApi,
+  enrollmentsApi,
+  submissionsApi,
+} from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  ArrowLeft,
+  BookOpen,
+  Clock,
+  GraduationCap,
+  Headphones,
+  FileText,
+  Mic,
+  PenTool,
+  Play,
+  Info,
+  CheckCircle2,
+  ClipboardCheck,
+  Eye,
+  Search,
+  ArrowUpDown,
+  SortAsc,
+  SortDesc,
+  Users,
+  Loader2,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const sectionIcons: Record<string, any> = {
+  listening: Headphones,
+  reading: BookOpen,
+  writing: PenTool,
+  speaking: Mic,
+  general: FileText,
+};
+
+const sectionColors: Record<string, string> = {
+  listening: "bg-listening text-white",
+  reading: "bg-reading text-white",
+  writing: "bg-writing text-white",
+  speaking: "bg-speaking text-white",
+  general: "bg-primary text-primary-foreground",
+};
+
+const MAX_EXAM_ATTEMPTS = 3;
+
+export default function CourseDetail() {
+  const { slug } = useParams<{ slug: string }>();
+  const { user, isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("week");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const limit = 10;
+
+  const { data: course, isLoading: courseLoading } = useQuery({
+    queryKey: ["course", slug],
+    queryFn: () => coursesApi.getById(slug!),
+    enabled: !!slug,
+  });
+
+  const { data: examsData, isLoading: examsLoading } = useQuery({
+    queryKey: ["course-exams", slug, page, search, sortBy, sortOrder],
+    queryFn: () =>
+      examsApi.list({
+        courseId: slug,
+        page,
+        limit,
+        search,
+        sortBy,
+        sortOrder,
+        isPublished: true,
+        isActive: true,
+      }),
+    enabled: !!slug,
+  });
+
+  const { data: enrollmentsData } = useQuery({
+    queryKey: ["my-enrollments"],
+    queryFn: () => enrollmentsApi.list(),
+    enabled: isAuthenticated,
+    refetchInterval: 10_000,
+    refetchIntervalInBackground: true,
+  });
+
+  // Fetch tất cả submissions của chính user hiện tại (truyền studentId để admin
+  // cũng chỉ lấy submissions của bản thân, không phải toàn bộ học sinh)
+  const { data: submissionsData } = useQuery({
+    queryKey: ["my-submissions", user?.id],
+    queryFn: () =>
+      submissionsApi.list({
+        limit: 100,
+        ...(user?.id ? { studentId: user.id } : {}),
+      }),
+    enabled: isAuthenticated && !!user?.id,
+  });
+
+  const exams = examsData?.data || [];
+  const meta = examsData?.meta;
+  const totalPages = meta?.totalPages || 1;
+  const courseExamIds = useMemo(
+    () =>
+      new Set(
+        ((course?.exams || []) as any[])
+          .filter((e: any) => e?.isPublished && e?.isActive)
+          .map((e: any) => e.id),
+      ),
+    [course?.exams],
+  );
+  const totalExams = courseExamIds.size;
+
+  // Check if user is enrolled in this course
+  const enrollmentList = enrollmentsData?.data || [];
+  const enrollment = enrollmentList.find(
+    (e: any) => e.courseId === slug || e.course?.id === slug,
+  );
+
+  // Tạo map: examId → trạng thái hiển thị thống nhất
+  // - filled: đã nộp (submittedAt != null)
+  // - in_progress: có bản nháp nhưng chưa nộp
+  // - not_started: không có record
+  const submissionStatusMap = (() => {
+    const submissions: any[] = submissionsData?.data || [];
+    const map: Record<string, "filled" | "in_progress" | "not_started"> = {};
+    const priority: Record<"filled" | "in_progress" | "not_started", number> = {
+      filled: 3,
+      in_progress: 2,
+      not_started: 1,
+    };
+    for (const sub of submissions) {
+      const examId = sub.exam?.id || sub.examId;
+      if (!examId) continue;
+      const normalizedStatus =
+        sub.submittedAt != null
+          ? ("filled" as const)
+          : ("in_progress" as const);
+      const existing = map[examId];
+      if (
+        !existing ||
+        (priority[normalizedStatus] ?? 0) > (priority[existing] ?? 0)
+      ) {
+        map[examId] = normalizedStatus;
+      }
+    }
+    return map;
+  })();
+
+  const attemptCountMap = useMemo(() => {
+    const submissions: any[] = submissionsData?.data || [];
+    const map: Record<string, number> = {};
+
+    for (const submission of submissions) {
+      const examId = submission?.exam?.id || submission?.examId;
+      if (!examId) continue;
+      map[examId] = (map[examId] || 0) + 1;
+    }
+
+    return map;
+  }, [submissionsData]);
+
+  const latestReviewQueries = useQueries({
+    queries: exams.map((exam: any) => ({
+      queryKey: ["course-exam-latest-review", user?.id, exam.id],
+      queryFn: () => submissionsApi.getLatestByExam(exam.id),
+      enabled: isAuthenticated && !!user?.id && !!exam?.id,
+    })),
+  });
+
+  const latestReviewSubmissionMap = (() => {
+    const map: Record<string, any> = {};
+    exams.forEach((exam: any, index: number) => {
+      if (!exam?.id) return;
+      map[exam.id] = latestReviewQueries[index]?.data ?? null;
+    });
+    return map;
+  })();
+
+  const latestReviewLoadingMap = (() => {
+    const map: Record<string, boolean> = {};
+    exams.forEach((exam: any, index: number) => {
+      if (!exam?.id) return;
+      map[exam.id] = !!latestReviewQueries[index]?.isLoading;
+    });
+    return map;
+  })();
+
+  // Progress stats
+  const completedExams = Object.entries(submissionStatusMap).filter(
+    ([examId, status]) => courseExamIds.has(examId) && status === "filled",
+  ).length;
+  const progressPercent =
+    totalExams > 0
+      ? Math.min(100, Math.round((completedExams / totalExams) * 100))
+      : 0;
+
+  if (courseLoading) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full rounded-xl" />
+        <Skeleton className="h-32 w-full" />
+      </div>
+    );
+  }
+
+  if (!course) {
+    return (
+      <div className="text-center py-16">
+        <h2 className="text-xl font-semibold mb-2">Không tìm thấy khóa học</h2>
+        <Button asChild variant="outline">
+          <Link to="/">Quay về trang chủ</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8 animate-fade-in">
+      {/* Back button */}
+      <Button variant="ghost" asChild className="-ml-2">
+        <Link to="/">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Quay lại
+        </Link>
+      </Button>
+
+      {/* Course Header */}
+      <div className="grid gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-6">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-4">
+              {course.title}
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              {course.description}
+            </p>
+          </div>
+
+          {/* Course Description */}
+          {course.description && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Nội dung khóa học
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+                  {course.description}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* Enrollment Card */}
+        <div>
+          <Card className="sticky top-20">
+            <CardHeader>
+              {course.thumbnailUrl && (
+                <img
+                  src={course.thumbnailUrl}
+                  alt={course.title}
+                  className="w-full h-48 object-cover rounded-lg mb-4"
+                />
+              )}
+              <CardTitle className="text-2xl">Thông tin khóa học</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Course stats */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center gap-2 text-sm rounded-lg bg-muted/50 p-3">
+                  <BookOpen className="h-4 w-4 text-primary" />
+                  <span className="font-medium">{totalExams} buổi</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm rounded-lg bg-muted/50 p-3">
+                  <GraduationCap className="h-4 w-4 text-primary" />
+                  <span className="font-medium">
+                    {course._count?.enrollments || 0} học viên
+                  </span>
+                </div>
+              </div>
+
+              {/* Progress bar (only for enrolled users) */}
+              {enrollment && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Tiến độ</span>
+                    <span className="font-semibold text-primary">
+                      {completedExams}/{totalExams} bài
+                    </span>
+                  </div>
+                  <Progress value={progressPercent} className="h-2.5" />
+                  <p className="text-xs text-muted-foreground text-right">
+                    {progressPercent}% hoàn thành
+                  </p>
+                </div>
+              )}
+
+              {enrollment ? (
+                <Button className="w-full" size="lg" disabled>
+                  <Play className="mr-2 h-4 w-4" />
+                  Đã đăng ký
+                </Button>
+              ) : (
+                <div className="text-center space-y-3">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 rounded-lg p-3">
+                    <Info className="h-4 w-4 shrink-0" />
+                    <span>
+                      Liên hệ giáo viên hoặc quản trị viên để được thêm vào khóa
+                      học này.
+                    </span>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <h2 className="text-2xl font-bold">bài tập trong khóa học</h2>
+
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Search Input */}
+            <div className="relative w-full md:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Tìm kiếm bài thi..."
+                className="pl-9"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1); // Reset to first page on search
+                }}
+              />
+            </div>
+
+            {/* Sort Controls */}
+            <div className="flex items-center gap-2">
+              <Select
+                value={sortBy}
+                onValueChange={(value) => {
+                  setSortBy(value);
+                  setPage(1);
+                }}
+              >
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="Sắp xếp" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="createdAt">Ngày tạo</SelectItem>
+                  <SelectItem value="week">Theo tuần</SelectItem>
+                  <SelectItem value="title">Tên bài thi</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                  setPage(1);
+                }}
+                className="shrink-0"
+                title={sortOrder === "asc" ? "Tăng dần" : "Giảm dần"}
+              >
+                {sortOrder === "asc" ? (
+                  <SortAsc className="h-4 w-4" />
+                ) : (
+                  <SortDesc className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {examsLoading ? (
+          <div className="grid gap-4 md:grid-cols-2">
+            {[...Array(2)].map((_, i) => (
+              <Skeleton key={i} className="h-32 rounded-xl" />
+            ))}
+          </div>
+        ) : exams && exams.length > 0 ? (
+          <div className="grid gap-4 grid-cols-1">
+            {exams
+              .filter((e: any) => e.isPublished && e.isActive)
+              .map((exam: any) => {
+                const examStatus = submissionStatusMap[exam.id];
+                const latestCompletedSubmission =
+                  latestReviewSubmissionMap[exam.id];
+                const latestReviewLoading = latestReviewLoadingMap[exam.id];
+                const canReviewLatest = !!latestCompletedSubmission?.id;
+                const isFilled = examStatus === "filled";
+                const isInProgress = examStatus === "in_progress";
+                const isNotStarted = !examStatus || examStatus === "not_started";
+                const isDone = isFilled;
+                const attemptCount = attemptCountMap[exam.id] || 0;
+                const remainingAttempts = Math.max(
+                  0,
+                  MAX_EXAM_ATTEMPTS - attemptCount,
+                );
+                const isAttemptLimitReached =
+                  attemptCount >= MAX_EXAM_ATTEMPTS;
+                const objectiveScore =
+                  latestCompletedSubmission?.correctAnswers != null &&
+                  latestCompletedSubmission?.totalQuestions != null
+                    ? `${latestCompletedSubmission.correctAnswers}/${latestCompletedSubmission.totalQuestions}`
+                    : null;
+                const gradedScore =
+                  latestCompletedSubmission?.totalScore != null
+                    ? String(latestCompletedSubmission.totalScore)
+                    : null;
+                const isOpenExam = exam.isOpen === true;
+                const hasSlots =
+                  exam.maxParticipants == null ||
+                  (exam.currentParticipants || 0) < exam.maxParticipants;
+                const canStartWithoutEnrollment = isOpenExam && hasSlots;
+                const canAccessExam = !!enrollment || canStartWithoutEnrollment;
+                const canRetakeExam = canAccessExam && !isAttemptLimitReached;
+                const canStartExam = canAccessExam && !isAttemptLimitReached;
+
+                // Build section type summary string
+                const sectionTypes = (exam.sections || [])
+                  .map((s: any) =>
+                    s.sectionType === "general"
+                      ? "Grammar"
+                      : s.sectionType.charAt(0).toUpperCase() +
+                        s.sectionType.slice(1),
+                  )
+                  .join(" · ");
+
+                return (
+                  <Card
+                    key={exam.id}
+                    className={`hover:shadow-md transition-all duration-200 relative ${
+                      isDone
+                        ? "border-green-200 bg-green-50/30 dark:border-green-800/40 dark:bg-green-900/10"
+                        : ""
+                    }`}
+                  >
+                    {/* Green checkmark circle for completed exams */}
+                    {isDone && (
+                      <div className="absolute -top-2 -right-2 z-10">
+                        <div className="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center shadow-md ring-2 ring-background">
+                          <CheckCircle2 className="h-4 w-4 text-white" />
+                        </div>
+                      </div>
+                    )}
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          {exam.title}
+                        </CardTitle>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {exam.week && (
+                            <Badge variant="outline" className="font-semibold">
+                              Week {exam.week}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                      {/* Section types as subtitle */}
+                      {sectionTypes && (
+                        <p className="text-sm text-muted-foreground">
+                          {sectionTypes}
+                        </p>
+                      )}
+                      {exam.description && (
+                        <CardDescription className="mt-1">
+                          {exam.description}
+                        </CardDescription>
+                      )}
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {exam.sections?.map((section: any) => {
+                          const Icon =
+                            sectionIcons[section.sectionType] || FileText;
+                          const colorCls =
+                            sectionColors[section.sectionType] ||
+                            sectionColors.general;
+                          return (
+                            <Badge
+                              key={section.id}
+                              className={`${colorCls} text-xs px-2 py-0.5`}
+                            >
+                              <Icon className="mr-1 h-3 w-3" />
+                              {section.sectionType === "general"
+                                ? "Grammar"
+                                : section.sectionType.charAt(0).toUpperCase() +
+                                  section.sectionType.slice(1)}
+                            </Badge>
+                          );
+                        })}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-col gap-1 text-sm text-muted-foreground">
+                          <div className="flex items-center">
+                            <Clock className="mr-1 h-4 w-4" />
+                            {exam.durationMinutes || 60} phút
+                          </div>
+                          {isFilled && (objectiveScore || gradedScore) && (
+                            <div>
+                              <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
+                                {objectiveScore || gradedScore}
+                              </Badge>
+                            </div>
+                          )}
+                          {isOpenExam && (
+                            <div className="flex items-center text-xs">
+                              <Users className="mr-1 h-3.5 w-3.5" />
+                              {exam.currentParticipants || 0}
+                              {exam.maxParticipants != null
+                                ? `/${exam.maxParticipants} slots`
+                                : " slots"}
+                            </div>
+                          )}
+                          <div
+                            className={`flex items-center text-xs ${
+                              isAttemptLimitReached
+                                ? "text-amber-600 font-medium"
+                                : "text-muted-foreground"
+                            }`}
+                          >
+                            <ClipboardCheck className="mr-1 h-3.5 w-3.5" />
+                            {attemptCount}/{MAX_EXAM_ATTEMPTS} lượt làm bài
+                            {isAttemptLimitReached
+                              ? " - đã hết lượt"
+                              : ` - còn ${remainingAttempts} lượt`}
+                          </div>
+                        </div>
+
+                        {/* Trạng thái & nút hành động */}
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            className={
+                              isFilled
+                                ? "bg-green-500 hover:bg-green-600 text-white gap-1"
+                                : isInProgress
+                                  ? "bg-amber-500 hover:bg-amber-600 text-white gap-1"
+                                  : "bg-slate-500 hover:bg-slate-600 text-white gap-1"
+                            }
+                          >
+                            <ClipboardCheck className="h-3.5 w-3.5" />
+                            {isFilled
+                              ? "Filled"
+                              : isInProgress
+                                ? "In Progress"
+                                : "Not Started"}
+                          </Badge>
+
+                          {isFilled && (
+                            <>
+                              {canRetakeExam ? (
+                                <Button size="sm" variant="outline" asChild>
+                                  <Link to={`/exam/${exam.id}`}>
+                                    <Play className="mr-1 h-3.5 w-3.5" />
+                                    Làm lại
+                                  </Link>
+                                </Button>
+                              ) : (
+                                canAccessExam && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    disabled
+                                    title="Đã đạt tối đa 3 lượt làm bài"
+                                  >
+                                    <Play className="mr-1 h-3.5 w-3.5" />
+                                    Hết lượt làm lại
+                                  </Button>
+                                )
+                              )}
+                              {latestReviewLoading && (
+                                <Button size="sm" variant="outline" disabled>
+                                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                                  Đang tải
+                                </Button>
+                              )}
+                              {!latestReviewLoading && canReviewLatest && (
+                                <Button size="sm" variant="secondary" asChild>
+                                  <Link
+                                    to={`/exam/${exam.id}/review?submissionId=${latestCompletedSubmission.id}`}
+                                  >
+                                    <Eye className="mr-1 h-3.5 w-3.5" />
+                                    Xem lại
+                                  </Link>
+                                </Button>
+                              )}
+                            </>
+                          )}
+                          {isInProgress && canAccessExam && (
+                            <Button size="sm" variant="default" asChild>
+                              <Link to={`/exam/${exam.id}`}>
+                                <Play className="mr-1 h-3.5 w-3.5" />
+                                Tiếp tục
+                              </Link>
+                            </Button>
+                          )}
+                          {isInProgress &&
+                            canAccessExam &&
+                            !latestReviewLoading &&
+                            canReviewLatest && (
+                              <Button size="sm" variant="secondary" asChild>
+                                <Link
+                                  to={`/exam/${exam.id}/review?submissionId=${latestCompletedSubmission.id}`}
+                                >
+                                  <Eye className="mr-1 h-3.5 w-3.5" />
+                                  Xem lại
+                                </Link>
+                              </Button>
+                          )}
+                          {isNotStarted && canStartExam && (
+                            !hasSlots && isOpenExam ? (
+                              <Button size="sm" disabled>
+                                <Play className="mr-1 h-3.5 w-3.5" />
+                                Đã đủ người
+                              </Button>
+                            ) : (
+                              <Button size="sm" asChild>
+                                <Link to={`/exam/${exam.id}`}>
+                                  <Play className="mr-1 h-3.5 w-3.5" />
+                                  Làm bài
+                                </Link>
+                              </Button>
+                            )
+                          )}
+                          {isNotStarted && canAccessExam && !canStartExam && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled
+                              title="Đã đạt tối đa 3 lượt làm bài"
+                            >
+                              <Play className="mr-1 h-3.5 w-3.5" />
+                              Hết lượt làm bài
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+          </div>
+        ) : (
+          <Card className="text-center py-8">
+            <CardContent>
+              <FileText className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+              <p className="text-muted-foreground">Chưa có bài tập nào</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {totalPages > 1 && (
+          <div className="mt-8">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    className={
+                      page <= 1
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  />
+                </PaginationItem>
+                {[...Array(totalPages)].map((_, i) => (
+                  <PaginationItem key={i}>
+                    <PaginationLink
+                      isActive={page === i + 1}
+                      onClick={() => setPage(i + 1)}
+                      className="cursor-pointer"
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    className={
+                      page >= totalPages
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

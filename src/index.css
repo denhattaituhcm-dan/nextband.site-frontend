@@ -1,0 +1,325 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Homework - IELTS Learning Platform Design System
+   Aesthetic: Modern, Academic, Duolingo meets Coursera
+   All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Core backgrounds */
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+
+    /* Card surfaces */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    /* Popovers & dropdowns */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Primary brand - Vibrant teal/cyan for learning */
+    --primary: 173 80% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Soft purple for accents */
+    --secondary: 250 50% 95%;
+    --secondary-foreground: 250 47% 38%;
+
+    /* Muted backgrounds */
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    /* Accent - Orange for CTAs and highlights */
+    --accent: 25 95% 53%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive/Error states */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Success states */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    /* Warning states */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 0%;
+
+    /* Info states */
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+
+    /* Form elements */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 173 80% 40%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar specific */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 173 80% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 173 80% 95%;
+    --sidebar-accent-foreground: 173 80% 30%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 173 80% 40%;
+
+    /* Exam section colors */
+    --listening: 199 89% 48%;
+    --reading: 142 76% 36%;
+    --writing: 250 47% 58%;
+    --speaking: 25 95% 53%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(173 80% 40%),
+      hsl(199 89% 48%)
+    );
+    --gradient-accent: linear-gradient(
+      135deg,
+      hsl(25 95% 53%),
+      hsl(38 92% 50%)
+    );
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(173 80% 95%),
+      hsl(250 50% 98%)
+    );
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 173 80% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 250 30% 20%;
+    --secondary-foreground: 250 50% 80%;
+
+    --muted: 217 33% 15%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 25 95% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 63% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 76% 42%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 55%;
+    --warning-foreground: 0 0% 0%;
+
+    --info: 199 89% 55%;
+    --info-foreground: 0 0% 100%;
+
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
+    --ring: 173 80% 45%;
+
+    --sidebar-background: 222 47% 9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 173 80% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 173 50% 15%;
+    --sidebar-accent-foreground: 173 80% 70%;
+    --sidebar-border: 217 33% 20%;
+    --sidebar-ring: 173 80% 45%;
+
+    --listening: 199 89% 55%;
+    --reading: 142 76% 50%;
+    --writing: 250 47% 65%;
+    --speaking: 25 95% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
+
+  /* Smooth scrolling + increase base size 1.2x */
+  html {
+    scroll-behavior: smooth;
+    font-size: 1.2rem;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted/50;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
+
+@layer components {
+  /* Exam skill badges */
+  .skill-listening {
+    @apply bg-[hsl(var(--listening))] text-white;
+  }
+
+  .skill-reading {
+    @apply bg-[hsl(var(--reading))] text-white;
+  }
+
+  .skill-writing {
+    @apply bg-[hsl(var(--writing))] text-white;
+  }
+
+  .skill-speaking {
+    @apply bg-[hsl(var(--speaking))] text-white;
+  }
+
+  /* Glass effect */
+  .glass {
+    @apply backdrop-blur-md bg-background/80 border border-border/50;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+
+  /* Rich text content — WYSIWYG consistency between admin editor and exam interface */
+  .rich-content {
+    line-height: 1.7;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    width: 100%;
+  }
+
+  .rich-content p {
+    margin-bottom: 1em;
+  }
+  .rich-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Passage variant — IELTS reading style: justified, wider paragraph gaps */
+  .rich-content-passage p {
+    margin-bottom: 1.25em;
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+  }
+  .rich-content-passage p:last-child {
+    margin-bottom: 0;
+  }
+  .rich-content [style*="text-align: justify"],
+  .rich-content .is-text-align-justify {
+    text-align: justify;
+    text-justify: inter-word;
+  }
+  .rich-content [style*="text-align: center"],
+  .rich-content .is-text-align-center {
+    text-align: center;
+  }
+  .rich-content [style*="text-align: right"],
+  .rich-content .is-text-align-right {
+    text-align: right;
+  }
+  .rich-content [style*="text-align: left"],
+  .rich-content .is-text-align-left {
+    text-align: left;
+  }
+
+  @media (max-width: 640px) {
+    .rich-content-passage p,
+    .rich-content [style*="text-align: justify"],
+    .rich-content .is-text-align-justify {
+      text-align: left;
+    }
+  }
+  .rich-content strong, .rich-content b { font-weight: 700; }
+  .rich-content em, .rich-content i { font-style: italic; }
+  .rich-content u { text-decoration: underline; }
+  .rich-content s { text-decoration: line-through; }
+
+  .rich-content h1 { font-size: 1.5em; font-weight: 700; margin-bottom: 0.5em; }
+  .rich-content h2 { font-size: 1.25em; font-weight: 700; margin-bottom: 0.4em; }
+  .rich-content h3 { font-size: 1.1em; font-weight: 600; margin-bottom: 0.3em; }
+
+  .rich-content ul {
+    list-style-type: disc;
+    padding-left: 1.5em;
+    margin-bottom: 0.5em;
+  }
+  .rich-content ol {
+    list-style-type: decimal;
+    padding-left: 1.5em;
+    margin-bottom: 0.5em;
+  }
+  .rich-content li { margin-bottom: 0.25em; }
+
+  .rich-content a {
+    color: hsl(var(--primary));
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .rich-content code {
+    background-color: hsl(var(--muted));
+    border-radius: 0.25rem;
+    padding: 0.1em 0.35em;
+    font-family: monospace;
+    font-size: 0.9em;
+  }
+  .rich-content blockquote {
+    border-left: 3px solid hsl(var(--border));
+    padding-left: 1em;
+    margin: 0.5em 0;
+    color: hsl(var(--muted-foreground));
+    font-style: italic;
+  }
+  .rich-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+  }
+}
+
+
+@layer utilities {
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
