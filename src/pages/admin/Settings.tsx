@@ -41,9 +41,15 @@ export default function AdminSettings() {
       toast({ title: "Đã lưu cài đặt hệ thống" });
     },
     onError: (error: any) => {
+      console.error("Save settings error:", error);
+      const errMsg =
+        error?.message ||
+        error?.error_description ||
+        error?.response?.data?.error ||
+        "Không thể lưu cài đặt (Vui lòng kiểm tra quyền RLS hoặc bảng site_settings trong Supabase).";
       toast({
         title: "Lỗi",
-        description: error?.response?.data?.error || "Không thể lưu cài đặt",
+        description: errMsg,
         variant: "destructive",
       });
     },
