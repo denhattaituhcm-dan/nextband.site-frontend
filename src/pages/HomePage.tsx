@@ -161,8 +161,8 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {(enrollments.length > 0 ? enrollments : coursesData?.data || []).slice(0, 2).map((item: any, idx: number) => {
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {(enrollments.length > 0 ? enrollments : coursesData?.data || []).slice(0, 6).map((item: any, idx: number) => {
               const course = item.courses || item;
               const completedLessons = idx === 0 ? 14 : 2;
               const totalLessons = 27;

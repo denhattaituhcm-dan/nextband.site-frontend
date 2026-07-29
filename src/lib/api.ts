@@ -152,8 +152,29 @@ export const coursesApi = {
     const ascending = params?.sortOrder === "asc";
     query = query.order(sortField, { ascending }).range(from, to);
 
-    const { data, count, error } = await query;
+    let { data, count, error } = await query;
     if (error) throw error;
+
+    // Auto-seed default 9 courses if database table is empty
+    if (!data || data.length === 0) {
+      const defaultCourses = [
+        { id: "c1000000-0000-0000-0000-000000000001", title: "DREAMER", description: "Khóa học IELTS dành cho người mới bắt đầu (Band 3.0 - 4.0)", level: "3.0 - 4.0", slug: "dreamer", is_published: true, is_active: true },
+        { id: "c1000000-0000-0000-0000-000000000002", title: "BUILDER", description: "Khóa học IELTS Xây dựng nền tảng (Band 4.0 - 5.0)", level: "4.0 - 5.0", slug: "builder", is_published: true, is_active: true },
+        { id: "c1000000-0000-0000-0000-000000000003", title: "MASTER", description: "Khóa học IELTS Chuyên sâu bứt phá (Band 5.0 - 6.0+)", level: "5.0 - 6.0+", slug: "master", is_published: true, is_active: true },
+        { id: "c1000000-0000-0000-0000-000000000004", title: "PLACEMENT TEST", description: "Bài thi kiểm tra trình độ đầu vào IELTS", level: "All Levels", slug: "placement-test", is_published: true, is_active: true },
+        { id: "c1000000-0000-0000-0000-000000000005", title: "LUYỆN THI TN THPT", description: "Bộ đề luyện thi tốt nghiệp Trung học Phổ thông", level: "Lớp 12", slug: "luyen-thi-tn-thpt", is_published: true, is_active: true },
+        { id: "c1000000-0000-0000-0000-000000000006", title: "ENTRANCE TEST THPTQG", description: "Bài test đánh giá năng lực THPTQG", level: "Lớp 12", slug: "entrance-test-thptqg", is_published: true, is_active: true },
+        { id: "c1000000-0000-0000-0000-000000000007", title: "STARTER", description: "Nền tảng Tiếng Anh căn bản", level: "Beginner", slug: "starter", is_published: true, is_active: true },
+        { id: "c1000000-0000-0000-0000-000000000008", title: "LEADER", description: "Bứt phá kỹ năng Luyện nói & Viết IELTS", level: "Intermediate", slug: "leader", is_published: true, is_active: true },
+        { id: "c1000000-0000-0000-0000-000000000009", title: "EXTRA LISTENING", description: "Luyện phản xạ và kỹ năng nghe chuyên sâu", level: "All Levels", slug: "extra-listening", is_published: true, is_active: true },
+      ];
+
+      // Fire and forget upsert to populate database
+      supabase.from("courses").upsert(defaultCourses, { onConflict: "id" }).then(() => {});
+
+      data = defaultCourses as any[];
+      count = defaultCourses.length;
+    }
 
     return {
       data: data || [],
@@ -283,7 +304,7 @@ export const examsApi = {
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
-    let query = supabase.from("exams").select("*", { count: "exact" });
+    let query = supabase.from("exams").select("*, course:courses(id, title)", { count: "exact" });
 
     if (params?.courseId) query = query.eq("course_id", params.courseId);
     if (params?.search) query = query.ilike("title", `%${params.search}%`);

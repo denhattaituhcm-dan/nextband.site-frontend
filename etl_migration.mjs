@@ -87,8 +87,22 @@ async function main() {
   console.log(`📄 Read SQL File: ${Math.round(sqlContent.length / 1024)} KB`);
 
   // 1. Migrate Courses
-  const rawCourses = parseInsertStatements(sqlContent, "courses") || parseInsertStatements(sqlContent, "Course");
-  console.log(`\n📚 Found ${rawCourses.length} Courses in SQL`);
+  let rawCourses = parseInsertStatements(sqlContent, "courses") || parseInsertStatements(sqlContent, "Course");
+  if (!rawCourses || rawCourses.length === 0) {
+    console.log("ℹ️ No courses found in SQL dump, creating 9 core IELTS courses...");
+    rawCourses = [
+      { id: "c1000000-0000-0000-0000-000000000001", title: "DREAMER", description: "Khóa học IELTS dành cho người mới bắt đầu (Band 3.0 - 4.0)", level: "3.0 - 4.0", slug: "dreamer", is_published: true, is_active: true },
+      { id: "c1000000-0000-0000-0000-000000000002", title: "BUILDER", description: "Khóa học IELTS Xây dựng nền tảng (Band 4.0 - 5.0)", level: "4.0 - 5.0", slug: "builder", is_published: true, is_active: true },
+      { id: "c1000000-0000-0000-0000-000000000003", title: "MASTER", description: "Khóa học IELTS Chuyên sâu bứt phá (Band 5.0 - 6.0+)", level: "5.0 - 6.0+", slug: "master", is_published: true, is_active: true },
+      { id: "c1000000-0000-0000-0000-000000000004", title: "PLACEMENT TEST", description: "Bài thi kiểm tra trình độ đầu vào IELTS", level: "All Levels", slug: "placement-test", is_published: true, is_active: true },
+      { id: "c1000000-0000-0000-0000-000000000005", title: "LUYỆN THI TN THPT", description: "Bộ đề luyện thi tốt nghiệp Trung học Phổ thông", level: "Lớp 12", slug: "luyen-thi-tn-thpt", is_published: true, is_active: true },
+      { id: "c1000000-0000-0000-0000-000000000006", title: "ENTRANCE TEST THPTQG", description: "Bài test đánh giá năng lực THPTQG", level: "Lớp 12", slug: "entrance-test-thptqg", is_published: true, is_active: true },
+      { id: "c1000000-0000-0000-0000-000000000007", title: "STARTER", description: "Nền tảng Tiếng Anh căn bản", level: "Beginner", slug: "starter", is_published: true, is_active: true },
+      { id: "c1000000-0000-0000-0000-000000000008", title: "LEADER", description: "Bứt phá kỹ năng Luyện nói & Viết IELTS", level: "Intermediate", slug: "leader", is_published: true, is_active: true },
+      { id: "c1000000-0000-0000-0000-000000000009", title: "EXTRA LISTENING", description: "Luyện phản xạ và kỹ năng nghe chuyên sâu", level: "All Levels", slug: "extra-listening", is_published: true, is_active: true },
+    ];
+  }
+  console.log(`\n📚 Found ${rawCourses.length} Courses to import`);
   let courseCount = 0;
   for (const c of rawCourses) {
     const { error } = await supabase.from("courses").upsert({
@@ -96,7 +110,7 @@ async function main() {
       title: c.title || c.name || "Untitled Course",
       description: c.description || "",
       thumbnail_url: c.thumbnail_url || c.thumbnailUrl || "",
-      level: c.level || "Intermediate",
+      level: c.level || "Beginner",
       price: c.price || 0,
       is_published: c.is_published ?? c.isPublished ?? true,
       is_active: c.is_active ?? c.isActive ?? true,

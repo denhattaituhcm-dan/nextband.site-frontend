@@ -118,26 +118,26 @@ export default function CourseStudentsList({
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button size="sm">
+            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl">
               <Plus className="mr-2 h-4 w-4" />
               Thêm học viên
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-md rounded-2xl">
             <DialogHeader>
-              <DialogTitle>Thêm học viên</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-slate-900 font-bold text-lg">Thêm học viên</DialogTitle>
+              <DialogDescription className="text-slate-500 text-xs">
                 Chọn học viên để thêm vào khóa học
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
+            <div className="space-y-4 pt-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
                   placeholder="Tìm theo email hoặc tên..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 rounded-xl border-emerald-500 focus-visible:ring-emerald-500 focus-visible:border-emerald-600"
                 />
               </div>
               <div className="max-h-[300px] overflow-y-auto space-y-2">
@@ -169,6 +169,7 @@ export default function CourseStudentsList({
                       </div>
                       <Button
                         size="sm"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl"
                         onClick={() => addMutation.mutate(user.id)}
                         disabled={addMutation.isPending}
                       >
