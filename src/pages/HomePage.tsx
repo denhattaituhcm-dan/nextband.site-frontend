@@ -51,6 +51,7 @@ export default function HomePage() {
         badge: "Bắt đầu bài đầu tiên",
         btnText: "Bắt đầu làm bài",
         subtext: "⏱️ Thời lượng dự kiến: 30 phút",
+        link: "/courses",
       };
     }
 
@@ -231,10 +232,25 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {(enrollments.length > 0 ? enrollments : coursesData?.data || []).slice(0, 2).map((item: any, idx: number) => {
+            {((enrollments.length > 0 ? enrollments : coursesData?.data?.length ? coursesData.data : [
+              {
+                id: "c1",
+                title: "IELTS Intensive Master (Target 6.5 - 7.5)",
+                slug: "ielts-intensive-master",
+                completedLessons: 14,
+                totalLessons: 27
+              },
+              {
+                id: "c2",
+                title: "IELTS Speaking & Writing Foundation",
+                slug: "ielts-speaking-writing-foundation",
+                completedLessons: 6,
+                totalLessons: 27
+              }
+            ])).slice(0, 2).map((item: any, idx: number) => {
               const course = item.courses || item;
-              const completedLessons = idx === 0 ? 14 : 2;
-              const totalLessons = 27;
+              const completedLessons = item.completedLessons ?? (idx === 0 ? 14 : 6);
+              const totalLessons = item.totalLessons ?? 27;
 
               return (
                 <Card key={course.id || idx} className="rounded-2xl border-slate-200/80 bg-white shadow-sm p-5 space-y-4">
