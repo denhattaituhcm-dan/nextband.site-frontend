@@ -5,11 +5,12 @@ import {
   useState,
   ReactNode,
 } from "react";
-import { authApi } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
+import { User as SupabaseAuthUser } from "@supabase/supabase-js";
 
 export type AppRole = "admin" | "teacher" | "student";
 
-interface User {
+export interface User {
   id: string;
   email: string;
   fullName: string | null;
@@ -33,7 +34,7 @@ interface AuthContextType {
   signUp: (
     email: string,
     password: string,
-    fullName?: string,
+    fullName?: string
   ) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -46,104 +47,132 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load user from token on mount
-  useEffect(() => {
-    const storedToken =
-      localStorage.getItem("token") || sessionStorage.getItem("token");
-    if (storedToken) {
-      setToken(storedToken);
-      loadUser();
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const loadUser = async () => {
+  const fetchUserProfile = async (authUser: SupabaseAuthUser) => {
     try {
-      const userData = await authApi.getMe();
+      // 1. Fetch Profile
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", authUser.id)
+        .maybeSingle();
+
+      // 2. Fetch User Roles
+      const { data: rolesData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", authUser.id);
+
+      const userRoles: AppRole[] = rolesData
+        ? (rolesData.map((r) => r.role) as AppRole[])
+        : ["student"];
+
       setUser({
-        id: userData.id,
-        email: userData.email,
-        fullName: userData.fullName,
-        avatarUrl: userData.avatarUrl,
-        bio: userData.bio,
-        phone: userData.phone,
-        gender: userData.gender,
-        roles: userData.roles as AppRole[],
+        id: authUser.id,
+        email: authUser.email || "",
+        fullName: profile?.full_name || authUser.user_metadata?.full_name || null,
+        avatarUrl: profile?.avatar_url || authUser.user_metadata?.avatar_url || null,
+        bio: profile?.bio || null,
+        phone: profile?.phone || null,
+        gender: profile?.gender || null,
+        roles: userRoles.length > 0 ? userRoles : ["student"],
       });
-    } catch (error) {
-      // Token invalid, clear it
-      localStorage.removeItem("token");
-      sessionStorage.removeItem("token");
-      setToken(null);
+    } catch (err) {
+      console.error("Failed to load user profile:", err);
       setUser(null);
-    } finally {
-      setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    // Check active session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setToken(session.access_token);
+        fetchUserProfile(session.user).finally(() => setIsLoading(false));
+      } else {
+        setIsLoading(false);
+      }
+    });
+
+    // Listen to Auth state changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        setToken(session.access_token);
+        await fetchUserProfile(session.user);
+      } else {
+        setToken(null);
+        setUser(null);
+      }
+      setIsLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
-      const response = await authApi.login(email, password);
-
-      // Save token
-      localStorage.setItem("token", response.token);
-      setToken(response.token);
-
-      // Set user
-      setUser({
-        id: response.user.id,
-        email: response.user.email,
-        fullName: response.user.fullName,
-        avatarUrl: response.user.avatarUrl,
-        phone: response.user.phone,
-        gender: response.user.gender,
-        roles: response.user.roles as AppRole[],
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
+
+      if (error) throw error;
+
+      if (data.session && data.user) {
+        setToken(data.session.access_token);
+        await fetchUserProfile(data.user);
+      }
 
       return { error: null };
     } catch (error: any) {
-      const message = error.response?.data?.error || "Đăng nhập thất bại";
-      return { error: new Error(message) };
+      return { error: new Error(error.message || "Đăng nhập thất bại") };
     }
   };
 
-  const signUp = async (email: string, password: string, fullName?: string) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    fullName?: string
+  ) => {
     try {
-      const response = await authApi.register(email, password, fullName);
-
-      // Save token
-      localStorage.setItem("token", response.token);
-      setToken(response.token);
-
-      // Set user
-      setUser({
-        id: response.user.id,
-        email: response.user.email,
-        fullName: response.user.fullName,
-        avatarUrl: response.user.avatarUrl,
-        phone: response.user.phone,
-        gender: response.user.gender,
-        roles: response.user.roles as AppRole[],
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+        },
       });
+
+      if (error) throw error;
+
+      if (data.session && data.user) {
+        setToken(data.session.access_token);
+        await fetchUserProfile(data.user);
+      }
 
       return { error: null };
     } catch (error: any) {
-      const message = error.response?.data?.error || "Đăng ký thất bại";
-      return { error: new Error(message) };
+      return { error: new Error(error.message || "Đăng ký thất bại") };
     }
   };
 
   const signOut = async () => {
-    localStorage.removeItem("token");
-    sessionStorage.removeItem("token");
+    await supabase.auth.signOut();
     setToken(null);
     setUser(null);
   };
 
   const refreshUser = async () => {
-    if (token) {
-      await loadUser();
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser();
+    if (authUser) {
+      await fetchUserProfile(authUser);
     }
   };
 
