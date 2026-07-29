@@ -124,6 +124,8 @@ export default function AdminSettings() {
                 }
                 label="Tải lên logo (PNG/JPG)"
               />
+            </div>
+
             <div className="space-y-2">
               <Label>Link Zalo hỗ trợ (hiển thị trên trang Đăng nhập)</Label>
               <Input
