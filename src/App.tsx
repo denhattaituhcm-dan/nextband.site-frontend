@@ -41,6 +41,7 @@ import AdminClassEdit from "@/pages/admin/ClassEdit";
 import AdminTeachers from "@/pages/admin/Teachers";
 import AdminSettings from "@/pages/admin/Settings";
 import TeacherWorkspace from "@/pages/admin/TeacherWorkspace";
+import ClassAttendancePage from "@/pages/admin/ClassAttendancePage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -199,6 +200,14 @@ const App = () => (
                 element={
                   <ProtectedRoute requiredRoles={["admin"]}>
                     <AdminClasses />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/classes/:classId/sessions/:sessionId/attendance"
+                element={
+                  <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                    <ClassAttendancePage />
                   </ProtectedRoute>
                 }
               />

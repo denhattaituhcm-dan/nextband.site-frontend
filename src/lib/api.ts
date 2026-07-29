@@ -1418,4 +1418,66 @@ export const lessonsApi = {
   },
 };
 
+export type AttendanceStatus = "UNMARKED" | "PRESENT" | "ABSENT" | "LATE" | "EXCUSED";
+
+export interface AttendanceStudentDTO {
+  studentId: string;
+  studentName: string;
+  avatarUrl: string | null;
+  status: AttendanceStatus;
+  notes: string | null;
+}
+
+export interface SessionAttendanceContract {
+  classId: string;
+  className: string;
+  sessionId: string;
+  sessionTitle: string;
+  sessionDate: string;
+  summary: {
+    total: number;
+    present: number;
+    absent: number;
+    late: number;
+    excused: number;
+    unmarked: number;
+  };
+  students: AttendanceStudentDTO[];
+}
+
+export const attendanceApi = {
+  getSessionAttendance: async (classId: string, sessionId: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    const response = await fetch(`http://localhost:3000/api/v1/classes/${classId}/sessions/${sessionId}/attendance`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Failed to fetch attendance");
+    return result as { success: boolean; data: SessionAttendanceContract };
+  },
+
+  markAttendance: async (
+    classId: string,
+    sessionId: string,
+    items: Array<{ studentId: string; status: AttendanceStatus; notes?: string }>
+  ) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    const response = await fetch(`http://localhost:3000/api/v1/classes/${classId}/sessions/${sessionId}/attendance`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ items }),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Failed to save attendance");
+    return result;
+  },
+};
+
 export default supabase;

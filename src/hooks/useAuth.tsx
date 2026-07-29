@@ -84,6 +84,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Check active session on mount
+    const storedMockUser = localStorage.getItem("nextband_mock_user");
+    if (storedMockUser) {
+      try {
+        setUser(JSON.parse(storedMockUser));
+        setToken("mock-demo-token-12345");
+        setIsLoading(false);
+        return;
+      } catch (e) {
+        localStorage.removeItem("nextband_mock_user");
+      }
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setToken(session.access_token);
@@ -97,6 +109,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (localStorage.getItem("nextband_mock_user")) {
+        setIsLoading(false);
+        return;
+      }
+
       if (session?.user) {
         setToken(session.access_token);
         await fetchUserProfile(session.user);
@@ -123,6 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           avatarUrl: null,
           roles: ["admin", "teacher", "student"],
         };
+        localStorage.setItem("nextband_mock_user", JSON.stringify(mockUser));
         setUser(mockUser);
         setToken("mock-demo-token-12345");
         return { error: null };
@@ -177,6 +195,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    localStorage.removeItem("nextband_mock_user");
     await supabase.auth.signOut();
     setToken(null);
     setUser(null);
