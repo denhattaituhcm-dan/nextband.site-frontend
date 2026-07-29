@@ -14,6 +14,7 @@ import MinimalLayout from "@/layouts/MinimalLayout";
 // Pages
 import Auth from "@/pages/Auth";
 import HomePage from "@/pages/HomePage";
+import StudentLessonViewerPage from "@/pages/StudentLessonViewerPage";
 import MyCourses from "@/pages/MyCourses";
 import MySubmissions from "@/pages/MySubmissions";
 import CourseDetail from "@/pages/CourseDetail";
@@ -39,6 +40,7 @@ import AdminClasses from "@/pages/admin/Classes";
 import AdminClassEdit from "@/pages/admin/ClassEdit";
 import AdminTeachers from "@/pages/admin/Teachers";
 import AdminSettings from "@/pages/admin/Settings";
+import TeacherWorkspace from "@/pages/admin/TeacherWorkspace";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -74,6 +76,7 @@ const App = () => (
             >
               <Route path="/" element={<HomePage />} />
               <Route path="/my-courses" element={<MyCourses />} />
+              <Route path="/class/:classId/lessons" element={<StudentLessonViewerPage />} />
               <Route path="/my-submissions" element={<MySubmissions />} />
               <Route path="/course/:slug" element={<CourseDetail />} />
               <Route path="/submissions/:id" element={<SubmissionDetail />} />
@@ -212,6 +215,14 @@ const App = () => (
                 element={
                   <ProtectedRoute requiredRoles={["admin"]}>
                     <AdminTeachers />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/teacher-workspace"
+                element={
+                  <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                    <TeacherWorkspace />
                   </ProtectedRoute>
                 }
               />

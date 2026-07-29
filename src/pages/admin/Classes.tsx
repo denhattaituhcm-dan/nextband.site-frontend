@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { classesApi, usersApi } from "@/lib/api";
+import { classesApi, usersApi, invitationsApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -42,6 +42,7 @@ import {
   GraduationCap,
   School,
   ClipboardCheck,
+  KeyRound,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -336,6 +337,31 @@ export default function AdminClasses() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={async () => {
+                          try {
+                            const res = await invitationsApi.generate({
+                              classId: cls.id,
+                              inviteCode: "DREAM31",
+                            });
+                            toast({
+                              title: "Mã mời đã sinh!",
+                              description: `Mã gia nhập lớp: ${res.invitation?.inviteCode || "DREAM31"}`,
+                            });
+                          } catch (err: any) {
+                            toast({
+                              title: "Lỗi sinh mã",
+                              description: err.message,
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                      >
+                        <KeyRound className="h-4 w-4 mr-1 text-emerald-600" />
+                        Mã DREAM31
+                      </Button>
                       <Button variant="ghost" size="sm" asChild>
                         <Link to={`/admin/classes/${cls.id}`}>
                           <ClipboardCheck className="h-4 w-4 mr-1" />
