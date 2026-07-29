@@ -1336,6 +1336,7 @@ export const homeworksApi = {
       },
       body: JSON.stringify(payload),
     });
+    const result = await response.json();
     if (!response.ok) throw new Error(result.error || "Failed to submit homework");
     return result;
   },

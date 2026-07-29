@@ -15,6 +15,8 @@ import {
   Bell,
   MessageSquare,
   Award,
+  ArrowRight,
+  CheckCircle2,
 } from "lucide-react";
 
 export default function HomePage() {
