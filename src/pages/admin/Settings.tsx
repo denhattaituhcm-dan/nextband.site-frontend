@@ -124,8 +124,16 @@ export default function AdminSettings() {
                 }
                 label="Tải lên logo (PNG/JPG)"
               />
+            <div className="space-y-2">
+              <Label>Link Zalo hỗ trợ (hiển thị trên trang Đăng nhập)</Label>
+              <Input
+                value={data.zaloLink || ""}
+                onChange={(e) =>
+                  updateSettings((prev) => ({ ...prev, zaloLink: e.target.value }))
+                }
+                placeholder="https://zalo.me/..."
+              />
             </div>
-
           </CardContent>
         </Card>
 

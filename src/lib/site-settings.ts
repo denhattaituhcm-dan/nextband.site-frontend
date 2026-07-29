@@ -6,6 +6,7 @@ export type SiteSettings = {
   authFeatureOneDescription: string;
   authFeatureTwoTitle: string;
   authFeatureTwoDescription: string;
+  zaloLink: string;
   highlightPresent: string;
   highlightAbsent: string;
   highlightInactive: string;
@@ -35,6 +36,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   authFeatureOneDescription: "Hàng trăm bài học từ cơ bản đến nâng cao",
   authFeatureTwoTitle: "Giáo viên uy tín",
   authFeatureTwoDescription: "Đội ngũ giáo viên giàu kinh nghiệm",
+  zaloLink: "https://zalo.me",
   highlightPresent: "#fff7a5",
   highlightAbsent: "#ffd7d7",
   highlightInactive: "#e5e7eb",
@@ -73,6 +75,7 @@ export function normalizeSiteSettings(raw: any): SiteSettings {
     authFeatureTwoDescription:
       raw?.authFeatureTwoDescription ??
       DEFAULT_SITE_SETTINGS.authFeatureTwoDescription,
+    zaloLink: raw?.zaloLink ?? DEFAULT_SITE_SETTINGS.zaloLink,
     sloganFontWeight: ["light", "regular", "bold"].includes(
       raw?.sloganFontWeight,
     )

@@ -18,6 +18,7 @@ import {
   Users,
   Eye,
   EyeOff,
+  MessageCircle,
 } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import { authApi } from "@/lib/api";
@@ -105,78 +106,97 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex bg-slate-50/60 dark:bg-slate-950">
-      {/* Left side - Light Academic Branding (Cohesive with Light Dashboard) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-slate-100/70 dark:bg-slate-900 text-slate-900 dark:text-slate-100 p-12 flex-col justify-between relative overflow-hidden border-r border-slate-200/80 dark:border-slate-800">
-        {/* Subtle Ambient Light Lighting */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen flex bg-slate-50/50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 selection:bg-primary/10 selection:text-primary">
+      {/* Left side - Balanced Quiet Academic Branding Panel */}
+      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-slate-100/80 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 p-10 xl:p-14 flex-col justify-between relative overflow-hidden border-r border-slate-200/60 dark:border-slate-800/60 backdrop-blur-md">
+        {/* Subtle Warm Ambient Glow */}
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_20%,rgba(16,185,129,0.04),transparent_60%)]" />
 
-        <div className="relative z-10">
+        {/* 1. Brand Recognition: Original Color Logo + Crisp Whitespace */}
+        <div className="relative z-10 space-y-4">
           <div className="flex items-center gap-3">
-            <SiteLogo alt="NextBand Logo" className="max-h-10 w-auto" />
+            <SiteLogo alt="NextBand Logo" className="max-h-10 w-auto object-contain" />
           </div>
-          <p className="text-slate-500 dark:text-slate-400 text-xs mt-2.5 font-normal tracking-wide">
+          {/* 4. Refined Tagline as a Quiet Academic Message */}
+          <p className="text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 leading-relaxed max-w-md">
             {settings.authTagline}
           </p>
         </div>
 
-        <div className="space-y-4 relative z-10 my-auto max-w-md">
-          <div className="flex items-start gap-3.5 p-4 rounded-xl bg-white/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/50 shadow-sm backdrop-blur-sm">
-            <div className="rounded-lg bg-primary/10 dark:bg-primary/20 p-2.5 border border-primary/20 shrink-0">
-              <BookOpen className="h-4.5 w-4.5 text-primary" />
+        {/* 5. Product Feature Cards (Cân đối không bị dồn nén) */}
+        <div className="space-y-4 relative z-10 my-auto w-full max-w-lg">
+          <div className="group flex items-start gap-4 p-5 rounded-2xl bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+            <div className="rounded-xl bg-primary/10 dark:bg-primary/20 p-3 border border-primary/20 shrink-0 group-hover:border-primary/40 transition-colors">
+              <BookOpen className="h-5 w-5 text-primary" />
             </div>
-            <div>
-              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm">
+            <div className="space-y-1 min-w-0 flex-1">
+              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm tracking-tight">
                 {settings.authFeatureOneTitle}
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed break-words">
                 {settings.authFeatureOneDescription}
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-3.5 p-4 rounded-xl bg-white/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/50 shadow-sm backdrop-blur-sm">
-            <div className="rounded-lg bg-primary/10 dark:bg-primary/20 p-2.5 border border-primary/20 shrink-0">
-              <Users className="h-4.5 w-4.5 text-primary" />
+          <div className="group flex items-start gap-4 p-5 rounded-2xl bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+            <div className="rounded-xl bg-primary/10 dark:bg-primary/20 p-3 border border-primary/20 shrink-0 group-hover:border-primary/40 transition-colors">
+              <Users className="h-5 w-5 text-primary" />
             </div>
-            <div>
-              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm">
+            <div className="space-y-1 min-w-0 flex-1">
+              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm tracking-tight">
                 {settings.authFeatureTwoTitle}
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed break-words">
                 {settings.authFeatureTwoDescription}
               </p>
             </div>
           </div>
+
+          {/* Nút liên hệ Admin qua Zalo */}
+          {settings.zaloLink && (
+            <div className="pt-2">
+              <a
+                href={settings.zaloLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/60 text-xs font-medium hover:bg-blue-100/70 dark:hover:bg-blue-900/60 transition-colors"
+              >
+                <MessageCircle className="h-4 w-4 shrink-0" />
+                <span>Cần hỗ trợ? Liên hệ Admin qua Zalo</span>
+              </a>
+            </div>
+          )}
         </div>
 
-        <p className="text-[11px] text-slate-400 dark:text-slate-500 relative z-10 tracking-wide">
+        {/* Footer */}
+        <p className="text-[11px] text-slate-400 dark:text-slate-500 relative z-10 font-normal tracking-wide">
           © {new Date().getFullYear()} NextBand. Tất cả quyền được bảo lưu.
         </p>
       </div>
 
-      {/* Right side - Student Login Workspace Form */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
-        <Card className="w-full max-w-sm border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-xl bg-white dark:bg-slate-900">
-          <CardHeader className="space-y-1.5 text-center pb-6">
-            <div className="lg:hidden flex items-center justify-center gap-2 mb-2">
-              <SiteLogo alt="NextBand Logo" className="max-h-9 w-auto" />
+      {/* Right side - Focal Point Student Login Workspace Form */}
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-12 lg:p-16">
+        {/* 6. Light Breathing Card */}
+        <Card className="w-full max-w-[380px] border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] rounded-2xl bg-white dark:bg-slate-900 p-2 sm:p-3">
+          <CardHeader className="space-y-1.5 text-center pb-5">
+            <div className="lg:hidden flex items-center justify-center gap-2 mb-3">
+              <SiteLogo alt="NextBand Logo" className="max-h-9 w-auto object-contain" />
             </div>
             <CardTitle className="text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
               Đăng nhập
             </CardTitle>
             <CardDescription className="text-xs text-slate-500 dark:text-slate-400">
-              Đăng nhập để tiếp tục học tập
+              Đăng nhập để tiếp tục bài học của bạn
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
-            {/* Google Login via Supabase OAuth (Primary CTA) */}
+            {/* 7. Google Login Primary Entry */}
             <div className="space-y-2">
               <Button
                 type="button"
                 variant="outline"
-                className="w-full flex items-center justify-center gap-2.5 border-slate-200 dark:border-slate-700 h-10 px-4 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors"
+                className="w-full flex items-center justify-center gap-3 border-slate-200 dark:border-slate-700 h-10.5 px-4 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800/80 text-slate-800 dark:text-slate-200 shadow-sm hover:shadow transition-all duration-150 active:scale-[0.99]"
                 onClick={async () => {
                   try {
                     setIsLoading(true);
@@ -192,7 +212,7 @@ export default function Auth() {
                   }
                 }}
               >
-                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                <svg className="w-4.5 h-4.5 shrink-0" viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -210,25 +230,25 @@ export default function Auth() {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                   />
                 </svg>
-                <span>Đăng nhập bằng Google</span>
+                <span className="tracking-tight">Đăng nhập bằng Google</span>
               </Button>
-              <p className="text-[11px] text-center text-slate-400 dark:text-slate-500">
-                Nhanh chóng & không cần nhớ mật khẩu
+              <p className="text-[11px] text-center text-slate-400 dark:text-slate-500 font-normal">
+                Cách nhanh nhất dành cho học viên
               </p>
             </div>
 
-            <div className="relative my-4">
+            <div className="relative my-3.5">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-slate-200 dark:border-slate-800" />
+                <span className="w-full border-t border-slate-200/80 dark:border-slate-800" />
               </div>
               <div className="relative flex justify-center text-[10px] uppercase tracking-wider">
-                <span className="bg-white dark:bg-slate-900 px-2 text-slate-400 font-medium">
-                  Hoặc đăng nhập với Email
+                <span className="bg-white dark:bg-slate-900 px-2.5 text-slate-400 font-medium">
+                  Hoặc bằng email
                 </span>
               </div>
             </div>
 
-            {/* Email/Password Sign In */}
+            {/* Secondary Email/Password Form */}
             <form onSubmit={handleSignIn} className="space-y-3.5">
               <div className="space-y-1.5">
                 <Label htmlFor="login-email" className="text-xs font-medium text-slate-700 dark:text-slate-300">
@@ -241,7 +261,7 @@ export default function Auth() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
-                  className="h-9 text-xs border-slate-200 dark:border-slate-800 focus-visible:ring-1"
+                  className="h-9.5 text-xs border-slate-200 dark:border-slate-800 focus-visible:ring-1 focus-visible:ring-primary/40"
                 />
                 {errors.email && (
                   <p className="text-xs text-destructive mt-1">{errors.email}</p>
@@ -259,7 +279,7 @@ export default function Auth() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={isLoading}
-                    className="h-9 text-xs pr-9 border-slate-200 dark:border-slate-800 focus-visible:ring-1"
+                    className="h-9.5 text-xs pr-9 border-slate-200 dark:border-slate-800 focus-visible:ring-1 focus-visible:ring-primary/40"
                   />
                   <Button
                     type="button"
@@ -280,7 +300,7 @@ export default function Auth() {
                   <p className="text-xs text-destructive mt-1">{errors.password}</p>
                 )}
               </div>
-              <Button type="submit" className="w-full h-9 text-xs font-medium mt-2" disabled={isLoading}>
+              <Button type="submit" className="w-full h-9.5 text-xs font-medium tracking-tight mt-1.5" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
