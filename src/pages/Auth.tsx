@@ -122,13 +122,13 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex bg-slate-50/50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 selection:bg-primary/10 selection:text-primary">
       {/* Left side - Education & Academic Branding Panel (Visual 2-Zone Separation) */}
-      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-slate-50 text-slate-900 p-6 xl:p-8 flex-col justify-between relative overflow-hidden border-r border-slate-200/80 animate-in fade-in duration-500">
+      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-slate-50 text-slate-900 p-6 xl:p-8 pt-6 xl:pt-8 flex-col justify-start space-y-6 relative overflow-hidden border-r border-slate-200/80 animate-in fade-in duration-500">
         {/* Subtle Soft Blue Ambient Glow */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Header Logo */}
-        <div className="relative z-10 space-y-2 mb-4">
+        <div className="relative z-10 space-y-2">
           <div className="flex items-center justify-between">
             <SiteLogo alt="NextBand Logo" className="max-h-10 w-auto object-contain" />
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200/80 shadow-xs text-[11px] font-medium text-slate-700">
@@ -241,13 +241,13 @@ export default function Auth() {
         </div>
 
         {/* Footer */}
-        <p className="text-[11px] text-slate-400 relative z-10 font-normal tracking-wide mt-4">
+        <p className="text-[11px] text-slate-400 relative z-10 font-normal tracking-wide pt-2">
           © {new Date().getFullYear()} NextBand. All rights reserved.
         </p>
       </div>
 
       {/* Right side - Focal Point Student Login Workspace Form */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
+      <div className="flex-1 flex items-start justify-center p-6 lg:p-12 pt-8 lg:pt-14">
         {/* 6. Light Breathing Card */}
         <Card className="w-full max-w-[440px] border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] rounded-2xl bg-white dark:bg-slate-900 p-6 sm:p-7">
           <CardHeader className="space-y-1.5 text-center p-0 pb-5">
