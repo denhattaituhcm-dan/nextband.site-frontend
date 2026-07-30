@@ -81,9 +81,11 @@ class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, { 
               ⚡
             </div>
             <h2 className="text-xl font-extrabold text-slate-900">NextBand LMS System</h2>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Đã xảy ra sự cố nạp dữ liệu. Vui lòng bấm nút dưới đây để làm mới ứng dụng.
-            </p>
+            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-left">
+              <p className="text-[11px] font-mono font-bold text-red-700 break-words">
+                {String(this.state.error?.message || this.state.error || "Unknown Error")}
+              </p>
+            </div>
             <button
               onClick={() => {
                 this.setState({ hasError: false, error: null });

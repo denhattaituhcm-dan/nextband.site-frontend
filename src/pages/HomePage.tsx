@@ -37,9 +37,9 @@ export default function HomePage() {
 
   const workspace = workspaceData?.data;
   const continueTask = workspace?.continue || null;
-  const dueTodayTasks = workspace?.dueToday || [];
-  const upcomingTasks = workspace?.upcoming || [];
-  const completedTasks = workspace?.completed || [];
+  const dueTodayTasks = Array.isArray(workspace?.dueToday) ? workspace.dueToday : [];
+  const upcomingTasks = Array.isArray(workspace?.upcoming) ? workspace.upcoming : [];
+  const completedTasks = Array.isArray(workspace?.completed) ? workspace.completed : [];
 
   // 1. Fetch Enrollments & Class Data
   const { data: enrollments = [] } = useQuery({
