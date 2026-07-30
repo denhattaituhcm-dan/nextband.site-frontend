@@ -65,16 +65,17 @@ export default function HomePage() {
     (l) => l.sessionDate && new Date(l.sessionDate) >= new Date()
   ) || classLessons[0];
 
-  // 2. Fetch Student Real Submissions for Recent Feedback & Progress
+  // 2. Fetch Student Real Submissions for Recent Feedback & Progress (Safe failover)
   const { data: submissionsData } = useQuery({
     queryKey: ["my-recent-submissions", user?.id],
-    queryFn: () => submissionsApi.list({ studentId: user?.id, limit: 50 }),
+    queryFn: () => submissionsApi.list({ studentId: user?.id, limit: 50 }).catch(() => ({ data: [] })),
     enabled: !!user?.id,
+    retry: false,
   });
 
-  const userSubmissions = submissionsData?.data || [];
-  const gradedSubmissions = userSubmissions.filter((s: any) => s.status === "graded");
-  const submittedTasksCount = userSubmissions.filter((s: any) => s.status === "graded" || s.status === "submitted").length;
+  const userSubmissions = Array.isArray(submissionsData?.data) ? submissionsData.data : [];
+  const gradedSubmissions = userSubmissions.filter((s: any) => s && s.status === "graded");
+  const submittedTasksCount = userSubmissions.filter((s: any) => s && (s.status === "graded" || s.status === "submitted")).length;
 
   const totalCourseLessons = classLessons.length > 0 ? classLessons.length : 27;
   const completedCount = Math.min(submittedTasksCount, totalCourseLessons);

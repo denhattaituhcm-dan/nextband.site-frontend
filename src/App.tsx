@@ -56,8 +56,54 @@ const queryClient = new QueryClient({
   },
 });
 
+import React from "react";
+
+class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; error: any }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error("[CRITICAL_APP_ERROR]", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6 text-center font-sans">
+          <div className="max-w-md w-full bg-white p-8 rounded-2xl border border-slate-200 shadow-xl space-y-4">
+            <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto text-xl font-bold">
+              ⚡
+            </div>
+            <h2 className="text-xl font-extrabold text-slate-900">NextBand LMS System</h2>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Đã xảy ra sự cố nạp dữ liệu. Vui lòng bấm nút dưới đây để làm mới ứng dụng.
+            </p>
+            <button
+              onClick={() => {
+                this.setState({ hasError: false, error: null });
+                window.location.reload();
+              }}
+              className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer"
+            >
+              Làm mới trang
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 const App = () => (
-  <QueryClientProvider client={queryClient}>
+  <AppErrorBoundary>
+    <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
         <Toaster />
@@ -252,6 +298,7 @@ const App = () => (
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
+  </AppErrorBoundary>
 );
 
 export default App;
