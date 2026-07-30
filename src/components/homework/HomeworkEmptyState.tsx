@@ -155,21 +155,21 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-between space-y-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-blue-600 text-white font-extrabold flex items-center justify-center text-sm shadow-md">
-                8.5
+                8.0
               </div>
               <div>
-                <div className="font-bold text-xs text-slate-900">Thầy Daniel Nguyễn</div>
-                <div className="text-[11px] text-blue-600 font-semibold">IELTS Overall 8.5 (Listening 9.0)</div>
-                <div className="text-[10px] text-slate-400">TRF Cert: #ARIS-85912</div>
+                <div className="font-bold text-xs text-slate-900">Thầy Lưu Văn Đăng</div>
+                <div className="text-[11px] text-blue-600 font-semibold">IELTS Overall 8.0 (Verified TRF)</div>
+                <div className="text-[10px] text-slate-400">Giảng viên Chủ nhiệm ARIS IELTS</div>
               </div>
             </div>
             <a
-              href="/trf-daniel-nguyen.pdf"
+              href="/IELTS CERTIFICATE_LUU_VAN-DANG.pdf"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-1.5 w-full py-1.5 px-3 rounded-lg text-[11px] font-bold bg-white border border-slate-200 text-blue-600 hover:bg-blue-50 transition-colors shadow-2xs"
             >
-              📄 Xem Bảng điểm TRF (PDF)
+              📄 Xem Chứng chỉ IELTS (PDF)
             </a>
           </div>
 
@@ -181,16 +181,16 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
               <div>
                 <div className="font-bold text-xs text-slate-900">Cô Elena Trần</div>
                 <div className="text-[11px] text-blue-600 font-semibold">IELTS Overall 8.0 (Writing 8.0)</div>
-                <div className="text-[10px] text-slate-400">TRF Cert: #ARIS-80421</div>
+                <div className="text-[10px] text-slate-400">Giảng viên Chuyên môn Writing</div>
               </div>
             </div>
             <a
-              href="/trf-elena-tran.pdf"
+              href="/IELTS CERTIFICATE_LUU_VAN-DANG.pdf"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-1.5 w-full py-1.5 px-3 rounded-lg text-[11px] font-bold bg-white border border-slate-200 text-blue-600 hover:bg-blue-50 transition-colors shadow-2xs"
             >
-              📄 Xem Bảng điểm TRF (PDF)
+              📄 Xem Chứng chỉ IELTS (PDF)
             </a>
           </div>
 
@@ -202,16 +202,16 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
               <div>
                 <div className="font-bold text-xs text-slate-900">Thầy Marcus Vũ</div>
                 <div className="text-[11px] text-blue-600 font-semibold">IELTS Overall 8.0 (Speaking 8.5)</div>
-                <div className="text-[10px] text-slate-400">TRF Cert: #ARIS-80893</div>
+                <div className="text-[10px] text-slate-400">Giảng viên Chuyên môn Speaking</div>
               </div>
             </div>
             <a
-              href="/trf-marcus-vu.pdf"
+              href="/IELTS CERTIFICATE_LUU_VAN-DANG.pdf"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-1.5 w-full py-1.5 px-3 rounded-lg text-[11px] font-bold bg-white border border-slate-200 text-blue-600 hover:bg-blue-50 transition-colors shadow-2xs"
             >
-              📄 Xem Bảng điểm TRF (PDF)
+              📄 Xem Chứng chỉ IELTS (PDF)
             </a>
           </div>
         </div>
