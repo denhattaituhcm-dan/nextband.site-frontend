@@ -107,44 +107,45 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex bg-slate-50/50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 selection:bg-primary/10 selection:text-primary">
-      {/* Left side - Balanced Quiet Academic Branding Panel */}
-      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-slate-100/80 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 p-10 xl:p-14 flex-col justify-between relative overflow-hidden border-r border-slate-200/60 dark:border-slate-800/60 backdrop-blur-md">
-        {/* Subtle Warm Ambient Glow */}
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_20%,rgba(16,185,129,0.04),transparent_60%)]" />
+      {/* Left side - ARIS IELTS Premium Academic Branding Panel */}
+      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-[#090D16] text-slate-100 p-10 xl:p-14 flex-col justify-between relative overflow-hidden border-r border-slate-800/80">
+        {/* ARIS Brand Glow: Dual Ambient Light from Logo Colors (Coral Red & Electric Blue) */}
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-rose-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* 1. Brand Recognition: Original Color Logo + Crisp Whitespace */}
         <div className="relative z-10 space-y-4">
           <div className="flex items-center gap-3">
-            <SiteLogo alt="NextBand Logo" className="max-h-10 w-auto object-contain" />
+            <SiteLogo alt="ARIS IELTS Logo" className="max-h-12 w-auto object-contain" />
           </div>
           {/* 4. Refined Tagline as a Quiet Academic Message */}
-          <p className="text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 leading-relaxed max-w-md">
+          <p className="text-sm font-medium tracking-tight text-slate-300 leading-relaxed max-w-md">
             {settings.authTagline}
           </p>
         </div>
 
-        {/* 5. Product Feature Cards (Cân đối không bị dồn nén) */}
+        {/* 5. ARIS Academic Feature Cards */}
         <div className="space-y-4 relative z-10 my-auto w-full max-w-lg">
-          <div className="group flex items-start gap-4 p-5 rounded-2xl bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-            <div className="rounded-xl bg-primary/10 dark:bg-primary/20 p-3 border border-primary/20 shrink-0 group-hover:border-primary/40 transition-colors">
-              <BookOpen className="h-5 w-5 text-primary" />
+          <div className="group flex items-start gap-4 p-5 rounded-2xl bg-slate-900/80 border border-slate-800/90 shadow-sm hover:shadow-md hover:border-slate-700 hover:-translate-y-0.5 transition-all duration-200 backdrop-blur-sm">
+            <div className="rounded-xl bg-gradient-to-br from-rose-500/20 to-sky-500/20 p-3 border border-rose-500/30 shrink-0 group-hover:border-rose-400/50 transition-colors">
+              <BookOpen className="h-5 w-5 text-rose-400" />
             </div>
             <div className="space-y-1 min-w-0 flex-1">
-              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm tracking-tight">
+              <h3 className="font-semibold text-slate-100 text-sm tracking-tight">
                 {settings.authFeatureOneTitle}
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed break-words">
+              <p className="text-xs text-slate-400 leading-relaxed break-words">
                 {settings.authFeatureOneDescription}
               </p>
             </div>
           </div>
 
-          <div className="group flex items-start gap-4 p-5 rounded-2xl bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-            <div className="rounded-xl bg-primary/10 dark:bg-primary/20 p-3 border border-primary/20 shrink-0 group-hover:border-primary/40 transition-colors">
-              <Users className="h-5 w-5 text-primary" />
+          <div className="group flex items-start gap-4 p-5 rounded-2xl bg-slate-900/80 border border-slate-800/90 shadow-sm hover:shadow-md hover:border-slate-700 hover:-translate-y-0.5 transition-all duration-200 backdrop-blur-sm">
+            <div className="rounded-xl bg-gradient-to-br from-sky-500/20 to-indigo-500/20 p-3 border border-sky-500/30 shrink-0 group-hover:border-sky-400/50 transition-colors">
+              <Users className="h-5 w-5 text-sky-400" />
             </div>
             <div className="space-y-1 min-w-0 flex-1">
-              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm tracking-tight">
+              <h3 className="font-semibold text-slate-100 text-sm tracking-tight">
                 {settings.authFeatureTwoTitle}
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed break-words">
@@ -160,9 +161,9 @@ export default function Auth() {
                 href={settings.zaloLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/60 text-xs font-medium hover:bg-blue-100/70 dark:hover:bg-blue-900/60 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-800 text-sky-400 border border-sky-500/30 text-xs font-medium transition-colors"
               >
-                <MessageCircle className="h-4 w-4 shrink-0" />
+                <MessageCircle className="h-4 w-4 shrink-0 text-sky-400" />
                 <span>Cần hỗ trợ? Liên hệ Admin qua Zalo</span>
               </a>
             </div>
@@ -300,7 +301,7 @@ export default function Auth() {
                   <p className="text-xs text-destructive mt-1">{errors.password}</p>
                 )}
               </div>
-              <Button type="submit" className="w-full h-9.5 text-xs font-medium tracking-tight mt-1.5" disabled={isLoading}>
+              <Button type="submit" className="w-full h-9.5 text-xs font-medium tracking-tight mt-1.5 bg-slate-900 hover:bg-slate-800 text-white transition-colors" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
