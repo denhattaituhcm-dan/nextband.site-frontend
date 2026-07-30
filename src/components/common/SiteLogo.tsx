@@ -21,7 +21,7 @@ const getFullLogoUrl = (url: string) => {
 export function SiteLogo({
   className,
   alt,
-  fallbackSrc = "/logo.png",
+  fallbackSrc = "/Logo.png",
 }: SiteLogoProps) {
   const { settings } = useSiteSettings();
   const [hasLoadError, setHasLoadError] = useState(false);
