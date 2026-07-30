@@ -122,15 +122,15 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex bg-slate-50/50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 selection:bg-primary/10 selection:text-primary">
       {/* Left side - Education & Academic Branding Panel (Visual 2-Zone Separation) */}
-      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-slate-50 text-slate-900 p-8 xl:p-12 flex-col justify-between relative overflow-hidden border-r border-slate-200/80 animate-in fade-in duration-500">
+      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-slate-50 text-slate-900 p-6 xl:p-8 flex-col justify-between relative overflow-hidden border-r border-slate-200/80 animate-in fade-in duration-500">
         {/* Subtle Soft Blue Ambient Glow */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Header Logo */}
-        <div className="relative z-10 space-y-3">
+        <div className="relative z-10 space-y-2 mb-4">
           <div className="flex items-center justify-between">
-            <SiteLogo alt="NextBand Logo" className="max-h-11 w-auto object-contain" />
+            <SiteLogo alt="NextBand Logo" className="max-h-10 w-auto object-contain" />
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200/80 shadow-xs text-[11px] font-medium text-slate-700">
               <Award className="h-3.5 w-3.5 text-amber-500" />
               Cambridge Standard
@@ -142,10 +142,10 @@ export default function Auth() {
         </div>
 
         {/* Middle Section: 2-ZONE SEPARATION (TOP: HỌC VIÊN / BOTTOM: GIÁO VIÊN & QUẢN TRỊ) */}
-        <div className="space-y-4 relative z-10 my-auto w-full max-w-md">
+        <div className="space-y-3.5 relative z-10 w-full max-w-md my-0">
           {/* ZONE 1: TOP SECTION - DÀNH CHO HỌC VIÊN (SKY/WHITE BACKGROUND TONE) */}
-          <div className="p-4 rounded-2xl bg-white border border-sky-100 shadow-xs space-y-3.5 relative">
-            <div className="flex items-center justify-between border-b border-sky-50 pb-2.5">
+          <div className="p-3.5 rounded-2xl bg-white border border-sky-100 shadow-xs space-y-3 relative">
+            <div className="flex items-center justify-between border-b border-sky-50 pb-2">
               <div className="flex items-center gap-2">
                 <span className="px-2 py-0.5 rounded-md bg-sky-100 text-sky-700 font-extrabold text-[10px] uppercase tracking-wider">
                   🎓 Cổng Học viên
@@ -155,8 +155,8 @@ export default function Auth() {
             </div>
 
             {/* Compact Feature Cards */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-sky-50/50 border border-sky-100">
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="flex items-center gap-2 p-2 rounded-xl bg-sky-50/50 border border-sky-100">
                 <div className="rounded-lg bg-sky-500/10 p-1.5 border border-sky-500/20 shrink-0">
                   <GraduationCap className="h-4 w-4 text-sky-600" />
                 </div>
@@ -170,7 +170,7 @@ export default function Auth() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-indigo-50/50 border border-indigo-100">
+              <div className="flex items-center gap-2 p-2 rounded-xl bg-indigo-50/50 border border-indigo-100">
                 <div className="rounded-lg bg-indigo-500/10 p-1.5 border border-indigo-500/20 shrink-0">
                   <TrendingUp className="h-4 w-4 text-indigo-600" />
                 </div>
@@ -186,13 +186,13 @@ export default function Auth() {
             </div>
 
             {/* Academic Curriculum Roadmap */}
-            <div className="pt-1">
-              <div className="flex items-center justify-between mb-2">
+            <div className="pt-0.5">
+              <div className="flex items-center justify-between mb-1.5">
                 <h4 className="font-semibold text-slate-800 text-xs tracking-tight">Academic Curriculum</h4>
                 <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200/60">5 Levels</span>
               </div>
 
-              <div className="relative pl-5 space-y-2.5 my-1">
+              <div className="relative pl-5 space-y-2 my-1">
                 <div className="absolute left-[5.5px] top-1.5 bottom-1.5 w-[1px] bg-slate-200" />
                 <div className="relative flex items-center justify-between text-xs">
                   <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-red-600 ring-2 ring-red-100" />
@@ -234,7 +234,7 @@ export default function Auth() {
           </div>
 
           {/* ZONE 2: BOTTOM SECTION - DÀNH CHO GIÁO VIÊN & QUẢN TRỊ (SLATE/AMBER BACKGROUND TONE) */}
-          <div className="p-3.5 rounded-2xl bg-slate-200/60 border border-slate-300/80 shadow-xs space-y-2">
+          <div className="p-3 rounded-2xl bg-slate-200/60 border border-slate-300/80 shadow-xs space-y-1.5">
             <div className="flex items-center justify-between">
               <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-100 font-extrabold text-[10px] uppercase tracking-wider flex items-center gap-1">
                 🔑 Cổng Giáo viên & Quản trị
@@ -275,13 +275,13 @@ export default function Auth() {
         </div>
 
         {/* Footer */}
-        <p className="text-[11px] text-slate-400 relative z-10 font-normal tracking-wide">
+        <p className="text-[11px] text-slate-400 relative z-10 font-normal tracking-wide mt-4">
           © {new Date().getFullYear()} NextBand. All rights reserved.
         </p>
       </div>
 
       {/* Right side - Focal Point Student Login Workspace Form */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-12 lg:p-16">
+      <div className="flex-1 flex items-start justify-center p-6 sm:p-10 lg:p-12 pt-8 sm:pt-12">
         {/* 6. Light Breathing Card */}
         <Card className="w-full max-w-[380px] border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] rounded-2xl bg-white dark:bg-slate-900 p-2 sm:p-3">
           <CardHeader className="space-y-1.5 text-center pb-5">
