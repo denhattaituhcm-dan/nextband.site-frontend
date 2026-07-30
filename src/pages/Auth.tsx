@@ -250,7 +250,7 @@ export default function Auth() {
       {/* Right side - Focal Point Student Login Workspace Form */}
       <div className="flex-1 flex items-start justify-center p-6 sm:p-10 lg:p-12 pt-8 sm:pt-12">
         {/* 6. Light Breathing Card */}
-        <Card className="w-full max-w-[380px] border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] rounded-2xl bg-white dark:bg-slate-900 p-2 sm:p-3">
+        <Card className="w-full max-w-[450px] border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] rounded-2xl bg-white dark:bg-slate-900 p-3 sm:p-5">
           <CardHeader className="space-y-1.5 text-center pb-5">
             <div className="lg:hidden flex items-center justify-center gap-2 mb-3">
               <SiteLogo alt="NextBand Logo" className="max-h-9 w-auto object-contain" />
@@ -264,7 +264,7 @@ export default function Auth() {
           </CardHeader>
           <CardContent className="space-y-5">
             {/* 7. Google Login Primary Entry (DÀNH CHO HỌC VIÊN) */}
-            <div className="space-y-2 p-3 rounded-2xl bg-sky-50/50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900/30">
+            <div className="space-y-2.5 p-4 sm:p-5 rounded-2xl bg-sky-50/50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900/30">
               <div className="text-[10px] font-bold tracking-wider text-sky-700 dark:text-sky-400 uppercase text-center mb-1">
                 🎓 Dành cho Học viên
               </div>
@@ -325,7 +325,7 @@ export default function Auth() {
             </div>
 
             {/* Secondary Email/Password Form (DÀNH CHO GIÁO VIÊN & QUẢN TRỊ) */}
-            <form onSubmit={handleSignIn} className="space-y-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60">
+            <form onSubmit={handleSignIn} className="space-y-3.5 p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60">
               <div className="text-[10px] font-bold tracking-wider text-slate-600 dark:text-slate-400 uppercase">
                 🔑 Cổng Giáo viên & Quản trị
               </div>
