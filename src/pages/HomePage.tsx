@@ -158,35 +158,37 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* PERSONAL DASHBOARD (IELTS TARGET MATRIX: "TÔI ĐANG Ở ĐÂU") */}
+              {/* HOMEWORK SUMMARY CARD (GÓC NHÌN HỌC VIÊN HMS: "CÒN BAO NHIÊU VIỆC?") */}
               <div className="md:col-span-4 bg-white p-6 md:p-8 rounded-2xl border border-slate-100 shadow-sm hover:-translate-y-0.5 transition-transform duration-200 flex flex-col justify-between space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Target Matrix cá nhân</h3>
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block animate-ping" title="Target Active" />
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Tình trạng Bài tập cá nhân</h3>
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block animate-pulse" title="Live homework status" />
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 space-y-0.5">
-                    <span className="text-[10px] text-slate-400 font-medium uppercase">Mục tiêu</span>
-                    <div className="font-extrabold text-blue-600 text-sm">Overall 6.5</div>
+                    <span className="text-[10px] text-slate-400 font-medium uppercase">Đã hoàn thành</span>
+                    <div className="font-extrabold text-emerald-600 text-sm">{completedCount} bài</div>
                   </div>
                   <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 space-y-0.5">
-                    <span className="text-[10px] text-slate-400 font-medium uppercase">Listening</span>
-                    <div className="font-extrabold text-slate-900 text-sm">6.5</div>
+                    <span className="text-[10px] text-slate-400 font-medium uppercase">Cần làm</span>
+                    <div className="font-extrabold text-blue-600 text-sm">{dueTodayTasks.length + upcomingTasks.length} bài</div>
                   </div>
                   <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 space-y-0.5">
-                    <span className="text-[10px] text-slate-400 font-medium uppercase">Reading</span>
-                    <div className="font-extrabold text-slate-900 text-sm">6.5</div>
+                    <span className="text-[10px] text-slate-400 font-medium uppercase">Chờ chấm</span>
+                    <div className="font-extrabold text-amber-600 text-sm">
+                      {userSubmissions.filter((s: any) => s.status === "submitted").length} bài
+                    </div>
                   </div>
                   <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 space-y-0.5">
-                    <span className="text-[10px] text-slate-400 font-medium uppercase">Writing/Speaking</span>
-                    <div className="font-extrabold text-slate-900 text-sm">6.0+</div>
+                    <span className="text-[10px] text-slate-400 font-medium uppercase">Quá hạn</span>
+                    <div className="font-extrabold text-red-600 text-sm">{dueTodayTasks.length} bài</div>
                   </div>
                 </div>
                 <Button
                   onClick={() => setJoinModalOpen(true)}
                   variant="outline"
                   size="sm"
-                  className="w-full border-red-200 text-red-600 hover:bg-red-50 font-bold text-xs rounded-xl"
+                  className="w-full border-blue-200 text-blue-600 hover:bg-blue-50 font-bold text-xs rounded-xl"
                 >
                   + Đăng ký Lớp bổ trợ / Chuyển lớp
                 </Button>

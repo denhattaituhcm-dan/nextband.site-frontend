@@ -11,6 +11,23 @@ interface HomeworkContinueCardProps {
 export function HomeworkContinueCard({ task }: HomeworkContinueCardProps) {
   const navigate = useNavigate();
 
+  // Dynamic CTA label based on business status
+  const getCtaLabel = (status: string) => {
+    switch (status?.toUpperCase()) {
+      case "SUBMITTED":
+        return "Xem bài đã nộp";
+      case "GRADED":
+        return "Xem nhận xét";
+      case "REVISION_REQUIRED":
+        return "Sửa và nộp lại";
+      case "UNSUBMITTED":
+      default:
+        return "Làm bài tập";
+    }
+  };
+
+  const ctaLabel = getCtaLabel(task.status);
+
   return (
     <Card className="border-blue-500 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white rounded-2xl shadow-lg shadow-blue-500/20 overflow-hidden relative border-0">
       <CardContent className="p-6 md:p-8 relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -34,7 +51,7 @@ export function HomeworkContinueCard({ task }: HomeworkContinueCardProps) {
               Hạn nộp: {task.deadline ? new Date(task.deadline).toLocaleDateString("vi-VN") : "Hôm nay"}
             </span>
             <span>•</span>
-            <span>Trạng thái: <strong className="text-white font-bold">Chưa nộp bài</strong></span>
+            <span>Trạng thái: <strong className="text-white font-bold">{task.status === "graded" ? "Đã chấm" : task.status === "submitted" ? "Đang chờ chấm" : "Chưa nộp bài"}</strong></span>
           </div>
         </div>
 
@@ -43,7 +60,7 @@ export function HomeworkContinueCard({ task }: HomeworkContinueCardProps) {
             onClick={() => navigate(task.actionUrl)}
             className="bg-white hover:bg-blue-50 text-blue-600 font-extrabold px-8 py-6 rounded-xl shadow-xl hover:shadow-2xl transition-all text-base flex items-center gap-2 border-0"
           >
-            Tiếp tục học
+            {ctaLabel}
             <ArrowRight className="w-5 h-5" />
           </Button>
         </div>

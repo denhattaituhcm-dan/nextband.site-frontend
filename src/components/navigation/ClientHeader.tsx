@@ -12,9 +12,24 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 
+import { useQuery } from "@tanstack/react-query";
+import { enrollmentsApi } from "@/lib/api";
+
 export function ClientHeader() {
-  const { user, signOut, isAdmin } = useAuth();
+  const { user, signOut, isAdmin, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  // Fetch student enrollments to evaluate active class name
+  const { data: enrollments = [] } = useQuery({
+    queryKey: ["my-enrollments-header"],
+    queryFn: () => enrollmentsApi.list(),
+    enabled: isAuthenticated,
+  });
+
+  const hasClasses = enrollments.length > 0;
+  const activeClassName = enrollments[0]?.courses?.title
+    ? `${enrollments[0].courses.title} • STARTER01`
+    : null;
 
   const handleSignOut = async () => {
     await signOut();
@@ -30,9 +45,15 @@ export function ClientHeader() {
             <h2 className="text-sm font-semibold text-slate-800">
               Xin chào, {user?.fullName || "Học viên"}
             </h2>
-            <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-              STARTER01 • 04.2026
-            </span>
+            {hasClasses && activeClassName ? (
+              <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                {activeClassName}
+              </span>
+            ) : (
+              <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                Chưa có lớp học
+              </span>
+            )}
           </div>
         </div>
 
