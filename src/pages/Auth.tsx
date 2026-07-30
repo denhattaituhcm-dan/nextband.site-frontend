@@ -57,7 +57,15 @@ export default function Auth() {
 
   useEffect(() => {
     if (user) {
-      navigate(from, { replace: true });
+      // Automatic role-based routing:
+      // If user has teacher or admin role (logged in via Password), redirect to Teacher Workspace for grading
+      if (user.roles?.includes("teacher") || user.roles?.includes("admin")) {
+        const adminTarget = from.startsWith("/admin") ? from : "/admin/teacher-workspace";
+        navigate(adminTarget, { replace: true });
+      } else {
+        // Students (logged in via Google OAuth) redirect to Student Workspace /
+        navigate(from, { replace: true });
+      }
     }
   }, [user, navigate, from]);
 
@@ -327,6 +335,9 @@ export default function Auth() {
 
             {/* Secondary Email/Password Form */}
             <form onSubmit={handleSignIn} className="space-y-3.5">
+              <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-[11px] text-slate-600 dark:text-slate-300">
+                🔑 <strong>Cổng Giáo viên & Quản trị:</strong> Đăng nhập bằng Email/Mật khẩu được cấp để vào Giao diện Chấm & Chữa bài tập.
+              </div>
               <div className="space-y-1.5">
                 <Label htmlFor="login-email" className="text-xs font-medium text-slate-700 dark:text-slate-300">
                   Email
