@@ -83,13 +83,25 @@ export const authApi = {
   },
 
   loginWithGoogle: async () => {
+    const targetRedirect = window.location.origin;
+    console.log("[AUTH_DIAGNOSTIC] Initiating signInWithOAuth", {
+      provider: "google",
+      redirectTo: targetRedirect,
+      currentHref: window.location.href,
+      origin: window.location.origin,
+      timestamp: new Date().toISOString(),
+    });
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: targetRedirect,
       },
     });
-    if (error) throw error;
+    if (error) {
+      console.error("[AUTH_DIAGNOSTIC] signInWithOAuth failed directly", error);
+      throw error;
+    }
+    console.log("[AUTH_DIAGNOSTIC] signInWithOAuth initiated successfully, provider URL returned:", data?.url);
     return data;
   },
 
@@ -582,7 +594,7 @@ export const examsApi = {
                     groupId: `grp-l-${id}`,
                     questionType: "fill_blank",
                     questionText: "Điền từ thích hợp vào chỗ trống",
-                    correctAnswer: "{"0":"library"}",
+                    correctAnswer: "{\"0\":\"library\"}",
                     points: 1,
                     orderIndex: 0
                   }

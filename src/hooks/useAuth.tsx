@@ -83,20 +83,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    console.log("[AUTH_DIAGNOSTIC] AuthProvider mounted", {
+      href: window.location.href,
+      hash: window.location.hash,
+      search: window.location.search,
+      mockUserPresent: !!localStorage.getItem("nextband_mock_user"),
+      timestamp: new Date().toISOString(),
+    });
+
     // Check active session on mount
     const storedMockUser = localStorage.getItem("nextband_mock_user");
     if (storedMockUser) {
+      console.warn("[AUTH_DIAGNOSTIC] Mock user detected in localStorage! Bypassing real Supabase Auth.", storedMockUser);
       try {
         setUser(JSON.parse(storedMockUser));
         setToken("mock-demo-token-12345");
         setIsLoading(false);
         return;
       } catch (e) {
+        console.error("[AUTH_DIAGNOSTIC] Failed to parse mock user, clearing.", e);
         localStorage.removeItem("nextband_mock_user");
       }
     }
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      console.log("[AUTH_DIAGNOSTIC] getSession result", {
+        hasSession: !!session,
+        userId: session?.user?.id,
+        email: session?.user?.email,
+        error: error?.message || null,
+      });
       if (session?.user) {
         setToken(session.access_token);
         fetchUserProfile(session.user).finally(() => setIsLoading(false));
@@ -108,8 +124,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Listen to Auth state changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("[AUTH_DIAGNOSTIC] onAuthStateChange event fired", {
+        event,
+        hasSession: !!session,
+        userId: session?.user?.id,
+        email: session?.user?.email,
+        mockUserActive: !!localStorage.getItem("nextband_mock_user"),
+      });
+
       if (localStorage.getItem("nextband_mock_user")) {
+        console.warn("[AUTH_DIAGNOSTIC] Ignoring onAuthStateChange because mock user is active in localStorage");
         setIsLoading(false);
         return;
       }
