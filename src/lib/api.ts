@@ -1033,92 +1033,36 @@ export const submissionsApi = {
       audioUrl?: string;
     }>
   ) => {
-    // 1. Save Answers
-    if (answers && answers.length > 0) {
+    // Gọi RPC Stored Procedure để thực hiện Atomic Transaction trên Database:
+    // Upsert Answers + Auto Grade + Mark Submitted/Graded trong 1 giao dịch duy nhất.
+    const formattedAnswers = (answers || []).map((a) => ({
+      question_id: a.questionId,
+      answer_text: a.answerText || "",
+      audio_url: a.audioUrl || "",
+    }));
+
+    const { data, error } = await supabase.rpc("submit_exam_transaction", {
+      p_submission_id: id,
+      p_answers: formattedAnswers,
+    });
+
+    if (error) {
+      // Fallback đơn giản nếu RPC chưa được tạo trong Supabase SQL Editor
+      console.warn("RPC submit_exam_transaction fail, fallback to direct update:", error.message);
       await submissionsApi.saveAnswers(id, answers);
-    }
-
-    // 2. Auto-grade MCQ and fill_blank questions
-    let autoCorrect = 0;
-    let autoTotal = 0;
-    try {
-      // Fetch the submission with exam → sections → groups → questions
-      const { data: sub } = await supabase
+      const { data: fallbackData, error: fallbackErr } = await supabase
         .from("exam_submissions")
-        .select("exam_id")
+        .update({
+          status: "submitted",
+          submitted_at: new Date().toISOString(),
+        })
         .eq("id", id)
+        .select()
         .single();
-
-      if (sub?.exam_id) {
-        const { data: questions } = await supabase
-          .from("questions")
-          .select("id, question_type, correct_answer, points, group_id")
-          .in("group_id",
-            (await supabase
-              .from("question_groups")
-              .select("id")
-              .in("section_id",
-                (await supabase
-                  .from("exam_sections")
-                  .select("id")
-                  .eq("exam_id", sub.exam_id)
-                ).data?.map((s: any) => s.id) || []
-              )
-            ).data?.map((g: any) => g.id) || []
-          );
-
-        const gradableTypes = ["multiple_choice", "fill_blank", "true_false_not_given", "yes_no_not_given"];
-        const gradableQuestions = (questions || []).filter((q: any) =>
-          gradableTypes.includes(q.question_type) && q.correct_answer
-        );
-
-        for (const q of gradableQuestions) {
-          const studentAnswer = answers.find(a => a.questionId === q.id);
-          if (!studentAnswer?.answerText) continue;
-
-          autoTotal++;
-          const isCorrect = studentAnswer.answerText.trim().toLowerCase() ===
-            q.correct_answer.trim().toLowerCase();
-          const score = isCorrect ? (q.points || 1) : 0;
-          if (isCorrect) autoCorrect++;
-
-          // Write auto-graded score to answers table
-          await supabase
-            .from("answers")
-            .update({ score, feedback: isCorrect ? "Correct ✓" : `Incorrect. Answer: ${q.correct_answer}` })
-            .eq("submission_id", id)
-            .eq("question_id", q.id);
-        }
-      }
-    } catch (_autoGradeErr) {
-      // Auto-grading failure does NOT block submission
-      console.warn("Auto-grading error (non-fatal):", _autoGradeErr);
+      if (fallbackErr) throw fallbackErr;
+      return fallbackData;
     }
 
-    // 3. Mark submission as submitted (with auto-grade stats if available)
-    const updatePayload: any = {
-      status: "submitted",
-      submitted_at: new Date().toISOString(),
-    };
-    if (autoTotal > 0) {
-      updatePayload.correct_answers = autoCorrect;
-      updatePayload.total_questions = autoTotal;
-      // If ALL questions are auto-gradable, mark as graded immediately
-      if (autoTotal === answers.length) {
-        updatePayload.status = "graded";
-        updatePayload.total_score = parseFloat(((autoCorrect / autoTotal) * 9).toFixed(1));
-        updatePayload.graded_at = new Date().toISOString();
-      }
-    }
-
-    const { data, error } = await supabase
-      .from("exam_submissions")
-      .update(updatePayload)
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (error) throw error;
     return data;
   },
 
