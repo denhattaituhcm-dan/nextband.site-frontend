@@ -121,8 +121,8 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex bg-slate-50/50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 selection:bg-primary/10 selection:text-primary">
-      {/* Left side - Apple Education + Coursera + Linear Premium Academic Branding Panel */}
-      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-[#090D16] text-slate-100 p-8 xl:p-12 flex-col justify-between relative overflow-hidden border-r border-slate-800/80 animate-in fade-in duration-500">
+      {/* Left side - Education & Academic Branding Panel (Light Theme) */}
+      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-slate-50 text-slate-900 p-8 xl:p-12 flex-col justify-between relative overflow-hidden border-r border-slate-200/80 animate-in fade-in duration-500">
         {/* Subtle Soft Blue & Ambient Brand Glow */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -131,97 +131,97 @@ export default function Auth() {
         <div className="relative z-10 space-y-3">
           <div className="flex items-center justify-between">
             <SiteLogo alt="NextBand Logo" className="max-h-11 w-auto object-contain" />
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-[11px] font-medium text-slate-300">
-              <Award className="h-3.5 w-3.5 text-amber-400" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200/80 shadow-xs text-[11px] font-medium text-slate-700">
+              <Award className="h-3.5 w-3.5 text-amber-500" />
               Cambridge Standard
             </span>
           </div>
-          <p className="text-xs font-medium tracking-tight text-slate-400 leading-relaxed max-w-sm">
+          <p className="text-xs font-medium tracking-tight text-slate-500 leading-relaxed max-w-sm">
             {settings.authTagline}
           </p>
         </div>
 
         {/* Middle Section: Compact Feature Cards & Academic Roadmap */}
         <div className="space-y-4 relative z-10 my-auto w-full max-w-md">
-          {/* Compact Feature Cards (35% Height Reduced) */}
+          {/* Compact Feature Cards */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 shadow-sm backdrop-blur-sm">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200/80 shadow-xs backdrop-blur-sm">
               <div className="rounded-lg bg-sky-500/10 p-2 border border-sky-500/20 shrink-0">
-                <GraduationCap className="h-4 w-4 text-sky-400" />
+                <GraduationCap className="h-4 w-4 text-sky-600" />
               </div>
               <div className="min-w-0">
-                <h3 className="font-semibold text-slate-200 text-xs tracking-tight truncate">
+                <h3 className="font-semibold text-slate-800 text-xs tracking-tight truncate">
                   Learning Workspace
                 </h3>
-                <p className="text-[11px] text-slate-400 truncate">
+                <p className="text-[11px] text-slate-500 truncate">
                   Structured IELTS learning
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 shadow-sm backdrop-blur-sm">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200/80 shadow-xs backdrop-blur-sm">
               <div className="rounded-lg bg-indigo-500/10 p-2 border border-indigo-500/20 shrink-0">
-                <TrendingUp className="h-4 w-4 text-indigo-400" />
+                <TrendingUp className="h-4 w-4 text-indigo-600" />
               </div>
               <div className="min-w-0">
-                <h3 className="font-semibold text-slate-200 text-xs tracking-tight truncate">
+                <h3 className="font-semibold text-slate-800 text-xs tracking-tight truncate">
                   Track Progress
                 </h3>
-                <p className="text-[11px] text-slate-400 truncate">
+                <p className="text-[11px] text-slate-500 truncate">
                   Measure improvement
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Academic Curriculum Roadmap Card (Refined Official Coursebook Colors & Curriculum Format) */}
-          <div className="p-4 rounded-2xl bg-slate-900/40 border border-slate-800/80 shadow-sm backdrop-blur-md relative overflow-hidden">
-            <div className="flex items-center justify-between mb-3.5 pb-2 border-b border-slate-800/60">
+          {/* Academic Curriculum Roadmap Card */}
+          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs backdrop-blur-md relative overflow-hidden">
+            <div className="flex items-center justify-between mb-3.5 pb-2 border-b border-slate-100">
               <div>
-                <h4 className="font-semibold text-slate-200 text-xs tracking-tight">Academic Curriculum</h4>
-                <p className="text-[10px] text-slate-400">Official Course Progression</p>
+                <h4 className="font-semibold text-slate-800 text-xs tracking-tight">Academic Curriculum</h4>
+                <p className="text-[10px] text-slate-500">Official Course Progression</p>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/60">5 Levels</span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200/60">5 Levels</span>
             </div>
 
             {/* Vertical Roadmap Timeline */}
             <div className="relative pl-5 space-y-3.5 my-1.5">
-              {/* Ultra-thin Elegant Connecting Line */}
-              <div className="absolute left-[5.5px] top-1.5 bottom-1.5 w-[1px] bg-slate-800" />
+              {/* Thin Connecting Line */}
+              <div className="absolute left-[5.5px] top-1.5 bottom-1.5 w-[1px] bg-slate-200" />
 
               {/* Stage 1: Leader (Dark Red) - TOP */}
               <div className="relative flex items-center justify-between text-xs group">
-                <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-red-700 ring-2 ring-red-900/50 shadow-[0_0_6px_rgba(185,28,28,0.6)]" />
-                <span className="font-medium text-slate-200 text-[11px]">Leader</span>
-                <span className="text-[10px] font-mono text-red-400 font-medium">IELTS 6.5+</span>
+                <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-red-600 ring-2 ring-red-100 shadow-[0_0_6px_rgba(220,38,38,0.4)]" />
+                <span className="font-medium text-slate-700 text-[11px]">Leader</span>
+                <span className="text-[10px] font-mono text-red-600 font-medium">IELTS 6.5+</span>
               </div>
 
               {/* Stage 2: Master (Green) */}
               <div className="relative flex items-center justify-between text-xs group">
-                <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-950/40 shadow-[0_0_6px_rgba(16,185,129,0.4)]" />
-                <span className="font-medium text-slate-200 text-[11px]">Master</span>
-                <span className="text-[10px] font-mono text-emerald-400 font-medium">IELTS 6.0</span>
+                <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-100 shadow-[0_0_6px_rgba(16,185,129,0.4)]" />
+                <span className="font-medium text-slate-700 text-[11px]">Master</span>
+                <span className="text-[10px] font-mono text-emerald-600 font-medium">IELTS 6.0</span>
               </div>
 
               {/* Stage 3: Builder (Orange) */}
               <div className="relative flex items-center justify-between text-xs group">
-                <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-amber-500 ring-2 ring-amber-950/40 shadow-[0_0_6px_rgba(245,158,11,0.4)]" />
-                <span className="font-medium text-slate-200 text-[11px]">Builder</span>
-                <span className="text-[10px] font-mono text-amber-400 font-medium">IELTS 5.0</span>
+                <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-amber-500 ring-2 ring-amber-100 shadow-[0_0_6px_rgba(245,158,11,0.4)]" />
+                <span className="font-medium text-slate-700 text-[11px]">Builder</span>
+                <span className="text-[10px] font-mono text-amber-600 font-medium">IELTS 5.0</span>
               </div>
 
               {/* Stage 4: Dreamer (Blue) */}
               <div className="relative flex items-center justify-between text-xs group">
-                <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-sky-500 ring-2 ring-sky-950/40 shadow-[0_0_6px_rgba(14,165,233,0.4)]" />
-                <span className="font-medium text-slate-300 text-[11px]">Dreamer</span>
-                <span className="text-[10px] font-mono text-sky-400 font-medium">IELTS 4.0</span>
+                <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-sky-500 ring-2 ring-sky-100 shadow-[0_0_6px_rgba(14,165,233,0.4)]" />
+                <span className="font-medium text-slate-700 text-[11px]">Dreamer</span>
+                <span className="text-[10px] font-mono text-sky-600 font-medium">IELTS 4.0</span>
               </div>
 
               {/* Stage 5: Starter (Pink) - BOTTOM */}
               <div className="relative flex items-center justify-between text-xs group">
-                <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-pink-500 ring-2 ring-pink-950/40 shadow-[0_0_6px_rgba(236,72,153,0.4)]" />
-                <span className="font-medium text-slate-300 text-[11px]">Starter</span>
-                <span className="text-[10px] font-mono text-pink-400 font-medium">IELTS 3.0</span>
+                <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-pink-500 ring-2 ring-pink-100 shadow-[0_0_6px_rgba(236,72,153,0.4)]" />
+                <span className="font-medium text-slate-700 text-[11px]">Starter</span>
+                <span className="text-[10px] font-mono text-pink-600 font-medium">IELTS 3.0</span>
               </div>
             </div>
           </div>
@@ -229,10 +229,10 @@ export default function Auth() {
           {/* Social Proof & Zalo Link Dynamic Single Source of Truth */}
           <div className="flex items-center justify-between gap-3 text-xs">
             {settings.completedLessonsStat && (
-              <div className="flex items-center gap-1.5 text-slate-400">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+              <div className="flex items-center gap-1.5 text-slate-500">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                 <span className="text-[11px]">
-                  <strong className="text-slate-200 font-medium">
+                  <strong className="text-slate-800 font-medium">
                     {settings.completedLessonsStat}
                   </strong>{" "}
                   lessons completed
@@ -245,9 +245,9 @@ export default function Auth() {
                 href={settings.zaloLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/90 hover:bg-slate-800 text-sky-400 border border-sky-500/30 text-[11px] font-medium transition-colors"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-sky-600 border border-slate-200 text-[11px] font-medium transition-colors shadow-2xs"
               >
-                <MessageCircle className="h-3 w-3 text-sky-400" />
+                <MessageCircle className="h-3 w-3 text-sky-500" />
                 <span>Support</span>
               </a>
             )}
@@ -255,7 +255,7 @@ export default function Auth() {
         </div>
 
         {/* Footer */}
-        <p className="text-[11px] text-slate-500 relative z-10 font-normal tracking-wide">
+        <p className="text-[11px] text-slate-400 relative z-10 font-normal tracking-wide">
           © {new Date().getFullYear()} NextBand. All rights reserved.
         </p>
       </div>
@@ -289,7 +289,7 @@ export default function Auth() {
                   } catch (error: any) {
                     toast({
                       variant: "destructive",
-                      title: "Đăng nhập Google thất bại",
+                      title: "Đăng nhập thất bại",
                       description: error?.message || "Không thể khởi chạy đăng nhập Google.",
                     });
                   } finally {
@@ -320,17 +320,6 @@ export default function Auth() {
               <p className="text-[11px] text-center text-slate-400 dark:text-slate-500 font-normal">
                 Cách nhanh nhất dành cho học viên
               </p>
-            </div>
-
-            <div className="relative my-3.5">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-slate-200/80 dark:border-slate-800" />
-              </div>
-              <div className="relative flex justify-center text-[10px] uppercase tracking-wider">
-                <span className="bg-white dark:bg-slate-900 px-2.5 text-slate-400 font-medium">
-                  Hoặc bằng email
-                </span>
-              </div>
             </div>
 
             {/* Secondary Email/Password Form */}
