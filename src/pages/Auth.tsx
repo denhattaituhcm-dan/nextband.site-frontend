@@ -182,32 +182,31 @@ export default function Auth() {
                 <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200/60">5 Levels</span>
               </div>
 
-              <div className="relative pl-5 space-y-2.5 my-1.5">
-                <div className="absolute left-[5.5px] top-1.5 bottom-1.5 w-[1px] bg-slate-200" />
-                <div className="relative flex items-center justify-between text-xs">
-                  <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-red-600 ring-2 ring-red-100" />
-                  <span className="font-medium text-slate-700 text-[11px]">Leader</span>
-                  <span className="text-[10px] font-mono text-red-600 font-medium">IELTS 6.5+</span>
+              <div className="space-y-2 my-1">
+                <div className="flex items-center gap-2.5 text-xs">
+                  <div className="w-2 h-2 rounded-full bg-red-600 shrink-0" />
+                  <span className="font-semibold text-slate-700 text-[11px] w-16">Leader</span>
+                  <span className="text-[10px] font-mono text-red-600 font-semibold px-2 py-0.5 rounded bg-red-50 border border-red-200/60">IELTS 6.5+</span>
                 </div>
-                <div className="relative flex items-center justify-between text-xs">
-                  <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-100" />
-                  <span className="font-medium text-slate-700 text-[11px]">Master</span>
-                  <span className="text-[10px] font-mono text-emerald-600 font-medium">IELTS 6.0</span>
+                <div className="flex items-center gap-2.5 text-xs">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                  <span className="font-semibold text-slate-700 text-[11px] w-16">Master</span>
+                  <span className="text-[10px] font-mono text-emerald-600 font-semibold px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200/60">IELTS 6.0</span>
                 </div>
-                <div className="relative flex items-center justify-between text-xs">
-                  <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-amber-500 ring-2 ring-amber-100" />
-                  <span className="font-medium text-slate-700 text-[11px]">Builder</span>
-                  <span className="text-[10px] font-mono text-amber-600 font-medium">IELTS 5.0</span>
+                <div className="flex items-center gap-2.5 text-xs">
+                  <div className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                  <span className="font-semibold text-slate-700 text-[11px] w-16">Builder</span>
+                  <span className="text-[10px] font-mono text-amber-600 font-semibold px-2 py-0.5 rounded bg-amber-50 border border-amber-200/60">IELTS 5.0</span>
                 </div>
-                <div className="relative flex items-center justify-between text-xs">
-                  <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-sky-500 ring-2 ring-sky-100" />
-                  <span className="font-medium text-slate-700 text-[11px]">Dreamer</span>
-                  <span className="text-[10px] font-mono text-sky-600 font-medium">IELTS 4.0</span>
+                <div className="flex items-center gap-2.5 text-xs">
+                  <div className="w-2 h-2 rounded-full bg-sky-500 shrink-0" />
+                  <span className="font-semibold text-slate-700 text-[11px] w-16">Dreamer</span>
+                  <span className="text-[10px] font-mono text-sky-600 font-semibold px-2 py-0.5 rounded bg-sky-50 border border-sky-200/60">IELTS 4.0</span>
                 </div>
-                <div className="relative flex items-center justify-between text-xs">
-                  <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-pink-500 ring-2 ring-pink-100" />
-                  <span className="font-medium text-slate-700 text-[11px]">Starter</span>
-                  <span className="text-[10px] font-mono text-pink-600 font-medium">IELTS 3.0</span>
+                <div className="flex items-center gap-2.5 text-xs">
+                  <div className="w-2 h-2 rounded-full bg-pink-500 shrink-0" />
+                  <span className="font-semibold text-slate-700 text-[11px] w-16">Starter</span>
+                  <span className="text-[10px] font-mono text-pink-600 font-semibold px-2 py-0.5 rounded bg-pink-50 border border-pink-200/60">IELTS 3.0</span>
                 </div>
               </div>
             </div>
