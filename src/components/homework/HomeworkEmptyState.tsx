@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, KeyRound, Sparkles } from "lucide-react";
+import { CheckCircle2, KeyRound, Sparkles, MessageCircle } from "lucide-react";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 interface HomeworkEmptyStateProps {
   onJoinClick: () => void;
@@ -9,6 +10,8 @@ interface HomeworkEmptyStateProps {
 }
 
 export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptyStateProps) {
+  const { settings } = useSiteSettings();
+
   if (hasClasses) {
     return (
       <Card className="border-blue-100 bg-gradient-to-r from-blue-500 via-indigo-600 to-blue-600 text-white rounded-2xl shadow-lg p-6 md:p-8 text-center space-y-4 border-0">
@@ -39,7 +42,7 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
   return (
     <div className="space-y-6">
       {/* 1. HERO WELCOME BANNER FOR UNENROLLED STUDENTS (ZERO-CODE FRICTIONLESS ONBOARDING) */}
-      <Card className="border-blue-500 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white rounded-2xl shadow-lg p-6 md:p-8 text-center space-y-3 border-0 relative overflow-hidden">
+      <Card className="border-blue-500 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white rounded-2xl shadow-lg p-6 md:p-8 text-center space-y-4 border-0 relative overflow-hidden">
         <div className="space-y-2 max-w-xl mx-auto">
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Chào mừng bạn đến với ARIS IELTS (NextBand)
@@ -48,6 +51,21 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
             Tài khoản Email của bạn chưa được liên kết với Lớp học nào. Vui lòng liên hệ Giáo viên / Trung tâm ARIS IELTS để được xếp lớp.
           </p>
         </div>
+
+        {/* SUPPORT BUTTON MATCHING LOGIN PAGE STYLE */}
+        {settings.zaloLink && (
+          <div className="flex justify-center pt-1">
+            <a
+              href={settings.zaloLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md text-xs font-semibold transition-all shadow-sm active:scale-95"
+            >
+              <MessageCircle className="h-4 w-4 text-sky-300" />
+              <span>Support</span>
+            </a>
+          </div>
+        )}
       </Card>
 
       {/* 2. 5-STEP GUIDELINE WORKFLOW */}

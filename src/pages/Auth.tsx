@@ -276,12 +276,15 @@ export default function Auth() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
-            {/* 7. Google Login Primary Entry */}
-            <div className="space-y-2">
+            {/* 7. Google Login Primary Entry (DÀNH CHO HỌC VIÊN) */}
+            <div className="space-y-2 p-3 rounded-2xl bg-sky-50/50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900/30">
+              <div className="text-[10px] font-bold tracking-wider text-sky-700 dark:text-sky-400 uppercase text-center mb-1">
+                🎓 Dành cho Học viên
+              </div>
               <Button
                 type="button"
                 variant="outline"
-                className="w-full flex items-center justify-center gap-3 border-slate-200 dark:border-slate-700 h-10.5 px-4 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800/80 text-slate-800 dark:text-slate-200 shadow-sm hover:shadow transition-all duration-150 active:scale-[0.99]"
+                className="w-full flex items-center justify-center gap-3 border-sky-200 dark:border-sky-800 bg-white dark:bg-slate-900 h-10 px-4 text-sm font-medium hover:bg-sky-50 dark:hover:bg-sky-900/40 text-slate-800 dark:text-slate-200 shadow-xs transition-all duration-150 active:scale-[0.99]"
                 onClick={async () => {
                   try {
                     setIsLoading(true);
@@ -317,15 +320,27 @@ export default function Auth() {
                 </svg>
                 <span className="tracking-tight">Đăng nhập bằng Google</span>
               </Button>
-              <p className="text-[11px] text-center text-slate-400 dark:text-slate-500 font-normal">
-                Cách nhanh nhất dành cho học viên
+              <p className="text-[10px] text-center text-slate-400 dark:text-slate-500 font-normal">
+                Cách đăng nhập nhanh chóng nhất
               </p>
             </div>
 
-            {/* Secondary Email/Password Form */}
-            <form onSubmit={handleSignIn} className="space-y-3.5">
-              <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-[11px] text-slate-600 dark:text-slate-300">
-                🔑 <strong>Cổng Giáo viên & Quản trị:</strong> Đăng nhập bằng Email/Mật khẩu được cấp để vào Giao diện Chấm & Chữa bài tập.
+            {/* DIVIDER BETWEEN STUDENT & TEACHER / ADMIN */}
+            <div className="relative my-2">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-slate-200 dark:border-slate-800" />
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase tracking-wider">
+                <span className="bg-white dark:bg-slate-900 px-2.5 text-slate-400 font-medium">
+                  Hoặc dành cho Giáo viên & Quản trị
+                </span>
+              </div>
+            </div>
+
+            {/* Secondary Email/Password Form (DÀNH CHO GIÁO VIÊN & QUẢN TRỊ) */}
+            <form onSubmit={handleSignIn} className="space-y-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60">
+              <div className="text-[10px] font-bold tracking-wider text-slate-600 dark:text-slate-400 uppercase">
+                🔑 Cổng Giáo viên & Quản trị
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="login-email" className="text-xs font-medium text-slate-700 dark:text-slate-300">
