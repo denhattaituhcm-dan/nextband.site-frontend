@@ -19,6 +19,11 @@ import {
   Eye,
   EyeOff,
   MessageCircle,
+  Headphones,
+  TrendingUp,
+  Award,
+  Clock,
+  CheckCircle2,
 } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import { authApi } from "@/lib/api";
@@ -107,72 +112,104 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex bg-slate-50/50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 selection:bg-primary/10 selection:text-primary">
-      {/* Left side - ARIS IELTS Premium Academic Branding Panel */}
+      {/* Left side - 50% Academic / 30% Premium SaaS / 20% Brand DNA */}
       <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-[#090D16] text-slate-100 p-10 xl:p-14 flex-col justify-between relative overflow-hidden border-r border-slate-800/80">
-        {/* ARIS Brand Glow: Dual Ambient Light from Logo Colors (Coral Red & Electric Blue) */}
+        {/* Ambient Brand Lighting */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-rose-600/15 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
 
-        {/* 1. Brand Recognition: Original Color Logo + Crisp Whitespace */}
+        {/* 1. Header Brand & Cambridge Badge */}
         <div className="relative z-10 space-y-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between">
             <SiteLogo alt="ARIS IELTS Logo" className="max-h-12 w-auto object-contain" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-[11px] font-medium text-slate-300">
+              <Award className="h-3.5 w-3.5 text-amber-400" />
+              Cambridge Standard
+            </span>
           </div>
-          {/* 4. Refined Tagline as a Quiet Academic Message */}
           <p className="text-sm font-medium tracking-tight text-slate-300 leading-relaxed max-w-md">
             {settings.authTagline}
           </p>
         </div>
 
-        {/* 5. ARIS Academic Feature Cards */}
+        {/* 2. Academic Features & Waveform / Progress Visual Elements */}
         <div className="space-y-4 relative z-10 my-auto w-full max-w-lg">
-          <div className="group flex items-start gap-4 p-5 rounded-2xl bg-slate-900/80 border border-slate-800/90 shadow-sm hover:shadow-md hover:border-slate-700 hover:-translate-y-0.5 transition-all duration-200 backdrop-blur-sm">
+          {/* Feature 1: Cambridge Materials & Audio Waveform Element */}
+          <div className="group flex items-start gap-4 p-4.5 rounded-2xl bg-slate-900/80 border border-slate-800/90 shadow-sm hover:shadow-md hover:border-slate-700 transition-all duration-200 backdrop-blur-sm">
             <div className="rounded-xl bg-gradient-to-br from-rose-500/20 to-sky-500/20 p-3 border border-rose-500/30 shrink-0 group-hover:border-rose-400/50 transition-colors">
-              <BookOpen className="h-5 w-5 text-rose-400" />
+              <Headphones className="h-5 w-5 text-rose-400" />
             </div>
-            <div className="space-y-1 min-w-0 flex-1">
-              <h3 className="font-semibold text-slate-100 text-sm tracking-tight">
-                {settings.authFeatureOneTitle}
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed break-words">
-                {settings.authFeatureOneDescription}
-              </p>
+            <div className="space-y-2 min-w-0 flex-1">
+              <div>
+                <h3 className="font-semibold text-slate-100 text-sm tracking-tight flex items-center justify-between">
+                  <span>{settings.authFeatureOneTitle}</span>
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">Audio 100% Real Test</span>
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed break-words mt-0.5">
+                  {settings.authFeatureOneDescription}
+                </p>
+              </div>
+              {/* Simulated Audio Waveform & Band Tracker (Academic Visual Asset) */}
+              <div className="flex items-center gap-1.5 pt-1">
+                <div className="flex items-end gap-1 h-4 px-2 py-1 rounded bg-slate-950/60 border border-slate-800 shrink-0">
+                  <span className="w-1 h-2 bg-rose-500/80 rounded-full animate-pulse" />
+                  <span className="w-1 h-3.5 bg-rose-400 rounded-full" />
+                  <span className="w-1 h-1.5 bg-rose-500/80 rounded-full" />
+                  <span className="w-1 h-4 bg-sky-400 rounded-full" />
+                  <span className="w-1 h-2.5 bg-sky-500/80 rounded-full" />
+                  <span className="w-1 h-3 bg-sky-400 rounded-full" />
+                </div>
+                <span className="text-[10px] text-slate-500 font-mono">Listening & Speaking Audio Sync</span>
+              </div>
             </div>
           </div>
 
-          <div className="group flex items-start gap-4 p-5 rounded-2xl bg-slate-900/80 border border-slate-800/90 shadow-sm hover:shadow-md hover:border-slate-700 hover:-translate-y-0.5 transition-all duration-200 backdrop-blur-sm">
+          {/* Feature 2: Band Target Journey & Progress Chart Bar */}
+          <div className="group flex items-start gap-4 p-4.5 rounded-2xl bg-slate-900/80 border border-slate-800/90 shadow-sm hover:shadow-md hover:border-slate-700 transition-all duration-200 backdrop-blur-sm">
             <div className="rounded-xl bg-gradient-to-br from-sky-500/20 to-indigo-500/20 p-3 border border-sky-500/30 shrink-0 group-hover:border-sky-400/50 transition-colors">
-              <Users className="h-5 w-5 text-sky-400" />
+              <TrendingUp className="h-5 w-5 text-sky-400" />
             </div>
-            <div className="space-y-1 min-w-0 flex-1">
-              <h3 className="font-semibold text-slate-100 text-sm tracking-tight">
-                {settings.authFeatureTwoTitle}
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed break-words">
-                {settings.authFeatureTwoDescription}
-              </p>
+            <div className="space-y-2 min-w-0 flex-1">
+              <div>
+                <h3 className="font-semibold text-slate-100 text-sm tracking-tight flex items-center justify-between">
+                  <span>{settings.authFeatureTwoTitle}</span>
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">Target Band 7.0+</span>
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed break-words mt-0.5">
+                  {settings.authFeatureTwoDescription}
+                </p>
+              </div>
+              {/* Simulated Progress Analytics Bar (Academic Visual Asset) */}
+              <div className="w-full bg-slate-950/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-800 flex items-center">
+                <div className="bg-gradient-to-r from-sky-500 to-rose-500 h-1.5 rounded-full w-[78%] transition-all" />
+              </div>
             </div>
           </div>
 
-          {/* Nút liên hệ Admin qua Zalo */}
-          {settings.zaloLink && (
-            <div className="pt-2">
+          {/* 3. Social Proof & Academic Support Link */}
+          <div className="pt-2 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-xs text-slate-400">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+              <span><strong className="text-slate-200 font-semibold">5,000+</strong> lượt bài tập đã hoàn thành</span>
+            </div>
+
+            {settings.zaloLink && (
               <a
                 href={settings.zaloLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-800 text-sky-400 border border-sky-500/30 text-xs font-medium transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-800 text-sky-400 border border-sky-500/30 text-xs font-medium transition-colors"
               >
-                <MessageCircle className="h-4 w-4 shrink-0 text-sky-400" />
-                <span>Cần hỗ trợ? Liên hệ Admin qua Zalo</span>
+                <Clock className="h-3.5 w-3.5 text-sky-400" />
+                <span>Academic Support</span>
               </a>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Footer */}
-        <p className="text-[11px] text-slate-400 dark:text-slate-500 relative z-10 font-normal tracking-wide">
-          © {new Date().getFullYear()} NextBand. Tất cả quyền được bảo lưu.
+        <p className="text-[11px] text-slate-500 relative z-10 font-normal tracking-wide">
+          © {new Date().getFullYear()} ARIS IELTS. All rights reserved.
         </p>
       </div>
 
