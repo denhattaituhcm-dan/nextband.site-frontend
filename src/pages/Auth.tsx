@@ -166,54 +166,54 @@ export default function Auth() {
             </div>
           </div>
 
-          {/* Academic Roadmap Card (Glassmorphism + Vertical Timeline Starter -> Leader) */}
+          {/* Academic Curriculum Roadmap Card (Refined Official Coursebook Colors & Curriculum Format) */}
           <div className="p-4 rounded-2xl bg-slate-900/40 border border-slate-800/80 shadow-sm backdrop-blur-md relative overflow-hidden">
-            <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-800/60">
+            <div className="flex items-center justify-between mb-3.5 pb-2 border-b border-slate-800/60">
               <div>
-                <h4 className="font-semibold text-slate-200 text-xs tracking-tight">Academic Roadmap</h4>
-                <p className="text-[10px] text-slate-400">From Starter to Leader</p>
+                <h4 className="font-semibold text-slate-200 text-xs tracking-tight">Academic Curriculum</h4>
+                <p className="text-[10px] text-slate-400">Official Course Progression</p>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">5 Stages</span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/60">5 Levels</span>
             </div>
 
             {/* Vertical Roadmap Timeline */}
-            <div className="relative pl-5 space-y-2.5 my-1">
-              {/* Thin Glowing Vertical Line */}
-              <div className="absolute left-[7px] top-1 bottom-1 w-[1.5px] bg-gradient-to-b from-sky-400 via-indigo-500 to-slate-700 shadow-[0_0_8px_rgba(56,189,248,0.5)]" />
+            <div className="relative pl-5 space-y-3.5 my-1.5">
+              {/* Ultra-thin Elegant Connecting Line */}
+              <div className="absolute left-[5.5px] top-1.5 bottom-1.5 w-[1px] bg-slate-800" />
 
-              {/* Stage 1: Leader (Top) */}
-              <div className="relative flex items-center justify-between text-xs">
-                <div className="absolute -left-[17px] w-2.5 h-2.5 rounded-full bg-sky-400 ring-2 ring-sky-500/30 shadow-[0_0_6px_rgba(56,189,248,0.8)]" />
-                <span className="font-semibold text-slate-100">Leader</span>
-                <span className="text-[11px] font-mono text-sky-400 font-medium">Band 6.5+</span>
+              {/* Stage 1: Leader (Dark Red) - TOP */}
+              <div className="relative flex items-center justify-between text-xs group">
+                <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-red-700 ring-2 ring-red-900/50 shadow-[0_0_6px_rgba(185,28,28,0.6)]" />
+                <span className="font-medium text-slate-200 text-[11px]">Leader</span>
+                <span className="text-[10px] font-mono text-red-400 font-medium">IELTS 6.5+</span>
               </div>
 
-              {/* Stage 2: Master */}
-              <div className="relative flex items-center justify-between text-xs">
-                <div className="absolute -left-[17px] w-2.5 h-2.5 rounded-full bg-indigo-400 border border-slate-900" />
-                <span className="font-medium text-slate-300">Master</span>
-                <span className="text-[11px] font-mono text-indigo-400">Band 6.0</span>
+              {/* Stage 2: Master (Green) */}
+              <div className="relative flex items-center justify-between text-xs group">
+                <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-950/40 shadow-[0_0_6px_rgba(16,185,129,0.4)]" />
+                <span className="font-medium text-slate-200 text-[11px]">Master</span>
+                <span className="text-[10px] font-mono text-emerald-400 font-medium">IELTS 6.0</span>
               </div>
 
-              {/* Stage 3: Builder */}
-              <div className="relative flex items-center justify-between text-xs">
-                <div className="absolute -left-[17px] w-2.5 h-2.5 rounded-full bg-slate-500 border border-slate-900" />
-                <span className="font-medium text-slate-300">Builder</span>
-                <span className="text-[11px] font-mono text-slate-400">Band 5.0</span>
+              {/* Stage 3: Builder (Orange) */}
+              <div className="relative flex items-center justify-between text-xs group">
+                <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-amber-500 ring-2 ring-amber-950/40 shadow-[0_0_6px_rgba(245,158,11,0.4)]" />
+                <span className="font-medium text-slate-200 text-[11px]">Builder</span>
+                <span className="text-[10px] font-mono text-amber-400 font-medium">IELTS 5.0</span>
               </div>
 
-              {/* Stage 4: Dreamer */}
-              <div className="relative flex items-center justify-between text-xs">
-                <div className="absolute -left-[17px] w-2.5 h-2.5 rounded-full bg-slate-600 border border-slate-900" />
-                <span className="font-medium text-slate-400">Dreamer</span>
-                <span className="text-[11px] font-mono text-slate-500">Band 4.0</span>
+              {/* Stage 4: Dreamer (Blue) */}
+              <div className="relative flex items-center justify-between text-xs group">
+                <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-sky-500 ring-2 ring-sky-950/40 shadow-[0_0_6px_rgba(14,165,233,0.4)]" />
+                <span className="font-medium text-slate-300 text-[11px]">Dreamer</span>
+                <span className="text-[10px] font-mono text-sky-400 font-medium">IELTS 4.0</span>
               </div>
 
-              {/* Stage 5: Starter (Bottom) */}
-              <div className="relative flex items-center justify-between text-xs">
-                <div className="absolute -left-[17px] w-2.5 h-2.5 rounded-full bg-slate-700 border border-slate-900" />
-                <span className="font-medium text-slate-400">Starter</span>
-                <span className="text-[11px] font-mono text-slate-500">Band 3.0</span>
+              {/* Stage 5: Starter (Pink) - BOTTOM */}
+              <div className="relative flex items-center justify-between text-xs group">
+                <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-pink-500 ring-2 ring-pink-950/40 shadow-[0_0_6px_rgba(236,72,153,0.4)]" />
+                <span className="font-medium text-slate-300 text-[11px]">Starter</span>
+                <span className="text-[10px] font-mono text-pink-400 font-medium">IELTS 3.0</span>
               </div>
             </div>
           </div>

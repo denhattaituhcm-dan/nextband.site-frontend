@@ -40,12 +40,26 @@ export default function HomePage() {
   const upcomingTasks = workspace?.upcoming || [];
   const completedTasks = workspace?.completed || [];
 
-  // 1. Fetch Enrollments
+  // 1. Fetch Enrollments & Class Data
   const { data: enrollments = [] } = useQuery({
     queryKey: ["my-enrollments"],
     queryFn: () => enrollmentsApi.list(),
     enabled: isAuthenticated,
   });
+
+  const enrolledClassId = enrollments[0]?.course_id || enrollments[0]?.courses?.id;
+
+  // 1b. Fetch Class Lessons (ClassSession + Homework + Submission Data)
+  const { data: classLessonsData } = useQuery({
+    queryKey: ["class-lessons-timeline", enrolledClassId],
+    queryFn: () => lessonsApi.getClassLessons(enrolledClassId!),
+    enabled: !!enrolledClassId,
+  });
+
+  const classLessons = classLessonsData?.data?.lessons || [];
+  const nextSessionLesson = classLessons.find(
+    (l) => l.sessionDate && new Date(l.sessionDate) >= new Date()
+  ) || classLessons[0];
 
   // 2. Fetch Student Real Submissions for Recent Feedback & Progress
   const { data: submissionsData } = useQuery({
@@ -58,7 +72,7 @@ export default function HomePage() {
   const gradedSubmissions = userSubmissions.filter((s: any) => s.status === "graded");
   const submittedTasksCount = userSubmissions.filter((s: any) => s.status === "graded" || s.status === "submitted").length;
 
-  const totalCourseLessons = 27; // Tiêu chuẩn 27 bài tập của khóa học
+  const totalCourseLessons = classLessons.length > 0 ? classLessons.length : 27; // Dữ liệu 27 buổi bài tập thật từ ClassSession
   const completedCount = Math.min(submittedTasksCount, totalCourseLessons);
   const activeClassName = enrollments[0]?.courses?.title ? `${enrollments[0].courses.title} • STARTER01` : "STARTER01 • 04.2026";
   const hasClasses = enrollments.length > 0;
@@ -116,23 +130,31 @@ export default function HomePage() {
             <HomeworkList title="Bài tập sắp tới" tasks={upcomingTasks} />
             <HomeworkList title="Bài tập đã làm & Đã chấm" tasks={completedTasks} variant="completed" />
 
-            {/* TIMELINE TRẠNG THÁI TIẾN ĐỘ BÀI TẬP (CÓ SCROLL NGANG CHO MÀN HÌNH NHỎ) */}
+            {/* TIMELINE TRẠNG THÁI TIẾN ĐỘ BÀI TẬP (KẾT NỐI DỮ LIỆU THẬT TỪ ClassSession) */}
             <Card className="rounded-2xl border-slate-200/80 bg-white p-5 space-y-4 shadow-sm">
               <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
                 <BookOpen className="w-4 h-4 text-emerald-600" />
-                Lộ trình 27 buổi học & Bài tập Lớp {activeClassName}
+                Lộ trình {totalCourseLessons} buổi học & Bài tập Lớp {activeClassName}
               </h3>
               
               <div className="overflow-x-auto pb-2 scrollbar-thin">
                 <div className="flex items-center gap-2 min-w-[650px] pt-1">
-                  {Array.from({ length: totalCourseLessons }).map((_, idx) => {
-                    const lessonNum = idx + 1;
-                    const isDone = lessonNum <= completedCount;
+                  {(classLessons.length > 0
+                    ? classLessons
+                    : Array.from({ length: totalCourseLessons }).map((_, idx) => ({
+                        id: `item-${idx}`,
+                        sessionNumber: idx + 1,
+                        progress: { lessonCompleted: idx + 1 <= completedCount },
+                        sessionDate: null,
+                      }))
+                  ).map((lesson: any, idx: number) => {
+                    const lessonNum = lesson.sessionNumber || lesson.lessonOrder || idx + 1;
+                    const isDone = lesson.progress?.lessonCompleted || lessonNum <= completedCount;
                     const isCurrent = lessonNum === completedCount + 1;
 
                     return (
                       <div
-                        key={idx}
+                        key={lesson.id || idx}
                         className={`flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-xl font-bold text-xs transition-all ${
                           isDone
                             ? "bg-emerald-500 text-white shadow-sm"
@@ -140,7 +162,7 @@ export default function HomePage() {
                             ? "bg-amber-100 text-amber-900 border-2 border-amber-500 animate-pulse"
                             : "bg-slate-100 text-slate-400"
                         }`}
-                        title={`Buổi ${lessonNum}: ${isDone ? "Đã nộp" : isCurrent ? "Bài hiện tại" : "Chưa mở"}`}
+                        title={`Buổi ${lessonNum}: ${isDone ? "Đã nộp bài" : isCurrent ? "Bài hiện tại" : "Chưa mở"}`}
                       >
                         {isDone ? "✓" : lessonNum}
                       </div>
@@ -165,7 +187,7 @@ export default function HomePage() {
 
           {/* RIGHT PANEL: NEXT CLASS SESSION, REMINDERS & CENTER NOTICES */}
           <div className="space-y-6">
-            {/* BUỔI HỌC TIẾP THEO WIDGET (LOẠI BỎ SỐ PHÒNG HỌC THEO THIẾT KẾ MỚI) */}
+            {/* BUỔI HỌC TIẾP THEO WIDGET (DỮ LIỆU THẬT TỪ ClassSession - BỎ PHÒNG HỌC & GIÁO VIÊN) */}
             <Card className="rounded-2xl border-slate-200/80 bg-white p-5 shadow-sm space-y-4">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5 border-b pb-3">
                 <Calendar className="w-4 h-4 text-emerald-600" />
@@ -173,9 +195,11 @@ export default function HomePage() {
               </span>
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-slate-900 font-extrabold text-lg">
-                  <span>Buổi 13</span>
+                  <span>Buổi {nextSessionLesson?.sessionNumber || 13}</span>
                   <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-semibold">
-                    15/08
+                    {nextSessionLesson?.sessionDate
+                      ? new Date(nextSessionLesson.sessionDate).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })
+                      : "15/08"}
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 flex items-center gap-1.5 font-medium">
@@ -183,12 +207,13 @@ export default function HomePage() {
                   18:00 - 20:00
                 </p>
                 <div className="pt-2 text-xs text-emerald-700 bg-emerald-50 p-2.5 rounded-xl border border-emerald-100">
-                  📌 Completing Homework Session 12 before class.
+                  📌 Hãy hoàn thành Bài tập Buổi {Math.max(1, (nextSessionLesson?.sessionNumber || 13) - 1)} trước giờ lên lớp.
                 </div>
               </div>
             </Card>
 
-            {/* THÔNG BÁO TỪ TRUNG TÂM WIDGET (3 THÔNG BÁO GẦN NHẤT) */}
+            {/* THÔNG BÁO TỪ TRUNG TÂM WIDGET (PLACEHOLDER - WAITING FOR ANNOUNCEMENT MODULE IN FUTURE PHASE) */}
+            {/* TODO: Waiting for Announcement module in future phase. Kept minimal placeholder without extra backend APIs. */}
             <Card className="rounded-2xl border-slate-200/80 bg-white p-5 shadow-sm space-y-3">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5 border-b pb-3">
                 <Bell className="w-4 h-4 text-blue-600" />
