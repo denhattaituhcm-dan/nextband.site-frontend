@@ -1,13 +1,73 @@
 import { supabase } from "./supabase";
 import { normalizeSiteSettings } from "./site-settings";
 
-// Helper helper format URLs if any
+// Helper to format URLs
 export const formatStorageUrl = (path: string | null) => {
   if (!path) return "";
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
   const { data } = supabase.storage.from("exam-assets").getPublicUrl(path);
   return data.publicUrl;
 };
+
+// =============================================
+// DATA NORMALIZER: Supabase snake_case → Frontend camelCase
+// Đảm bảo ExamInterface, QuestionRenderers, v.v. hoạt động
+// dù data đến từ Supabase (snake_case) hay fallback (camelCase)
+// =============================================
+export function normalizeExamData(exam: any): any {
+  if (!exam) return exam;
+
+  const normalizeSections = (sections: any[]) =>
+    (sections || []).map((s: any) => ({
+      ...s,
+      // Normalize section fields
+      sectionType: s.sectionType || s.section_type,
+      section_type: s.section_type || s.sectionType,
+      examId: s.examId || s.exam_id,
+      orderIndex: s.orderIndex ?? s.order_index ?? 0,
+      audioUrl: s.audioUrl || s.audio_url || "",
+      audioScript: s.audioScript || s.audio_script || "",
+      // Normalize nested question_groups / questionGroups
+      questionGroups: normalizeGroups(s.questionGroups || s.question_groups || []),
+      question_groups: normalizeGroups(s.questionGroups || s.question_groups || []),
+    }));
+
+  const normalizeGroups = (groups: any[]) =>
+    (groups || []).map((g: any) => ({
+      ...g,
+      sectionId: g.sectionId || g.section_id,
+      orderIndex: g.orderIndex ?? g.order_index ?? 0,
+      audioUrl: g.audioUrl || g.audio_url || "",
+      questions: normalizeQuestions(g.questions || []),
+    }));
+
+  const normalizeQuestions = (questions: any[]) =>
+    (questions || []).map((q: any) => ({
+      ...q,
+      questionType: q.questionType || q.question_type,
+      question_type: q.question_type || q.questionType,
+      questionText: q.questionText || q.question_text || "",
+      question_text: q.question_text || q.questionText || "",
+      correctAnswer: q.correctAnswer || q.correct_answer || "",
+      correct_answer: q.correct_answer || q.correctAnswer || "",
+      groupId: q.groupId || q.group_id,
+      orderIndex: q.orderIndex ?? q.order_index ?? 0,
+      audioUrl: q.audioUrl || q.audio_url || "",
+      // Normalize options: ensure array format
+      options: Array.isArray(q.options)
+        ? q.options
+        : (q.options ? (typeof q.options === "string" ? JSON.parse(q.options) : q.options) : []),
+    }));
+
+  return {
+    ...exam,
+    courseId: exam.courseId || exam.course_id,
+    durationMinutes: exam.durationMinutes || exam.duration_minutes || 60,
+    isPublished: exam.isPublished ?? exam.is_published ?? false,
+    isActive: exam.isActive ?? exam.is_active ?? true,
+    sections: normalizeSections(exam.sections || exam.exam_sections || []),
+  };
+}
 
 // =============================================
 // AUTH API
@@ -496,7 +556,7 @@ export const examsApi = {
       .eq("id", id)
       .single();
 
-    if (!error && data) return data;
+    if (!error && data) return normalizeExamData(data);
 
     // Fallback for offline/local exams lookup
     const examList = await examsApi.list({ limit: 1000 });
@@ -978,13 +1038,82 @@ export const submissionsApi = {
       await submissionsApi.saveAnswers(id, answers);
     }
 
-    // 2. Mark submission as submitted
+    // 2. Auto-grade MCQ and fill_blank questions
+    let autoCorrect = 0;
+    let autoTotal = 0;
+    try {
+      // Fetch the submission with exam → sections → groups → questions
+      const { data: sub } = await supabase
+        .from("exam_submissions")
+        .select("exam_id")
+        .eq("id", id)
+        .single();
+
+      if (sub?.exam_id) {
+        const { data: questions } = await supabase
+          .from("questions")
+          .select("id, question_type, correct_answer, points, group_id")
+          .in("group_id",
+            (await supabase
+              .from("question_groups")
+              .select("id")
+              .in("section_id",
+                (await supabase
+                  .from("exam_sections")
+                  .select("id")
+                  .eq("exam_id", sub.exam_id)
+                ).data?.map((s: any) => s.id) || []
+              )
+            ).data?.map((g: any) => g.id) || []
+          );
+
+        const gradableTypes = ["multiple_choice", "fill_blank", "true_false_not_given", "yes_no_not_given"];
+        const gradableQuestions = (questions || []).filter((q: any) =>
+          gradableTypes.includes(q.question_type) && q.correct_answer
+        );
+
+        for (const q of gradableQuestions) {
+          const studentAnswer = answers.find(a => a.questionId === q.id);
+          if (!studentAnswer?.answerText) continue;
+
+          autoTotal++;
+          const isCorrect = studentAnswer.answerText.trim().toLowerCase() ===
+            q.correct_answer.trim().toLowerCase();
+          const score = isCorrect ? (q.points || 1) : 0;
+          if (isCorrect) autoCorrect++;
+
+          // Write auto-graded score to answers table
+          await supabase
+            .from("answers")
+            .update({ score, feedback: isCorrect ? "Correct ✓" : `Incorrect. Answer: ${q.correct_answer}` })
+            .eq("submission_id", id)
+            .eq("question_id", q.id);
+        }
+      }
+    } catch (_autoGradeErr) {
+      // Auto-grading failure does NOT block submission
+      console.warn("Auto-grading error (non-fatal):", _autoGradeErr);
+    }
+
+    // 3. Mark submission as submitted (with auto-grade stats if available)
+    const updatePayload: any = {
+      status: "submitted",
+      submitted_at: new Date().toISOString(),
+    };
+    if (autoTotal > 0) {
+      updatePayload.correct_answers = autoCorrect;
+      updatePayload.total_questions = autoTotal;
+      // If ALL questions are auto-gradable, mark as graded immediately
+      if (autoTotal === answers.length) {
+        updatePayload.status = "graded";
+        updatePayload.total_score = parseFloat(((autoCorrect / autoTotal) * 9).toFixed(1));
+        updatePayload.graded_at = new Date().toISOString();
+      }
+    }
+
     const { data, error } = await supabase
       .from("exam_submissions")
-      .update({
-        status: "submitted",
-        submitted_at: new Date().toISOString(),
-      })
+      .update(updatePayload)
       .eq("id", id)
       .select()
       .single();
