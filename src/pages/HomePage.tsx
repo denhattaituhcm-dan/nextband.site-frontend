@@ -43,7 +43,17 @@ export default function HomePage() {
     enabled: isAuthenticated,
   });
 
-  // 2. Fetch Courses list
+  // 2. Fetch Student Real Submissions
+  const { data: submissionsData } = useQuery({
+    queryKey: ["my-recent-submissions", user?.id],
+    queryFn: () => submissionsApi.list({ studentId: user?.id, limit: 50 }),
+    enabled: !!user?.id,
+  });
+
+  const userSubmissions = submissionsData?.data || [];
+  const gradedOrSubmitted = userSubmissions.filter((s: any) => s.status === "graded" || s.status === "submitted");
+
+  // 3. Fetch Courses list
   const { data: coursesData } = useQuery({
     queryKey: ["courses-home"],
     queryFn: () => coursesApi.list({ limit: 6 }),
@@ -58,7 +68,7 @@ export default function HomePage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-              Xin chào {user?.fullName || "DAN"} - NextBand V2.0 Workspaces 👋
+              Xin chào {user?.fullName || user?.email?.split("@")[0] || "Học viên"} 👋
             </h1>
             <p className="text-sm text-slate-500 mt-1">
               {isAuthenticated
@@ -69,7 +79,7 @@ export default function HomePage() {
           {isAuthenticated && (
             <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border shadow-sm text-xs text-slate-600">
               <Award className="w-4 h-4 text-emerald-600" />
-              <span>Current Target: <strong>Band 6.5</strong></span>
+              <span>Mục tiêu: <strong>IELTS Band 6.5</strong></span>
             </div>
           )}
         </div>
@@ -106,22 +116,25 @@ export default function HomePage() {
               <div className="flex items-center justify-between text-slate-600">
                 <span className="text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5">
                   <Target className="w-4 h-4 text-emerald-600" />
-                  Band Goal Trajectory
+                  Tiến độ mục tiêu (Band Goal)
                 </span>
               </div>
               <div className="flex items-baseline justify-between">
                 <div>
-                  <div className="text-xs text-slate-500">Current Band</div>
-                  <div className="text-3xl font-extrabold text-slate-900">6.0</div>
+                  <div className="text-xs text-slate-500">Đã làm</div>
+                  <div className="text-3xl font-extrabold text-slate-900">{gradedOrSubmitted.length} Bài</div>
                 </div>
                 <ArrowRight className="w-5 h-5 text-slate-300" />
                 <div className="text-right">
-                  <div className="text-xs text-slate-500">Target Band</div>
-                  <div className="text-3xl font-extrabold text-emerald-600">6.5</div>
+                  <div className="text-xs text-slate-500">Mục tiêu</div>
+                  <div className="text-3xl font-extrabold text-emerald-600">Band 6.5</div>
                 </div>
               </div>
               <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                <div className="bg-emerald-500 h-full w-[65%]" />
+                <div
+                  className="bg-emerald-500 h-full transition-all duration-500"
+                  style={{ width: `${Math.min(100, Math.max(10, gradedOrSubmitted.length * 5))}%` }}
+                />
               </div>
             </CardContent>
           </Card>
@@ -132,24 +145,38 @@ export default function HomePage() {
               <div className="flex items-center justify-between text-slate-600 border-b pb-2">
                 <span className="text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5">
                   <Bell className="w-4 h-4 text-blue-600" />
-                  Cần chú ý (Notifications)
+                  Thông báo (Notifications)
                 </span>
-                <span className="text-xs text-blue-600 font-medium">1 Mới</span>
+                <span className="text-xs text-slate-400 font-medium">
+                  {gradedOrSubmitted.length > 0 ? `${gradedOrSubmitted.length} Bài đã nộp` : "Chưa có thông báo mới"}
+                </span>
               </div>
               <div className="space-y-2">
-                <div className="flex items-start gap-3 p-2 rounded-xl bg-blue-50/50 border border-blue-100 text-xs">
-                  <MessageSquare className="w-4 h-4 text-blue-600 mt-0.5" />
-                  <div>
-                    <span className="font-semibold text-slate-900">Giáo viên đã nhận xét bài Writing</span>
-                    <p className="text-slate-500 mt-0.5">Cô Trà My: "Bài viết Task 2 từ vựng tốt, chú ý mạch nối giữa các đoạn..."</p>
-                  </div>
-                </div>
+                {gradedOrSubmitted.length > 0 ? (
+                  gradedOrSubmitted.slice(0, 2).map((sub: any) => (
+                    <div key={sub.id} className="flex items-start gap-3 p-2.5 rounded-xl bg-blue-50/50 border border-blue-100 text-xs">
+                      <MessageSquare className="w-4 h-4 text-blue-600 mt-0.5" />
+                      <div>
+                        <span className="font-semibold text-slate-900">
+                          {sub.status === "graded" ? "Bài thi đã được chấm điểm" : "Bài thi đã nộp thành công"}
+                        </span>
+                        <p className="text-slate-500 mt-0.5">
+                          {sub.exams?.title || "Bài thi IELTS"} — {sub.status === "graded" ? `Điểm số: ${sub.total_score ?? 'N/A'}` : "Đang chờ giáo viên chấm."}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-xs text-slate-400 py-2">
+                    Bạn chưa có thông báo mới. Hãy tham gia lớp học hoặc làm bài thi để xem phản hồi từ giáo viên.
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* LEVEL 3: JOURNEY COURSES (27 DOTS MAP) */}
+        {/* LEVEL 3: JOURNEY COURSES (REAL DYNAMIC DOTS MAP) */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -162,18 +189,22 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {(enrollments.length > 0 ? enrollments : coursesData?.data || []).slice(0, 6).map((item: any, idx: number) => {
+            {(enrollments.length > 0 ? enrollments : coursesData?.data || []).slice(0, 6).map((item: any) => {
               const course = item.courses || item;
-              const completedLessons = idx === 0 ? 14 : 2;
-              const totalLessons = 27;
+              const totalLessons = 27; // Tiêu chuẩn 27 ngày học IELTS
+
+              // Tính số bài thật học viên đã nộp trong khóa này
+              const completedCount = userSubmissions.filter((sub: any) =>
+                sub.exams?.course_id === course.id && (sub.status === "submitted" || sub.status === "graded")
+              ).length;
 
               return (
-                <Card key={course.id || idx} className="rounded-2xl border-slate-200/80 bg-white shadow-sm p-5 space-y-4">
+                <Card key={course.id} className="rounded-2xl border-slate-200/80 bg-white shadow-sm p-5 space-y-4 hover:border-emerald-200 transition-all">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-bold text-slate-900 text-base">{course.title}</h3>
                       <span className="text-xs text-slate-500">
-                        {completedLessons}/{totalLessons} Lessons Completed
+                        {completedCount}/{totalLessons} Bài học hoàn thành
                       </span>
                     </div>
                     <Link to={`/course/${course.slug || course.id}`}>
@@ -183,13 +214,13 @@ export default function HomePage() {
                     </Link>
                   </div>
 
-                  {/* 27 JOURNEY DOTS */}
+                  {/* 27 JOURNEY DOTS DỰA TRÊN DỮ LIỆU THẬT */}
                   <div className="flex items-center gap-1.5 flex-wrap pt-1">
                     {Array.from({ length: totalLessons }).map((_, dIdx) => (
                       <span
                         key={dIdx}
                         className={`w-2.5 h-2.5 rounded-full transition-all ${
-                          dIdx < completedLessons
+                          dIdx < completedCount
                             ? "bg-emerald-500 shadow-sm shadow-emerald-500/50"
                             : "bg-slate-200"
                         }`}
@@ -203,26 +234,29 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* RECENT ACTIVITY (CẢM GIÁC HOÀN THÀNH) */}
+        {/* RECENT ACTIVITY (DỮ LIỆU THẬT) */}
         <div className="space-y-3 pt-2">
           <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-            Lịch sử vừa hoàn thành (Recent Activity)
+            Lịch sử làm bài gần đây (Recent Activity)
           </h3>
           <div className="bg-white rounded-2xl border border-slate-200/80 p-4 space-y-3 text-xs">
-            <div className="flex items-center justify-between py-1 border-b border-slate-100">
-              <span className="flex items-center gap-2 text-slate-700 font-medium">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                Lesson 11: Listening — Đã hoàn thành (Score: 8.5/10)
-              </span>
-              <span className="text-slate-400">Hôm qua</span>
-            </div>
-            <div className="flex items-center justify-between py-1">
-              <span className="flex items-center gap-2 text-slate-700 font-medium">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                Lesson 10: Writing Task 1 — Đã nhận feedback giáo viên
-              </span>
-              <span className="text-slate-400">2 ngày trước</span>
-            </div>
+            {gradedOrSubmitted.length > 0 ? (
+              gradedOrSubmitted.slice(0, 5).map((sub: any) => (
+                <div key={sub.id} className="flex items-center justify-between py-1.5 border-b last:border-0 border-slate-100">
+                  <span className="flex items-center gap-2 text-slate-700 font-medium">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    {sub.exams?.title || "Bài thi IELTS"} — {sub.status === "graded" ? `Đã chấm (Điểm: ${sub.total_score ?? 'N/A'})` : "Đã nộp bài"}
+                  </span>
+                  <span className="text-slate-400">
+                    {sub.submitted_at ? new Date(sub.submitted_at).toLocaleDateString("vi-VN") : "Gần đây"}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="text-slate-400 py-2 text-center">
+                Chưa có lịch sử nộp bài. Chọn một khóa học để bắt đầu làm bài luyện tập!
+              </div>
+            )}
           </div>
         </div>
       </div>
