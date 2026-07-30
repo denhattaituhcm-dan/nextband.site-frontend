@@ -145,7 +145,7 @@ export default function Auth() {
         <div className="space-y-4 relative z-10 w-full max-w-lg my-0">
           <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-5 relative">
             {/* Feature Cards */}
-            <div className="grid grid-cols-2 gap-3.5">
+            <div className="flex flex-col gap-2.5">
               <div className="flex items-center gap-3 p-3 rounded-xl bg-sky-50/60 border border-sky-100">
                 <div className="rounded-lg bg-sky-500/10 p-2 border border-sky-500/20 shrink-0">
                   <GraduationCap className="h-4.5 w-4.5 text-sky-600" />
@@ -154,7 +154,7 @@ export default function Auth() {
                   <h3 className="font-semibold text-slate-800 text-xs tracking-tight truncate">
                     Learning Workspace
                   </h3>
-                  <p className="text-[10px] text-slate-500 truncate">
+                  <p className="text-[11px] text-slate-500 truncate">
                     Lộ trình IELTS chuẩn
                   </p>
                 </div>
@@ -168,7 +168,7 @@ export default function Auth() {
                   <h3 className="font-semibold text-slate-800 text-xs tracking-tight truncate">
                     Track Progress
                   </h3>
-                  <p className="text-[10px] text-slate-500 truncate">
+                  <p className="text-[11px] text-slate-500 truncate">
                     Theo dõi tiến độ
                   </p>
                 </div>
