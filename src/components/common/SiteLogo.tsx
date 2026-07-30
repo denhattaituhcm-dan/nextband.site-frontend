@@ -26,10 +26,7 @@ export function SiteLogo({
   const { settings } = useSiteSettings();
   const [hasLoadError, setHasLoadError] = useState(false);
 
-  const logoSrc =
-    !hasLoadError && settings.logoUrl
-      ? getFullLogoUrl(settings.logoUrl)
-      : fallbackSrc;
+  const logoSrc = fallbackSrc;
 
   return (
     <img

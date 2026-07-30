@@ -37,30 +37,23 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
 
   return (
     <div className="space-y-6">
-      {/* 1. HERO WELCOME BANNER FOR UNENROLLED STUDENTS (COMPACT 100% VIEWPORT FIT) */}
-      <Card className="border-blue-500 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white rounded-2xl shadow-lg p-5 md:p-6 text-center space-y-4 border-0 relative overflow-hidden">
-        <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mx-auto text-white backdrop-blur-md">
-          <Sparkles className="w-5 h-5" />
-        </div>
-
-        <div className="space-y-1.5 max-w-xl mx-auto">
-          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white/20 text-white backdrop-blur-md">
-            HỆ THỐNG QUẢN LÝ BÀI TẬP ARIS IELTS
-          </span>
-          <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
-            Chào mừng bạn đến với NextBand
+      {/* 1. HERO WELCOME BANNER FOR UNENROLLED STUDENTS (COMPACT & FOCUS) */}
+      <Card className="border-blue-500 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white rounded-2xl shadow-lg p-6 md:p-8 text-center space-y-4 border-0 relative overflow-hidden">
+        <div className="space-y-1.5 max-w-lg mx-auto">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+            Gia nhập Lớp học của bạn
           </h1>
-          <p className="text-xs md:text-sm text-blue-100 font-medium leading-normal max-w-lg mx-auto">
-            NextBand là hệ thống đồng hành học tập trực tuyến dành riêng cho học viên ARIS IELTS. Hãy nhập Mã Lớp học để nhận bài tập & phản hồi trực tiếp từ Giáo viên.
+          <p className="text-xs md:text-sm text-blue-100 font-medium">
+            Nhập Mã Lớp học do Trung tâm/Giáo viên cấp để bắt đầu nhận bài tập về nhà.
           </p>
         </div>
 
         <div className="pt-1 flex justify-center">
           <Button
             onClick={onJoinClick}
-            className="bg-white hover:bg-blue-50 text-blue-600 font-extrabold px-6 py-3.5 rounded-xl shadow-md hover:shadow-blue-900/30 transition-all text-sm flex items-center gap-2 border-0"
+            className="bg-white hover:bg-blue-50 text-blue-600 font-extrabold px-8 py-5 rounded-xl shadow-lg hover:shadow-blue-900/30 transition-all text-base flex items-center gap-2 border-0"
           >
-            <KeyRound className="w-4 h-4" />
+            <KeyRound className="w-5 h-5" />
             Nhập Mã Lớp học (VD: STARTER01)
           </Button>
         </div>
