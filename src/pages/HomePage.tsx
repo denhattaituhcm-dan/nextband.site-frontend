@@ -87,25 +87,17 @@ export default function HomePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 space-y-6">
         
         {/* ========================================================================= */}
-        {/* STATE A: VISITOR STATE (CHƯA VÀO LỚP)                                      */}
+        {/* STATE A: FIRST-TIME STUDENT ONBOARDING (JOIN CLASS WORKSPACE)            */}
         {/* ========================================================================= */}
         {!hasClasses ? (
-          <div className="space-y-6">
-            <HomeworkEmptyState
-              hasClasses={false}
-              onJoinClick={() => setJoinModalOpen(true)}
-            />
-            <Card className="rounded-2xl border border-slate-100 bg-white p-8 text-center space-y-3 shadow-sm hover:-translate-y-0.5 transition-transform duration-200">
-              <div className="w-12 h-12 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto font-bold text-lg">
-                📍
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">Bạn chưa có Lớp học kích hoạt</h3>
-              <p className="text-sm text-slate-500 max-w-md mx-auto">
-                Hãy liên hệ Giáo viên hoặc Quản lý đào tạo để nhận Mã tham gia Lớp học. Lộ trình bài tập sẽ được tự động mở khóa ngay khi bạn nhập mã.
-              </p>
-            </Card>
-          </div>
+          <HomeworkEmptyState
+            hasClasses={false}
+            onJoinClick={() => setJoinModalOpen(true)}
+          />
         ) : (
+          /* ========================================================================= */
+          /* STATE B, C, D: STUDENT WORKSPACE (Dành cho học viên đã có lớp)           */
+          /* ========================================================================= */
           /* ========================================================================= */
           /* STATE B, C, D: STUDENT, OVERDUE & COMPLETED STATE                         */
           /* ========================================================================= */
