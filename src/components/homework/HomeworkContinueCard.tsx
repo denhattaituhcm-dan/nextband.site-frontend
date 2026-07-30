@@ -17,8 +17,8 @@ export function HomeworkContinueCard({ task }: HomeworkContinueCardProps) {
       <CardContent className="p-6 md:p-8 relative z-10 space-y-5">
         <div className="flex items-center justify-between">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-            <Sparkles className="w-3.5 h-3.5" />
-            BÀI TẬP CẦN LÀM BÂY GIỜ
+            <Clock className="w-3.5 h-3.5" />
+            Bài tập hiện tại
           </span>
           {task.deadline && (
             <span className="text-xs text-slate-300 font-medium flex items-center gap-1.5 bg-slate-800/80 px-3 py-1 rounded-lg border border-slate-700">
