@@ -247,10 +247,10 @@ export default function Auth() {
       </div>
 
       {/* Right side - Focal Point Student Login Workspace Form */}
-      <div className="flex-1 flex items-start justify-center p-6 sm:p-10 lg:p-12 pt-8 sm:pt-12">
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
         {/* 6. Light Breathing Card */}
-        <Card className="w-full max-w-[450px] border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] rounded-2xl bg-white dark:bg-slate-900 p-3 sm:p-5">
-          <CardHeader className="space-y-1.5 text-center pb-5">
+        <Card className="w-full max-w-[440px] border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] rounded-2xl bg-white dark:bg-slate-900 p-6 sm:p-7">
+          <CardHeader className="space-y-1.5 text-center p-0 pb-5">
             <div className="lg:hidden flex items-center justify-center gap-2 mb-3">
               <SiteLogo alt="NextBand Logo" className="max-h-9 w-auto object-contain" />
             </div>
@@ -261,7 +261,7 @@ export default function Auth() {
               Đăng nhập để tiếp tục bài học của bạn
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-5">
+          <CardContent className="space-y-5 p-0">
             {/* 7. Google Login Primary Entry (DÀNH CHO HỌC VIÊN) */}
             <div className="space-y-2.5 p-4 sm:p-5 rounded-2xl bg-sky-50/50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900/30">
               <div className="text-[10px] font-bold tracking-wider text-sky-700 dark:text-sky-400 uppercase text-center mb-1">
