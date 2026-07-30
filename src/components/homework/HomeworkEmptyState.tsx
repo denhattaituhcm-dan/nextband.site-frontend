@@ -100,45 +100,70 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
         </div>
       </Card>
 
-      {/* 3. 5-LEVEL IELTS ROADMAP SUMMARY WITH DISTINCT ACADEMIC LEVEL COLORS */}
+      {/* 3. 5-LEVEL IELTS ROADMAP SUMMARY MATCHING EXACT COURSEBOOK COVER COLORS */}
       <Card className="rounded-2xl border border-slate-100 bg-white p-6 md:p-8 space-y-4 shadow-sm">
         <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider text-center">
           Khung 5 Cấp độ Khóa học tại ARIS IELTS
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-1">
-          {/* STARTER - EMERALD GREEN */}
-          <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-center space-y-1">
-            <span className="text-[10px] font-extrabold text-emerald-700 uppercase tracking-wider">Cấp độ 1</span>
-            <div className="font-black text-xs text-emerald-950">STARTER</div>
-            <p className="text-[10px] text-emerald-700 font-semibold">Nền tảng IELTS</p>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3.5 pt-1">
+          {/* 1. STARTER - MAGENTA PINK (#D84B85) */}
+          <div className="relative group">
+            <div className="absolute inset-0 bg-[#F8D7E4] rounded-xl translate-y-1 translate-x-1 transition-transform group-hover:translate-y-1.5 group-hover:translate-x-1.5" />
+            <div className="relative p-3.5 rounded-xl bg-[#D84B85] text-white text-center space-y-1 border border-[#C23A73]">
+              <span className="text-[10px] font-extrabold text-pink-100 uppercase tracking-widest">Cấp độ 1</span>
+              <div className="font-black text-sm text-white tracking-tight">STARTER</div>
+              <div className="mt-1 px-2 py-0.5 rounded-md bg-white/20 text-[10px] font-bold text-white backdrop-blur-xs">
+                PRE-IELTS
+              </div>
+            </div>
           </div>
 
-          {/* DREAMER - SKY BLUE */}
-          <div className="p-3.5 rounded-xl bg-sky-50 border border-sky-200 text-center space-y-1">
-            <span className="text-[10px] font-extrabold text-sky-700 uppercase tracking-wider">Cấp độ 2</span>
-            <div className="font-black text-xs text-sky-950">DREAMER</div>
-            <p className="text-[10px] text-sky-700 font-semibold">Khởi động Band 4.5+</p>
+          {/* 2. DREAMER - TEAL CYAN (#0093A8) */}
+          <div className="relative group">
+            <div className="absolute inset-0 bg-[#D2F2F7] rounded-xl translate-y-1 translate-x-1 transition-transform group-hover:translate-y-1.5 group-hover:translate-x-1.5" />
+            <div className="relative p-3.5 rounded-xl bg-[#0093A8] text-white text-center space-y-1 border border-[#007D8F]">
+              <span className="text-[10px] font-extrabold text-cyan-100 uppercase tracking-widest">Cấp độ 2</span>
+              <div className="font-black text-sm text-white tracking-tight">DREAMER</div>
+              <div className="mt-1 px-2 py-0.5 rounded-md bg-white/20 text-[10px] font-bold text-white backdrop-blur-xs">
+                IELTS 3.0 - 4.0
+              </div>
+            </div>
           </div>
 
-          {/* BUILDER - INDIGO BLUE */}
-          <div className="p-3.5 rounded-xl bg-indigo-50 border border-indigo-200 text-center space-y-1">
-            <span className="text-[10px] font-extrabold text-indigo-700 uppercase tracking-wider">Cấp độ 3</span>
-            <div className="font-black text-xs text-indigo-950">BUILDER</div>
-            <p className="text-[10px] text-indigo-700 font-semibold">Xây dựng Band 5.5+</p>
+          {/* 3. BUILDER - ORANGE (#EE771D) */}
+          <div className="relative group">
+            <div className="absolute inset-0 bg-[#FCE8D5] rounded-xl translate-y-1 translate-x-1 transition-transform group-hover:translate-y-1.5 group-hover:translate-x-1.5" />
+            <div className="relative p-3.5 rounded-xl bg-[#EE771D] text-white text-center space-y-1 border border-[#D66510]">
+              <span className="text-[10px] font-extrabold text-orange-100 uppercase tracking-widest">Cấp độ 3</span>
+              <div className="font-black text-sm text-white tracking-tight">BUILDER</div>
+              <div className="mt-1 px-2 py-0.5 rounded-md bg-white/20 text-[10px] font-bold text-white backdrop-blur-xs">
+                IELTS 4.0 - 5.0
+              </div>
+            </div>
           </div>
 
-          {/* MASTER - PURPLE / VIOLET */}
-          <div className="p-3.5 rounded-xl bg-purple-50 border border-purple-200 text-center space-y-1">
-            <span className="text-[10px] font-extrabold text-purple-700 uppercase tracking-wider">Cấp độ 4</span>
-            <div className="font-black text-xs text-purple-950">MASTER</div>
-            <p className="text-[10px] text-purple-700 font-semibold">Bứt phá Band 6.0+</p>
+          {/* 4. MASTER - EMERALD GREEN (#00B956) */}
+          <div className="relative group">
+            <div className="absolute inset-0 bg-[#D1F7E2] rounded-xl translate-y-1 translate-x-1 transition-transform group-hover:translate-y-1.5 group-hover:translate-x-1.5" />
+            <div className="relative p-3.5 rounded-xl bg-[#00B956] text-white text-center space-y-1 border border-[#009E48]">
+              <span className="text-[10px] font-extrabold text-emerald-100 uppercase tracking-widest">Cấp độ 4</span>
+              <div className="font-black text-sm text-white tracking-tight">MASTER</div>
+              <div className="mt-1 px-2 py-0.5 rounded-md bg-white/20 text-[10px] font-bold text-white backdrop-blur-xs">
+                IELTS 5.0 - 6.0
+              </div>
+            </div>
           </div>
 
-          {/* LEADER - ROSE / RED */}
-          <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-center space-y-1">
-            <span className="text-[10px] font-extrabold text-rose-700 uppercase tracking-wider">Cấp độ 5</span>
-            <div className="font-black text-xs text-rose-950">LEADER</div>
-            <p className="text-[10px] text-rose-700 font-extrabold">Chinh phục Band 6.5+</p>
+          {/* 5. LEADER - CRIMSON RED (#B82B37) */}
+          <div className="relative group">
+            <div className="absolute inset-0 bg-[#FAD6D9] rounded-xl translate-y-1 translate-x-1 transition-transform group-hover:translate-y-1.5 group-hover:translate-x-1.5" />
+            <div className="relative p-3.5 rounded-xl bg-[#B82B37] text-white text-center space-y-1 border border-[#9E202B]">
+              <span className="text-[10px] font-extrabold text-rose-100 uppercase tracking-widest">Cấp độ 5</span>
+              <div className="font-black text-sm text-white tracking-tight">LEADER</div>
+              <div className="mt-1 px-2 py-0.5 rounded-md bg-white/20 text-[10px] font-bold text-white backdrop-blur-xs">
+                IELTS 6.5 - 7.0+
+              </div>
+            </div>
           </div>
         </div>
       </Card>
