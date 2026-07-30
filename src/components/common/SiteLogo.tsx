@@ -26,12 +26,15 @@ export function SiteLogo({
   const { settings } = useSiteSettings();
   const [hasLoadError, setHasLoadError] = useState(false);
 
-  const logoSrc = fallbackSrc;
+  const logoSrc =
+    !hasLoadError && settings?.logoUrl && settings.logoUrl.trim() !== ""
+      ? getFullLogoUrl(settings.logoUrl)
+      : fallbackSrc;
 
   return (
     <img
       src={logoSrc}
-      alt={alt || `${settings.siteName} Logo`}
+      alt={alt || `${settings?.siteName || "NextBand"} Logo`}
       className={cn("object-contain", className)}
       onError={() => setHasLoadError(true)}
     />
