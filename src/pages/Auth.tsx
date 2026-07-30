@@ -141,24 +141,14 @@ export default function Auth() {
           </p>
         </div>
 
-        {/* Middle Section: 2-ZONE SEPARATION (TOP: HỌC VIÊN / BOTTOM: GIÁO VIÊN & QUẢN TRỊ) */}
-        <div className="space-y-3.5 relative z-10 w-full max-w-md my-0">
-          {/* ZONE 1: TOP SECTION - DÀNH CHO HỌC VIÊN (SKY/WHITE BACKGROUND TONE) */}
-          <div className="p-3.5 rounded-2xl bg-white border border-sky-100 shadow-xs space-y-3 relative">
-            <div className="flex items-center justify-between border-b border-sky-50 pb-2">
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded-md bg-sky-100 text-sky-700 font-extrabold text-[10px] uppercase tracking-wider">
-                  🎓 Cổng Học viên
-                </span>
-              </div>
-              <span className="text-[11px] text-sky-600 font-medium">Đăng nhập Google ⚡</span>
-            </div>
-
-            {/* Compact Feature Cards */}
-            <div className="grid grid-cols-2 gap-2.5">
-              <div className="flex items-center gap-2 p-2 rounded-xl bg-sky-50/50 border border-sky-100">
-                <div className="rounded-lg bg-sky-500/10 p-1.5 border border-sky-500/20 shrink-0">
-                  <GraduationCap className="h-4 w-4 text-sky-600" />
+        {/* Middle Section: Academic & Course Information (Branding Panel) */}
+        <div className="space-y-4 relative z-10 w-full max-w-lg my-0">
+          <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-5 relative">
+            {/* Feature Cards */}
+            <div className="grid grid-cols-2 gap-3.5">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-sky-50/60 border border-sky-100">
+                <div className="rounded-lg bg-sky-500/10 p-2 border border-sky-500/20 shrink-0">
+                  <GraduationCap className="h-4.5 w-4.5 text-sky-600" />
                 </div>
                 <div className="min-w-0">
                   <h3 className="font-semibold text-slate-800 text-xs tracking-tight truncate">
@@ -170,9 +160,9 @@ export default function Auth() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 p-2 rounded-xl bg-indigo-50/50 border border-indigo-100">
-                <div className="rounded-lg bg-indigo-500/10 p-1.5 border border-indigo-500/20 shrink-0">
-                  <TrendingUp className="h-4 w-4 text-indigo-600" />
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-indigo-50/60 border border-indigo-100">
+                <div className="rounded-lg bg-indigo-500/10 p-2 border border-indigo-500/20 shrink-0">
+                  <TrendingUp className="h-4.5 w-4.5 text-indigo-600" />
                 </div>
                 <div className="min-w-0">
                   <h3 className="font-semibold text-slate-800 text-xs tracking-tight truncate">
@@ -186,13 +176,13 @@ export default function Auth() {
             </div>
 
             {/* Academic Curriculum Roadmap */}
-            <div className="pt-0.5">
-              <div className="flex items-center justify-between mb-1.5">
+            <div className="pt-1">
+              <div className="flex items-center justify-between mb-2.5">
                 <h4 className="font-semibold text-slate-800 text-xs tracking-tight">Academic Curriculum</h4>
                 <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200/60">5 Levels</span>
               </div>
 
-              <div className="relative pl-5 space-y-2 my-1">
+              <div className="relative pl-5 space-y-2.5 my-1.5">
                 <div className="absolute left-[5.5px] top-1.5 bottom-1.5 w-[1px] bg-slate-200" />
                 <div className="relative flex items-center justify-between text-xs">
                   <div className="absolute -left-[18px] w-2 h-2 rounded-full bg-red-600 ring-2 ring-red-100" />
@@ -223,31 +213,8 @@ export default function Auth() {
             </div>
           </div>
 
-          {/* CLEAR VISUAL DIVIDER BETWEEN TOP & BOTTOM SECTIONS */}
-          <div className="relative flex items-center justify-center my-1">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t-2 border-dashed border-slate-300/70" />
-            </div>
-            <span className="relative px-3 py-0.5 rounded-full bg-slate-200 text-slate-600 text-[9px] font-extrabold tracking-widest uppercase border border-slate-300 shadow-2xs">
-              ▼ Phân cổng Đăng nhập
-            </span>
-          </div>
-
-          {/* ZONE 2: BOTTOM SECTION - DÀNH CHO GIÁO VIÊN & QUẢN TRỊ (SLATE/AMBER BACKGROUND TONE) */}
-          <div className="p-3 rounded-2xl bg-slate-200/60 border border-slate-300/80 shadow-xs space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-100 font-extrabold text-[10px] uppercase tracking-wider flex items-center gap-1">
-                🔑 Cổng Giáo viên & Quản trị
-              </span>
-              <span className="text-[10px] text-slate-600 font-semibold">Email / Pass 🔒</span>
-            </div>
-            <p className="text-[11px] text-slate-600 leading-normal font-medium">
-              Dành riêng cho Giáo viên & Admin hệ thống vào giao diện Chấm bài, chữa bài Speaking / Writing và quản lý khóa học.
-            </p>
-          </div>
-
-          {/* Social Proof & Zalo Link */}
-          <div className="flex items-center justify-between gap-3 text-xs pt-1">
+          {/* Social Proof & Zalo Support Link */}
+          <div className="flex items-center justify-between gap-3 text-xs pt-1 px-1">
             {settings.completedLessonsStat && (
               <div className="flex items-center gap-1.5 text-slate-500">
                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
