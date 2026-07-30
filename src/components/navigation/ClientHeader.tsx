@@ -26,10 +26,13 @@ export function ClientHeader() {
       <div className="flex h-14 items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <SidebarTrigger className="-ml-1" />
-          <div className="hidden md:block">
-            <h2 className="text-lg font-semibold">
-              Xin chào, {user?.fullName || "Học viên"}!
+          <div className="flex items-center gap-3">
+            <h2 className="text-sm font-semibold text-slate-800">
+              Xin chào, {user?.fullName || "Học viên"}
             </h2>
+            <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+              STARTER01 • 04.2026
+            </span>
           </div>
         </div>
 

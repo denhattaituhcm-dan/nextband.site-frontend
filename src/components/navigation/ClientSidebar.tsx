@@ -26,25 +26,25 @@ import { SiteLogo } from "@/components/common/SiteLogo";
 
 const navigationItems = [
   {
-    title: "Trang Chủ",
+    title: "Bài tập",
     url: "/",
-    icon: Home,
-    description: "Danh sách khóa học",
+    icon: ClipboardList,
+    description: "Bàn làm việc bài tập",
   },
   {
-    title: "Khóa Học Của Tôi",
+    title: "Lớp học & Khóa học",
     url: "/my-courses",
     icon: BookOpen,
-    description: "Khóa học đã đăng ký",
+    description: "Lớp học và lộ trình",
   },
   {
-    title: "Bài Đã Làm",
+    title: "Kết quả & Nhận xét",
     url: "/my-submissions",
-    icon: ClipboardList,
-    description: "Lịch sử bài thi",
+    icon: GraduationCap,
+    description: "Lịch sử nộp bài & Đánh giá",
   },
   {
-    title: "Cá Nhân",
+    title: "Cá nhân",
     url: "/profile",
     icon: User,
     description: "Thông tin cá nhân",

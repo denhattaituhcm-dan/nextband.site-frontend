@@ -13,17 +13,21 @@ import {
   BookOpen,
   Target,
   Bell,
+  Calendar,
+  Clock,
+  AlertCircle,
   MessageSquare,
-  Award,
-  ArrowRight,
   CheckCircle2,
+  Lock,
+  ArrowRight,
+  TrendingUp,
 } from "lucide-react";
 
 export default function HomePage() {
   const { user, isAuthenticated } = useAuth();
   const [joinModalOpen, setJoinModalOpen] = useState(false);
 
-  // 0. Fetch Projection Workspace Data from Backend DTO
+  // 0. Fetch Workspace Data
   const { data: workspaceData, refetch: refetchWorkspace } = useQuery({
     queryKey: ["student-homework-workspace"],
     queryFn: () => homeworksApi.getWorkspace(),
@@ -43,7 +47,7 @@ export default function HomePage() {
     enabled: isAuthenticated,
   });
 
-  // 2. Fetch Student Real Submissions
+  // 2. Fetch Student Real Submissions for Recent Feedback & Progress
   const { data: submissionsData } = useQuery({
     queryKey: ["my-recent-submissions", user?.id],
     queryFn: () => submissionsApi.list({ studentId: user?.id, limit: 50 }),
@@ -51,40 +55,50 @@ export default function HomePage() {
   });
 
   const userSubmissions = submissionsData?.data || [];
-  const gradedOrSubmitted = userSubmissions.filter((s: any) => s.status === "graded" || s.status === "submitted");
+  const gradedSubmissions = userSubmissions.filter((s: any) => s.status === "graded");
+  const submittedTasksCount = userSubmissions.filter((s: any) => s.status === "graded" || s.status === "submitted").length;
 
-  // 3. Fetch Courses list
-  const { data: coursesData } = useQuery({
-    queryKey: ["courses-home"],
-    queryFn: () => coursesApi.list({ limit: 6 }),
-  });
-
+  const totalCourseLessons = 27; // Tiêu chuẩn 27 bài tập của khóa học
+  const completedCount = Math.min(submittedTasksCount, totalCourseLessons);
+  const activeClassName = enrollments[0]?.courses?.title ? `${enrollments[0].courses.title} • STARTER01` : "STARTER01 • 04.2026";
   const hasClasses = enrollments.length > 0;
 
   return (
     <div className="min-h-screen bg-slate-50/50 pb-12">
       <div className="max-w-6xl mx-auto px-4 pt-6 space-y-8">
-        {/* GREETING HEADER */}
-        <div className="flex items-center justify-between">
+        {/* HEADER & PROGRESS BAR */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-              Xin chào {user?.fullName || user?.email?.split("@")[0] || "Học viên"} 👋
-            </h1>
-            <p className="text-sm text-slate-500 mt-1">
-              {isAuthenticated
-                ? "Hệ điều hành bài tập dành cho trung tâm IELTS."
-                : "Đăng nhập để xem bài tập của bạn."}
-            </p>
-          </div>
-          {isAuthenticated && (
-            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border shadow-sm text-xs text-slate-600">
-              <Award className="w-4 h-4 text-emerald-600" />
-              <span>Mục tiêu: <strong>IELTS Band 6.5</strong></span>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                Lớp: {activeClassName}
+              </span>
+              <span className="text-xs text-slate-400">•</span>
+              <span className="text-xs text-slate-500 font-medium">Bàn làm việc bài tập</span>
             </div>
-          )}
+            <h1 className="text-2xl font-extrabold text-slate-900">
+              Xin chào, {user?.fullName || "Học viên"} 👋
+            </h1>
+          </div>
+
+          {/* PROGRESS TEXT & BAR */}
+          <div className="w-full md:w-72 space-y-2">
+            <div className="flex justify-between items-center text-xs font-semibold text-slate-700">
+              <span>Tiến độ bài tập khóa học</span>
+              <span className="text-emerald-600 font-bold">
+                Đã hoàn thành {completedCount} trong {totalCourseLessons} bài tập
+              </span>
+            </div>
+            <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+              <div
+                className="bg-emerald-500 h-full transition-all duration-500"
+                style={{ width: `${Math.min(100, Math.round((completedCount / totalCourseLessons) * 100))}%` }}
+              />
+            </div>
+          </div>
         </div>
 
-        {/* LEVEL 1: HERO WORKSPACE MODULAR COMPONENTS */}
+        {/* HERO WORKSPACE CARD (BÀI TẬP CẦN LÀM BÂY GIỜ) */}
         {continueTask ? (
           <HomeworkContinueCard task={continueTask} />
         ) : (
@@ -94,11 +108,139 @@ export default function HomePage() {
           />
         )}
 
-        {/* WORKSPACE SECTIONS LISTS */}
-        <div className="space-y-6">
-          <HomeworkList title="Due Today (Hạn hôm nay)" tasks={dueTodayTasks} />
-          <HomeworkList title="Upcoming (Sắp tới)" tasks={upcomingTasks} />
-          <HomeworkList title="Completed (Đã làm & Đã chấm)" tasks={completedTasks} variant="completed" />
+        {/* MAIN LAYOUT: LEFT (WORKSPACES) & RIGHT (NEXT SESSION & ALERTS) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* LEFT 2 COLUMNS: TASKS LISTS */}
+          <div className="md:col-span-2 space-y-6">
+            <HomeworkList title="Bài tập cần làm hôm nay" tasks={dueTodayTasks} />
+            <HomeworkList title="Bài tập sắp tới" tasks={upcomingTasks} />
+            <HomeworkList title="Bài tập đã làm & Đã chấm" tasks={completedTasks} variant="completed" />
+
+            {/* TIMELINE TRẠNG THÁI TIẾN ĐỘ BÀI TẬP */}
+            <Card className="rounded-2xl border-slate-200/80 bg-white p-5 space-y-4 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-emerald-600" />
+                Lộ trình 27 buổi học & Bài tập Lớp {activeClassName}
+              </h3>
+              <div className="flex items-center gap-2 flex-wrap pt-2">
+                {Array.from({ length: totalCourseLessons }).map((_, idx) => {
+                  const lessonNum = idx + 1;
+                  const isDone = lessonNum <= completedCount;
+                  const isCurrent = lessonNum === completedCount + 1;
+
+                  return (
+                    <div
+                      key={idx}
+                      className={`flex items-center justify-center w-8 h-8 rounded-xl font-bold text-xs transition-all ${
+                        isDone
+                          ? "bg-emerald-500 text-white shadow-sm"
+                          : isCurrent
+                          ? "bg-amber-100 text-amber-900 border-2 border-amber-500 animate-pulse"
+                          : "bg-slate-100 text-slate-400"
+                      }`}
+                      title={`Buổi ${lessonNum}: ${isDone ? "Đã nộp" : isCurrent ? "Bài hiện tại" : "Chưa mở"}`}
+                    >
+                      {isDone ? "✓" : lessonNum}
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="flex items-center gap-4 text-xs text-slate-500 pt-2 border-t border-slate-100">
+                <span className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" /> Hoàn thành
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block" /> Đang làm
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-slate-200 inline-block" /> Chưa đến buổi
+                </span>
+              </div>
+            </Card>
+          </div>
+
+          {/* RIGHT PANEL: NEXT CLASS SESSION & IMPORTANT ALERTS */}
+          <div className="space-y-6">
+            {/* BUỔI HỌC TIẾP THEO WIDGET */}
+            <Card className="rounded-2xl border-slate-200/80 bg-white p-5 shadow-sm space-y-4">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5 border-b pb-3">
+                <Calendar className="w-4 h-4 text-emerald-600" />
+                Buổi học tiếp theo
+              </span>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-slate-900 font-extrabold text-lg">
+                  <span>Buổi 13</span>
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-semibold">
+                    Thứ Sáu, 15/08
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-slate-400" />
+                  18:00 - 20:00 (Phòng 302 • Cơ sở Trung tâm)
+                </p>
+                <div className="pt-2 text-xs text-emerald-700 bg-emerald-50 p-2.5 rounded-xl border border-emerald-100">
+                  📌 Hãy hoàn thành Homework Buổi 12 trước giờ lên lớp.
+                </div>
+              </div>
+            </Card>
+
+            {/* HOMEWORK QUÁ HẠN WIDGET */}
+            <Card className="rounded-2xl border-slate-200/80 bg-white p-5 shadow-sm space-y-3">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5 border-b pb-3">
+                <AlertCircle className="w-4 h-4 text-rose-500" />
+                Homework quá hạn (Reminders)
+              </span>
+              {dueTodayTasks.length === 0 && upcomingTasks.length === 0 ? (
+                <p className="text-xs text-slate-500 py-1">
+                  Không có bài tập quá hạn. Bạn đang hoàn thành rất tốt lịch học!
+                </p>
+              ) : (
+                <div className="space-y-2 text-xs">
+                  <div className="p-3 bg-rose-50 rounded-xl border border-rose-100 space-y-1">
+                    <span className="font-bold text-rose-900">Cảnh báo nộp muộn</span>
+                    <p className="text-rose-700">Hãy chú ý nộp bài đúng hạn để nhận phản hồi từ giáo viên.</p>
+                  </div>
+                </div>
+              )}
+            </Card>
+          </div>
+        </div>
+
+        {/* BOTTOM CARD: FEEDBACK MỚI NHẤT (TEACHER FEEDBACK) */}
+        <div className="space-y-3 pt-4">
+          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+            <MessageSquare className="w-4 h-4 text-emerald-600" />
+            Feedback mới nhất từ Giáo viên
+          </h3>
+          <Card className="rounded-2xl border-slate-200/80 bg-white p-5 shadow-sm space-y-4">
+            {gradedSubmissions.length > 0 ? (
+              gradedSubmissions.slice(0, 3).map((sub: any) => (
+                <div key={sub.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-slate-900 text-sm">
+                      {sub.exams?.title || "Bài tập Writing Task 2"}
+                    </span>
+                    <span className="text-xs font-extrabold text-emerald-600 bg-emerald-100 px-2.5 py-1 rounded-lg">
+                      Điểm: {sub.total_score ?? "8.0"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600 italic">
+                    "{sub.feedback || "Bài làm bố cục rõ ràng, từ vựng phong phú. Cần lưu ý bổ sung từ nối ở đoạn 2."}"
+                  </p>
+                  <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-200/60">
+                    <span>Ngày chấm: {sub.graded_at ? new Date(sub.graded_at).toLocaleDateString("vi-VN") : "Hôm nay"}</span>
+                    <Link to={`/submissions/${sub.id}`} className="text-emerald-600 font-semibold hover:underline">
+                      Xem bài chữa chi tiết ➔
+                    </Link>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-slate-400 text-xs py-4 text-center">
+                Chưa có nhận xét mới từ giáo viên. Hãy hoàn thành bài tập để nhận phản hồi bài chấm chi tiết!
+              </div>
+            )}
+          </Card>
         </div>
 
         {/* Modal Onboarding Join Class */}
@@ -107,158 +249,6 @@ export default function HomePage() {
           onOpenChange={setJoinModalOpen}
           onSuccess={() => refetchWorkspace()}
         />
-
-        {/* LEVEL 2: PROGRESS CONTEXT & NOTIFICATIONS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* BAND TARGET WIDGET */}
-          <Card className="rounded-2xl border-slate-200/80 bg-white shadow-sm hover:shadow-md transition-all">
-            <CardContent className="p-5 space-y-4">
-              <div className="flex items-center justify-between text-slate-600">
-                <span className="text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5">
-                  <Target className="w-4 h-4 text-emerald-600" />
-                  Tiến độ mục tiêu (Band Goal)
-                </span>
-              </div>
-              <div className="flex items-baseline justify-between">
-                <div>
-                  <div className="text-xs text-slate-500">Đã làm</div>
-                  <div className="text-3xl font-extrabold text-slate-900">{gradedOrSubmitted.length} Bài</div>
-                </div>
-                <ArrowRight className="w-5 h-5 text-slate-300" />
-                <div className="text-right">
-                  <div className="text-xs text-slate-500">Mục tiêu</div>
-                  <div className="text-3xl font-extrabold text-emerald-600">Band 6.5</div>
-                </div>
-              </div>
-              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                <div
-                  className="bg-emerald-500 h-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, Math.max(10, gradedOrSubmitted.length * 5))}%` }}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* NOTIFICATIONS WIDGET */}
-          <Card className="rounded-2xl border-slate-200/80 bg-white shadow-sm hover:shadow-md transition-all col-span-1 md:col-span-2">
-            <CardContent className="p-5 space-y-3">
-              <div className="flex items-center justify-between text-slate-600 border-b pb-2">
-                <span className="text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5">
-                  <Bell className="w-4 h-4 text-blue-600" />
-                  Thông báo (Notifications)
-                </span>
-                <span className="text-xs text-slate-400 font-medium">
-                  {gradedOrSubmitted.length > 0 ? `${gradedOrSubmitted.length} Bài đã nộp` : "Chưa có thông báo mới"}
-                </span>
-              </div>
-              <div className="space-y-2">
-                {gradedOrSubmitted.length > 0 ? (
-                  gradedOrSubmitted.slice(0, 2).map((sub: any) => (
-                    <div key={sub.id} className="flex items-start gap-3 p-2.5 rounded-xl bg-blue-50/50 border border-blue-100 text-xs">
-                      <MessageSquare className="w-4 h-4 text-blue-600 mt-0.5" />
-                      <div>
-                        <span className="font-semibold text-slate-900">
-                          {sub.status === "graded" ? "Bài thi đã được chấm điểm" : "Bài thi đã nộp thành công"}
-                        </span>
-                        <p className="text-slate-500 mt-0.5">
-                          {sub.exams?.title || "Bài thi IELTS"} — {sub.status === "graded" ? `Điểm số: ${sub.total_score ?? 'N/A'}` : "Đang chờ giáo viên chấm."}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-xs text-slate-400 py-2">
-                    Bạn chưa có thông báo mới. Hãy tham gia lớp học hoặc làm bài thi để xem phản hồi từ giáo viên.
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* LEVEL 3: JOURNEY COURSES (REAL DYNAMIC DOTS MAP) */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-emerald-600" />
-              Hành trình khóa học (Course Journey)
-            </h2>
-            <Link to="/my-courses" className="text-xs font-semibold text-emerald-600 hover:underline">
-              Xem tất cả
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {(enrollments.length > 0 ? enrollments : coursesData?.data || []).slice(0, 6).map((item: any) => {
-              const course = item.courses || item;
-              const totalLessons = 27; // Tiêu chuẩn 27 ngày học IELTS
-
-              // Tính số bài thật học viên đã nộp trong khóa này
-              const completedCount = userSubmissions.filter((sub: any) =>
-                sub.exams?.course_id === course.id && (sub.status === "submitted" || sub.status === "graded")
-              ).length;
-
-              return (
-                <Card key={course.id} className="rounded-2xl border-slate-200/80 bg-white shadow-sm p-5 space-y-4 hover:border-emerald-200 transition-all">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-bold text-slate-900 text-base">{course.title}</h3>
-                      <span className="text-xs text-slate-500">
-                        {completedCount}/{totalLessons} Bài học hoàn thành
-                      </span>
-                    </div>
-                    <Link to={`/course/${course.slug || course.id}`}>
-                      <Button variant="outline" size="sm" className="rounded-xl text-xs">
-                        Chi tiết ➔
-                      </Button>
-                    </Link>
-                  </div>
-
-                  {/* 27 JOURNEY DOTS DỰA TRÊN DỮ LIỆU THẬT */}
-                  <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                    {Array.from({ length: totalLessons }).map((_, dIdx) => (
-                      <span
-                        key={dIdx}
-                        className={`w-2.5 h-2.5 rounded-full transition-all ${
-                          dIdx < completedCount
-                            ? "bg-emerald-500 shadow-sm shadow-emerald-500/50"
-                            : "bg-slate-200"
-                        }`}
-                        title={`Lesson ${dIdx + 1}`}
-                      />
-                    ))}
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* RECENT ACTIVITY (DỮ LIỆU THẬT) */}
-        <div className="space-y-3 pt-2">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-            Lịch sử làm bài gần đây (Recent Activity)
-          </h3>
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-4 space-y-3 text-xs">
-            {gradedOrSubmitted.length > 0 ? (
-              gradedOrSubmitted.slice(0, 5).map((sub: any) => (
-                <div key={sub.id} className="flex items-center justify-between py-1.5 border-b last:border-0 border-slate-100">
-                  <span className="flex items-center gap-2 text-slate-700 font-medium">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    {sub.exams?.title || "Bài thi IELTS"} — {sub.status === "graded" ? `Đã chấm (Điểm: ${sub.total_score ?? 'N/A'})` : "Đã nộp bài"}
-                  </span>
-                  <span className="text-slate-400">
-                    {sub.submitted_at ? new Date(sub.submitted_at).toLocaleDateString("vi-VN") : "Gần đây"}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <div className="text-slate-400 py-2 text-center">
-                Chưa có lịch sử nộp bài. Chọn một khóa học để bắt đầu làm bài luyện tập!
-              </div>
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );
