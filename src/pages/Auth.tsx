@@ -218,12 +218,19 @@ export default function Auth() {
             </div>
           </div>
 
-          {/* Social Proof & Zalo Link */}
+          {/* Social Proof & Zalo Link Dynamic Single Source of Truth */}
           <div className="flex items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-1.5 text-slate-400">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-              <span className="text-[11px]"><strong className="text-slate-200 font-medium">5,000+</strong> lessons completed</span>
-            </div>
+            {settings.completedLessonsStat && (
+              <div className="flex items-center gap-1.5 text-slate-400">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                <span className="text-[11px]">
+                  <strong className="text-slate-200 font-medium">
+                    {settings.completedLessonsStat}
+                  </strong>{" "}
+                  lessons completed
+                </span>
+              </div>
+            )}
 
             {settings.zaloLink && (
               <a

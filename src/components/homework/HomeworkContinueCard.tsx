@@ -12,41 +12,39 @@ export function HomeworkContinueCard({ task }: HomeworkContinueCardProps) {
   const navigate = useNavigate();
 
   return (
-    <Card className="border-emerald-100 bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 text-white rounded-2xl shadow-xl overflow-hidden relative">
-      <div className="absolute -right-12 -top-12 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
-      <CardContent className="p-6 md:p-8 relative z-10 space-y-5">
-        <div className="flex items-center justify-between">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-            <Clock className="w-3.5 h-3.5" />
-            Bài tập hiện tại
-          </span>
-          {task.deadline && (
-            <span className="text-xs text-slate-300 font-medium flex items-center gap-1.5 bg-slate-800/80 px-3 py-1 rounded-lg border border-slate-700">
-              <Clock className="w-3.5 h-3.5 text-amber-400" />
-              Hạn nộp: {new Date(task.deadline).toLocaleDateString("vi-VN")}
+    <Card className="border-blue-500 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white rounded-2xl shadow-lg shadow-blue-500/20 overflow-hidden relative border-0">
+      <CardContent className="p-6 md:p-8 relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-3 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-md">
+              Buổi {task.title.match(/Buổi \d+/i)?.[0] || "12"}
             </span>
-          )}
-        </div>
-
-        <div className="space-y-1.5">
-          <div className="text-xs font-semibold tracking-wider text-emerald-400 uppercase">
-            Lớp: {task.className || "STARTER01 • 04.2026"}
+            <span className="text-xs font-semibold text-blue-100 uppercase tracking-wider">
+              {task.className || "STARTER01 • 04.2026"}
+            </span>
           </div>
+
           <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
             {task.title}
           </h2>
+
+          <div className="flex items-center gap-4 text-xs text-blue-100 font-medium">
+            <span className="flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5" />
+              Hạn nộp: {task.deadline ? new Date(task.deadline).toLocaleDateString("vi-VN") : "Hôm nay"}
+            </span>
+            <span>•</span>
+            <span>Trạng thái: <strong className="text-white font-bold">Chưa nộp bài</strong></span>
+          </div>
         </div>
 
-        <div className="pt-3 flex items-center justify-between border-t border-slate-800/80">
-          <div className="text-xs text-slate-400">
-            Trạng thái: <span className="text-amber-300 font-semibold">Chưa nộp bài</span>
-          </div>
+        <div className="flex items-center justify-end">
           <Button
             onClick={() => navigate(task.actionUrl)}
-            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-6 py-5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2"
+            className="bg-white hover:bg-blue-50 text-blue-600 font-extrabold px-8 py-6 rounded-xl shadow-xl hover:shadow-2xl transition-all text-base flex items-center gap-2 border-0"
           >
-            Làm bài
-            <ArrowRight className="w-4 h-4" />
+            Tiếp tục học
+            <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
       </CardContent>

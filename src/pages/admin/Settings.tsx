@@ -136,6 +136,20 @@ export default function AdminSettings() {
                 placeholder="https://zalo.me/..."
               />
             </div>
+
+            <div className="space-y-2">
+              <Label>Số liệu Social Proof bài học (trang Đăng nhập)</Label>
+              <Input
+                value={data.completedLessonsStat || ""}
+                onChange={(e) =>
+                  updateSettings((prev) => ({
+                    ...prev,
+                    completedLessonsStat: e.target.value,
+                  }))
+                }
+                placeholder="5,000+"
+              />
+            </div>
           </CardContent>
         </Card>
 
