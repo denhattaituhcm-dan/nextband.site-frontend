@@ -950,130 +950,122 @@ export default function AdminClassEdit() {
                 <TableRow>
                   <TableHead>Họ tên</TableHead>
                   <TableHead>Email</TableHead>
+                  <TableHead>Trạng thái Kích hoạt</TableHead>
                   <TableHead>Ngày tham gia</TableHead>
                   <TableHead className="w-[80px]">Xoá</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {(classData.students || []).map((cs: any) => (
-                  <TableRow key={cs.id}>
-                    <TableCell className="font-medium">
-                      {cs.student?.fullName || "—"}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {cs.student?.email}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">
-                      {new Date(cs.joinedAt).toLocaleDateString("vi-VN")}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() =>
-                          setRemoveStudent({
-                            id: cs.studentId,
-                            name: cs.student?.fullName || cs.student?.email,
-                          })
-                        }
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {(classData.students || []).map((cs: any) => {
+                  const isActivated = !!cs.student?.userId || !!cs.student?.user_id;
+                  return (
+                    <TableRow key={cs.id}>
+                      <TableCell className="font-medium">
+                        {cs.student?.fullName || cs.student?.full_name || "—"}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground font-mono text-xs">
+                        {cs.student?.email}
+                      </TableCell>
+                      <TableCell>
+                        {isActivated ? (
+                          <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 gap-1 text-[11px]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            🟢 Đã kích hoạt
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 gap-1 text-[11px]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                            🟡 Chờ đăng nhập
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-sm">
+                        {new Date(cs.joinedAt).toLocaleDateString("vi-VN")}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() =>
+                            setRemoveStudent({
+                              id: cs.studentId,
+                              name: cs.student?.fullName || cs.student?.email,
+                            })
+                          }
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           )}
         </CardContent>
       </Card>
 
-      {/* Add Students Dialog */}
+      {/* Add Students by Email List Dialog (Pre-provisioned Email Auto-linking) */}
       <Dialog open={addStudentsOpen} onOpenChange={setAddStudentsOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
+        <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Thêm học viên vào lớp</DialogTitle>
+            <DialogTitle>Dán danh sách Email học viên xếp Lớp</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Tìm theo tên hoặc email..."
-                value={studentSearch}
-                onChange={(e) => setStudentSearch(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
-            {selectedStudents.length > 0 && (
-              <Badge variant="secondary">
-                Đã chọn: {selectedStudents.length} học viên
-              </Badge>
-            )}
-
-            <div className="flex-1 overflow-y-auto border rounded-md max-h-[350px]">
-              {usersLoading ? (
-                <div className="text-center py-4 text-muted-foreground">
-                  Đang tải...
-                </div>
-              ) : availableStudents.length === 0 ? (
-                <div className="text-center py-4 text-muted-foreground">
-                  Không tìm thấy học viên nào
-                </div>
-              ) : (
-                <div className="divide-y">
-                  {availableStudents.map((user: any) => (
-                    <label
-                      key={user.id}
-                      className="flex items-center gap-3 p-3 hover:bg-muted/50 cursor-pointer"
-                    >
-                      <Checkbox
-                        checked={selectedStudents.includes(user.id)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setSelectedStudents([...selectedStudents, user.id]);
-                          } else {
-                            setSelectedStudents(
-                              selectedStudents.filter((id) => id !== user.id),
-                            );
-                          }
-                        }}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">
-                          {user.fullName || "Chưa có tên"}
-                        </p>
-                        <p className="text-sm text-muted-foreground truncate">
-                          {user.email}
-                        </p>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
+          <div className="space-y-3 pt-2">
+            <Label className="text-xs font-semibold text-slate-700">
+              Nhập hoặc Dán danh sách Email (phân cách bằng phẩy hoặc xuống dòng):
+            </Label>
+            <Textarea
+              rows={6}
+              placeholder="VD:
+student1@gmail.com, student2@gmail.com
+student3@gmail.com"
+              value={studentSearch}
+              onChange={(e) => setStudentSearch(e.target.value)}
+              className="text-xs font-mono p-3 leading-relaxed"
+            />
+            <p className="text-[11px] text-slate-500">
+              💡 Hệ thống sẽ tự động gán Email vào Lớp. Khi học viên đăng nhập bằng Gmail trùng khớp lần đầu, tài khoản sẽ tự động được kích hoạt và đưa thẳng vào Lớp!
+            </p>
           </div>
-          <DialogFooter>
+          <DialogFooter className="pt-2">
             <Button
               variant="outline"
               onClick={() => {
                 setAddStudentsOpen(false);
-                setSelectedStudents([]);
+                setStudentSearch("");
               }}
             >
               Hủy
             </Button>
             <Button
-              onClick={() => addStudentsMutation.mutate(selectedStudents)}
-              disabled={
-                selectedStudents.length === 0 || addStudentsMutation.isPending
-              }
+              onClick={async () => {
+                const emails = studentSearch.split(/[\n,;]+/).map((e) => e.trim()).filter(Boolean);
+                if (emails.length === 0) {
+                  toast({ title: "Vui lòng nhập ít nhất 1 email", variant: "destructive" });
+                  return;
+                }
+                try {
+                  const res = await classesApi.addStudentsByEmails(id!, emails);
+                  queryClient.invalidateQueries({ queryKey: ["admin-class", id] });
+                  toast({
+                    title: "Đã gán Email vào Lớp!",
+                    description: `Đã xử lý ${res.added} email học viên.`,
+                  });
+                  setAddStudentsOpen(false);
+                  setStudentSearch("");
+                } catch (err: any) {
+                  toast({
+                    title: "Lỗi thêm học viên",
+                    description: err.message,
+                    variant: "destructive",
+                  });
+                }
+              }}
+              disabled={!studentSearch.trim()}
             >
-              {addStudentsMutation.isPending && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Thêm {selectedStudents.length} học viên
+              Lưu & Gán vào Lớp
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1414,6 +1414,94 @@ export const classesApi = {
     return data;
   },
 
+  addStudentsByEmails: async (classId: string, emails: string[]) => {
+    const cleanEmails = Array.from(
+      new Set(
+        emails
+          .map((e) => e.trim().toLowerCase())
+          .filter((e) => e && e.includes("@"))
+      )
+    );
+
+    if (cleanEmails.length === 0) {
+      return { added: 0, profiles: [] };
+    }
+
+    const addedProfiles: Array<{ id: string; email: string; isNew: boolean }> = [];
+
+    for (const email of cleanEmails) {
+      // 1. Check if profile with email exists
+      let { data: profile } = await supabase
+        .from("profiles")
+        .select("id, user_id, email")
+        .eq("email", email)
+        .maybeSingle();
+
+      let profileId = profile?.id;
+
+      // 2. Pre-provision profile if not found
+      if (!profile) {
+        const newProfileId = crypto.randomUUID();
+        const { data: createdProfile, error: createErr } = await supabase
+          .from("profiles")
+          .insert({
+            id: newProfileId,
+            email: email,
+            full_name: email.split("@")[0],
+          })
+          .select("id, email")
+          .single();
+
+        if (createErr) {
+          console.warn(`Failed to pre-provision profile for ${email}:`, createErr.message);
+          continue;
+        }
+
+        profileId = createdProfile.id;
+        addedProfiles.push({ id: profileId, email, isNew: true });
+      } else {
+        addedProfiles.push({ id: profileId, email, isNew: false });
+      }
+
+      // 3. Link profile.id to class_students
+      if (profileId) {
+        await supabase
+          .from("class_students")
+          .upsert(
+            { class_id: classId, student_id: profileId },
+            { onConflict: "class_id,student_id" }
+          );
+      }
+    }
+
+    return { added: addedProfiles.length, profiles: addedProfiles };
+  },
+
+  claimProfileOnLogin: async (authUser: { id: string; email: string; user_metadata?: any }) => {
+    if (!authUser.email) return;
+
+    // Check if a pre-provisioned profile exists for this email
+    const { data: existingProfile } = await supabase
+      .from("profiles")
+      .select("id, user_id")
+      .eq("email", authUser.email.toLowerCase())
+      .maybeSingle();
+
+    if (existingProfile) {
+      // If user_id is not set or different, update it to claim ownership
+      if (existingProfile.user_id !== authUser.id) {
+        await supabase
+          .from("profiles")
+          .update({
+            user_id: authUser.id,
+            full_name: authUser.user_metadata?.full_name || authUser.email.split("@")[0],
+            avatar_url: authUser.user_metadata?.avatar_url || null,
+          })
+          .eq("id", existingProfile.id);
+      }
+    }
+  },
+
   removeStudent: async (classId: string, studentId: string) => {
     const { error } = await supabase
       .from("class_students")

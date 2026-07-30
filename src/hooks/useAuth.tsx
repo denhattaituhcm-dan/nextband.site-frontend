@@ -6,6 +6,7 @@ import {
   ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabase";
+import { classesApi } from "@/lib/api";
 import { User as SupabaseAuthUser } from "@supabase/supabase-js";
 
 export type AppRole = "admin" | "teacher" | "student";
@@ -49,6 +50,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserProfile = async (authUser: SupabaseAuthUser) => {
     try {
+      // 0. Auto-claim pre-provisioned profile by email
+      if (authUser.email) {
+        await classesApi.claimProfileOnLogin(authUser);
+      }
+
       // 1. Fetch Profile
       const { data: profile } = await supabase
         .from("profiles")

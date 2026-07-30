@@ -37,25 +37,15 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
 
   return (
     <div className="space-y-6">
-      {/* 1. HERO WELCOME BANNER FOR UNENROLLED STUDENTS (COMPACT & FOCUS) */}
-      <Card className="border-blue-500 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white rounded-2xl shadow-lg p-6 md:p-8 text-center space-y-4 border-0 relative overflow-hidden">
-        <div className="space-y-1.5 max-w-lg mx-auto">
-          <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
-            Gia nhập Lớp học của bạn
+      {/* 1. HERO WELCOME BANNER FOR UNENROLLED STUDENTS (ZERO-CODE FRICTIONLESS ONBOARDING) */}
+      <Card className="border-blue-500 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white rounded-2xl shadow-lg p-6 md:p-8 text-center space-y-3 border-0 relative overflow-hidden">
+        <div className="space-y-2 max-w-xl mx-auto">
+          <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+            Chào mừng bạn đến với ARIS IELTS (NextBand)
           </h1>
-          <p className="text-xs md:text-sm text-blue-100 font-medium">
-            Nhập Mã Lớp học do Trung tâm/Giáo viên cấp để bắt đầu nhận bài tập về nhà.
+          <p className="text-xs md:text-sm text-blue-100 font-medium leading-relaxed">
+            Tài khoản Email của bạn chưa được liên kết với Lớp học nào. Vui lòng liên hệ Giáo viên / Trung tâm ARIS IELTS để được xếp lớp.
           </p>
-        </div>
-
-        <div className="pt-1 flex justify-center">
-          <Button
-            onClick={onJoinClick}
-            className="bg-white hover:bg-blue-50 text-blue-600 font-extrabold px-8 py-5 rounded-xl shadow-lg hover:shadow-blue-900/30 transition-all text-base flex items-center gap-2 border-0"
-          >
-            <KeyRound className="w-5 h-5" />
-            Nhập Mã Lớp học (VD: STARTER01)
-          </Button>
         </div>
       </Card>
 
