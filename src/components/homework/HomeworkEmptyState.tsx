@@ -37,30 +37,30 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
 
   return (
     <div className="space-y-6">
-      {/* 1. HERO WELCOME BANNER FOR UNENROLLED STUDENTS */}
-      <Card className="border-blue-500 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white rounded-2xl shadow-xl p-8 md:p-10 text-center space-y-6 border-0 relative overflow-hidden">
-        <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mx-auto text-white backdrop-blur-md">
-          <Sparkles className="w-7 h-7" />
+      {/* 1. HERO WELCOME BANNER FOR UNENROLLED STUDENTS (COMPACT 100% VIEWPORT FIT) */}
+      <Card className="border-blue-500 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white rounded-2xl shadow-lg p-5 md:p-6 text-center space-y-4 border-0 relative overflow-hidden">
+        <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mx-auto text-white backdrop-blur-md">
+          <Sparkles className="w-5 h-5" />
         </div>
 
-        <div className="space-y-3 max-w-2xl mx-auto">
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-md">
+        <div className="space-y-1.5 max-w-xl mx-auto">
+          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white/20 text-white backdrop-blur-md">
             HỆ THỐNG QUẢN LÝ BÀI TẬP ARIS IELTS
           </span>
-          <h1 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight">
+          <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Chào mừng bạn đến với NextBand
           </h1>
-          <p className="text-sm md:text-base text-blue-100 font-medium leading-relaxed">
-            NextBand là hệ thống đồng hành học tập trực tuyến dành riêng cho học viên trung tâm ARIS IELTS. Đăng nhập ngay và nhập Mã Lớp học để bắt đầu lộ trình làm bài tập & nhận phản hồi trực tiếp từ Giáo viên.
+          <p className="text-xs md:text-sm text-blue-100 font-medium leading-normal max-w-lg mx-auto">
+            NextBand là hệ thống đồng hành học tập trực tuyến dành riêng cho học viên ARIS IELTS. Hãy nhập Mã Lớp học để nhận bài tập & phản hồi trực tiếp từ Giáo viên.
           </p>
         </div>
 
-        <div className="pt-2 flex justify-center">
+        <div className="pt-1 flex justify-center">
           <Button
             onClick={onJoinClick}
-            className="bg-white hover:bg-blue-50 text-blue-600 font-extrabold px-8 py-6 rounded-xl shadow-2xl hover:shadow-blue-900/30 transition-all text-base flex items-center gap-2 border-0"
+            className="bg-white hover:bg-blue-50 text-blue-600 font-extrabold px-6 py-3.5 rounded-xl shadow-md hover:shadow-blue-900/30 transition-all text-sm flex items-center gap-2 border-0"
           >
-            <KeyRound className="w-5 h-5" />
+            <KeyRound className="w-4 h-4" />
             Nhập Mã Lớp học (VD: STARTER01)
           </Button>
         </div>
@@ -153,67 +153,25 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
             VERIFIED TRF 8.0+
           </span>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-between space-y-3">
+        <div className="max-w-md mx-auto pt-1">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-between space-y-3 shadow-sm hover:border-blue-200 transition-colors">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-600 text-white font-extrabold flex items-center justify-center text-sm shadow-md">
+              <div className="w-12 h-12 rounded-full bg-blue-600 text-white font-extrabold flex items-center justify-center text-base shadow-md">
                 8.0
               </div>
-              <div>
-                <div className="font-bold text-xs text-slate-900">Thầy Lưu Văn Đang</div>
-                <div className="text-[11px] text-blue-600 font-semibold">IELTS Overall 8.0 (Verified TRF)</div>
-                <div className="text-[10px] text-slate-400">Giảng viên Chủ nhiệm ARIS IELTS</div>
+              <div className="text-left space-y-0.5">
+                <div className="font-extrabold text-sm text-slate-900">Thầy Lưu Văn Đang</div>
+                <div className="text-xs text-blue-600 font-bold">IELTS Overall 8.0 (Verified TRF)</div>
+                <div className="text-[11px] text-slate-500">Giảng viên Chủ nhiệm & Đội ngũ Chấm bài ARIS IELTS</div>
               </div>
             </div>
             <a
               href="/IELTS CERTIFICATE_LUU_VAN-DANG.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 w-full py-1.5 px-3 rounded-lg text-[11px] font-bold bg-white border border-slate-200 text-blue-600 hover:bg-blue-50 transition-colors shadow-2xs"
+              className="inline-flex items-center justify-center gap-2 w-full py-2 px-4 rounded-xl font-extrabold text-xs bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 transition-all shadow-sm"
             >
-              📄 Xem Chứng chỉ IELTS (PDF)
-            </a>
-          </div>
-
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-between space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-600 text-white font-extrabold flex items-center justify-center text-sm shadow-md">
-                8.0
-              </div>
-              <div>
-                <div className="font-bold text-xs text-slate-900">Cô Elena Trần</div>
-                <div className="text-[11px] text-blue-600 font-semibold">IELTS Overall 8.0 (Writing 8.0)</div>
-                <div className="text-[10px] text-slate-400">Giảng viên Chuyên môn Writing</div>
-              </div>
-            </div>
-            <a
-              href="/IELTS CERTIFICATE_LUU_VAN-DANG.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 w-full py-1.5 px-3 rounded-lg text-[11px] font-bold bg-white border border-slate-200 text-blue-600 hover:bg-blue-50 transition-colors shadow-2xs"
-            >
-              📄 Xem Chứng chỉ IELTS (PDF)
-            </a>
-          </div>
-
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-between space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-600 text-white font-extrabold flex items-center justify-center text-sm shadow-md">
-                8.0
-              </div>
-              <div>
-                <div className="font-bold text-xs text-slate-900">Thầy Marcus Vũ</div>
-                <div className="text-[11px] text-blue-600 font-semibold">IELTS Overall 8.0 (Speaking 8.5)</div>
-                <div className="text-[10px] text-slate-400">Giảng viên Chuyên môn Speaking</div>
-              </div>
-            </div>
-            <a
-              href="/IELTS CERTIFICATE_LUU_VAN-DANG.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 w-full py-1.5 px-3 rounded-lg text-[11px] font-bold bg-white border border-slate-200 text-blue-600 hover:bg-blue-50 transition-colors shadow-2xs"
-            >
-              📄 Xem Chứng chỉ IELTS (PDF)
+              📄 Xem Chứng chỉ IELTS TRF (PDF)
             </a>
           </div>
         </div>
