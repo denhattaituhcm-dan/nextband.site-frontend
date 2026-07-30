@@ -325,9 +325,6 @@ export default function Auth() {
 
             {/* Secondary Email/Password Form (DÀNH CHO GIÁO VIÊN & QUẢN TRỊ) */}
             <form onSubmit={handleSignIn} className="space-y-4 p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60">
-              <div className="text-xs font-bold tracking-wider text-slate-600 dark:text-slate-400 uppercase">
-                🔑 Cổng Giáo viên & Quản trị
-              </div>
               <div className="space-y-1.5">
                 <Label htmlFor="login-email" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Email
