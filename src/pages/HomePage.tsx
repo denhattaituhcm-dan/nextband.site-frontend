@@ -27,11 +27,12 @@ export default function HomePage() {
   const { user, isAuthenticated } = useAuth();
   const [joinModalOpen, setJoinModalOpen] = useState(false);
 
-  // 0. Fetch Workspace Data
+  // 0. Fetch Workspace Data (Safe failover)
   const { data: workspaceData, refetch: refetchWorkspace } = useQuery({
     queryKey: ["student-homework-workspace"],
-    queryFn: () => homeworksApi.getWorkspace(),
+    queryFn: () => homeworksApi.getWorkspace().catch(() => ({ success: false, data: null as any })),
     enabled: isAuthenticated,
+    retry: false,
   });
 
   const workspace = workspaceData?.data;
@@ -43,18 +44,20 @@ export default function HomePage() {
   // 1. Fetch Enrollments & Class Data
   const { data: enrollments = [] } = useQuery({
     queryKey: ["my-enrollments"],
-    queryFn: () => enrollmentsApi.list(),
+    queryFn: () => enrollmentsApi.list().catch(() => []),
     enabled: isAuthenticated,
+    retry: false,
   });
 
-  const hasClasses = enrollments.length > 0;
+  const hasClasses = Array.isArray(enrollments) && enrollments.length > 0;
   const enrolledClassId = enrollments[0]?.course_id || enrollments[0]?.courses?.id;
 
   // 1b. Fetch Class Lessons (ClassSession + Homework + Submission Data)
   const { data: classLessonsData } = useQuery({
     queryKey: ["class-lessons-timeline", enrolledClassId],
-    queryFn: () => lessonsApi.getClassLessons(enrolledClassId!),
+    queryFn: () => lessonsApi.getClassLessons(enrolledClassId!).catch(() => ({ success: false, data: null as any })),
     enabled: !!enrolledClassId,
+    retry: false,
   });
 
   const classLessons = classLessonsData?.data?.lessons || [];

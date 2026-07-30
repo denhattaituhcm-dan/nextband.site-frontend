@@ -50,9 +50,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserProfile = async (authUser: SupabaseAuthUser) => {
     try {
-      // 0. Auto-claim pre-provisioned profile by email
+      // 0. Auto-claim pre-provisioned profile by email (safe failover)
       if (authUser.email) {
-        await classesApi.claimProfileOnLogin(authUser);
+        try {
+          await classesApi.claimProfileOnLogin(authUser);
+        } catch (claimErr) {
+          console.warn("Auto-claim profile warning:", claimErr);
+        }
       }
 
       // 1. Fetch Profile

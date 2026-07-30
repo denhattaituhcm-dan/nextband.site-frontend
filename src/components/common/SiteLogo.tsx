@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
@@ -9,6 +9,7 @@ interface SiteLogoProps {
 }
 
 const getFullLogoUrl = (url: string) => {
+  if (!url) return "";
   if (url.startsWith("/uploads")) {
     const apiUrl =
       import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1";
@@ -26,17 +27,28 @@ export function SiteLogo({
   const { settings } = useSiteSettings();
   const [hasLoadError, setHasLoadError] = useState(false);
 
-  const logoSrc =
-    !hasLoadError && settings?.logoUrl && settings.logoUrl.trim() !== ""
-      ? getFullLogoUrl(settings.logoUrl)
-      : fallbackSrc;
+  const customLogoUrl = settings?.logoUrl?.trim()
+    ? getFullLogoUrl(settings.logoUrl)
+    : "";
+
+  // Reset error state when custom logo URL changes
+  useEffect(() => {
+    setHasLoadError(false);
+  }, [customLogoUrl, fallbackSrc]);
+
+  // Determine final src to render
+  const logoSrc = !hasLoadError && customLogoUrl ? customLogoUrl : fallbackSrc;
 
   return (
     <img
       src={logoSrc}
       alt={alt || `${settings?.siteName || "NextBand"} Logo`}
       className={cn("object-contain", className)}
-      onError={() => setHasLoadError(true)}
+      onError={() => {
+        // If loading custom logo failed, fall back to fallbackSrc.
+        // If fallbackSrc itself fails, do nothing further to avoid infinite loop.
+        setHasLoadError(true);
+      }}
     />
   );
 }
