@@ -24,6 +24,7 @@ import {
   Award,
   Clock,
   CheckCircle2,
+  GraduationCap,
 } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import { authApi } from "@/lib/api";
@@ -112,85 +113,116 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex bg-slate-50/50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 selection:bg-primary/10 selection:text-primary">
-      {/* Left side - 50% Academic / 30% Premium SaaS / 20% Brand DNA */}
-      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-[#090D16] text-slate-100 p-10 xl:p-14 flex-col justify-between relative overflow-hidden border-r border-slate-800/80">
-        {/* Ambient Brand Lighting */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-rose-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
+      {/* Left side - Apple Education + Coursera + Linear Premium Academic Branding Panel */}
+      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-[#090D16] text-slate-100 p-8 xl:p-12 flex-col justify-between relative overflow-hidden border-r border-slate-800/80 animate-in fade-in duration-500">
+        {/* Subtle Soft Blue & Ambient Brand Glow */}
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        {/* 1. Header Brand & Cambridge Badge */}
-        <div className="relative z-10 space-y-4">
+        {/* Header Logo */}
+        <div className="relative z-10 space-y-3">
           <div className="flex items-center justify-between">
-            <SiteLogo alt="ARIS IELTS Logo" className="max-h-12 w-auto object-contain" />
+            <SiteLogo alt="NextBand Logo" className="max-h-11 w-auto object-contain" />
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-[11px] font-medium text-slate-300">
               <Award className="h-3.5 w-3.5 text-amber-400" />
               Cambridge Standard
             </span>
           </div>
-          <p className="text-sm font-medium tracking-tight text-slate-300 leading-relaxed max-w-md">
+          <p className="text-xs font-medium tracking-tight text-slate-400 leading-relaxed max-w-sm">
             {settings.authTagline}
           </p>
         </div>
 
-        {/* 2. Academic Features & Waveform / Progress Visual Elements */}
-        <div className="space-y-4 relative z-10 my-auto w-full max-w-lg">
-          {/* Feature 1: Cambridge Materials & Audio Waveform Element */}
-          <div className="group flex items-start gap-4 p-4.5 rounded-2xl bg-slate-900/80 border border-slate-800/90 shadow-sm hover:shadow-md hover:border-slate-700 transition-all duration-200 backdrop-blur-sm">
-            <div className="rounded-xl bg-gradient-to-br from-rose-500/20 to-sky-500/20 p-3 border border-rose-500/30 shrink-0 group-hover:border-rose-400/50 transition-colors">
-              <Headphones className="h-5 w-5 text-rose-400" />
-            </div>
-            <div className="space-y-2 min-w-0 flex-1">
-              <div>
-                <h3 className="font-semibold text-slate-100 text-sm tracking-tight flex items-center justify-between">
-                  <span>{settings.authFeatureOneTitle}</span>
-                  <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">Audio 100% Real Test</span>
+        {/* Middle Section: Compact Feature Cards & Academic Roadmap */}
+        <div className="space-y-4 relative z-10 my-auto w-full max-w-md">
+          {/* Compact Feature Cards (35% Height Reduced) */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 shadow-sm backdrop-blur-sm">
+              <div className="rounded-lg bg-sky-500/10 p-2 border border-sky-500/20 shrink-0">
+                <GraduationCap className="h-4 w-4 text-sky-400" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-semibold text-slate-200 text-xs tracking-tight truncate">
+                  Learning Workspace
                 </h3>
-                <p className="text-xs text-slate-400 leading-relaxed break-words mt-0.5">
-                  {settings.authFeatureOneDescription}
+                <p className="text-[11px] text-slate-400 truncate">
+                  Structured IELTS learning
                 </p>
               </div>
-              {/* Simulated Audio Waveform & Band Tracker (Academic Visual Asset) */}
-              <div className="flex items-center gap-1.5 pt-1">
-                <div className="flex items-end gap-1 h-4 px-2 py-1 rounded bg-slate-950/60 border border-slate-800 shrink-0">
-                  <span className="w-1 h-2 bg-rose-500/80 rounded-full animate-pulse" />
-                  <span className="w-1 h-3.5 bg-rose-400 rounded-full" />
-                  <span className="w-1 h-1.5 bg-rose-500/80 rounded-full" />
-                  <span className="w-1 h-4 bg-sky-400 rounded-full" />
-                  <span className="w-1 h-2.5 bg-sky-500/80 rounded-full" />
-                  <span className="w-1 h-3 bg-sky-400 rounded-full" />
-                </div>
-                <span className="text-[10px] text-slate-500 font-mono">Listening & Speaking Audio Sync</span>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 shadow-sm backdrop-blur-sm">
+              <div className="rounded-lg bg-indigo-500/10 p-2 border border-indigo-500/20 shrink-0">
+                <TrendingUp className="h-4 w-4 text-indigo-400" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-semibold text-slate-200 text-xs tracking-tight truncate">
+                  Track Progress
+                </h3>
+                <p className="text-[11px] text-slate-400 truncate">
+                  Measure improvement
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Feature 2: Band Target Journey & Progress Chart Bar */}
-          <div className="group flex items-start gap-4 p-4.5 rounded-2xl bg-slate-900/80 border border-slate-800/90 shadow-sm hover:shadow-md hover:border-slate-700 transition-all duration-200 backdrop-blur-sm">
-            <div className="rounded-xl bg-gradient-to-br from-sky-500/20 to-indigo-500/20 p-3 border border-sky-500/30 shrink-0 group-hover:border-sky-400/50 transition-colors">
-              <TrendingUp className="h-5 w-5 text-sky-400" />
-            </div>
-            <div className="space-y-2 min-w-0 flex-1">
+          {/* Academic Roadmap Card (Glassmorphism + Vertical Timeline Starter -> Leader) */}
+          <div className="p-4 rounded-2xl bg-slate-900/40 border border-slate-800/80 shadow-sm backdrop-blur-md relative overflow-hidden">
+            <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-800/60">
               <div>
-                <h3 className="font-semibold text-slate-100 text-sm tracking-tight flex items-center justify-between">
-                  <span>{settings.authFeatureTwoTitle}</span>
-                  <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">Target Band 7.0+</span>
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed break-words mt-0.5">
-                  {settings.authFeatureTwoDescription}
-                </p>
+                <h4 className="font-semibold text-slate-200 text-xs tracking-tight">Academic Roadmap</h4>
+                <p className="text-[10px] text-slate-400">From Starter to Leader</p>
               </div>
-              {/* Simulated Progress Analytics Bar (Academic Visual Asset) */}
-              <div className="w-full bg-slate-950/80 rounded-full h-2 overflow-hidden p-0.5 border border-slate-800 flex items-center">
-                <div className="bg-gradient-to-r from-sky-500 to-rose-500 h-1.5 rounded-full w-[78%] transition-all" />
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">5 Stages</span>
+            </div>
+
+            {/* Vertical Roadmap Timeline */}
+            <div className="relative pl-5 space-y-2.5 my-1">
+              {/* Thin Glowing Vertical Line */}
+              <div className="absolute left-[7px] top-1 bottom-1 w-[1.5px] bg-gradient-to-b from-sky-400 via-indigo-500 to-slate-700 shadow-[0_0_8px_rgba(56,189,248,0.5)]" />
+
+              {/* Stage 1: Leader (Top) */}
+              <div className="relative flex items-center justify-between text-xs">
+                <div className="absolute -left-[17px] w-2.5 h-2.5 rounded-full bg-sky-400 ring-2 ring-sky-500/30 shadow-[0_0_6px_rgba(56,189,248,0.8)]" />
+                <span className="font-semibold text-slate-100">Leader</span>
+                <span className="text-[11px] font-mono text-sky-400 font-medium">Band 6.5+</span>
+              </div>
+
+              {/* Stage 2: Master */}
+              <div className="relative flex items-center justify-between text-xs">
+                <div className="absolute -left-[17px] w-2.5 h-2.5 rounded-full bg-indigo-400 border border-slate-900" />
+                <span className="font-medium text-slate-300">Master</span>
+                <span className="text-[11px] font-mono text-indigo-400">Band 6.0</span>
+              </div>
+
+              {/* Stage 3: Builder */}
+              <div className="relative flex items-center justify-between text-xs">
+                <div className="absolute -left-[17px] w-2.5 h-2.5 rounded-full bg-slate-500 border border-slate-900" />
+                <span className="font-medium text-slate-300">Builder</span>
+                <span className="text-[11px] font-mono text-slate-400">Band 5.0</span>
+              </div>
+
+              {/* Stage 4: Dreamer */}
+              <div className="relative flex items-center justify-between text-xs">
+                <div className="absolute -left-[17px] w-2.5 h-2.5 rounded-full bg-slate-600 border border-slate-900" />
+                <span className="font-medium text-slate-400">Dreamer</span>
+                <span className="text-[11px] font-mono text-slate-500">Band 4.0</span>
+              </div>
+
+              {/* Stage 5: Starter (Bottom) */}
+              <div className="relative flex items-center justify-between text-xs">
+                <div className="absolute -left-[17px] w-2.5 h-2.5 rounded-full bg-slate-700 border border-slate-900" />
+                <span className="font-medium text-slate-400">Starter</span>
+                <span className="text-[11px] font-mono text-slate-500">Band 3.0</span>
               </div>
             </div>
           </div>
 
-          {/* 3. Social Proof & Academic Support Link */}
-          <div className="pt-2 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2 text-xs text-slate-400">
-              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-              <span><strong className="text-slate-200 font-semibold">5,000+</strong> lượt bài tập đã hoàn thành</span>
+          {/* Social Proof & Zalo Link */}
+          <div className="flex items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-1.5 text-slate-400">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+              <span className="text-[11px]"><strong className="text-slate-200 font-medium">5,000+</strong> lessons completed</span>
             </div>
 
             {settings.zaloLink && (
@@ -198,10 +230,10 @@ export default function Auth() {
                 href={settings.zaloLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-800 text-sky-400 border border-sky-500/30 text-xs font-medium transition-colors"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/90 hover:bg-slate-800 text-sky-400 border border-sky-500/30 text-[11px] font-medium transition-colors"
               >
-                <Clock className="h-3.5 w-3.5 text-sky-400" />
-                <span>Academic Support</span>
+                <MessageCircle className="h-3 w-3 text-sky-400" />
+                <span>Support</span>
               </a>
             )}
           </div>
@@ -209,7 +241,7 @@ export default function Auth() {
 
         {/* Footer */}
         <p className="text-[11px] text-slate-500 relative z-10 font-normal tracking-wide">
-          © {new Date().getFullYear()} ARIS IELTS. All rights reserved.
+          © {new Date().getFullYear()} NextBand. All rights reserved.
         </p>
       </div>
 
