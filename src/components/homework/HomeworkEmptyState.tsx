@@ -158,7 +158,7 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
                 8.0
               </div>
               <div>
-                <div className="font-bold text-xs text-slate-900">Thầy Lưu Văn Đăng</div>
+                <div className="font-bold text-xs text-slate-900">Thầy Lưu Văn Đang</div>
                 <div className="text-[11px] text-blue-600 font-semibold">IELTS Overall 8.0 (Verified TRF)</div>
                 <div className="text-[10px] text-slate-400">Giảng viên Chủ nhiệm ARIS IELTS</div>
               </div>
