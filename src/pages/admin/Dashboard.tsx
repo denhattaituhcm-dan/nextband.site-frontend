@@ -27,7 +27,8 @@ import { cn } from "@/lib/utils";
 export default function AdminDashboard() {
   const { data: stats } = useQuery({
     queryKey: ["admin-stats"],
-    queryFn: () => statsApi.getAdminStats(),
+    queryFn: () => statsApi.getAdminStats().catch(() => ({ courses: 0, users: 0, exams: 0 })),
+    retry: false,
   });
 
   const currentYear = new Date().getFullYear();

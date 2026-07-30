@@ -22,8 +22,9 @@ export function ClientHeader() {
   // Fetch student enrollments to evaluate active class name
   const { data: enrollments = [] } = useQuery({
     queryKey: ["my-enrollments-header"],
-    queryFn: () => enrollmentsApi.list(),
+    queryFn: () => enrollmentsApi.list().catch(() => []),
     enabled: isAuthenticated,
+    retry: false,
   });
 
   const hasClasses = enrollments.length > 0;
