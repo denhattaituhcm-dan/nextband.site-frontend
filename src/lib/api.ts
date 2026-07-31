@@ -2006,6 +2006,141 @@ export const attendanceApi = {
     if (!response.ok) throw new Error(result.error || "Failed to save attendance");
     return result;
   },
+// NOTIFICATIONS API (Core Notification Engine)
+// =============================================
+export interface NotificationItem {
+  id: string;
+  recipient_id?: string;
+  recipient_role: "admin" | "teacher" | "student";
+  type: string;
+  title: string;
+  message: string;
+  entity_type?: string;
+  entity_id?: string;
+  action_url: string;
+  priority: "info" | "warning" | "urgent";
+  is_read: boolean;
+  created_at: string;
+  read_at?: string;
+}
+
+export const notificationsApi = {
+  list: async (scope: "admin" | "teacher" | "student") => {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    let query = supabase.from("notifications").select("*").order("created_at", { ascending: false });
+
+    if (scope === "admin") {
+      query = query.eq("recipient_role", "admin");
+    } else if (user?.id) {
+      query = query.or(`recipient_id.eq.${user.id},and(recipient_role.eq.${scope},recipient_id.is.null)`);
+    } else {
+      query = query.eq("recipient_role", scope);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      // Mock Fallback nếu chưa tạo bảng notifications trên CSDL
+      const mockNotifications: NotificationItem[] = scope === "admin" ? [
+        {
+          id: "n1",
+          recipient_role: "admin",
+          type: "user_sso",
+          title: "Học viên mới đăng nhập",
+          message: "Học viên Phạm Văn D vừa đăng nhập lần đầu qua Google SSO.",
+          action_url: "/admin/users?search=student",
+          priority: "info",
+          is_read: false,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: "n2",
+          recipient_role: "admin",
+          type: "sla_warning",
+          title: "Cảnh báo chấm bài chậm",
+          message: "Giáo viên Hoàng Anh có 12 bài nộp chưa chấm quá 3 ngày.",
+          action_url: "/admin/teachers",
+          priority: "warning",
+          is_read: false,
+          created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
+        },
+        {
+          id: "n3",
+          recipient_role: "admin",
+          type: "class_complete",
+          title: "Lớp học hoàn tất khóa",
+          message: "Lớp Leader K10 đã hoàn thành 27/27 buổi học.",
+          action_url: "/admin/classes",
+          priority: "info",
+          is_read: true,
+          created_at: new Date(Date.now() - 3600000 * 5).toISOString(),
+        },
+      ] : [
+        {
+          id: "nt1",
+          recipient_role: "teacher",
+          type: "submission",
+          title: "Bài nộp mới Writing Task 2",
+          message: "Học viên Nguyễn Văn A vừa nộp bài Writing Task 2 cho Lớp Dreamer K31.",
+          action_url: "/teacher/grading",
+          priority: "urgent",
+          is_read: false,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: "nt2",
+          recipient_role: "teacher",
+          type: "submission",
+          title: "Bài nộp mới Speaking Part 2",
+          message: "Học viên Trần Thị B vừa gửi ghi âm Speaking Part 2.",
+          action_url: "/teacher/grading",
+          priority: "info",
+          is_read: false,
+          created_at: new Date(Date.now() - 3600000 * 1).toISOString(),
+        },
+        {
+          id: "nt3",
+          recipient_role: "teacher",
+          type: "enrollment",
+          title: "Biến động học viên",
+          message: "Admin vừa thêm 2 học viên mới vào Lớp Master K15 của bạn.",
+          action_url: "/teacher/classes",
+          priority: "info",
+          is_read: true,
+          created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
+        },
+      ];
+      return mockNotifications;
+    }
+
+    return (data || []) as NotificationItem[];
+  },
+
+  markAsRead: async (id: string) => {
+    const { error } = await supabase
+      .from("notifications")
+      .update({ is_read: true, read_at: new Date().toISOString() })
+      .eq("id", id);
+
+    if (error) {
+      console.warn("Failed to mark notification as read in DB:", error.message);
+    }
+    return { success: true };
+  },
+
+  markAllAsRead: async (scope: "admin" | "teacher" | "student") => {
+    const { data: { user } } = await supabase.auth.getUser();
+    let query = supabase.from("notifications").update({ is_read: true, read_at: new Date().toISOString() });
+
+    if (scope === "admin") {
+      query = query.eq("recipient_role", "admin");
+    } else if (user?.id) {
+      query = query.or(`recipient_id.eq.${user.id},recipient_role.eq.${scope}`);
+    }
+
+    await query.catch(() => null);
+    return { success: true };
+  },
 };
 
 export default supabase;

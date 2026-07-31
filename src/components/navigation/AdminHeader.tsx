@@ -13,6 +13,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 
+import { NotificationBell } from './NotificationBell';
+
 export function AdminHeader() {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
@@ -33,7 +35,8 @@ export function AdminHeader() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <NotificationBell scope="admin" />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">

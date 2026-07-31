@@ -163,13 +163,27 @@ ALTER TABLE public.highlights ADD CONSTRAINT highlights_student_id_fkey FOREIGN 
 
 -- profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can view profiles with proper access" ON public.profiles;
 CREATE POLICY "Users can view profiles with proper access" ON public.profiles FOR SELECT USING ((auth.uid() = user_id) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'teacher'::app_role));
-CREATE POLICY "Users can insert own profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users and admins can insert profiles" ON public.profiles;
+CREATE POLICY "Users and admins can insert profiles" ON public.profiles FOR INSERT WITH CHECK ((auth.uid() = user_id) OR has_role(auth.uid(), 'admin'::app_role));
+
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users and admins can update profiles" ON public.profiles;
+CREATE POLICY "Users and admins can update profiles" ON public.profiles FOR UPDATE USING ((auth.uid() = user_id) OR has_role(auth.uid(), 'admin'::app_role));
+
+DROP POLICY IF EXISTS "Admins can delete profiles" ON public.profiles;
+CREATE POLICY "Admins can delete profiles" ON public.profiles FOR DELETE USING (has_role(auth.uid(), 'admin'::app_role));
 
 -- user_roles
 ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can view own roles" ON public.user_roles FOR SELECT USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can view own roles" ON public.user_roles;
+CREATE POLICY "Users can view own roles or admins can view all" ON public.user_roles FOR SELECT USING ((auth.uid() = user_id) OR has_role(auth.uid(), 'admin'::app_role));
+
+DROP POLICY IF EXISTS "Admins can manage user roles" ON public.user_roles;
+CREATE POLICY "Admins can manage user roles" ON public.user_roles FOR ALL USING (has_role(auth.uid(), 'admin'::app_role));
 
 -- courses
 ALTER TABLE public.courses ENABLE ROW LEVEL SECURITY;

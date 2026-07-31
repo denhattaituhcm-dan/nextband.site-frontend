@@ -15,8 +15,10 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { enrollmentsApi } from "@/lib/api";
 
+import { NotificationBell } from "./NotificationBell";
+
 export function ClientHeader() {
-  const { user, signOut, isAdmin, isAuthenticated } = useAuth();
+  const { user, signOut, isAdmin, isAuthenticated, isTeacher } = useAuth();
   const navigate = useNavigate();
 
   // Fetch student enrollments to evaluate active class name
@@ -58,7 +60,8 @@ export function ClientHeader() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <NotificationBell scope={isTeacher ? "teacher" : "student"} />
           {isAdmin && (
             <Button
               variant="outline"
