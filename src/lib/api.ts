@@ -1151,8 +1151,23 @@ export const usersApi = {
   },
 
   create: async (user: any) => {
-    const newId = crypto.randomUUID();
     const targetRole = user.role || "student";
+
+    // 1. Thu nghiem goi RPC admin_create_user (chay duoi quyen SECURITY DEFINER de vuot qua RLS)
+    const { data: rpcData, error: rpcError } = await supabase.rpc("admin_create_user", {
+      p_email: user.email,
+      p_full_name: user.fullName || null,
+      p_phone: user.phone || null,
+      p_gender: user.gender || null,
+      p_role: targetRole,
+    });
+
+    if (!rpcError && rpcData) {
+      return { ...rpcData, role: targetRole, roles: [targetRole] };
+    }
+
+    // 2. Direct table fallback if RPC is not present
+    const newId = crypto.randomUUID();
     
     // Check if profile with email already exists
     const { data: existingProfile } = await supabase

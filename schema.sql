@@ -281,6 +281,54 @@ BEGIN
 END;
 $$;
 
+CREATE OR REPLACE FUNCTION public.admin_create_user(
+  p_email text,
+  p_full_name text DEFAULT NULL,
+  p_phone text DEFAULT NULL,
+  p_gender text DEFAULT NULL,
+  p_role text DEFAULT 'student'
+)
+RETURNS json
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_new_id uuid := gen_random_uuid();
+  v_existing_id uuid;
+  v_result json;
+BEGIN
+  SELECT id INTO v_existing_id FROM public.profiles WHERE email = p_email LIMIT 1;
+  
+  IF v_existing_id IS NOT NULL THEN
+    UPDATE public.profiles
+    SET full_name = COALESCE(p_full_name, full_name),
+        phone = COALESCE(p_phone, phone),
+        gender = COALESCE(p_gender, gender),
+        is_active = true,
+        updated_at = now()
+    WHERE id = v_existing_id;
+
+    INSERT INTO public.user_roles (user_id, role)
+    VALUES (v_existing_id, p_role::app_role)
+    ON CONFLICT (user_id, role) DO NOTHING;
+
+    SELECT row_to_json(p) INTO v_result FROM public.profiles p WHERE id = v_existing_id;
+    RETURN v_result;
+  END IF;
+
+  INSERT INTO public.profiles (id, user_id, email, full_name, phone, gender, is_active)
+  VALUES (v_new_id, v_new_id, p_email, p_full_name, p_phone, p_gender, true);
+
+  INSERT INTO public.user_roles (user_id, role)
+  VALUES (v_new_id, p_role::app_role)
+  ON CONFLICT DO NOTHING;
+
+  SELECT row_to_json(p) INTO v_result FROM public.profiles p WHERE id = v_new_id;
+  RETURN v_result;
+END;
+$$;
+
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
 RETURNS trigger LANGUAGE plpgsql SET search_path TO 'public' AS $$
 BEGIN
