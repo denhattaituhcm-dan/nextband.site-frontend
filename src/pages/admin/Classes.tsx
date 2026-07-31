@@ -112,7 +112,15 @@ export default function AdminClasses() {
     queryFn: () => coursesApi.list({ limit: 100 }),
   });
 
-  const courses = coursesData?.data || [];
+  const defaultArisCourses = [
+    { id: "c1000000-0000-0000-0000-000000000007", title: "STARTER", level: "Band 3.0 (27 buổi)" },
+    { id: "c1000000-0000-0000-0000-000000000001", title: "DREAMER", level: "Band 4.0 (27 buổi)" },
+    { id: "c1000000-0000-0000-0000-000000000002", title: "BUILDER", level: "Band 5.0 (27 buổi)" },
+    { id: "c1000000-0000-0000-0000-000000000003", title: "MASTER", level: "Band 6.0 (27 buổi)" },
+    { id: "c1000000-0000-0000-0000-000000000008", title: "LEADER", level: "Band 7.0+ (30 buổi)" },
+  ];
+
+  const courses = (coursesData?.data && coursesData.data.length > 0) ? coursesData.data : defaultArisCourses;
 
   // Fetch teachers for the dropdown
   const { data: teachersData } = useQuery({
