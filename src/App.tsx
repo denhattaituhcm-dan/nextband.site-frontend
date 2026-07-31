@@ -285,10 +285,6 @@ const App = () => (
                 }
               />
               <Route
-                path="/admin/teachers"
-                element={<Navigate to="/admin/users?role=teacher" replace />}
-              />
-              <Route
                 path="/admin/teacher-workspace"
                 element={
                   <ProtectedRoute requiredRoles={["admin", "teacher"]}>

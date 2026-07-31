@@ -187,10 +187,6 @@ export const authApi = {
     if (error) throw error;
     return { success: true };
   },
-
-  verifyPassword: async (password: string) => {
-    return { valid: true };
-  },
 };
 
 // =============================================
@@ -1332,12 +1328,6 @@ export const enrollmentsApi = {
   },
 
   delete: async (id: string) => {
-    const { error } = await supabase.from("enrollments").delete().eq("id", id);
-    if (error) throw error;
-    return { success: true };
-  },
-
-  unenroll: async (id: string) => {
     const { error } = await supabase.from("enrollments").delete().eq("id", id);
     if (error) throw error;
     return { success: true };

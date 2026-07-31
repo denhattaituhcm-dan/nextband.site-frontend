@@ -165,22 +165,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    const isDevAuthEnabled =
+      import.meta.env.DEV &&
+      import.meta.env.VITE_ENABLE_DEV_AUTH === "true";
+
+    if (isDevAuthEnabled) {
+      try {
+        const isTeacher = email.includes("teacher");
+        const mockUser: User = {
+          id: isTeacher ? "00000000-0000-0000-0000-000000000002" : "00000000-0000-0000-0000-000000000001",
+          email: email,
+          fullName: isTeacher ? "Giáo viên ARIS IELTS" : "Admin User (ARIS IELTS)",
+          avatarUrl: null,
+          roles: isTeacher ? ["teacher", "student"] : ["admin", "teacher", "student"],
+        };
+        localStorage.setItem("nextband_mock_user", JSON.stringify(mockUser));
+        setUser(mockUser);
+        setToken("mock-demo-token-12345");
+        return { error: null };
+      } catch (error: any) {
+        return { error: error as Error };
+      }
+    }
+
     try {
-      // Direct Admin & Test Bypass for local review
-      const isTeacher = email.includes("teacher");
-      const mockUser: User = {
-        id: isTeacher ? "00000000-0000-0000-0000-000000000002" : "00000000-0000-0000-0000-000000000001",
-        email: email,
-        fullName: isTeacher ? "Giáo viên ARIS IELTS" : "Admin User (ARIS IELTS)",
-        avatarUrl: null,
-        roles: isTeacher ? ["teacher", "student"] : ["admin", "teacher", "student"],
-      };
-      localStorage.setItem("nextband_mock_user", JSON.stringify(mockUser));
-      setUser(mockUser);
-      setToken("mock-demo-token-12345");
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) return { error };
+
+      if (data.user) {
+        setToken(data.session?.access_token || null);
+        await fetchUserProfile(data.user);
+      }
+
       return { error: null };
     } catch (error: any) {
-      return { error: null };
+      return { error: error as Error };
     }
   };
 

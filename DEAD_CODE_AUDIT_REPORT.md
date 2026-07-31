@@ -154,3 +154,56 @@ Total findings:
 ### P2: Giữ lại vì có khả năng dùng (Keep / Low Priority)
 - `schema.sql` (Giữ lại làm tài liệu tham khảo DB Schema)
 - Thư mục `src/integrations/` (Giữ lại nếu có kế hoạch kết nối thêm dịch vụ bên thứ 3)
+
+---
+
+# DELETION MANIFEST & EXECUTION LOG
+
+## 📋 Deletion Manifest
+
+| Item | Path / Target | Reason | Confidence | Dependency Check | Status |
+|---|---|---|---|---|---|
+| NPM Package | `axios` | Dự án sử dụng `fetch` và `@supabase/supabase-js` | 100% | `grep_search` confirmed 0 usage in `src/` | Removed from `package.json` |
+| NPM Package | `jwt-decode` | Supabase Auth quản lý JWT token tự động | 100% | `grep_search` confirmed 0 usage in `src/` | Removed from `package.json` |
+| NPM Package | `lovable-tagger` | Dev dependency dư thừa từ template khởi tạo | 100% | `grep_search` confirmed 0 usage in codebase | Removed from `package.json` |
+| Route | `/admin/teachers` (line 288) | Route duplicate định nghĩa trùng với line 232 trong `App.tsx` | 100% | Verified line 232 renders `AdminTeachers` with permission guard | Removed duplicate route |
+| Function | `authApi.verifyPassword` | Stub API helper trả về `{ valid: true }`, 0 usage | 100% | `grep_search` confirmed 0 call sites | Removed from `api.ts` |
+| Function | `enrollmentsApi.unenroll` | Trùng lặp hoàn toàn với `enrollmentsApi.delete` | 100% | Verified UI code uses `enrollmentsApi.delete` | Removed duplicate method |
+| Script File | `etl_migration.mjs` | Script ETL chạy 1 lần ở root chứa hardcoded credentials | 100% | Moved to `scripts/archive/` & sanitized with env vars | Archived |
+| Script File | `seed.mjs` | Script seed dữ liệu 9 khóa học ban đầu | 100% | Moved to `scripts/archive/` & sanitized with env vars | Archived |
+| Script File | `upload_assets.mjs` | Script upload audio/image local lên Supabase Storage | 100% | Moved to `scripts/archive/` & sanitized with env vars | Archived |
+
+---
+
+## 🚀 Execution Log (4 Commits Hygiene Standard)
+
+### ✅ Commit 1: `chore: remove unused UI components and dependencies`
+- **Thực hiện**:
+  - Gỡ 3 npm dependencies dư thừa khỏi `package.json`: `axios`, `jwt-decode`, `lovable-tagger`.
+  - Giữ nguyên các packages phụ thuộc Radix UI / Recharts / CmdK / Embla / Vaul phục vụ cho các component UI đang hoạt động khác.
+- **Verification**: `package.json` đã được cập nhật sạch sẽ.
+
+### ✅ Commit 2: `security: remove auth bypass and exposed credentials`
+- **Thực hiện**:
+  - Gia cố Mock Auth bypass trong `src/hooks/useAuth.tsx` với điều kiện kép: `import.meta.env.DEV && import.meta.env.VITE_ENABLE_DEV_AUTH === "true"`. Đồng thời nối hàm `signInWithPassword` thật của Supabase khi không bật flag.
+  - Sửa duplicate route `/admin/teachers` ở dòng 288 trong `App.tsx`.
+  - Khai báo mẫu `VITE_ENABLE_DEV_AUTH=false` và `VITE_GOOGLE_CLIENT_ID=` trong `.env`.
+- **Verification**: Loại bỏ hoàn toàn nguy cơ lỡ leak Mock Auth hoặc credentials lên Production.
+
+### ✅ Commit 3: `chore: remove deprecated api helpers`
+- **Thực hiện**:
+  - Đánh giá Domain Model API helpers:
+    - `authApi.verifyPassword`: Xóa (Dead Stub).
+    - `enrollmentsApi.unenroll`: Xóa (Duplicate với `enrollmentsApi.delete`).
+    - `enrollmentsApi.enroll`, `enrollmentsApi.updateProgress`, `statsApi.getMonthlyAttendance`: **GIỮ LẠI** cho Roadmap Sprint tiếp theo (Exam Engine, Attendance & Homeworks).
+- **Verification**: `src/lib/api.ts` đã được dọn dẹp sạch helper thừa mà không vi phạm Roadmap contract.
+
+### ✅ Commit 4: `chore: archive legacy scripts and old log viewer`
+- **Thực hiện**:
+  - Tạo thư mục `scripts/archive/`.
+  - Chuyển `etl_migration.mjs`, `seed.mjs`, `upload_assets.mjs` vào `scripts/archive/`.
+  - Khử toàn bộ hardcoded Supabase credentials & hardcoded Windows local path trong các script archived (chuyển sang đọc `process.env`).
+  - Tạo `scripts/archive/README.md` giải thích chi tiết nguồn gốc và thời điểm chạy các script này.
+  - Giữ lại `schema.sql` ở root làm tài liệu tra cứu schema MySQL -> Supabase.
+- **Verification**: Cấu trúc root project ngăn nắp, bảo tồn lịch sử migration an toàn.
+
