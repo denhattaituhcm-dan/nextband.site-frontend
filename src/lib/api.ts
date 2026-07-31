@@ -2006,6 +2006,8 @@ export const attendanceApi = {
     if (!response.ok) throw new Error(result.error || "Failed to save attendance");
     return result;
   },
+};
+
 // NOTIFICATIONS API (Core Notification Engine)
 // =============================================
 export interface NotificationItem {
