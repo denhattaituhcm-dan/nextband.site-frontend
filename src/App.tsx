@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
@@ -38,7 +38,6 @@ import AdminSubmissionGrade from "@/pages/admin/SubmissionGrade";
 import AdminLogViewer from "@/pages/admin/LogViewer";
 import AdminClasses from "@/pages/admin/Classes";
 import AdminClassEdit from "@/pages/admin/ClassEdit";
-import AdminTeachers from "@/pages/admin/Teachers";
 import AdminSettings from "@/pages/admin/Settings";
 import TeacherWorkspace from "@/pages/admin/TeacherWorkspace";
 import ClassAttendancePage from "@/pages/admin/ClassAttendancePage";
