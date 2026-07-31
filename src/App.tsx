@@ -33,6 +33,8 @@ import AdminExamCreate from "@/pages/admin/ExamCreate";
 import AdminExamEdit from "@/pages/admin/ExamEdit";
 import AdminSectionEdit from "@/pages/admin/SectionEdit";
 import AdminUsers from "@/pages/admin/Users";
+import AdminTeachers from "@/pages/admin/Teachers";
+import AdminAdmins from "@/pages/admin/Admins";
 import AdminCheckAttempt from "@/pages/admin/CheckAttempt";
 import AdminSubmissionGrade from "@/pages/admin/SubmissionGrade";
 import AdminLogViewer from "@/pages/admin/LogViewer";
@@ -223,6 +225,22 @@ const App = () => (
                 element={
                   <ProtectedRoute requiredRoles={["admin"]}>
                     <AdminUsers />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/teachers"
+                element={
+                  <ProtectedRoute requiredRoles={["admin"]}>
+                    <AdminTeachers />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/admins"
+                element={
+                  <ProtectedRoute requiredRoles={["admin"]}>
+                    <AdminAdmins />
                   </ProtectedRoute>
                 }
               />

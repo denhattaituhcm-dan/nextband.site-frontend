@@ -64,13 +64,18 @@ const adminItems = [
   },
   {
     title: "Học viên",
-    url: "/admin/users",
+    url: "/admin/users?role=student",
     icon: Users,
   },
   {
     title: "Giáo viên",
     url: "/admin/teachers",
     icon: GraduationCap,
+  },
+  {
+    title: "Quản trị viên",
+    url: "/admin/admins",
+    icon: ShieldCheck,
   },
   {
     title: "Cài đặt",

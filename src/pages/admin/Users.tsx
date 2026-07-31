@@ -235,15 +235,15 @@ export default function AdminUsers() {
             <Users className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">Quản lý người dùng</h1>
+            <h1 className="text-2xl font-bold">Quản lý Học viên</h1>
             <p className="text-sm text-muted-foreground">
-              {total} người dùng trong hệ thống
+              {total} học viên trong hệ thống
             </p>
           </div>
         </div>
         <Button onClick={openCreate}>
           <Plus className="mr-2 h-4 w-4" />
-          Thêm người dùng
+          Thêm học viên
         </Button>
       </div>
 
@@ -491,12 +491,29 @@ export default function AdminUsers() {
                   Thông tin phụ huynh (Dành cho Học viên)
                 </p>
                 <div className="grid grid-cols-2 gap-3">
-                      setForm({ ...form, parentPhone: e.target.value })
-                    }
-                  />
+                  <div className="space-y-2">
+                    <Label>Tên phụ huynh</Label>
+                    <Input
+                      placeholder="Nguyễn Văn B"
+                      value={form.parentName}
+                      onChange={(e) =>
+                        setForm({ ...form, parentName: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>SĐT phụ huynh</Label>
+                    <Input
+                      placeholder="0901234567"
+                      value={form.parentPhone}
+                      onChange={(e) =>
+                        setForm({ ...form, parentPhone: e.target.value })
+                      }
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
