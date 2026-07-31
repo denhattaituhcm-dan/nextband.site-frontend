@@ -263,7 +263,7 @@ export default function TeacherWorkspace() {
           studentId: currentStudent.id,
           score: parseFloat(calculatedOverall),
           feedback,
-        }).catch(() => null);
+        });
 
         toast({
           title: "Đã trả bài thành công 🎉",

@@ -572,9 +572,6 @@ export const examsApi = {
     durationMinutes?: number;
     isPublished?: boolean;
     isActive?: boolean;
-    isLocked?: boolean;
-    isOpen?: boolean;
-    maxParticipants?: number | null;
   }) => {
     const { data: newExam, error } = await supabase
       .from("exams")
@@ -586,9 +583,6 @@ export const examsApi = {
         duration_minutes: exam.durationMinutes ?? 60,
         is_published: exam.isPublished ?? false,
         is_active: exam.isActive ?? true,
-        is_locked: exam.isLocked ?? false,
-        is_open: exam.isOpen ?? false,
-        max_participants: exam.maxParticipants ?? null,
       })
       .select()
       .single();
@@ -604,9 +598,10 @@ export const examsApi = {
       { section_type: "general", title: "General", order_index: 4 },
     ];
 
-    await supabase.from("exam_sections").insert(
+    const { error: sectionsError } = await supabase.from("exam_sections").insert(
       defaultSections.map((s) => ({ ...s, exam_id: newExam.id }))
     );
+    if (sectionsError) console.warn("[EXAM_SECTIONS_WARNING]", sectionsError);
 
     return newExam;
   },
@@ -618,26 +613,21 @@ export const examsApi = {
       description: string;
       isPublished: boolean;
       isActive: boolean;
-      isLocked: boolean;
       week: number;
       durationMinutes: number;
-      isOpen: boolean;
-      maxParticipants: number | null;
     }>
   ) => {
+    const updatePayload: any = {};
+    if (exam.title !== undefined) updatePayload.title = exam.title;
+    if (exam.description !== undefined) updatePayload.description = exam.description;
+    if (exam.isPublished !== undefined) updatePayload.is_published = exam.isPublished;
+    if (exam.isActive !== undefined) updatePayload.is_active = exam.isActive;
+    if (exam.week !== undefined) updatePayload.week = exam.week;
+    if (exam.durationMinutes !== undefined) updatePayload.duration_minutes = exam.durationMinutes;
+
     const { data, error } = await supabase
       .from("exams")
-      .update({
-        title: exam.title,
-        description: exam.description,
-        is_published: exam.isPublished,
-        is_active: exam.isActive,
-        is_locked: exam.isLocked,
-        week: exam.week,
-        duration_minutes: exam.durationMinutes,
-        is_open: exam.isOpen,
-        max_participants: exam.maxParticipants,
-      })
+      .update(updatePayload)
       .eq("id", id)
       .select()
       .single();
@@ -2121,7 +2111,8 @@ export const notificationsApi = {
       query = query.or(`recipient_id.eq.${user.id},recipient_role.eq.${scope}`);
     }
 
-    await query.catch(() => null);
+    const { error } = await query;
+    if (error) console.warn("markAllAsRead warning:", error);
     return { success: true };
   },
 };

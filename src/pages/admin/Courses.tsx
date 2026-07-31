@@ -20,8 +20,6 @@ import {
   Trash2,
   ArrowUpDown,
   BookOpen,
-  Lock,
-  Unlock,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -105,22 +103,6 @@ export default function AdminCourses() {
     },
   });
 
-  const lockMutation = useMutation({
-    mutationFn: async ({ id, isLocked }: { id: string; isLocked: boolean }) =>
-      coursesApi.update(id, { isLocked }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-courses"] });
-      toast({ title: "Đã cập nhật trạng thái khóa" });
-    },
-    onError: (err: any) => {
-      toast({
-        title: "Lỗi",
-        description:
-          err.response?.data?.error || "Không thể cập nhật trạng thái khóa",
-        variant: "destructive",
-      });
-    },
-  });
 
   const toggleSort = (field: SortField) => {
     if (sortField === field) {
@@ -195,8 +177,7 @@ export default function AdminCourses() {
               <SortHeader field="level">Cấp độ</SortHeader>
               <TableHead>Xuất bản</TableHead>
               <TableHead>Kích hoạt</TableHead>
-              <TableHead>Khóa</TableHead>
-              <TableHead className="w-[240px]">Hành động</TableHead>
+              <TableHead className="w-[180px]">Hành động</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -230,45 +211,11 @@ export default function AdminCourses() {
                   <TableCell>
                     <Switch
                       checked={(course.is_active ?? course.isActive) ?? true}
-                      disabled={!!(course.is_locked ?? course.isLocked)}
                       className="data-[state=checked]:bg-emerald-600"
                       onCheckedChange={(checked) =>
-                        toggleMutation.mutate({
-                          id: course.id,
-                          isActive: checked,
-                        })
+                        toggleMutation.mutate({ id: course.id, isActive: checked })
                       }
                     />
-                  </TableCell>
-                  <TableCell>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-slate-400 hover:text-slate-600"
-                            onClick={() =>
-                              lockMutation.mutate({
-                                id: course.id,
-                                isLocked: !(course.is_locked ?? course.isLocked),
-                              })
-                            }
-                            disabled={lockMutation.isPending}
-                            aria-label={(course.is_locked ?? course.isLocked) ? "Mở khóa" : "Khóa"}
-                          >
-                            {(course.is_locked ?? course.isLocked) ? (
-                              <Unlock className="h-4 w-4 text-amber-600" />
-                            ) : (
-                              <Lock className="h-4 w-4 text-slate-400" />
-                            )}
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          {(course.is_locked ?? course.isLocked) ? "Mở khóa" : "Khóa"}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -297,12 +244,11 @@ export default function AdminCourses() {
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-100 hover:text-rose-600 border border-rose-100"
-                              disabled={!!(course.is_locked ?? course.isLocked)}
+                              disabled={false}
                               onClick={() =>
                                 setDeleteCourse({
                                   id: course.id,
                                   title: course.title,
-                                  isLocked: !!(course.is_locked ?? course.isLocked),
                                 })
                               }
                             >
