@@ -289,7 +289,6 @@ export const coursesApi = {
     thumbnailUrl?: string;
     isPublished?: boolean;
     isActive?: boolean;
-    isLocked?: boolean;
     slug?: string;
   }) => {
     const slug =
@@ -304,7 +303,6 @@ export const coursesApi = {
         thumbnail_url: course.thumbnailUrl,
         is_published: course.isPublished ?? false,
         is_active: course.isActive ?? true,
-        is_locked: course.isLocked ?? false,
         slug,
       })
       .select()
@@ -323,22 +321,21 @@ export const coursesApi = {
       thumbnailUrl: string;
       isPublished: boolean;
       isActive: boolean;
-      isLocked: boolean;
       slug: string;
     }>
   ) => {
+    const updatePayload: any = {};
+    if (course.title !== undefined) updatePayload.title = course.title;
+    if (course.description !== undefined) updatePayload.description = course.description;
+    if (course.level !== undefined) updatePayload.level = course.level;
+    if (course.thumbnailUrl !== undefined) updatePayload.thumbnail_url = course.thumbnailUrl;
+    if (course.isPublished !== undefined) updatePayload.is_published = course.isPublished;
+    if (course.isActive !== undefined) updatePayload.is_active = course.isActive;
+    if (course.slug !== undefined) updatePayload.slug = course.slug;
+
     const { data, error } = await supabase
       .from("courses")
-      .update({
-        title: course.title,
-        description: course.description,
-        level: course.level,
-        thumbnail_url: course.thumbnailUrl,
-        is_published: course.isPublished,
-        is_active: course.isActive,
-        is_locked: course.isLocked,
-        slug: course.slug,
-      })
+      .update(updatePayload)
       .eq("id", id)
       .select()
       .single();
@@ -1087,50 +1084,65 @@ export const usersApi = {
   }) => {
     const page = params?.page || 1;
     const limit = params?.limit || 10;
+    const hasRoleFilter = params?.role && params.role !== "all";
+
+    const selectClause = hasRoleFilter
+      ? "*, user_roles!inner(role)"
+      : "*, user_roles(role)";
 
     let query = supabase
       .from("profiles")
-      .select("*, user_roles(role)", { count: "exact" });
+      .select(selectClause, { count: "exact" });
+
+    if (hasRoleFilter) {
+      query = query.eq("user_roles.role", params.role);
+    }
 
     if (params?.search) {
-      query = query.or(`full_name.ilike.%${params.search}%,email.ilike.%${params.search}%`);
+      query = query.or(
+        `full_name.ilike.%${params.search}%,email.ilike.%${params.search}%`
+      );
     }
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
-    let { data, count, error } = await query.range(from, to);
+    const { data, count, error } = await query
+      .order("created_at", { ascending: false })
+      .range(from, to);
 
     if (error) {
-      // Fallback query if user_roles join fails
-      const fallbackRes = await supabase.from("profiles").select("*").range(from, to);
-      data = fallbackRes.data || [];
-      count = fallbackRes.count || data.length;
+      throw error;
     }
 
-    let formattedData = (data || []).map((p: any) => ({
-      id: p.id || p.user_id,
-      user_id: p.user_id || p.id,
-      email: p.email,
-      fullName: p.full_name || p.fullName || p.email?.split("@")[0],
-      phone: p.phone,
-      gender: p.gender,
-      roles: p.user_roles && p.user_roles.length > 0 ? p.user_roles.map((r: any) => r.role) : [p.role || "student"],
-      role: p.role || "student",
-      isActive: p.is_active ?? true,
-      createdAt: p.created_at,
-    }));
+    const formattedData = (data || []).map((p: any) => {
+      const extractedRoles =
+        p.user_roles && Array.isArray(p.user_roles) && p.user_roles.length > 0
+          ? p.user_roles.map((r: any) => r.role)
+          : [p.role || "student"];
 
-    if (params?.role && params.role !== "all") {
-      formattedData = formattedData.filter(u => u.roles.includes(params.role) || u.role === params.role);
-    }
+      return {
+        id: p.id || p.user_id,
+        user_id: p.user_id || p.id,
+        email: p.email,
+        fullName: p.full_name || p.fullName || p.email?.split("@")[0],
+        phone: p.phone,
+        gender: p.gender,
+        roles: extractedRoles,
+        role: extractedRoles[0] || "student",
+        isActive: p.is_active ?? true,
+        createdAt: p.created_at,
+      };
+    });
+
+    const totalCount = count !== null && count !== undefined ? count : formattedData.length;
 
     return {
       data: formattedData,
       meta: {
-        total: count || formattedData.length,
+        total: totalCount,
         page,
         limit,
-        totalPages: Math.ceil((count || formattedData.length) / limit) || 1,
+        totalPages: Math.ceil(totalCount / limit) || 1,
       },
     };
   },
@@ -1149,77 +1161,20 @@ export const usersApi = {
   create: async (user: any) => {
     const targetRole = user.role || "student";
 
-    // 1. Thu nghiem goi RPC admin_create_user (chay duoi quyen SECURITY DEFINER de vuot qua RLS)
     const { data: rpcData, error: rpcError } = await supabase.rpc("admin_create_user", {
       p_email: user.email,
       p_full_name: user.fullName || null,
       p_phone: user.phone || null,
       p_gender: user.gender || null,
       p_role: targetRole,
+      p_password: user.password || "nextband123",
     });
 
-    if (!rpcError && rpcData) {
-      return { ...rpcData, role: targetRole, roles: [targetRole] };
+    if (rpcError) {
+      throw rpcError;
     }
 
-    // 2. Direct table fallback if RPC is not present
-    const newId = crypto.randomUUID();
-    
-    // Check if profile with email already exists
-    const { data: existingProfile } = await supabase
-      .from("profiles")
-      .select("id, user_id, email")
-      .eq("email", user.email)
-      .maybeSingle();
-
-    if (existingProfile) {
-      // Update existing profile
-      const { data: updated, error: uError } = await supabase
-        .from("profiles")
-        .update({
-          full_name: user.fullName,
-          phone: user.phone,
-          gender: user.gender,
-          is_active: true,
-        })
-        .eq("id", existingProfile.id)
-        .select()
-        .single();
-        
-      if (uError) throw uError;
-
-      // Upsert user_role
-      await supabase.from("user_roles").upsert({
-        user_id: existingProfile.user_id || existingProfile.id,
-        role: targetRole,
-      }, { onConflict: "user_id,role" }).catch(() => null);
-
-      return { ...updated, role: targetRole, roles: [targetRole] };
-    }
-
-    // Insert new profile
-    const { data: profile, error: pError } = await supabase
-      .from("profiles")
-      .insert({
-        id: newId,
-        user_id: newId,
-        email: user.email,
-        full_name: user.fullName,
-        phone: user.phone,
-        gender: user.gender,
-        is_active: true,
-      })
-      .select()
-      .single();
-
-    if (pError) throw pError;
-
-    await supabase.from("user_roles").insert({
-      user_id: newId,
-      role: targetRole,
-    }).catch(() => null);
-
-    return { ...profile, role: targetRole, roles: [targetRole] };
+    return { ...rpcData, role: targetRole, roles: [targetRole] };
   },
 
   update: async (id: string, user: any) => {
@@ -1415,7 +1370,7 @@ export const classesApi = {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }) => {
-    let query = supabase.from("classes").select("*", { count: "exact" });
+    let query = supabase.from("classes").select("*, courses(title)", { count: "exact" });
 
     if (params?.search) {
       query = query.ilike("name", `%${params.search}%`);
@@ -1438,6 +1393,8 @@ export const classesApi = {
       id: c.id,
       name: c.name,
       description: c.description || "",
+      courseId: c.course_id,
+      courseTitle: c.courses?.title || null,
       teacherId: c.teacher_id,
       startDate: c.start_date,
       endDate: c.end_date,
@@ -1445,13 +1402,15 @@ export const classesApi = {
       createdAt: c.created_at,
     }));
 
+    const totalCount = count !== null && count !== undefined ? count : formatted.length;
+
     return {
       data: formatted,
       meta: {
-        total: count || formatted.length,
+        total: totalCount,
         page: params?.page || 1,
         limit: params?.limit || 10,
-        totalPages: Math.ceil((count || formatted.length) / (params?.limit || 10)) || 1,
+        totalPages: Math.ceil(totalCount / (params?.limit || 10)) || 1,
       },
     };
   },
@@ -1466,6 +1425,7 @@ export const classesApi = {
     if (error) throw error;
     return {
       ...data,
+      courseId: data.course_id,
       teacherId: data.teacher_id,
       startDate: data.start_date,
       endDate: data.end_date,
@@ -1477,6 +1437,7 @@ export const classesApi = {
     const dbPayload = {
       name: body.name,
       description: body.description || null,
+      course_id: body.courseId || null,
       teacher_id: body.teacherId || null,
       start_date: body.startDate || null,
       end_date: body.endDate || null,
@@ -1490,17 +1451,25 @@ export const classesApi = {
       .single();
 
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      courseId: data.course_id,
+      teacherId: data.teacher_id,
+      startDate: data.start_date,
+      endDate: data.end_date,
+      isActive: data.is_active,
+    };
   },
 
   update: async (id: string, body: any) => {
     const dbPayload = {
-      name: body.name,
-      description: body.description || null,
-      teacher_id: body.teacherId || null,
-      start_date: body.startDate || null,
-      end_date: body.endDate || null,
-      is_active: body.isActive ?? true,
+      ...(body.name !== undefined && { name: body.name }),
+      ...(body.description !== undefined && { description: body.description || null }),
+      ...(body.courseId !== undefined && { course_id: body.courseId || null }),
+      ...(body.teacherId !== undefined && { teacher_id: body.teacherId || null }),
+      ...(body.startDate !== undefined && { start_date: body.startDate || null }),
+      ...(body.endDate !== undefined && { end_date: body.endDate || null }),
+      ...(body.isActive !== undefined && { is_active: body.isActive }),
     };
 
     const { data, error } = await supabase
@@ -1511,7 +1480,14 @@ export const classesApi = {
       .single();
 
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      courseId: data.course_id,
+      teacherId: data.teacher_id,
+      startDate: data.start_date,
+      endDate: data.end_date,
+      isActive: data.is_active,
+    };
   },
 
   delete: async (id: string) => {
