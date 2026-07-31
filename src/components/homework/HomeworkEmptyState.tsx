@@ -102,69 +102,285 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
         </div>
       </Card>
 
-      {/* 3. 5-LEVEL IELTS ROADMAP SUMMARY MATCHING EXACT COURSEBOOK COVER COLORS */}
-      <Card className="rounded-2xl border border-slate-100 bg-white p-6 md:p-8 space-y-4 shadow-sm">
-        <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider text-center">
-          Khung 5 Cấp độ Khóa học tại ARIS IELTS
-        </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3.5 pt-1">
-          {/* 1. STARTER - MAGENTA PINK (#D84B85) */}
-          <div className="relative group">
-            <div className="absolute inset-0 bg-[#F8D7E4] rounded-xl translate-y-1 translate-x-1 transition-transform group-hover:translate-y-1.5 group-hover:translate-x-1.5" />
-            <div className="relative p-3.5 rounded-xl bg-[#D84B85] text-white text-center space-y-1 border border-[#C23A73]">
-              <span className="text-[10px] font-extrabold text-pink-100 uppercase tracking-widest">Cấp độ 1</span>
-              <div className="font-black text-sm text-white tracking-tight">STARTER</div>
-              <div className="mt-1 px-2 py-0.5 rounded-md bg-white/20 text-[10px] font-bold text-white backdrop-blur-xs">
-                PRE-IELTS
+      {/* 3. 5-LEVEL IELTS ROADMAP SUMMARY - YOUR IELTS GROWTH PATH (BUILDER JOURNEY METAPHOR) */}
+      <Card className="rounded-2xl border border-slate-100 bg-white p-6 md:p-8 space-y-6 shadow-sm overflow-hidden">
+        <div className="text-center space-y-1.5 max-w-xl mx-auto">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-extrabold tracking-wide uppercase border border-blue-100">
+            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+            <span>The ARIS Growth Journey</span>
+          </div>
+          <h3 className="text-lg md:text-xl font-black text-slate-900 tracking-tight">
+            YOUR IELTS GROWTH PATH
+          </h3>
+          <p className="text-xs text-slate-500 font-medium">
+            Từng bước kiến tạo tri thức – Từ nền tảng vững chắc đến vị thế Leader
+          </p>
+        </div>
+
+        {/* ROADMAP GRID (5 COLUMNS DESKTOP / VERTICAL TIMELINE MOBILE) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-2 relative">
+          {/* LEVEL 1: STARTER */}
+          <div className="relative group flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-pink-50/30 border border-slate-200/80 hover:border-[#D84B85]/60 hover:shadow-xl hover:shadow-pink-500/10 transition-all duration-300 hover:-translate-y-1">
+            {/* TOP IELTS BAND BADGE */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="px-2.5 py-1 rounded-full bg-[#D84B85] text-white text-[11px] font-black shadow-xs">
+                  BAND 3.0
+                </span>
+                <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
+                  LVL 01
+                </span>
               </div>
+
+              <div>
+                <div className="font-black text-base text-slate-900 tracking-tight">STARTER</div>
+                <div className="text-[11px] font-bold text-[#D84B85] italic">"I start"</div>
+              </div>
+
+              {/* PROGRESSIVE METAPHOR ILLUSTRATION: FOUNDATION STONE */}
+              <div className="py-3 flex justify-center items-center">
+                <div className="w-14 h-14 rounded-2xl bg-pink-100/80 text-[#D84B85] flex items-center justify-center shadow-inner border border-pink-200 group-hover:scale-110 transition-transform duration-300">
+                  <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* CONCISE ACADEMIC BENEFITS */}
+              <div className="space-y-1.5 pt-1">
+                <div className="text-xs font-extrabold text-slate-800">Build Your Foundation</div>
+                <ul className="text-[11px] text-slate-600 space-y-1 font-medium">
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#D84B85]" />
+                    <span>Core Grammar</span>
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#D84B85]" />
+                    <span>Essential Vocabulary</span>
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#D84B85]" />
+                    <span>Pronunciation Basics</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-semibold">
+              <span>⏱ 24 lessons</span>
+              <span className="text-[10px] text-slate-400">Phase 1</span>
             </div>
           </div>
 
-          {/* 2. DREAMER - TEAL CYAN (#0093A8) */}
-          <div className="relative group">
-            <div className="absolute inset-0 bg-[#D2F2F7] rounded-xl translate-y-1 translate-x-1 transition-transform group-hover:translate-y-1.5 group-hover:translate-x-1.5" />
-            <div className="relative p-3.5 rounded-xl bg-[#0093A8] text-white text-center space-y-1 border border-[#007D8F]">
-              <span className="text-[10px] font-extrabold text-cyan-100 uppercase tracking-widest">Cấp độ 2</span>
-              <div className="font-black text-sm text-white tracking-tight">DREAMER</div>
-              <div className="mt-1 px-2 py-0.5 rounded-md bg-white/20 text-[10px] font-bold text-white backdrop-blur-xs">
-                IELTS 3.0 - 4.0
+          {/* LEVEL 2: DREAMER */}
+          <div className="relative group flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-cyan-50/30 border border-slate-200/80 hover:border-[#0093A8]/60 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 hover:-translate-y-1">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="px-2.5 py-1 rounded-full bg-[#0093A8] text-white text-[11px] font-black shadow-xs">
+                  BAND 4.0
+                </span>
+                <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
+                  LVL 02
+                </span>
               </div>
+
+              <div>
+                <div className="font-black text-base text-slate-900 tracking-tight">DREAMER</div>
+                <div className="text-[11px] font-bold text-[#0093A8] italic">"I believe"</div>
+              </div>
+
+              {/* PROGRESSIVE METAPHOR ILLUSTRATION: BLUEPRINT */}
+              <div className="py-3 flex justify-center items-center">
+                <div className="w-14 h-14 rounded-2xl bg-cyan-100/80 text-[#0093A8] flex items-center justify-center shadow-inner border border-cyan-200 group-hover:scale-110 transition-transform duration-300">
+                  <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M3 9h18" />
+                    <path d="M9 21V9" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 pt-1">
+                <div className="text-xs font-extrabold text-slate-800">Think in English</div>
+                <ul className="text-[11px] text-slate-600 space-y-1 font-medium">
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#0093A8]" />
+                    <span>Sentence Structure</span>
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#0093A8]" />
+                    <span>Listening Strategy</span>
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#0093A8]" />
+                    <span>Speaking Confidence</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-semibold">
+              <span>⏱ 24 lessons</span>
+              <span className="text-[10px] text-slate-400">Phase 2</span>
             </div>
           </div>
 
-          {/* 3. BUILDER - ORANGE (#EE771D) */}
-          <div className="relative group">
-            <div className="absolute inset-0 bg-[#FCE8D5] rounded-xl translate-y-1 translate-x-1 transition-transform group-hover:translate-y-1.5 group-hover:translate-x-1.5" />
-            <div className="relative p-3.5 rounded-xl bg-[#EE771D] text-white text-center space-y-1 border border-[#D66510]">
-              <span className="text-[10px] font-extrabold text-orange-100 uppercase tracking-widest">Cấp độ 3</span>
-              <div className="font-black text-sm text-white tracking-tight">BUILDER</div>
-              <div className="mt-1 px-2 py-0.5 rounded-md bg-white/20 text-[10px] font-bold text-white backdrop-blur-xs">
-                IELTS 4.0 - 5.0
+          {/* LEVEL 3: BUILDER */}
+          <div className="relative group flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-orange-50/30 border border-slate-200/80 hover:border-[#EE771D]/60 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 hover:-translate-y-1">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="px-2.5 py-1 rounded-full bg-[#EE771D] text-white text-[11px] font-black shadow-xs">
+                  BAND 5.0
+                </span>
+                <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
+                  LVL 03
+                </span>
               </div>
+
+              <div>
+                <div className="font-black text-base text-slate-900 tracking-tight">BUILDER</div>
+                <div className="text-[11px] font-bold text-[#EE771D] italic">"I build"</div>
+              </div>
+
+              {/* PROGRESSIVE METAPHOR ILLUSTRATION: BUILDING UNDER CONSTRUCTION */}
+              <div className="py-3 flex justify-center items-center">
+                <div className="w-14 h-14 rounded-2xl bg-orange-100/80 text-[#EE771D] flex items-center justify-center shadow-inner border border-orange-200 group-hover:scale-110 transition-transform duration-300">
+                  <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18" />
+                    <path d="M6 12h12" />
+                    <path d="M6 7h12" />
+                    <path d="M6 17h12" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 pt-1">
+                <div className="text-xs font-extrabold text-slate-800">Build Academic Skills</div>
+                <ul className="text-[11px] text-slate-600 space-y-1 font-medium">
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#EE771D]" />
+                    <span>Task 1 & Task 2 Intro</span>
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#EE771D]" />
+                    <span>Cohesion & Flow</span>
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#EE771D]" />
+                    <span>Academic Style</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-semibold">
+              <span>⏱ 24 lessons</span>
+              <span className="text-[10px] text-slate-400">Phase 3</span>
             </div>
           </div>
 
-          {/* 4. MASTER - EMERALD GREEN (#00B956) */}
-          <div className="relative group">
-            <div className="absolute inset-0 bg-[#D1F7E2] rounded-xl translate-y-1 translate-x-1 transition-transform group-hover:translate-y-1.5 group-hover:translate-x-1.5" />
-            <div className="relative p-3.5 rounded-xl bg-[#00B956] text-white text-center space-y-1 border border-[#009E48]">
-              <span className="text-[10px] font-extrabold text-emerald-100 uppercase tracking-widest">Cấp độ 4</span>
-              <div className="font-black text-sm text-white tracking-tight">MASTER</div>
-              <div className="mt-1 px-2 py-0.5 rounded-md bg-white/20 text-[10px] font-bold text-white backdrop-blur-xs">
-                IELTS 5.0 - 6.0
+          {/* LEVEL 4: MASTER */}
+          <div className="relative group flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-emerald-50/30 border border-slate-200/80 hover:border-[#00B956]/60 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 hover:-translate-y-1">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="px-2.5 py-1 rounded-full bg-[#00B956] text-white text-[11px] font-black shadow-xs">
+                  BAND 6.0
+                </span>
+                <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
+                  LVL 04
+                </span>
               </div>
+
+              <div>
+                <div className="font-black text-base text-slate-900 tracking-tight">MASTER</div>
+                <div className="text-[11px] font-bold text-[#00B956] italic">"I master"</div>
+              </div>
+
+              {/* PROGRESSIVE METAPHOR ILLUSTRATION: COMPLETED ACADEMY */}
+              <div className="py-3 flex justify-center items-center">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-100/80 text-[#00B956] flex items-center justify-center shadow-inner border border-emerald-200 group-hover:scale-110 transition-transform duration-300">
+                  <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 21h18" />
+                    <path d="M5 21V7l7-4 7 4v14" />
+                    <path d="M9 10a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v11" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 pt-1">
+                <div className="text-xs font-extrabold text-slate-800">Perform Like Candidate</div>
+                <ul className="text-[11px] text-slate-600 space-y-1 font-medium">
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#00B956]" />
+                    <span>Time Management</span>
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#00B956]" />
+                    <span>Complex Grammar</span>
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#00B956]" />
+                    <span>High Accuracy</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-semibold">
+              <span>⏱ 24 lessons</span>
+              <span className="text-[10px] text-slate-400">Phase 4</span>
             </div>
           </div>
 
-          {/* 5. LEADER - CRIMSON RED (#B82B37) */}
-          <div className="relative group">
-            <div className="absolute inset-0 bg-[#FAD6D9] rounded-xl translate-y-1 translate-x-1 transition-transform group-hover:translate-y-1.5 group-hover:translate-x-1.5" />
-            <div className="relative p-3.5 rounded-xl bg-[#B82B37] text-white text-center space-y-1 border border-[#9E202B]">
-              <span className="text-[10px] font-extrabold text-rose-100 uppercase tracking-widest">Cấp độ 5</span>
-              <div className="font-black text-sm text-white tracking-tight">LEADER</div>
-              <div className="mt-1 px-2 py-0.5 rounded-md bg-white/20 text-[10px] font-bold text-white backdrop-blur-xs">
-                IELTS 6.5 - 7.0+
+          {/* LEVEL 5: LEADER */}
+          <div className="relative group flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-rose-50/40 border border-slate-200/80 hover:border-[#B82B37]/60 hover:shadow-xl hover:shadow-rose-500/10 transition-all duration-300 hover:-translate-y-1">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="px-2.5 py-1 rounded-full bg-[#B82B37] text-white text-[11px] font-black shadow-xs">
+                  BAND 7.0+
+                </span>
+                <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
+                  LVL 05
+                </span>
               </div>
+
+              <div>
+                <div className="font-black text-base text-slate-900 tracking-tight">LEADER</div>
+                <div className="text-[11px] font-bold text-[#B82B37] italic">"I inspire"</div>
+              </div>
+
+              {/* PROGRESSIVE METAPHOR ILLUSTRATION: LANDMARK WITH CROWN */}
+              <div className="py-3 flex justify-center items-center">
+                <div className="w-14 h-14 rounded-2xl bg-rose-100/80 text-[#B82B37] flex items-center justify-center shadow-inner border border-rose-200 group-hover:scale-110 transition-transform duration-300 relative">
+                  <Sparkles className="w-4 h-4 text-amber-500 absolute -top-1 -right-1 animate-pulse" />
+                  <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 pt-1">
+                <div className="text-xs font-extrabold text-slate-800">Lead with Confidence</div>
+                <ul className="text-[11px] text-slate-600 space-y-1 font-medium">
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#B82B37]" />
+                    <span>Advanced Arguments</span>
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#B82B37]" />
+                    <span>Native-like Fluency</span>
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#B82B37]" />
+                    <span>Critical Thinking</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-semibold">
+              <span>⏱ 30 lessons</span>
+              <span className="text-[10px] text-slate-400">Phase 5</span>
             </div>
           </div>
         </div>
