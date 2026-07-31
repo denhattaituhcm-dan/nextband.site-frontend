@@ -43,6 +43,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { DataTablePagination } from "@/components/admin/DataTablePagination";
 
+import { useSearchParams } from "react-router-dom";
+
 type SortField = "fullName" | "email" | "createdAt";
 
 const emptyForm = {
@@ -58,16 +60,20 @@ const emptyForm = {
   certificateBand: "",
   certificateType: "",
   certificateUrl: "",
+  certificateVerified: false,
 };
 
 export default function AdminUsers() {
+  const [searchParams] = useSearchParams();
+  const initialRole = searchParams.get("role") || "all";
+
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortField, setSortField] = useState<SortField>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [roleFilter, setRoleFilter] = useState<string>(initialRole);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -506,6 +512,17 @@ export default function AdminUsers() {
                     placeholder="https://... /IELTS_CERTIFICATE.pdf"
                     value={form.certificateUrl}
                     onChange={(e) => setForm({ ...form, certificateUrl: e.target.value })}
+                  />
+                </div>
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-blue-50/60 border border-blue-100">
+                  <div className="space-y-0.5">
+                    <Label className="text-xs font-bold text-blue-900">✔ Đã xác minh chứng chỉ (Admin Only)</Label>
+                    <p className="text-[10px] text-blue-600">Bật công tắc này khi đã kiểm tra đối chiếu bằng thật</p>
+                  </div>
+                  <Switch
+                    checked={form.certificateVerified}
+                    onCheckedChange={(checked) => setForm({ ...form, certificateVerified: checked })}
+                    className="data-[state=checked]:bg-blue-600"
                   />
                 </div>
               </div>
