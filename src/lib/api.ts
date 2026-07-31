@@ -1074,18 +1074,34 @@ export const usersApi = {
   }) => {
     const page = params?.page || 1;
     const limit = params?.limit || 10;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
     const hasRoleFilter = params?.role && params.role !== "all";
 
-    const selectClause = hasRoleFilter
-      ? "*, user_roles!inner(role)"
-      : "*, user_roles(role)";
+    // BƯỚC 1: Nếu lọc theo role -> lấy danh sách user_id từ user_roles trước
+    let allowedUserIds: string[] | null = null;
+    if (hasRoleFilter) {
+      const { data: roleRows, error: roleError } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", params.role);
 
+      if (roleError) throw roleError;
+      allowedUserIds = (roleRows || []).map((r: any) => r.user_id);
+
+      // Nếu không có ai có role này -> trả về rỗng ngay
+      if (allowedUserIds.length === 0) {
+        return { data: [], meta: { total: 0, page, limit, totalPages: 1 } };
+      }
+    }
+
+    // BƯỚC 2: Query profiles
     let query = supabase
       .from("profiles")
-      .select(selectClause, { count: "exact" });
+      .select("*, user_roles(role)", { count: "exact" });
 
-    if (hasRoleFilter) {
-      query = query.eq("user_roles.role", params.role);
+    if (allowedUserIds !== null) {
+      query = query.in("user_id", allowedUserIds);
     }
 
     if (params?.search) {
@@ -1094,21 +1110,17 @@ export const usersApi = {
       );
     }
 
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
     const { data, count, error } = await query
       .order("created_at", { ascending: false })
       .range(from, to);
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     const formattedData = (data || []).map((p: any) => {
       const extractedRoles =
         p.user_roles && Array.isArray(p.user_roles) && p.user_roles.length > 0
           ? p.user_roles.map((r: any) => r.role)
-          : [p.role || "student"];
+          : [params?.role || "student"];
 
       return {
         id: p.id || p.user_id,
@@ -1128,12 +1140,7 @@ export const usersApi = {
 
     return {
       data: formattedData,
-      meta: {
-        total: totalCount,
-        page,
-        limit,
-        totalPages: Math.ceil(totalCount / limit) || 1,
-      },
+      meta: { total: totalCount, page, limit, totalPages: Math.ceil(totalCount / limit) || 1 },
     };
   },
 
