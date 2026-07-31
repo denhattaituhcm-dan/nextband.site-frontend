@@ -383,29 +383,31 @@ export default function AdminUsers() {
             {/* Email + Password (only on create) */}
             {!editingUser && (
               <>
-                <div className="grid grid-cols-2 gap-3">
+                <div className={form.role === "student" ? "grid grid-cols-1 gap-3" : "grid grid-cols-2 gap-3"}>
                   <div className="space-y-2">
                     <Label>Email *</Label>
                     <Input
                       type="email"
-                      placeholder="email@example.com"
+                      placeholder="email@gmail.com"
                       value={form.email}
                       onChange={(e) =>
                         setForm({ ...form, email: e.target.value })
                       }
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label>Mật khẩu</Label>
-                    <Input
-                      type="password"
-                      placeholder="•••••••• (Để trống sẽ tạo ngẫu nhiên)"
-                      value={form.password}
-                      onChange={(e) =>
-                        setForm({ ...form, password: e.target.value })
-                      }
-                    />
-                  </div>
+                  {form.role !== "student" && (
+                    <div className="space-y-2">
+                      <Label>Mật khẩu *</Label>
+                      <Input
+                        type="password"
+                        placeholder="Mật khẩu đăng nhập"
+                        value={form.password}
+                        onChange={(e) =>
+                          setForm({ ...form, password: e.target.value })
+                        }
+                      />
+                    </div>
+                  )}
                 </div>
               </>
             )}
