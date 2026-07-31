@@ -50,8 +50,8 @@ export function normalizeExamData(exam: any): any {
       question_type: q.question_type || q.questionType,
       questionText: q.questionText || q.question_text || "",
       question_text: q.question_text || q.questionText || "",
-      correctAnswer: q.correctAnswer || q.correct_answer || "",
-      correct_answer: q.correct_answer || q.correctAnswer || "",
+      correctAnswer: q.correctAnswer ?? q.correct_answer ?? "",
+      correct_answer: q.correct_answer ?? q.correctAnswer ?? "",
       groupId: q.groupId || q.group_id,
       orderIndex: q.orderIndex ?? q.order_index ?? 0,
       audioUrl: q.audioUrl || q.audio_url || "",
@@ -559,80 +559,16 @@ export const examsApi = {
   },
 
   getById: async (id: string) => {
-    const { data, error } = await supabase
-      .from("exams")
-      .select(
-        "*, course:courses(id, title), sections:exam_sections(*, question_groups:question_groups(*, questions:questions(*)))"
-      )
-      .eq("id", id)
-      .single();
+    const { data, error } = await supabase.rpc("get_exam_by_id", {
+      p_exam_id: id,
+    });
 
-    if (!error && data) return normalizeExamData(data);
-
-    // Fallback for offline/local exams lookup
-    const examList = await examsApi.list({ limit: 1000 });
-    const match = examList.data.find((e: any) => e.id === id);
-    if (match) {
-      return {
-        ...match,
-        sections: [
-          {
-            id: `sec-l-${id}`,
-            examId: id,
-            sectionType: "listening",
-            title: "Listening Section",
-            instructions: "Nghe đoạn băng và trả lời các câu hỏi.",
-            questionGroups: [
-              {
-                id: `grp-l-${id}`,
-                sectionId: `sec-l-${id}`,
-                title: "Listening Part 1",
-                questions: [
-                  {
-                    id: `q-l1-${id}`,
-                    groupId: `grp-l-${id}`,
-                    questionType: "fill_blank",
-                    questionText: "Điền từ thích hợp vào chỗ trống",
-                    correctAnswer: "{\"0\":\"library\"}",
-                    points: 1,
-                    orderIndex: 0
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            id: `sec-r-${id}`,
-            examId: id,
-            sectionType: "reading",
-            title: "Reading Section",
-            instructions: "Đọc đoạn văn và trả lời các câu hỏi.",
-            questionGroups: [
-              {
-                id: `grp-r-${id}`,
-                sectionId: `sec-r-${id}`,
-                title: "Reading Passage 1",
-                passage: "<p>IELTS Reading sample text for practice.</p>",
-                questions: [
-                  {
-                    id: `q-r1-${id}`,
-                    groupId: `grp-r-${id}`,
-                    questionType: "multiple_choice",
-                    questionText: "Nội dung chính của đoạn văn là gì?",
-                    options: ["A. Giới thiệu", "B. Phân tích", "C. Kết luận", "D. Thảo luận"],
-                    correctAnswer: "A",
-                    points: 1,
-                    orderIndex: 0
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      };
+    if (error) {
+      console.error("[EXAM_FETCH_ERROR] Failed to fetch exam via RPC get_exam_by_id:", error.message);
+      throw error;
     }
 
-    throw error || new Error("Exam not found");
+    return normalizeExamData(data);
   },
 
   create: async (exam: {
