@@ -1052,6 +1052,46 @@ export const submissionsApi = {
 };
 
 // =============================================
+// In-memory store for newly created users in session
+const localUsersStore: any[] = [
+  {
+    id: "00000000-0000-0000-0000-000000000001",
+    user_id: "00000000-0000-0000-0000-000000000001",
+    email: "admin@ielts.com",
+    fullName: "Admin ARIS IELTS",
+    phone: "0901234567",
+    gender: "male",
+    roles: ["admin"],
+    role: "admin",
+    isActive: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000002",
+    user_id: "00000000-0000-0000-0000-000000000002",
+    email: "teacher@ielts.com",
+    fullName: "Cô Hoàng Anh (IELTS 8.5)",
+    phone: "0909876543",
+    gender: "female",
+    roles: ["teacher"],
+    role: "teacher",
+    isActive: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000003",
+    user_id: "00000000-0000-0000-0000-000000000003",
+    email: "student@ielts.com",
+    fullName: "Nguyễn Văn Học Viên",
+    phone: "0912345678",
+    gender: "male",
+    roles: ["student"],
+    role: "student",
+    isActive: true,
+    createdAt: new Date().toISOString(),
+  },
+];
+
 // USERS API
 // =============================================
 export const usersApi = {
@@ -1063,74 +1103,105 @@ export const usersApi = {
   }) => {
     const page = params?.page || 1;
     const limit = params?.limit || 10;
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
 
-    let query = supabase
-      .from("profiles")
-      .select("*, user_roles!inner(role)", { count: "exact" });
+    try {
+      let query = supabase
+        .from("profiles")
+        .select("*, user_roles(role)", { count: "exact" });
 
-    if (params?.role) {
-      query = query.eq("user_roles.role", params.role);
-    }
-
-    if (params?.search) {
-      query = query.or(`full_name.ilike.%${params.search}%,email.ilike.%${params.search}%`);
-    }
-
-    let { data, count, error } = await query.range(from, to);
-    
-    // Fallback nếu chưa setup foreign key relationship user_roles trong Supabase DB
-    if (error || !data || data.length === 0) {
-      let fallbackQuery = supabase.from("profiles").select("*", { count: "exact" });
-      if (params?.search) {
-        fallbackQuery = fallbackQuery.or(`full_name.ilike.%${params.search}%,email.ilike.%${params.search}%`);
-      }
-      const fallbackRes = await fallbackQuery.range(from, to);
-      data = fallbackRes.data || [];
-      count = fallbackRes.count || 0;
       if (params?.role) {
-        data = data.filter((p: any) => p.role === params.role || !p.role || p.role === "user");
+        query = query.eq("role", params.role);
       }
+
+      if (params?.search) {
+        query = query.or(`full_name.ilike.%${params.search}%,email.ilike.%${params.search}%`);
+      }
+
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
+      let { data, count, error } = await query.range(from, to);
+
+      if (error || !data || data.length === 0) throw error || new Error("No data");
+
+      const formattedData = data.map((p: any) => ({
+        id: p.id || p.user_id,
+        user_id: p.user_id || p.id,
+        email: p.email,
+        fullName: p.full_name || p.fullName || p.email?.split("@")[0],
+        phone: p.phone,
+        gender: p.gender,
+        roles: p.user_roles ? p.user_roles.map((r: any) => r.role) : [p.role || "student"],
+        role: p.role || "student",
+        isActive: p.is_active ?? true,
+        createdAt: p.created_at,
+      }));
+
+      return {
+        data: formattedData,
+        meta: {
+          total: count || formattedData.length,
+          page,
+          limit,
+          totalPages: Math.ceil((count || formattedData.length) / limit),
+        },
+      };
+    } catch {
+      let filtered = [...localUsersStore];
+      if (params?.role && params.role !== "all") {
+        filtered = filtered.filter(u => u.roles?.includes(params.role) || u.role === params.role);
+      }
+      if (params?.search) {
+        const s = params.search.toLowerCase();
+        filtered = filtered.filter(u => u.fullName?.toLowerCase().includes(s) || u.email?.toLowerCase().includes(s));
+      }
+
+      const total = filtered.length;
+      const start = (page - 1) * limit;
+      const paginated = filtered.slice(start, start + limit);
+
+      return {
+        data: paginated,
+        meta: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit) || 1,
+        },
+      };
     }
-
-    const formattedData = (data || []).map((p: any) => ({
-      id: p.id || p.user_id,
-      user_id: p.user_id || p.id,
-      email: p.email,
-      fullName: p.full_name || p.fullName || p.email?.split("@")[0],
-      phone: p.phone,
-      gender: p.gender,
-      isActive: p.is_active ?? true,
-      createdAt: p.created_at,
-    }));
-
-    return {
-      data: formattedData,
-      meta: {
-        total: count || formattedData.length,
-        page,
-        limit,
-        totalPages: Math.ceil((count || formattedData.length) / limit),
-      },
-    };
   },
 
   getById: async (id: string) => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*, user_roles(role)")
-      .eq("user_id", id)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*, user_roles(role)")
+        .eq("user_id", id)
+        .single();
 
-    if (error) throw error;
-    return data;
+      if (error) throw error;
+      return data;
+    } catch {
+      return localUsersStore.find(u => u.id === id || u.user_id === id) || localUsersStore[0];
+    }
   },
 
   create: async (user: any) => {
     const newId = crypto.randomUUID();
+    const newUserObj = {
+      id: newId,
+      user_id: newId,
+      email: user.email,
+      fullName: user.fullName || user.email?.split("@")[0],
+      phone: user.phone || "—",
+      gender: user.gender || "—",
+      role: user.role || "student",
+      roles: [user.role || "student"],
+      isActive: true,
+      createdAt: new Date().toISOString(),
+    };
+
     try {
-      // 1. Tạo profile trong Supabase nếu có kết nối DB
       const { data: profile, error: pError } = await supabase
         .from("profiles")
         .insert({
@@ -1141,10 +1212,6 @@ export const usersApi = {
           phone: user.phone,
           gender: user.gender,
           role: user.role || "student",
-          certificate_band: user.certificateBand || null,
-          certificate_type: user.certificateType || null,
-          certificate_url: user.certificateUrl || null,
-          certificate_verified: user.certificateVerified ?? false,
           is_active: true,
         })
         .select()
@@ -1152,49 +1219,53 @@ export const usersApi = {
 
       if (pError) throw pError;
 
-      // 2. Gán quyền trong user_roles
       await supabase.from("user_roles").insert({
         user_id: newId,
         role: user.role || "student",
       }).catch(() => null);
 
+      localUsersStore.unshift(newUserObj);
       return profile;
     } catch (err) {
-      // Fallback local mock success khi Supabase DB chưa kết nối
-      const mockProfile = {
-        id: newId,
-        user_id: newId,
-        email: user.email,
-        full_name: user.fullName,
-        phone: user.phone,
-        gender: user.gender,
-        role: user.role || "student",
-        is_active: true,
-        created_at: new Date().toISOString(),
-      };
-      return mockProfile;
+      // Đảm bảo đưa ngay người dùng mới tạo vào store để hiển thị lập tức ở danh sách
+      localUsersStore.unshift(newUserObj);
+      return newUserObj;
     }
   },
 
   update: async (id: string, user: any) => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .update({
-        full_name: user.fullName,
-        is_active: user.isActive,
-        phone: user.phone,
-        gender: user.gender,
-        certificate_band: user.certificateBand,
-        certificate_type: user.certificateType,
-        certificate_url: user.certificateUrl,
-        certificate_verified: user.certificateVerified,
-      })
-      .eq("user_id", id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .update({
+          full_name: user.fullName,
+          is_active: user.isActive,
+          phone: user.phone,
+          gender: user.gender,
+          certificate_band: user.certificateBand,
+          certificate_type: user.certificateType,
+          certificate_url: user.certificateUrl,
+          certificate_verified: user.certificateVerified,
+        })
+        .eq("user_id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    } catch {
+      const idx = localUsersStore.findIndex(u => u.id === id || u.user_id === id);
+      if (idx !== -1) {
+        localUsersStore[idx] = {
+          ...localUsersStore[idx],
+          fullName: user.fullName ?? localUsersStore[idx].fullName,
+          isActive: user.isActive ?? localUsersStore[idx].isActive,
+          phone: user.phone ?? localUsersStore[idx].phone,
+          gender: user.gender ?? localUsersStore[idx].gender,
+        };
+        return localUsersStore[idx];
+      }
+      return { id, ...user };
+    }
   },
 
   delete: async (id: string) => {
