@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { classesApi, homeworksApi } from "@/lib/api";
 import { Card } from "@/components/ui/card";
@@ -80,9 +80,11 @@ export default function TeacherWorkspace() {
 
   const classes = classesData || [];
 
-  if (!selectedClassId && classes.length > 0) {
-    setSelectedClassId(classes[0].id);
-  }
+  useEffect(() => {
+    if (!selectedClassId && classes.length > 0) {
+      setSelectedClassId(classes[0].id);
+    }
+  }, [selectedClassId, classes]);
 
   const currentClass = useMemo(() => {
     return classes.find((c: any) => c.id === selectedClassId) || classes[0];
@@ -136,9 +138,11 @@ export default function TeacherWorkspace() {
     ];
   }, [rawStudents]);
 
-  if (!selectedStudentId && students.length > 0) {
-    setSelectedStudentId(students[0].id);
-  }
+  useEffect(() => {
+    if (!selectedStudentId && students.length > 0) {
+      setSelectedStudentId(students[0].id);
+    }
+  }, [selectedStudentId, students]);
 
   const filteredStudents = useMemo(() => {
     if (studentFilter === "pending") {
@@ -219,10 +223,12 @@ export default function TeacherWorkspace() {
     }));
   }, [workbookItems]);
 
-  if (!selectedHomeworkId && workbookItems.length > 0) {
-    const pendingHw = workbookItems.find((h) => h.status === "submitted") || workbookItems[0];
-    setSelectedHomeworkId(pendingHw.id);
-  }
+  useEffect(() => {
+    if (!selectedHomeworkId && workbookItems.length > 0) {
+      const pendingHw = workbookItems.find((h) => h.status === "submitted") || workbookItems[0];
+      setSelectedHomeworkId(pendingHw.id);
+    }
+  }, [selectedHomeworkId, workbookItems]);
 
   const currentHomework = useMemo(() => {
     return workbookItems.find((h) => h.id === selectedHomeworkId) || workbookItems[0];
