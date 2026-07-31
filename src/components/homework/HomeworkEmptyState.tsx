@@ -283,30 +283,29 @@ function TeacherFacultySection() {
           </a>
         </div>
 
-        {/* RIGHT COLUMN: CLEAN INLINE TRF CERTIFICATE DISPLAY */}
-        <div className="md:col-span-7 bg-white p-3 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col space-y-3">
+        {/* RIGHT COLUMN: CLEAN DIRECT CERTIFICATE DISPLAY ON PAGE */}
+        <div className="md:col-span-7 space-y-3">
           <div className="flex items-center justify-between px-1 text-xs font-bold text-slate-700">
-            <span className="flex items-center gap-1.5 text-slate-800 font-extrabold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse" />
-              Bảng điểm thi IELTS — {currentTeacher.name} (TRF Chính thức)
+            <span className="text-slate-800 font-extrabold text-sm">
+              Bảng điểm thi IELTS
             </span>
             <a
               href={currentTeacher.pdfUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-blue-600 hover:underline font-extrabold flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200"
+              className="text-xs text-blue-600 hover:underline font-extrabold flex items-center gap-1"
             >
-              Mở file PDF ↗
+              Phóng to
             </a>
           </div>
 
-          {/* INLINE CANVAS PREVIEW DIRECTLY ON PAGE BACKGROUND */}
-          <div className="w-full rounded-xl overflow-hidden bg-white border border-slate-200/80 shadow-xs flex justify-center">
+          {/* DIRECT CERTIFICATE VIEW ON PAGE (MATCHING DESIGN REFERENCE) */}
+          <div className="w-full rounded-2xl bg-white border border-slate-200/90 p-2 sm:p-4 shadow-sm relative overflow-hidden">
             <iframe
               key={currentTeacher.id}
               src={`${currentTeacher.pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
               title={`Bảng điểm IELTS ${currentTeacher.name}`}
-              className="w-full h-[680px] md:h-[820px] border-0 bg-white"
+              className="w-full h-[620px] sm:h-[750px] border-0 rounded-xl bg-white"
             />
           </div>
         </div>
