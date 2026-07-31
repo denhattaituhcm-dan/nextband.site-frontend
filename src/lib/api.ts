@@ -1152,6 +1152,7 @@ export const usersApi = {
 
   create: async (user: any) => {
     const newId = crypto.randomUUID();
+    const targetRole = user.role || "student";
     
     // Check if profile with email already exists
     const { data: existingProfile } = await supabase
@@ -1168,7 +1169,6 @@ export const usersApi = {
           full_name: user.fullName,
           phone: user.phone,
           gender: user.gender,
-          role: user.role || "student",
           is_active: true,
         })
         .eq("id", existingProfile.id)
@@ -1176,7 +1176,14 @@ export const usersApi = {
         .single();
         
       if (uError) throw uError;
-      return updated;
+
+      // Upsert user_role
+      await supabase.from("user_roles").upsert({
+        user_id: existingProfile.user_id || existingProfile.id,
+        role: targetRole,
+      }, { onConflict: "user_id,role" }).catch(() => null);
+
+      return { ...updated, role: targetRole, roles: [targetRole] };
     }
 
     // Insert new profile
@@ -1189,7 +1196,6 @@ export const usersApi = {
         full_name: user.fullName,
         phone: user.phone,
         gender: user.gender,
-        role: user.role || "student",
         is_active: true,
       })
       .select()
@@ -1199,10 +1205,10 @@ export const usersApi = {
 
     await supabase.from("user_roles").insert({
       user_id: newId,
-      role: user.role || "student",
+      role: targetRole,
     }).catch(() => null);
 
-    return profile;
+    return { ...profile, role: targetRole, roles: [targetRole] };
   },
 
   update: async (id: string, user: any) => {
