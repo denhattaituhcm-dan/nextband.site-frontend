@@ -124,9 +124,10 @@ export default function AdminTeachers() {
       setForm(emptyForm);
     },
     onError: (err: any) => {
+      const msg = err?.message || err?.response?.data?.error || "Không thể tạo giáo viên. Vui lòng kiểm tra dữ liệu!";
       toast({
         title: "Lỗi",
-        description: err.response?.data?.error || "Không thể tạo giáo viên",
+        description: msg,
         variant: "destructive",
       });
     },

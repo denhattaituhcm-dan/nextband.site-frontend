@@ -109,9 +109,10 @@ export default function AdminAdmins() {
       setForm(emptyForm);
     },
     onError: (err: any) => {
+      const msg = err?.message || err?.response?.data?.error || "Không thể tạo quản trị viên. Vui lòng kiểm tra dữ liệu!";
       toast({
         title: "Lỗi",
-        description: err.response?.data?.error || "Không thể tạo quản trị viên",
+        description: msg,
         variant: "destructive",
       });
     },

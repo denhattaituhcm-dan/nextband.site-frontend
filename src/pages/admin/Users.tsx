@@ -73,7 +73,7 @@ export default function AdminUsers() {
   const [pageSize, setPageSize] = useState(10);
   const [sortField, setSortField] = useState<SortField>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [roleFilter, setRoleFilter] = useState<string>(initialRole);
+  const [roleFilter, setRoleFilter] = useState<string>("student");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -258,20 +258,7 @@ export default function AdminUsers() {
         />
       </div>
 
-      <Tabs
-        value={roleFilter}
-        onValueChange={(value) => {
-          setRoleFilter(value);
-          setPage(1);
-        }}
-      >
-        <TabsList>
-          <TabsTrigger value="all">Tất cả</TabsTrigger>
-          <TabsTrigger value="student">Học sinh</TabsTrigger>
-          <TabsTrigger value="teacher">Giáo viên</TabsTrigger>
-          <TabsTrigger value="admin">Quản trị</TabsTrigger>
-        </TabsList>
-      </Tabs>
+
 
       <div className="border rounded-lg">
         <Table>
@@ -281,7 +268,6 @@ export default function AdminUsers() {
               <SortHeader field="email">Email</SortHeader>
               <TableHead>SĐT</TableHead>
               <TableHead>Giới tính</TableHead>
-              <TableHead>Vai trò</TableHead>
               <SortHeader field="createdAt">Ngày tạo</SortHeader>
               <TableHead>Kích hoạt</TableHead>
               <TableHead className="w-[60px]"></TableHead>
@@ -323,13 +309,6 @@ export default function AdminUsers() {
                   <TableCell className="text-sm">{user.phone || "—"}</TableCell>
                   <TableCell className="text-sm">
                     {genderLabel(user.gender)}
-                  </TableCell>
-                  <TableCell>
-                    {user.roles?.map((role: string) => (
-                      <Badge key={role} variant="outline" className="mr-1">
-                        {role}
-                      </Badge>
-                    ))}
                   </TableCell>
                   <TableCell className="text-sm">
                     {new Date(user.createdAt).toLocaleDateString("vi-VN")}
