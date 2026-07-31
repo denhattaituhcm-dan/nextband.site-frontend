@@ -52,7 +52,7 @@ const navigationItems = [
   },
   {
     title: "Chấm bài",
-    url: "/admin/check-attempt",
+    url: "/admin/teacher-workspace",
     icon: ClipboardCheck,
   },
   {
