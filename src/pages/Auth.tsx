@@ -106,10 +106,16 @@ export default function Auth() {
     setIsLoading(false);
 
     if (error) {
+      const rawMsg = error.message;
+      const description =
+        typeof rawMsg === "string" && rawMsg.trim() && rawMsg.trim() !== "{}"
+          ? rawMsg
+          : "Email hoặc mật khẩu không chính xác.";
+
       toast({
         variant: "destructive",
         title: "Đăng nhập thất bại",
-        description: error.message || "Email hoặc mật khẩu không chính xác.",
+        description,
       });
     } else {
       toast({
