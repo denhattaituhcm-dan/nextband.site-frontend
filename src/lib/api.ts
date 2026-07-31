@@ -1204,7 +1204,10 @@ export const usersApi = {
         full_name: user.fullName,
         phone: user.phone,
         gender: user.gender,
-        role: user.role || "teacher",
+        role: user.role || "student",
+        certificate_band: user.certificateBand || null,
+        certificate_type: user.certificateType || null,
+        certificate_url: user.certificateUrl || null,
         is_active: true,
       })
       .select()
@@ -1215,7 +1218,7 @@ export const usersApi = {
     // 2. Gán quyền trong user_roles
     await supabase.from("user_roles").insert({
       user_id: newId,
-      role: user.role || "teacher",
+      role: user.role || "student",
     }).catch(() => null);
 
     return profile;
@@ -1229,6 +1232,9 @@ export const usersApi = {
         is_active: user.isActive,
         phone: user.phone,
         gender: user.gender,
+        certificate_band: user.certificateBand,
+        certificate_type: user.certificateType,
+        certificate_url: user.certificateUrl,
       })
       .eq("user_id", id)
       .select()

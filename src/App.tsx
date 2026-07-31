@@ -269,11 +269,7 @@ const App = () => (
               />
               <Route
                 path="/admin/teachers"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminTeachers />
-                  </ProtectedRoute>
-                }
+                element={<Navigate to="/admin/users?role=teacher" replace />}
               />
               <Route
                 path="/admin/teacher-workspace"

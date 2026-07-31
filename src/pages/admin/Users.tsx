@@ -38,6 +38,7 @@ import {
   Plus,
   Edit,
   Loader2,
+  GraduationCap,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DataTablePagination } from "@/components/admin/DataTablePagination";
@@ -54,6 +55,9 @@ const emptyForm = {
   phone: "",
   parentName: "",
   parentPhone: "",
+  certificateBand: "",
+  certificateType: "",
+  certificateUrl: "",
 };
 
 export default function AdminUsers() {
@@ -463,11 +467,47 @@ export default function AdminUsers() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="student">Học sinh</SelectItem>
+                    <SelectItem value="student">Học viên</SelectItem>
                     <SelectItem value="teacher">Giáo viên</SelectItem>
                     <SelectItem value="admin">Quản trị</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+            )}
+
+            {/* Teacher Certificate Info (Strict Profile Scope) */}
+            {form.role === "teacher" && (
+              <div className="border-t pt-3 space-y-3">
+                <p className="text-xs font-bold text-blue-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <GraduationCap className="h-4 w-4" />
+                  Thông tin Chứng chỉ IELTS Giáo viên
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">IELTS Band Overall</Label>
+                    <Input
+                      placeholder="VD: 8.0 hoặc 8.5"
+                      value={form.certificateBand}
+                      onChange={(e) => setForm({ ...form, certificateBand: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Loại chứng chỉ</Label>
+                    <Input
+                      placeholder="IELTS Academic / TESOL"
+                      value={form.certificateType}
+                      onChange={(e) => setForm({ ...form, certificateType: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Link Chứng chỉ TRF (PDF/Ảnh)</Label>
+                  <Input
+                    placeholder="https://... /IELTS_CERTIFICATE.pdf"
+                    value={form.certificateUrl}
+                    onChange={(e) => setForm({ ...form, certificateUrl: e.target.value })}
+                  />
+                </div>
               </div>
             )}
 
