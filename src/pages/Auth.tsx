@@ -102,7 +102,7 @@ export default function Auth() {
     if (!validateInputs()) return;
 
     setIsLoading(true);
-    const { error } = await signIn(email, password);
+    const { error } = await signIn(email.trim(), password.trim());
     setIsLoading(false);
 
     if (error) {
