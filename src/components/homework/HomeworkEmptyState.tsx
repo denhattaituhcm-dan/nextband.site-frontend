@@ -105,10 +105,6 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
       {/* 3. 5-LEVEL IELTS ROADMAP SUMMARY - YOUR IELTS GROWTH PATH (BUILDER JOURNEY METAPHOR) */}
       <Card className="rounded-2xl border border-slate-100 bg-white p-6 md:p-8 space-y-6 shadow-sm overflow-hidden">
         <div className="text-center space-y-1.5 max-w-xl mx-auto">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-extrabold tracking-wide uppercase border border-blue-100">
-            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-            <span>The ARIS Growth Journey</span>
-          </div>
           <h3 className="text-lg md:text-xl font-black text-slate-900 tracking-tight">
             YOUR IELTS GROWTH PATH
           </h3>
@@ -146,28 +142,28 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
                 </div>
               </div>
 
-              {/* CONCISE ACADEMIC BENEFITS */}
+              {/* REAL ACADEMIC BENEFITS */}
               <div className="space-y-1.5 pt-1">
-                <div className="text-xs font-extrabold text-slate-800">Build Your Foundation</div>
+                <div className="text-xs font-extrabold text-slate-800">Hiểu bản chất một câu văn</div>
                 <ul className="text-[11px] text-slate-600 space-y-1 font-medium">
                   <li className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#D84B85]" />
-                    <span>Core Grammar</span>
+                    <span>Cách các thành phần liên hệ</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#D84B85]" />
-                    <span>Essential Vocabulary</span>
+                    <span>Áp dụng để tự tin Viết/Đọc/Nói</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#D84B85]" />
-                    <span>Pronunciation Basics</span>
+                    <span>Nền tảng từ vựng Pre IELTS</span>
                   </li>
                 </ul>
               </div>
             </div>
 
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-semibold">
-              <span>⏱ 24 lessons</span>
+              <span>⏱ 27 buổi (9 tuần)</span>
               <span className="text-[10px] text-slate-400">Phase 1</span>
             </div>
           </div>
@@ -186,7 +182,7 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
 
               <div>
                 <div className="font-black text-base text-slate-900 tracking-tight">DREAMER</div>
-                <div className="text-[11px] font-bold text-[#0093A8] italic">"I believe"</div>
+                <div className="text-[11px] font-bold text-[#0093A8] italic">"I dream"</div>
               </div>
 
               {/* PROGRESSIVE METAPHOR ILLUSTRATION: BLUEPRINT */}
@@ -201,26 +197,26 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
               </div>
 
               <div className="space-y-1.5 pt-1">
-                <div className="text-xs font-extrabold text-slate-800">Think in English</div>
+                <div className="text-xs font-extrabold text-slate-800">Sự mạch lạc của đoạn văn</div>
                 <ul className="text-[11px] text-slate-600 space-y-1 font-medium">
                   <li className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#0093A8]" />
-                    <span>Sentence Structure</span>
+                    <span>Liên kết các câu văn với nhau</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#0093A8]" />
-                    <span>Listening Strategy</span>
+                    <span>Tự tin viết/đọc/nói đoạn dài</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#0093A8]" />
-                    <span>Speaking Confidence</span>
+                    <span>Tư duy phản xạ bài thi IELTS</span>
                   </li>
                 </ul>
               </div>
             </div>
 
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-semibold">
-              <span>⏱ 24 lessons</span>
+              <span>⏱ 27 buổi (9 tuần)</span>
               <span className="text-[10px] text-slate-400">Phase 2</span>
             </div>
           </div>
@@ -255,26 +251,26 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
               </div>
 
               <div className="space-y-1.5 pt-1">
-                <div className="text-xs font-extrabold text-slate-800">Build Academic Skills</div>
+                <div className="text-xs font-extrabold text-slate-800">Thi IELTS cơ bản</div>
                 <ul className="text-[11px] text-slate-600 space-y-1 font-medium">
                   <li className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#EE771D]" />
-                    <span>Task 1 & Task 2 Intro</span>
+                    <span>Hiểu bản chất kỳ thi IELTS</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#EE771D]" />
-                    <span>Cohesion & Flow</span>
+                    <span>Trả lời tự nhiên & logic</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#EE771D]" />
-                    <span>Academic Style</span>
+                    <span>Ứng dụng được Tiếng Anh thực tế</span>
                   </li>
                 </ul>
               </div>
             </div>
 
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-semibold">
-              <span>⏱ 24 lessons</span>
+              <span>⏱ 27 buổi (9 tuần)</span>
               <span className="text-[10px] text-slate-400">Phase 3</span>
             </div>
           </div>
@@ -308,26 +304,26 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
               </div>
 
               <div className="space-y-1.5 pt-1">
-                <div className="text-xs font-extrabold text-slate-800">Perform Like Candidate</div>
+                <div className="text-xs font-extrabold text-slate-800">Luyện thi nâng cao</div>
                 <ul className="text-[11px] text-slate-600 space-y-1 font-medium">
                   <li className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#00B956]" />
-                    <span>Time Management</span>
+                    <span>Lập luận tốt tất cả dạng đề</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#00B956]" />
-                    <span>Complex Grammar</span>
+                    <span>Nắm rõ xử lý các dạng đề khó</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#00B956]" />
-                    <span>High Accuracy</span>
+                    <span>Tối ưu hóa thời gian thi thực tế</span>
                   </li>
                 </ul>
               </div>
             </div>
 
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-semibold">
-              <span>⏱ 24 lessons</span>
+              <span>⏱ 27 buổi (9 tuần)</span>
               <span className="text-[10px] text-slate-400">Phase 4</span>
             </div>
           </div>
@@ -346,7 +342,7 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
 
               <div>
                 <div className="font-black text-base text-slate-900 tracking-tight">LEADER</div>
-                <div className="text-[11px] font-bold text-[#B82B37] italic">"I inspire"</div>
+                <div className="text-[11px] font-bold text-[#B82B37] italic">"I lead"</div>
               </div>
 
               {/* PROGRESSIVE METAPHOR ILLUSTRATION: LANDMARK WITH CROWN */}
@@ -360,26 +356,26 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
               </div>
 
               <div className="space-y-1.5 pt-1">
-                <div className="text-xs font-extrabold text-slate-800">Lead with Confidence</div>
+                <div className="text-xs font-extrabold text-slate-800">Master & Chinh phục 7.0+</div>
                 <ul className="text-[11px] text-slate-600 space-y-1 font-medium">
                   <li className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#B82B37]" />
-                    <span>Advanced Arguments</span>
+                    <span>Tư duy & lập luận chuyên sâu</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#B82B37]" />
-                    <span>Native-like Fluency</span>
+                    <span>Lưu khoát & tự nhiên như bản xứ</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#B82B37]" />
-                    <span>Critical Thinking</span>
+                    <span>Dẫn dắt & định hình phản xạ</span>
                   </li>
                 </ul>
               </div>
             </div>
 
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-semibold">
-              <span>⏱ 30 lessons</span>
+              <span>⏱ 30 buổi (10 tuần)</span>
               <span className="text-[10px] text-slate-400">Phase 5</span>
             </div>
           </div>
