@@ -184,6 +184,7 @@ function TeacherFacultySection() {
       score: "8.0",
       role: "Giảng viên Chủ nhiệm ARIS IELTS",
       pdfUrl: "/IELTS CERTIFICATE_LUU_VAN-DANG.pdf",
+      imageUrl: "/IELTS CERTIFICATE_LUU_VAN-DANG_page-0001.jpg",
       credentials: [
         "Chứng chỉ Nghiệp vụ Sư phạm — ĐH Sư phạm TP.HCM",
         "Hơn 5 năm kinh nghiệm giảng dạy & tư vấn lộ trình IELTS 6.5+",
@@ -195,6 +196,7 @@ function TeacherFacultySection() {
   const [selectedTeacherId, setSelectedTeacherId] = useState(teachersList[0].id);
   const currentTeacher =
     teachersList.find((t) => t.id === selectedTeacherId) || teachersList[0];
+  const [imgError, setImgError] = useState(false);
 
   return (
     <Card className="rounded-2xl border border-slate-100 bg-white p-6 md:p-8 space-y-6 shadow-sm">
@@ -219,7 +221,10 @@ function TeacherFacultySection() {
           return (
             <button
               key={t.id}
-              onClick={() => setSelectedTeacherId(t.id)}
+              onClick={() => {
+                setSelectedTeacherId(t.id);
+                setImgError(false);
+              }}
               className={`flex items-center gap-2.5 px-4 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
                 isSelected
                   ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20"
@@ -283,14 +288,14 @@ function TeacherFacultySection() {
           </a>
         </div>
 
-        {/* RIGHT COLUMN: CLEAN DIRECT CERTIFICATE DISPLAY ON PAGE */}
+        {/* RIGHT COLUMN: FLAT NATURAL IMAGE DISPLAY ON PAGE */}
         <div className="md:col-span-7 space-y-3">
           <div className="flex items-center justify-between px-1 text-xs font-bold text-slate-700">
             <span className="text-slate-800 font-extrabold text-sm">
               Bảng điểm thi IELTS
             </span>
             <a
-              href={currentTeacher.pdfUrl}
+              href={currentTeacher.imageUrl || currentTeacher.pdfUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs text-blue-600 hover:underline font-extrabold flex items-center gap-1"
@@ -299,14 +304,24 @@ function TeacherFacultySection() {
             </a>
           </div>
 
-          {/* DIRECT CERTIFICATE VIEW ON PAGE (MATCHING DESIGN REFERENCE) */}
-          <div className="w-full rounded-2xl bg-white border border-slate-200/90 p-2 sm:p-4 shadow-sm relative overflow-hidden">
-            <iframe
-              key={currentTeacher.id}
-              src={`${currentTeacher.pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-              title={`Bảng điểm IELTS ${currentTeacher.name}`}
-              className="w-full h-[620px] sm:h-[750px] border-0 rounded-xl bg-white"
-            />
+          {/* DIRECT FLAT IMAGE VIEW (NO PDF VIEWER FRAME) */}
+          <div className="w-full rounded-2xl bg-white border border-slate-200/90 p-2 sm:p-3 shadow-xs relative overflow-hidden flex items-center justify-center">
+            {!imgError && currentTeacher.imageUrl ? (
+              <img
+                key={currentTeacher.id}
+                src={currentTeacher.imageUrl}
+                alt={`Bảng điểm IELTS ${currentTeacher.name}`}
+                onError={() => setImgError(true)}
+                className="w-full h-auto max-h-[750px] object-contain rounded-xl"
+              />
+            ) : (
+              <iframe
+                key={currentTeacher.id}
+                src={`${currentTeacher.pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                title={`Bảng điểm IELTS ${currentTeacher.name}`}
+                className="w-full h-[620px] sm:h-[750px] border-0 rounded-xl bg-white"
+              />
+            )}
           </div>
         </div>
       </div>
