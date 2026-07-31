@@ -127,10 +127,11 @@ export default function AdminClasses() {
       setDialogOpen(false);
       setForm(emptyForm);
     },
-    onError: () => {
+    onError: (err: any) => {
+      console.error("[CREATE_CLASS_ERROR]", err);
       toast({
         title: "Lỗi",
-        description: "Không thể tạo lớp học",
+        description: err.message || err.details || "Không thể tạo lớp học",
         variant: "destructive",
       });
     },

@@ -1410,9 +1410,35 @@ export const logsApi = {
 // =============================================
 export const classesApi = {
   list: async (params?: any) => {
-    const { data, error } = await supabase.from("classes").select("*");
+    let query = supabase.from("classes").select("*", { count: "exact" });
+
+    if (params?.search) {
+      query = query.ilike("name", `%${params.search}%`);
+    }
+
+    const { data, count, error } = await query;
     if (error) throw error;
-    return { data: data || [] };
+
+    const formatted = (data || []).map((c: any) => ({
+      id: c.id,
+      name: c.name,
+      description: c.description || "",
+      teacherId: c.teacher_id,
+      startDate: c.start_date,
+      endDate: c.end_date,
+      isActive: c.is_active ?? true,
+      createdAt: c.created_at,
+    }));
+
+    return {
+      data: formatted,
+      meta: {
+        total: count || formatted.length,
+        page: params?.page || 1,
+        limit: params?.limit || 10,
+        totalPages: Math.ceil((count || formatted.length) / (params?.limit || 10)),
+      },
+    };
   },
 
   getById: async (id: string) => {
@@ -1423,23 +1449,51 @@ export const classesApi = {
       .single();
 
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      teacherId: data.teacher_id,
+      startDate: data.start_date,
+      endDate: data.end_date,
+      isActive: data.is_active,
+    };
   },
 
   create: async (body: any) => {
+    const dbPayload = {
+      name: body.name,
+      description: body.description || null,
+      teacher_id: body.teacherId || null,
+      start_date: body.startDate || null,
+      end_date: body.endDate || null,
+      is_active: body.isActive ?? true,
+    };
+
     const { data, error } = await supabase
       .from("classes")
-      .insert(body)
+      .insert(dbPayload)
       .select()
       .single();
-    if (error) throw error;
+
+    if (error) {
+      console.error("[CLASSES_API_CREATE_ERROR]", error);
+      throw error;
+    }
     return data;
   },
 
   update: async (id: string, body: any) => {
+    const dbPayload = {
+      name: body.name,
+      description: body.description || null,
+      teacher_id: body.teacherId || null,
+      start_date: body.startDate || null,
+      end_date: body.endDate || null,
+      is_active: body.isActive ?? true,
+    };
+
     const { data, error } = await supabase
       .from("classes")
-      .update(body)
+      .update(dbPayload)
       .eq("id", id)
       .select()
       .single();
