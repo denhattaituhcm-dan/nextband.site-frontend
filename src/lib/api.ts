@@ -1145,9 +1145,9 @@ export const usersApi = {
 
     let { data, count, error } = await query.range(from, to);
     
-    // Fallback nếu chưa tạo relationship inner join
-    if (error) {
-      let fallbackQuery = supabase.from("profiles").select("*, user_roles(role)", { count: "exact" });
+    // Fallback nếu chưa setup foreign key relationship user_roles trong Supabase DB
+    if (error || !data || data.length === 0) {
+      let fallbackQuery = supabase.from("profiles").select("*", { count: "exact" });
       if (params?.search) {
         fallbackQuery = fallbackQuery.or(`full_name.ilike.%${params.search}%,email.ilike.%${params.search}%`);
       }
@@ -1155,7 +1155,7 @@ export const usersApi = {
       data = fallbackRes.data || [];
       count = fallbackRes.count || 0;
       if (params?.role) {
-        data = data.filter((p: any) => p.user_roles?.some((r: any) => r.role === params.role) || p.role === params.role);
+        data = data.filter((p: any) => p.role === params.role || !p.role || p.role === "user");
       }
     }
 

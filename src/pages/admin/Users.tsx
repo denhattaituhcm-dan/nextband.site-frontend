@@ -203,7 +203,7 @@ export default function AdminUsers() {
       const { email, password, ...rest } = form;
       updateMutation.mutate({ id: editingUser.id, ...rest });
     } else {
-      createMutation.mutate(form);
+      createMutation.mutate({ ...form, role: form.role || "student" });
     }
   };
 
