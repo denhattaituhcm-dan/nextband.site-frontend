@@ -399,8 +399,9 @@ export default function AdminUsers() {
                     <div className="space-y-2">
                       <Label>Mật khẩu *</Label>
                       <Input
-                        type="password"
-                        placeholder="Mật khẩu đăng nhập"
+                        type="text"
+                        placeholder="Mật khẩu đăng nhập (Hiển thị rõ)"
+                        className="font-mono bg-amber-50/50 border-amber-200 font-bold"
                         value={form.password}
                         onChange={(e) =>
                           setForm({ ...form, password: e.target.value })
@@ -483,75 +484,13 @@ export default function AdminUsers() {
               </div>
             )}
 
-            {/* Teacher Certificate Info (Strict Profile Scope) */}
-            {form.role === "teacher" && (
+            {/* Parent Info (Only relevant for Students) */}
+            {form.role === "student" && (
               <div className="border-t pt-3 space-y-3">
-                <p className="text-xs font-bold text-blue-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <GraduationCap className="h-4 w-4" />
-                  Thông tin Chứng chỉ IELTS Giáo viên
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  Thông tin phụ huynh (Dành cho Học viên)
                 </p>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs">IELTS Band Overall</Label>
-                    <Input
-                      placeholder="VD: 8.0 hoặc 8.5"
-                      value={form.certificateBand}
-                      onChange={(e) => setForm({ ...form, certificateBand: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs">Loại chứng chỉ</Label>
-                    <Input
-                      placeholder="IELTS Academic / TESOL"
-                      value={form.certificateType}
-                      onChange={(e) => setForm({ ...form, certificateType: e.target.value })}
-                    />
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Link Chứng chỉ TRF (PDF/Ảnh)</Label>
-                  <Input
-                    placeholder="https://... /IELTS_CERTIFICATE.pdf"
-                    value={form.certificateUrl}
-                    onChange={(e) => setForm({ ...form, certificateUrl: e.target.value })}
-                  />
-                </div>
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-blue-50/60 border border-blue-100">
-                  <div className="space-y-0.5">
-                    <Label className="text-xs font-bold text-blue-900">✔ Đã xác minh chứng chỉ (Admin Only)</Label>
-                    <p className="text-[10px] text-blue-600">Bật công tắc này khi đã kiểm tra đối chiếu bằng thật</p>
-                  </div>
-                  <Switch
-                    checked={form.certificateVerified}
-                    onCheckedChange={(checked) => setForm({ ...form, certificateVerified: checked })}
-                    className="data-[state=checked]:bg-blue-600"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Separator */}
-            <div className="border-t pt-3">
-              <p className="text-sm font-semibold text-muted-foreground mb-3">
-                Thông tin phụ huynh
-              </p>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label>Tên phụ huynh</Label>
-                  <Input
-                    placeholder="Nguyễn Văn B"
-                    value={form.parentName}
-                    onChange={(e) =>
-                      setForm({ ...form, parentName: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>SĐT phụ huynh</Label>
-                  <Input
-                    placeholder="0901234567"
-                    value={form.parentPhone}
-                    onChange={(e) =>
                       setForm({ ...form, parentPhone: e.target.value })
                     }
                   />
