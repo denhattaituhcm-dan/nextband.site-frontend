@@ -1077,6 +1077,9 @@ const localUsersStore: any[] = [
     role: "teacher",
     isActive: true,
     createdAt: new Date().toISOString(),
+  },
+];
+
 // USERS API (Cleaned Production Store - No Silent RAM Fallbacks)
 // =============================================
 export const usersApi = {
