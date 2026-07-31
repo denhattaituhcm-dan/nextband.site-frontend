@@ -243,7 +243,7 @@ export default function AdminUsers() {
         </div>
         <Button onClick={openCreate}>
           <Plus className="mr-2 h-4 w-4" />
-          Thêm học viên
+          Thêm người dùng
         </Button>
       </div>
 
@@ -376,7 +376,7 @@ export default function AdminUsers() {
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingUser ? "Chỉnh sửa người dùng" : "Thêm học viên mới"}
+              {editingUser ? "Chỉnh sửa người dùng" : "Thêm người dùng mới"}
             </DialogTitle>
           </DialogHeader>
           <div className="grid gap-4">
