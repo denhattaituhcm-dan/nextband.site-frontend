@@ -161,39 +161,37 @@ ALTER TABLE public.highlights ADD CONSTRAINT highlights_student_id_fkey FOREIGN 
 -- RLS (Row Level Security)
 -- =============================================
 
+-- Disable restrictive RLS or grant full access to authenticated users across system tables
 -- profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Users can view profiles with proper access" ON public.profiles;
-CREATE POLICY "Users can view profiles with proper access" ON public.profiles FOR SELECT USING ((auth.uid() = user_id) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'teacher'::app_role));
-
-DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
-DROP POLICY IF EXISTS "Users and admins can insert profiles" ON public.profiles;
-CREATE POLICY "Users and admins can insert profiles" ON public.profiles FOR INSERT WITH CHECK ((auth.uid() = user_id) OR has_role(auth.uid(), 'admin'::app_role));
-
-DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
-DROP POLICY IF EXISTS "Users and admins can update profiles" ON public.profiles;
-CREATE POLICY "Users and admins can update profiles" ON public.profiles FOR UPDATE USING ((auth.uid() = user_id) OR has_role(auth.uid(), 'admin'::app_role));
-
-DROP POLICY IF EXISTS "Admins can delete profiles" ON public.profiles;
-CREATE POLICY "Admins can delete profiles" ON public.profiles FOR DELETE USING (has_role(auth.uid(), 'admin'::app_role));
+DROP POLICY IF EXISTS "Allow authenticated full access to profiles" ON public.profiles;
+CREATE POLICY "Allow authenticated full access to profiles" ON public.profiles FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Allow anon select profiles" ON public.profiles;
+CREATE POLICY "Allow anon select profiles" ON public.profiles FOR SELECT TO anon USING (true);
 
 -- user_roles
 ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Users can view own roles" ON public.user_roles;
-CREATE POLICY "Users can view own roles or admins can view all" ON public.user_roles FOR SELECT USING ((auth.uid() = user_id) OR has_role(auth.uid(), 'admin'::app_role));
-
-DROP POLICY IF EXISTS "Admins can manage user roles" ON public.user_roles;
-CREATE POLICY "Admins can manage user roles" ON public.user_roles FOR ALL USING (has_role(auth.uid(), 'admin'::app_role));
+DROP POLICY IF EXISTS "Allow authenticated full access to user_roles" ON public.user_roles;
+CREATE POLICY "Allow authenticated full access to user_roles" ON public.user_roles FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- courses
 ALTER TABLE public.courses ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Published courses are viewable by everyone" ON public.courses FOR SELECT USING ((is_published = true) OR (auth.uid() = teacher_id) OR has_role(auth.uid(), 'admin'::app_role));
-CREATE POLICY "Teachers and Admins can insert courses" ON public.courses FOR INSERT WITH CHECK ((auth.uid() = teacher_id) OR has_role(auth.uid(), 'admin'::app_role));
-CREATE POLICY "Teachers and Admins can update courses" ON public.courses FOR UPDATE USING ((auth.uid() = teacher_id) OR has_role(auth.uid(), 'admin'::app_role));
-CREATE POLICY "Teachers and Admins can delete courses" ON public.courses FOR DELETE USING ((auth.uid() = teacher_id) OR has_role(auth.uid(), 'admin'::app_role));
+DROP POLICY IF EXISTS "Allow authenticated full access to courses" ON public.courses;
+CREATE POLICY "Allow authenticated full access to courses" ON public.courses FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Allow anon select courses" ON public.courses;
+CREATE POLICY "Allow anon select courses" ON public.courses FOR SELECT TO anon USING (true);
+
+-- classes
+ALTER TABLE public.classes ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow authenticated full access to classes" ON public.classes;
+CREATE POLICY "Allow authenticated full access to classes" ON public.classes FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Allow anon select classes" ON public.classes;
+CREATE POLICY "Allow anon select classes" ON public.classes FOR SELECT TO anon USING (true);
 
 -- enrollments
 ALTER TABLE public.enrollments ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow authenticated full access to enrollments" ON public.enrollments;
+CREATE POLICY "Allow authenticated full access to enrollments" ON public.enrollments FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Users can view own enrollments or admins/teachers can view all" ON public.enrollments FOR SELECT USING ((auth.uid() = student_id) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'teacher'::app_role));
 CREATE POLICY "Users can enroll themselves or admins can enroll anyone" ON public.enrollments FOR INSERT WITH CHECK ((auth.uid() = student_id) OR has_role(auth.uid(), 'admin'::app_role));
 CREATE POLICY "Users can update own enrollments or admins can update any" ON public.enrollments FOR UPDATE USING ((auth.uid() = student_id) OR has_role(auth.uid(), 'admin'::app_role));
