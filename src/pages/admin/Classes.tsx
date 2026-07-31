@@ -43,6 +43,7 @@ import {
   School,
   ClipboardCheck,
   KeyRound,
+  BookOpen,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -54,6 +55,7 @@ type SortField = "name" | "createdAt";
 const emptyForm = {
   name: "",
   description: "",
+  courseId: "",
   teacherId: "",
   startDate: "",
   endDate: "",
@@ -104,6 +106,14 @@ export default function AdminClasses() {
       }),
   });
 
+  // Fetch courses for the dropdown
+  const { data: coursesData } = useQuery({
+    queryKey: ["courses-list"],
+    queryFn: () => coursesApi.list({ limit: 100 }),
+  });
+
+  const courses = coursesData?.data || [];
+
   // Fetch teachers for the dropdown
   const { data: teachersData } = useQuery({
     queryKey: ["teachers-list"],
@@ -116,6 +126,7 @@ export default function AdminClasses() {
     mutationFn: (body: typeof emptyForm) =>
       classesApi.create({
         ...body,
+        courseId: body.courseId || undefined,
         teacherId: body.teacherId || undefined,
         startDate: body.startDate || undefined,
         endDate: body.endDate || undefined,
@@ -142,6 +153,7 @@ export default function AdminClasses() {
       classesApi.update(id, {
         name: body.name,
         description: body.description,
+        courseId: body.courseId || null,
         teacherId: body.teacherId || null,
         startDate: body.startDate || null,
         endDate: body.endDate || null,
@@ -212,6 +224,7 @@ export default function AdminClasses() {
     setForm({
       name: cls.name || "",
       description: cls.description || "",
+      courseId: cls.courseId || cls.course_id || "",
       teacherId: cls.teacherId || cls.teacher?.id || "",
       startDate: cls.startDate
         ? new Date(cls.startDate).toISOString().split("T")[0]
@@ -428,16 +441,33 @@ export default function AdminClasses() {
                 placeholder="VD: IELTS Foundation 01"
               />
             </div>
+            {/* Course / Program select */}
             <div className="space-y-2">
-              <Label>Mô tả</Label>
-              <Textarea
-                value={form.description}
-                onChange={(e) =>
-                  setForm({ ...form, description: e.target.value })
+              <Label className="flex items-center gap-1.5 font-bold text-slate-700">
+                <BookOpen className="h-3.5 w-3.5 text-blue-600" />
+                Khóa học / Chương trình đào tạo *
+              </Label>
+              <Select
+                value={form.courseId}
+                onValueChange={(v) =>
+                  setForm({ ...form, courseId: v === "__none__" ? "" : v })
                 }
-                placeholder="Mô tả lớp học..."
-                rows={3}
-              />
+              >
+                <SelectTrigger className="bg-slate-50 border-slate-200 font-medium">
+                  <SelectValue placeholder="Chọn Khóa học (STARTER, MASTER, BUILDER...)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">
+                    <span className="text-muted-foreground">— Chọn khóa học —</span>
+                  </SelectItem>
+                  {courses.map((c: any) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      <span className="font-semibold text-slate-800">{c.title}</span>
+                      {c.level ? <span className="text-xs text-muted-foreground ml-2">({c.level})</span> : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Teacher select */}
