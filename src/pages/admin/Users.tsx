@@ -129,9 +129,10 @@ export default function AdminUsers() {
       setForm(emptyForm);
     },
     onError: (err: any) => {
+      const msg = err?.message || err?.response?.data?.error || "Không thể tạo người dùng. Vui lòng kiểm tra quyền Supabase DB!";
       toast({
         title: "Lỗi",
-        description: err.response?.data?.error || "Không thể tạo người dùng",
+        description: msg,
         variant: "destructive",
       });
     },

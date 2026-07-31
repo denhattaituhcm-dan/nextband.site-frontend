@@ -1096,10 +1096,6 @@ export const usersApi = {
       .from("profiles")
       .select("*, user_roles(role)", { count: "exact" });
 
-    if (params?.role && params.role !== "all") {
-      query = query.eq("role", params.role);
-    }
-
     if (params?.search) {
       query = query.or(`full_name.ilike.%${params.search}%,email.ilike.%${params.search}%`);
     }
@@ -1108,9 +1104,14 @@ export const usersApi = {
     const to = from + limit - 1;
     let { data, count, error } = await query.range(from, to);
 
-    if (error) throw error;
+    if (error) {
+      // Fallback query if user_roles join fails
+      const fallbackRes = await supabase.from("profiles").select("*").range(from, to);
+      data = fallbackRes.data || [];
+      count = fallbackRes.count || data.length;
+    }
 
-    const formattedData = (data || []).map((p: any) => ({
+    let formattedData = (data || []).map((p: any) => ({
       id: p.id || p.user_id,
       user_id: p.user_id || p.id,
       email: p.email,
@@ -1122,6 +1123,10 @@ export const usersApi = {
       isActive: p.is_active ?? true,
       createdAt: p.created_at,
     }));
+
+    if (params?.role && params.role !== "all") {
+      formattedData = formattedData.filter(u => u.roles.includes(params.role) || u.role === params.role);
+    }
 
     return {
       data: formattedData,
@@ -1147,6 +1152,34 @@ export const usersApi = {
 
   create: async (user: any) => {
     const newId = crypto.randomUUID();
+    
+    // Check if profile with email already exists
+    const { data: existingProfile } = await supabase
+      .from("profiles")
+      .select("id, user_id, email")
+      .eq("email", user.email)
+      .maybeSingle();
+
+    if (existingProfile) {
+      // Update existing profile
+      const { data: updated, error: uError } = await supabase
+        .from("profiles")
+        .update({
+          full_name: user.fullName,
+          phone: user.phone,
+          gender: user.gender,
+          role: user.role || "student",
+          is_active: true,
+        })
+        .eq("id", existingProfile.id)
+        .select()
+        .single();
+        
+      if (uError) throw uError;
+      return updated;
+    }
+
+    // Insert new profile
     const { data: profile, error: pError } = await supabase
       .from("profiles")
       .insert({
