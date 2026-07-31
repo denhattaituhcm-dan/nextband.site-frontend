@@ -336,6 +336,39 @@ END;
 $$;
 
 -- =============================================
+-- ADDITIONAL TABLES (classes & notifications)
+-- =============================================
+
+CREATE TABLE IF NOT EXISTS public.classes (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  course_id uuid REFERENCES public.courses(id) ON DELETE SET NULL,
+  teacher_id uuid REFERENCES public.profiles(user_id) ON DELETE SET NULL,
+  description text,
+  start_date date,
+  end_date date,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS public.notifications (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  recipient_id uuid REFERENCES public.profiles(user_id) ON DELETE CASCADE,
+  recipient_role text DEFAULT 'student',
+  type text NOT NULL,
+  title text NOT NULL,
+  message text NOT NULL,
+  entity_type text,
+  entity_id text,
+  action_url text,
+  priority text DEFAULT 'info',
+  is_read boolean DEFAULT false,
+  created_at timestamptz DEFAULT now(),
+  read_at timestamptz
+);
+
+-- =============================================
 -- STORAGE BUCKETS
 -- =============================================
 INSERT INTO storage.buckets (id, name, public) VALUES ('course-thumbnails', 'course-thumbnails', true);
