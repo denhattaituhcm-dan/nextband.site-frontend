@@ -1208,6 +1208,7 @@ export const usersApi = {
         certificate_band: user.certificateBand || null,
         certificate_type: user.certificateType || null,
         certificate_url: user.certificateUrl || null,
+        certificate_verified: user.certificateVerified ?? false,
         is_active: true,
       })
       .select()
@@ -1235,6 +1236,7 @@ export const usersApi = {
         certificate_band: user.certificateBand,
         certificate_type: user.certificateType,
         certificate_url: user.certificateUrl,
+        certificate_verified: user.certificateVerified,
       })
       .eq("user_id", id)
       .select()
