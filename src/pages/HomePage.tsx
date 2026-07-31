@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import { coursesApi, enrollmentsApi, homeworksApi } from "@/lib/api";
+import { coursesApi, enrollmentsApi, homeworksApi, lessonsApi, submissionsApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";

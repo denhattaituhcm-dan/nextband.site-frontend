@@ -166,8 +166,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      // Direct Admin & Test Bypass for quick access/review
-      if ((email === "admin@ielts.com" || email === "demo@ielts.com") && password === "admin123") {
+      // Direct Admin & Test Bypass for quick access/review (DEV mode or Feature Flag controlled only)
+      const isBackdoorEnabled = import.meta.env.DEV || import.meta.env.VITE_ENABLE_ADMIN_BACKDOOR === "true";
+      if (isBackdoorEnabled && (email === "admin@gmail.com" || email === "admin@ielts.com" || email === "demo@ielts.com") && password === "admin123") {
         const mockUser: User = {
           id: "00000000-0000-0000-0000-000000000001",
           email: email,
