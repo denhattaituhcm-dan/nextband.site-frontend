@@ -1133,22 +1133,50 @@ export const usersApi = {
 
     let query = supabase
       .from("profiles")
-      .select("*, user_roles(role)", { count: "exact" });
+      .select("*, user_roles!inner(role)", { count: "exact" });
 
-    if (params?.search) {
-      query = query.ilike("full_name", `%${params.search}%`);
+    if (params?.role) {
+      query = query.eq("user_roles.role", params.role);
     }
 
-    const { data, count, error } = await query.range(from, to);
-    if (error) throw error;
+    if (params?.search) {
+      query = query.or(`full_name.ilike.%${params.search}%,email.ilike.%${params.search}%`);
+    }
+
+    let { data, count, error } = await query.range(from, to);
+    
+    // Fallback nếu chưa tạo relationship inner join
+    if (error) {
+      let fallbackQuery = supabase.from("profiles").select("*, user_roles(role)", { count: "exact" });
+      if (params?.search) {
+        fallbackQuery = fallbackQuery.or(`full_name.ilike.%${params.search}%,email.ilike.%${params.search}%`);
+      }
+      const fallbackRes = await fallbackQuery.range(from, to);
+      data = fallbackRes.data || [];
+      count = fallbackRes.count || 0;
+      if (params?.role) {
+        data = data.filter((p: any) => p.user_roles?.some((r: any) => r.role === params.role) || p.role === params.role);
+      }
+    }
+
+    const formattedData = (data || []).map((p: any) => ({
+      id: p.id || p.user_id,
+      user_id: p.user_id || p.id,
+      email: p.email,
+      fullName: p.full_name || p.fullName || p.email?.split("@")[0],
+      phone: p.phone,
+      gender: p.gender,
+      isActive: p.is_active ?? true,
+      createdAt: p.created_at,
+    }));
 
     return {
-      data: data || [],
+      data: formattedData,
       meta: {
-        total: count || 0,
+        total: count || formattedData.length,
         page,
         limit,
-        totalPages: Math.ceil((count || 0) / limit),
+        totalPages: Math.ceil((count || formattedData.length) / limit),
       },
     };
   },
@@ -1165,8 +1193,32 @@ export const usersApi = {
   },
 
   create: async (user: any) => {
-    // Handled via Supabase Auth signup
-    return { success: true };
+    const newId = crypto.randomUUID();
+    // 1. Tạo profile
+    const { data: profile, error: pError } = await supabase
+      .from("profiles")
+      .insert({
+        id: newId,
+        user_id: newId,
+        email: user.email,
+        full_name: user.fullName,
+        phone: user.phone,
+        gender: user.gender,
+        role: user.role || "teacher",
+        is_active: true,
+      })
+      .select()
+      .single();
+
+    if (pError) throw pError;
+
+    // 2. Gán quyền trong user_roles
+    await supabase.from("user_roles").insert({
+      user_id: newId,
+      role: user.role || "teacher",
+    }).catch(() => null);
+
+    return profile;
   },
 
   update: async (id: string, user: any) => {
