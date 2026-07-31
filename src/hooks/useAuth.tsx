@@ -168,13 +168,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // Direct Admin & Test Bypass for quick access/review (DEV mode or Feature Flag controlled only)
       const isBackdoorEnabled = import.meta.env.DEV || import.meta.env.VITE_ENABLE_ADMIN_BACKDOOR === "true";
-      if (isBackdoorEnabled && (email === "admin@gmail.com" || email === "admin@ielts.com" || email === "demo@ielts.com") && password === "admin123") {
+      const isAdminLogin = (email === "admin@gmail.com" || email === "admin@ielts.com" || email === "demo@ielts.com") && (password === "admin123" || password === "teacher123");
+      const isTeacherLogin = (email === "teacher@ielts.com" || email === "teacher@nextband.edu.vn") && (password === "teacher123" || password === "admin123");
+
+      if (isBackdoorEnabled && (isAdminLogin || isTeacherLogin)) {
+        const roleList = isTeacherLogin ? ["teacher", "student"] : ["admin", "teacher", "student"];
         const mockUser: User = {
-          id: "00000000-0000-0000-0000-000000000001",
+          id: isTeacherLogin ? "00000000-0000-0000-0000-000000000002" : "00000000-0000-0000-0000-000000000001",
           email: email,
-          fullName: "Admin User (DAN)",
+          fullName: isTeacherLogin ? "Giáo viên ARIS IELTS" : "Admin User (DAN)",
           avatarUrl: null,
-          roles: ["admin", "teacher", "student"],
+          roles: roleList,
         };
         localStorage.setItem("nextband_mock_user", JSON.stringify(mockUser));
         setUser(mockUser);
