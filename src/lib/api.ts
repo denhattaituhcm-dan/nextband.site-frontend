@@ -1,6 +1,8 @@
 import { supabase } from "./supabase";
 import { normalizeSiteSettings } from "./site-settings";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1";
+
 // Helper to format URLs
 export const formatStorageUrl = (path: string | null) => {
   if (!path) return "";
@@ -239,9 +241,6 @@ export const coursesApi = {
         { id: "c1000000-0000-0000-0000-000000000008", title: "LEADER", description: "Bứt phá kỹ năng Luyện nói & Viết IELTS", level: "Intermediate", slug: "leader" },
         { id: "c1000000-0000-0000-0000-000000000009", title: "EXTRA LISTENING", description: "Luyện phản xạ và kỹ năng nghe chuyên sâu", level: "All Levels", slug: "extra-listening" },
       ];
-
-      // Auto-upsert background sync
-      supabase.from("courses").upsert(defaultCourses, { onConflict: "id" }).then(() => {});
 
       let filtered = defaultCourses;
       if (params?.search) {
@@ -1763,7 +1762,7 @@ export const invitationsApi = {
   joinByCode: async (payload: { code: string }) => {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
-    const response = await fetch("http://localhost:3000/api/v1/invitations/join", {
+    const response = await fetch(`${API_BASE_URL}/invitations/join`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1779,7 +1778,7 @@ export const invitationsApi = {
   generate: async (payload: { classId: string; inviteCode?: string }) => {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
-    const response = await fetch("http://localhost:3000/api/v1/invitations/generate", {
+    const response = await fetch(`${API_BASE_URL}/invitations/generate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1814,7 +1813,7 @@ export const homeworksApi = {
   getWorkspace: async () => {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
-    const response = await fetch("http://localhost:3000/api/v1/homeworks/workspace", {
+    const response = await fetch(`${API_BASE_URL}/homeworks/workspace`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1827,7 +1826,7 @@ export const homeworksApi = {
   getTeacherWorkspace: async () => {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
-    const response = await fetch("http://localhost:3000/api/v1/homeworks/teacher-workspace", {
+    const response = await fetch(`${API_BASE_URL}/homeworks/teacher-workspace`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1840,7 +1839,7 @@ export const homeworksApi = {
   create: async (payload: { classId: string; title: string; description?: string; deadline?: string }) => {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
-    const response = await fetch("http://localhost:3000/api/v1/homeworks/create", {
+    const response = await fetch(`${API_BASE_URL}/homeworks/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1856,7 +1855,7 @@ export const homeworksApi = {
   submit: async (payload: { homeworkId: string }) => {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
-    const response = await fetch("http://localhost:3000/api/v1/homeworks/submit", {
+    const response = await fetch(`${API_BASE_URL}/homeworks/submit`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1872,7 +1871,7 @@ export const homeworksApi = {
   grade: async (payload: { homeworkId: string; studentId: string; score: number; feedback: string }) => {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
-    const response = await fetch("http://localhost:3000/api/v1/homeworks/grade", {
+    const response = await fetch(`${API_BASE_URL}/homeworks/grade`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1935,7 +1934,7 @@ export const lessonsApi = {
   getClassLessons: async (classId: string) => {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
-    const response = await fetch(`http://localhost:3000/api/v1/classes/${classId}/lessons`, {
+    const response = await fetch(`${API_BASE_URL}/classes/${classId}/lessons`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1977,7 +1976,7 @@ export const attendanceApi = {
   getSessionAttendance: async (classId: string, sessionId: string) => {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
-    const response = await fetch(`http://localhost:3000/api/v1/classes/${classId}/sessions/${sessionId}/attendance`, {
+    const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/attendance`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1994,7 +1993,7 @@ export const attendanceApi = {
   ) => {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
-    const response = await fetch(`http://localhost:3000/api/v1/classes/${classId}/sessions/${sessionId}/attendance`, {
+    const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/attendance`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
