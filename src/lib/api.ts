@@ -1077,22 +1077,7 @@ const localUsersStore: any[] = [
     role: "teacher",
     isActive: true,
     createdAt: new Date().toISOString(),
-  },
-  {
-    id: "00000000-0000-0000-0000-000000000003",
-    user_id: "00000000-0000-0000-0000-000000000003",
-    email: "student@ielts.com",
-    fullName: "Nguyễn Văn Học Viên",
-    phone: "0912345678",
-    gender: "male",
-    roles: ["student"],
-    role: "student",
-    isActive: true,
-    createdAt: new Date().toISOString(),
-  },
-];
-
-// USERS API
+// USERS API (Cleaned Production Store - No Silent RAM Fallbacks)
 // =============================================
 export const usersApi = {
   list: async (params?: {
@@ -1104,168 +1089,105 @@ export const usersApi = {
     const page = params?.page || 1;
     const limit = params?.limit || 10;
 
-    try {
-      let query = supabase
-        .from("profiles")
-        .select("*, user_roles(role)", { count: "exact" });
+    let query = supabase
+      .from("profiles")
+      .select("*, user_roles(role)", { count: "exact" });
 
-      if (params?.role) {
-        query = query.eq("role", params.role);
-      }
-
-      if (params?.search) {
-        query = query.or(`full_name.ilike.%${params.search}%,email.ilike.%${params.search}%`);
-      }
-
-      const from = (page - 1) * limit;
-      const to = from + limit - 1;
-      let { data, count, error } = await query.range(from, to);
-
-      if (error || !data || data.length === 0) throw error || new Error("No data");
-
-      const formattedData = data.map((p: any) => ({
-        id: p.id || p.user_id,
-        user_id: p.user_id || p.id,
-        email: p.email,
-        fullName: p.full_name || p.fullName || p.email?.split("@")[0],
-        phone: p.phone,
-        gender: p.gender,
-        roles: p.user_roles ? p.user_roles.map((r: any) => r.role) : [p.role || "student"],
-        role: p.role || "student",
-        isActive: p.is_active ?? true,
-        createdAt: p.created_at,
-      }));
-
-      return {
-        data: formattedData,
-        meta: {
-          total: count || formattedData.length,
-          page,
-          limit,
-          totalPages: Math.ceil((count || formattedData.length) / limit),
-        },
-      };
-    } catch {
-      let filtered = [...localUsersStore];
-      if (params?.role && params.role !== "all") {
-        filtered = filtered.filter(u => u.roles?.includes(params.role) || u.role === params.role);
-      }
-      if (params?.search) {
-        const s = params.search.toLowerCase();
-        filtered = filtered.filter(u => u.fullName?.toLowerCase().includes(s) || u.email?.toLowerCase().includes(s));
-      }
-
-      const total = filtered.length;
-      const start = (page - 1) * limit;
-      const paginated = filtered.slice(start, start + limit);
-
-      return {
-        data: paginated,
-        meta: {
-          total,
-          page,
-          limit,
-          totalPages: Math.ceil(total / limit) || 1,
-        },
-      };
+    if (params?.role && params.role !== "all") {
+      query = query.eq("role", params.role);
     }
+
+    if (params?.search) {
+      query = query.or(`full_name.ilike.%${params.search}%,email.ilike.%${params.search}%`);
+    }
+
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+    let { data, count, error } = await query.range(from, to);
+
+    if (error) throw error;
+
+    const formattedData = (data || []).map((p: any) => ({
+      id: p.id || p.user_id,
+      user_id: p.user_id || p.id,
+      email: p.email,
+      fullName: p.full_name || p.fullName || p.email?.split("@")[0],
+      phone: p.phone,
+      gender: p.gender,
+      roles: p.user_roles && p.user_roles.length > 0 ? p.user_roles.map((r: any) => r.role) : [p.role || "student"],
+      role: p.role || "student",
+      isActive: p.is_active ?? true,
+      createdAt: p.created_at,
+    }));
+
+    return {
+      data: formattedData,
+      meta: {
+        total: count || formattedData.length,
+        page,
+        limit,
+        totalPages: Math.ceil((count || formattedData.length) / limit) || 1,
+      },
+    };
   },
 
   getById: async (id: string) => {
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*, user_roles(role)")
-        .eq("user_id", id)
-        .single();
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*, user_roles(role)")
+      .eq("user_id", id)
+      .single();
 
-      if (error) throw error;
-      return data;
-    } catch {
-      return localUsersStore.find(u => u.id === id || u.user_id === id) || localUsersStore[0];
-    }
+    if (error) throw error;
+    return data;
   },
 
   create: async (user: any) => {
     const newId = crypto.randomUUID();
-    const newUserObj = {
-      id: newId,
-      user_id: newId,
-      email: user.email,
-      fullName: user.fullName || user.email?.split("@")[0],
-      phone: user.phone || "—",
-      gender: user.gender || "—",
-      role: user.role || "student",
-      roles: [user.role || "student"],
-      isActive: true,
-      createdAt: new Date().toISOString(),
-    };
-
-    try {
-      const { data: profile, error: pError } = await supabase
-        .from("profiles")
-        .insert({
-          id: newId,
-          user_id: newId,
-          email: user.email,
-          full_name: user.fullName,
-          phone: user.phone,
-          gender: user.gender,
-          role: user.role || "student",
-          is_active: true,
-        })
-        .select()
-        .single();
-
-      if (pError) throw pError;
-
-      await supabase.from("user_roles").insert({
+    const { data: profile, error: pError } = await supabase
+      .from("profiles")
+      .insert({
+        id: newId,
         user_id: newId,
+        email: user.email,
+        full_name: user.fullName,
+        phone: user.phone,
+        gender: user.gender,
         role: user.role || "student",
-      }).catch(() => null);
+        is_active: true,
+      })
+      .select()
+      .single();
 
-      localUsersStore.unshift(newUserObj);
-      return profile;
-    } catch (err) {
-      // Đảm bảo đưa ngay người dùng mới tạo vào store để hiển thị lập tức ở danh sách
-      localUsersStore.unshift(newUserObj);
-      return newUserObj;
-    }
+    if (pError) throw pError;
+
+    await supabase.from("user_roles").insert({
+      user_id: newId,
+      role: user.role || "student",
+    }).catch(() => null);
+
+    return profile;
   },
 
   update: async (id: string, user: any) => {
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .update({
-          full_name: user.fullName,
-          is_active: user.isActive,
-          phone: user.phone,
-          gender: user.gender,
-          certificate_band: user.certificateBand,
-          certificate_type: user.certificateType,
-          certificate_url: user.certificateUrl,
-          certificate_verified: user.certificateVerified,
-        })
-        .eq("user_id", id)
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
-    } catch {
-      const idx = localUsersStore.findIndex(u => u.id === id || u.user_id === id);
-      if (idx !== -1) {
-        localUsersStore[idx] = {
-          ...localUsersStore[idx],
-          fullName: user.fullName ?? localUsersStore[idx].fullName,
-          isActive: user.isActive ?? localUsersStore[idx].isActive,
-          phone: user.phone ?? localUsersStore[idx].phone,
-          gender: user.gender ?? localUsersStore[idx].gender,
-        };
-        return localUsersStore[idx];
-      }
-      return { id, ...user };
-    }
+    const { data, error } = await supabase
+      .from("profiles")
+      .update({
+        full_name: user.fullName,
+        is_active: user.isActive,
+        phone: user.phone,
+        gender: user.gender,
+        certificate_band: user.certificateBand,
+        certificate_type: user.certificateType,
+        certificate_url: user.certificateUrl,
+        certificate_verified: user.certificateVerified,
+      })
+      .eq("user_id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
   },
 
   delete: async (id: string) => {
@@ -1439,79 +1361,72 @@ export const logsApi = {
 // CLASSES API
 // =============================================
 export const classesApi = {
-  list: async (params?: any) => {
-    try {
-      let query = supabase.from("classes").select("*", { count: "exact" });
+  list: async (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+  }) => {
+    let query = supabase.from("classes").select("*", { count: "exact" });
 
-      if (params?.search) {
-        query = query.ilike("name", `%${params.search}%`);
-      }
-
-      const { data, count, error } = await query;
-      if (error) throw error;
-
-      const formatted = (data || []).map((c: any) => ({
-        id: c.id,
-        name: c.name,
-        description: c.description || "",
-        teacherId: c.teacher_id,
-        startDate: c.start_date,
-        endDate: c.end_date,
-        isActive: c.is_active ?? true,
-        createdAt: c.created_at,
-      }));
-
-      return {
-        data: formatted,
-        meta: {
-          total: count || formatted.length,
-          page: params?.page || 1,
-          limit: params?.limit || 10,
-          totalPages: Math.ceil((count || formatted.length) / (params?.limit || 10)),
-        },
-      };
-    } catch {
-      // Mock Fallback Lớp học thực tế từ seed
-      const mockClasses = [
-        { id: "dreamer-k31-id", name: "Dreamer K31", description: "Lớp IELTS Dreamer Khóa 31 (Tối 2 - 4 - 6)", teacherId: "00000000-0000-0000-0000-000000000002", startDate: new Date().toISOString(), isActive: true, createdAt: new Date().toISOString() },
-        { id: "builder-k20-id", name: "Builder K20", description: "Lớp IELTS Builder Khóa 20 (Tối 3 - 5 - 7)", teacherId: "00000000-0000-0000-0000-000000000002", startDate: new Date().toISOString(), isActive: true, createdAt: new Date().toISOString() },
-      ];
-      return {
-        data: mockClasses,
-        meta: { total: mockClasses.length, page: 1, limit: 10, totalPages: 1 }
-      };
+    if (params?.search) {
+      query = query.ilike("name", `%${params.search}%`);
     }
+
+    const sortField = params?.sortBy || "created_at";
+    const ascending = params?.sortOrder === "asc";
+    query = query.order(sortField, { ascending });
+
+    if (params?.page && params?.limit) {
+      const from = (params.page - 1) * params.limit;
+      const to = from + params.limit - 1;
+      query = query.range(from, to);
+    }
+
+    const { data, count, error } = await query;
+    if (error) throw error;
+
+    const formatted = (data || []).map((c: any) => ({
+      id: c.id,
+      name: c.name,
+      description: c.description || "",
+      teacherId: c.teacher_id,
+      startDate: c.start_date,
+      endDate: c.end_date,
+      isActive: c.is_active ?? true,
+      createdAt: c.created_at,
+    }));
+
+    return {
+      data: formatted,
+      meta: {
+        total: count || formatted.length,
+        page: params?.page || 1,
+        limit: params?.limit || 10,
+        totalPages: Math.ceil((count || formatted.length) / (params?.limit || 10)) || 1,
+      },
+    };
   },
 
   getById: async (id: string) => {
-    try {
-      const { data, error } = await supabase
-        .from("classes")
-        .select("*, class_students(*)")
-        .eq("id", id)
-        .single();
+    const { data, error } = await supabase
+      .from("classes")
+      .select("*, class_students(*)")
+      .eq("id", id)
+      .single();
 
-      if (error) throw error;
-      return {
-        ...data,
-        teacherId: data.teacher_id,
-        startDate: data.start_date,
-        endDate: data.end_date,
-        isActive: data.is_active,
-      };
-    } catch {
-      return {
-        id,
-        name: "Dreamer K31",
-        description: "Lớp IELTS Dreamer Khóa 31",
-        teacherId: "00000000-0000-0000-0000-000000000002",
-        isActive: true,
-      };
-    }
+    if (error) throw error;
+    return {
+      ...data,
+      teacherId: data.teacher_id,
+      startDate: data.start_date,
+      endDate: data.end_date,
+      isActive: data.is_active,
+    };
   },
 
   create: async (body: any) => {
-    const newId = crypto.randomUUID();
     const dbPayload = {
       name: body.name,
       description: body.description || null,
@@ -1521,18 +1436,14 @@ export const classesApi = {
       is_active: body.isActive ?? true,
     };
 
-    try {
-      const { data, error } = await supabase
-        .from("classes")
-        .insert(dbPayload)
-        .select()
-        .single();
+    const { data, error } = await supabase
+      .from("classes")
+      .insert(dbPayload)
+      .select()
+      .single();
 
-      if (error) throw error;
-      return data;
-    } catch {
-      return { id: newId, ...dbPayload, created_at: new Date().toISOString() };
-    }
+    if (error) throw error;
+    return data;
   },
 
   update: async (id: string, body: any) => {
@@ -1545,18 +1456,15 @@ export const classesApi = {
       is_active: body.isActive ?? true,
     };
 
-    try {
-      const { data, error } = await supabase
-        .from("classes")
-        .update(dbPayload)
-        .eq("id", id)
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
-    } catch {
-      return { id, ...dbPayload };
-    }
+    const { data, error } = await supabase
+      .from("classes")
+      .update(dbPayload)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
   },
 
   delete: async (id: string) => {
