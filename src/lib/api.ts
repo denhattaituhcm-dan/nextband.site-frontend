@@ -1975,4 +1975,41 @@ export const notificationsApi = {
   },
 };
 
+export interface StudentWorkspaceViewModel {
+  state: "NO_ENROLLMENT" | "PENDING_ACTIVATION" | "SUSPENDED_STUDENT" | "ACTIVE_STUDENT";
+  student: { id: string; email: string; fullName: string; avatarUrl?: string };
+  classes: Array<{
+    id: string;
+    name: string;
+    description?: string;
+    courseTitle?: string;
+    status: "INVITED" | "PENDING" | "ACTIVE" | "SUSPENDED" | "COMPLETED";
+    joinedAt?: string;
+  }>;
+  nextAction: {
+    type: "HOMEWORK" | "LESSON" | "EXAM";
+    targetId: string;
+    title: string;
+    classId: string;
+    deadline?: string | null;
+  } | null;
+  announcements: any[];
+  notifications: any[];
+}
+
+export const workspaceApi = {
+  getStudentWorkspace: async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    const response = await fetch(`${API_BASE_URL}/me/workspace`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Failed to fetch student workspace");
+    return result as { success: boolean; data: StudentWorkspaceViewModel };
+  },
+};
+
 export default supabase;
