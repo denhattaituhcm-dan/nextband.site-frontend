@@ -1258,15 +1258,15 @@ export const classesApi = {
   },
 
   create: async (body: any) => {
-    const dbPayload = {
+    const dbPayload: any = {
       name: body.name,
-      description: body.description || null,
-      course_id: body.courseId || null,
-      teacher_id: body.teacherId || null,
-      start_date: body.startDate || null,
-      end_date: body.endDate || null,
       is_active: body.isActive ?? true,
     };
+    if (body.description) dbPayload.description = body.description;
+    if (body.courseId) dbPayload.course_id = body.courseId;
+    if (body.teacherId) dbPayload.teacher_id = body.teacherId;
+    if (body.startDate) dbPayload.start_date = body.startDate;
+    if (body.endDate) dbPayload.end_date = body.endDate;
 
     const { data, error } = await supabase
       .from("classes")
@@ -1286,15 +1286,14 @@ export const classesApi = {
   },
 
   update: async (id: string, body: any) => {
-    const dbPayload = {
-      ...(body.name !== undefined && { name: body.name }),
-      ...(body.description !== undefined && { description: body.description || null }),
-      ...(body.courseId !== undefined && { course_id: body.courseId || null }),
-      ...(body.teacherId !== undefined && { teacher_id: body.teacherId || null }),
-      ...(body.startDate !== undefined && { start_date: body.startDate || null }),
-      ...(body.endDate !== undefined && { end_date: body.endDate || null }),
-      ...(body.isActive !== undefined && { is_active: body.isActive }),
-    };
+    const dbPayload: any = {};
+    if (body.name !== undefined) dbPayload.name = body.name;
+    if (body.description !== undefined) dbPayload.description = body.description || null;
+    if (body.courseId) dbPayload.course_id = body.courseId;
+    if (body.teacherId) dbPayload.teacher_id = body.teacherId;
+    if (body.startDate) dbPayload.start_date = body.startDate;
+    if (body.endDate) dbPayload.end_date = body.endDate;
+    if (body.isActive !== undefined) dbPayload.is_active = body.isActive;
 
     const { data, error } = await supabase
       .from("classes")
