@@ -1,11 +1,11 @@
 import React from "react";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-} from "@/components/ui/drawer";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { HomeworkProgressStrip } from "./HomeworkProgressStrip";
@@ -32,9 +32,9 @@ export const StudentDrawer: React.FC<StudentDrawerProps> = ({
   ];
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-w-2xl mx-auto p-6 max-h-[85vh] overflow-y-auto space-y-6">
-        <DrawerHeader className="px-0 pt-0 border-b pb-4">
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="w-full sm:max-w-2xl p-6 overflow-y-auto space-y-6">
+        <SheetHeader className="px-0 pt-0 border-b pb-4">
           <div className="flex items-center gap-4">
             <Avatar className="h-12 w-12">
               <AvatarImage src={student.avatarUrl} />
@@ -43,17 +43,17 @@ export const StudentDrawer: React.FC<StudentDrawerProps> = ({
               </AvatarFallback>
             </Avatar>
             <div>
-              <DrawerTitle className="text-xl font-bold">{student.fullName}</DrawerTitle>
-              <DrawerDescription className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5">
+              <SheetTitle className="text-xl font-bold">{student.fullName}</SheetTitle>
+              <SheetDescription className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5">
                 <span>{student.email}</span>
                 <span>•</span>
                 <Badge variant="outline" className="text-xs text-emerald-600 bg-emerald-50">
                   Active Student
                 </Badge>
-              </DrawerDescription>
+              </SheetDescription>
             </div>
           </div>
-        </DrawerHeader>
+        </SheetHeader>
 
         {/* 27 Homework Progress Strip */}
         <HomeworkProgressStrip
@@ -83,7 +83,7 @@ export const StudentDrawer: React.FC<StudentDrawerProps> = ({
             ))}
           </div>
         </div>
-      </DrawerContent>
-    </Drawer>
+      </SheetContent>
+    </Sheet>
   );
 };
