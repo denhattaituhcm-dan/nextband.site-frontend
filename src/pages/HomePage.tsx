@@ -411,7 +411,7 @@ export default function HomePage() {
               </Card>
             </div>
           </>
-        {/* Student Hub Page Footer / Spacing */}
+        )}
       </div>
     </div>
   );
