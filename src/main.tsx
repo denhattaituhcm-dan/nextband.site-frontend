@@ -1,3 +1,4 @@
+// Global Error Boundary v3
 import { createRoot } from "react-dom/client";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import App from "./App.tsx";

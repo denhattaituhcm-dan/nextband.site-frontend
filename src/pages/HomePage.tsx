@@ -1,3 +1,4 @@
+// Updated Student Workspace Hub v3
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { coursesApi, enrollmentsApi, homeworksApi, lessonsApi, submissionsApi, workspaceApi } from "@/lib/api";
