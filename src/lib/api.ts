@@ -2302,10 +2302,12 @@ export const notificationsApi = {
   },
 
   markAllAsRead: async (scope: "admin" | "teacher" | "student") => {
+    const announcements = await announcementsApi.list(scope);
+    for (const ann of announcements) {
+      if (!ann.is_read || ann.has_newer_version) {
+        await announcementsApi.markAsRead(ann.id, ann.version);
+      }
     }
-
-    const { error } = await query;
-    if (error) console.warn("markAllAsRead warning:", error);
     return { success: true };
   },
 };
