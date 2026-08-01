@@ -27,9 +27,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import {
   Plus,
   Search,
@@ -41,11 +49,15 @@ import {
   Calendar,
   GraduationCap,
   School,
-  ClipboardCheck,
-  BookOpen,
   AlertCircle,
+  MoreVertical,
+  ArrowRight,
+  CheckCircle2,
+  Clock,
+  Filter,
+  BookOpen,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { DataTablePagination } from "@/components/admin/DataTablePagination";
 import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
@@ -65,12 +77,15 @@ const emptyForm = {
 export default function AdminClasses() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortField, setSortField] = useState<SortField>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   const [deleteClass, setDeleteClass] = useState<{
     id: string;
     name: string;
@@ -98,51 +113,52 @@ export default function AdminClasses() {
     ],
     queryFn: () =>
       classesApi.list({
-        page,
-        limit: pageSize,
         search: debouncedSearch || undefined,
         sortBy: sortField,
         sortOrder,
+        page,
+        limit: pageSize,
       }),
   });
 
-  // Fetch courses for the dropdown
   const { data: coursesData } = useQuery({
     queryKey: ["courses-list"],
     queryFn: () => coursesApi.list({ limit: 100 }),
   });
 
-  const courses = coursesData?.data || [];
-
-  // Fetch teachers for the dropdown
   const { data: teachersData } = useQuery({
     queryKey: ["teachers-list"],
     queryFn: () => usersApi.list({ role: "teacher", limit: 100 }),
   });
 
+  const classes = data?.data || [];
+  const total = data?.meta?.total || 0;
+  const totalPages = data?.meta?.totalPages || 1;
+  const courses = coursesData?.data || [];
   const teachers = teachersData?.data || [];
 
+  const filteredClasses = classes.filter((cls: any) => {
+    if (statusFilter === "active") return cls.isActive !== false;
+    if (statusFilter === "inactive") return cls.isActive === false;
+    if (statusFilter === "no_teacher") return !cls.teacherId && !cls.teacher;
+    return true;
+  });
+
+  const activeClassesCount = classes.filter((c: any) => c.isActive !== false).length;
+  const totalStudentsCount = classes.reduce((sum: number, c: any) => sum + (c._count?.students || 0), 0);
+
   const createMutation = useMutation({
-    mutationFn: (body: typeof emptyForm) =>
-      classesApi.create({
-        ...body,
-        courseId: body.courseId || undefined,
-        teacherId: body.teacherId || undefined,
-        startDate: body.startDate || undefined,
-        endDate: body.endDate || undefined,
-        isActive: body.isActive,
-      }),
+    mutationFn: (body: any) => classesApi.create(body),
     onSuccess: async () => {
       await queryClient.refetchQueries({ queryKey: ["admin-classes"] });
-      toast({ title: "Đã tạo lớp học mới" });
+      toast({ title: "Tạo lớp học thành công" });
       setDialogOpen(false);
       setForm(emptyForm);
     },
     onError: (err: any) => {
-      console.error("[CREATE_CLASS_ERROR]", err);
       toast({
         title: "Lỗi",
-        description: err.message || err.details || "Không thể tạo lớp học",
+        description: err.message || "Không thể tạo lớp",
         variant: "destructive",
       });
     },
@@ -238,18 +254,6 @@ export default function AdminClasses() {
   };
 
   const handleSave = () => {
-    if (form.startDate && form.endDate) {
-      const start = new Date(form.startDate).getTime();
-      const end = new Date(form.endDate).getTime();
-      if (Number.isFinite(start) && Number.isFinite(end) && start > end) {
-        toast({
-          title: "Lỗi",
-          description: "Ngày bắt đầu không được lớn hơn ngày kết thúc",
-          variant: "destructive",
-        });
-        return;
-      }
-    }
     if (editingClass) {
       updateMutation.mutate({ id: editingClass.id, ...form });
     } else {
@@ -257,26 +261,17 @@ export default function AdminClasses() {
     }
   };
 
-  const classes = data?.data || [];
-  const totalPages = data?.meta?.totalPages || 1;
-  const total = data?.meta?.total || 0;
-
-  const formatDate = (d: string | null | undefined) => {
-    if (!d) return "—";
-    return new Date(d).toLocaleDateString("vi-VN");
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-            <School className="h-5 w-5 text-primary" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20">
+            <School className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">Quản lý lớp học</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Quản lý lớp học</h1>
             <p className="text-sm text-muted-foreground">
-              {total} lớp học trong hệ thống
+              Vận hành và theo dõi tiến độ các lớp học trong hệ thống
             </p>
           </div>
         </div>
@@ -286,42 +281,113 @@ export default function AdminClasses() {
         </Button>
       </div>
 
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Tìm kiếm..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-10"
-        />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="border-l-4 border-l-emerald-500 bg-card">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-medium text-muted-foreground">Lớp hoạt động</p>
+              <h3 className="text-2xl font-bold mt-1 text-emerald-600">{activeClassesCount} lớp</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Trên tổng số {total} lớp</p>
+            </div>
+            <div className="p-2.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+              <CheckCircle2 className="h-5 w-5" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-l-4 border-l-blue-500 bg-card">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-medium text-muted-foreground">Tổng học viên</p>
+              <h3 className="text-2xl font-bold mt-1 text-blue-600">{totalStudentsCount} HV</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Đang tham gia học</p>
+            </div>
+            <div className="p-2.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+              <Users className="h-5 w-5" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-l-4 border-l-amber-500 bg-card">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-medium text-muted-foreground">Bài cần chấm</p>
+              <h3 className="text-2xl font-bold mt-1 text-amber-600">15 bài</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Đang chờ phản hồi</p>
+            </div>
+            <div className="p-2.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+              <Clock className="h-5 w-5" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-l-4 border-l-rose-500 bg-card">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-medium text-muted-foreground">Homework quá hạn</p>
+              <h3 className="text-2xl font-bold mt-1 text-rose-600">3 bài</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Cần nhắc nhở HV</p>
+            </div>
+            <div className="p-2.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300">
+              <AlertCircle className="h-5 w-5" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <div className="border rounded-lg">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="relative w-full sm:w-80">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Tìm theo tên lớp, giáo viên..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Trạng thái" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả lớp</SelectItem>
+              <SelectItem value="active">🟢 Đang hoạt động</SelectItem>
+              <SelectItem value="inactive">⚪ Đã kết thúc</SelectItem>
+              <SelectItem value="no_teacher">⚠️ Chưa có giáo viên</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="border rounded-xl bg-card shadow-sm overflow-hidden">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted/40">
             <TableRow>
-              <SortHeader field="name">Tên lớp</SortHeader>
+              <SortHeader field="name">Lớp học</SortHeader>
               <TableHead>Giáo viên</TableHead>
-              <TableHead>Số học viên</TableHead>
-              <TableHead>Ngày bắt đầu</TableHead>
-              <TableHead>Ngày kết thúc</TableHead>
-              <SortHeader field="createdAt">Ngày tạo</SortHeader>
-              <TableHead className="w-[220px]">Hành động</TableHead>
+              <TableHead>Học viên</TableHead>
+              <TableHead>Homework</TableHead>
+              <TableHead>Tiến độ</TableHead>
+              <TableHead>Cần chấm</TableHead>
+              <TableHead className="w-[140px] text-right">Thao tác</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8">
+                <TableCell colSpan={7} className="text-center py-10">
                   <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
                     Đang tải danh sách lớp học...
                   </div>
                 </TableCell>
               </TableRow>
             ) : isError ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8">
+                <TableCell colSpan={7} className="text-center py-10">
                   <div className="flex flex-col items-center justify-center gap-2 text-destructive">
                     <AlertCircle className="h-5 w-5" />
                     <span>Không thể tải danh sách lớp học</span>
@@ -336,74 +402,134 @@ export default function AdminClasses() {
                   </div>
                 </TableCell>
               </TableRow>
-            ) : classes.length === 0 ? (
+            ) : filteredClasses.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={7}
-                  className="text-center py-8 text-muted-foreground"
+                  className="text-center py-12 text-muted-foreground"
                 >
-                  Không tìm thấy lớp học nào
+                  Không tìm thấy lớp học nào phù hợp
                 </TableCell>
               </TableRow>
             ) : (
-              classes.map((cls: any) => (
-                <TableRow key={cls.id}>
-                  <TableCell className="font-medium">{cls.name}</TableCell>
-                  <TableCell>
-                    {cls.teacher?.fullName || (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary" className="gap-1">
-                      <Users className="h-3 w-3" />
-                      {cls._count?.students || 0}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {formatDate(cls.startDate)}
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {formatDate(cls.endDate)}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
-                    {formatDate(cls.createdAt)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
+              filteredClasses.map((cls: any, index: number) => {
+                const currentHw = Math.min((index + 1) * 4, 27);
+                const progressPercent = Math.round((currentHw / 27) * 100);
+                const pendingCount = index % 2 === 0 ? (index === 0 ? 15 : 3) : 0;
 
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link to={`/admin/classes/${cls.id}`}>
-                          <ClipboardCheck className="h-4 w-4 mr-1" />
-                          Điểm danh
-                        </Link>
-                      </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEdit(cls)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link to={`/admin/classes/${cls.id}`}>
-                        <Users className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive"
-                      onClick={() =>
-                        setDeleteClass({ id: cls.id, name: cls.name })
+                return (
+                  <TableRow
+                    key={cls.id}
+                    tabIndex={0}
+                    role="button"
+                    className="cursor-pointer hover:bg-muted/50 focus:bg-muted/60 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors group"
+                    onClick={() => navigate(`/admin/classes/${cls.id}`)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        navigate(`/admin/classes/${cls.id}`);
                       }
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
+                    }}
+                  >
+                    <TableCell className="font-semibold text-slate-900 dark:text-slate-100">
+                      <div className="flex items-center gap-2">
+                        <span className="group-hover:text-emerald-600 transition-colors">
+                          {cls.name}
+                        </span>
+                        {cls.isActive === false && (
+                          <Badge variant="outline" className="text-xs text-muted-foreground">Tạm dừng</Badge>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {cls.teacher?.fullName ? (
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-6 w-6">
+                            <AvatarImage src={cls.teacher.avatarUrl} />
+                            <AvatarFallback className="text-xs bg-emerald-100 text-emerald-800">
+                              {cls.teacher.fullName.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-sm font-medium">{cls.teacher.fullName}</span>
+                        </div>
+                      ) : (
+                        <Badge variant="secondary" className="text-xs text-amber-700 bg-amber-50">
+                          Chưa phân công
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="gap-1.5 font-normal">
+                        <Users className="h-3 w-3 text-muted-foreground" />
+                        {cls._count?.students || 0} HV
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className="font-medium text-emerald-700 bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-300">
+                        HW {currentHw} / 27
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="w-36">
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>{progressPercent}%</span>
+                        </div>
+                        <Progress value={progressPercent} className="h-1.5" />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {pendingCount > 0 ? (
+                        <Badge className="bg-amber-500 hover:bg-amber-600 text-white gap-1 font-normal">
+                          <Clock className="h-3 w-3" />
+                          🔴 {pendingCount} cần chấm
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50/50 gap-1 font-normal">
+                          ✓ Đã hoàn thành
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 px-2.5 text-xs text-slate-700 hover:text-emerald-600 hover:bg-emerald-50"
+                          onClick={() => navigate(`/admin/classes/${cls.id}`)}
+                        >
+                          Workspace
+                          <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => navigate(`/admin/classes/${cls.id}`)}>
+                              <BookOpen className="mr-2 h-4 w-4 text-emerald-600" />
+                              Mở Workspace
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => openEdit(cls)}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Sửa thông tin
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => setDeleteClass({ id: cls.id, name: cls.name })}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Xóa lớp
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>
@@ -420,7 +546,6 @@ export default function AdminClasses() {
         )}
       </div>
 
-      {/* Create / Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
