@@ -7,6 +7,7 @@ import { WorkspaceSkeleton } from "./components/WorkspaceSkeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { OverviewTab } from "./tabs/OverviewTab";
 import { StudentsTab } from "./tabs/StudentsTab";
+import { SessionsTab } from "./tabs/SessionsTab";
 import { GradingTab } from "./tabs/GradingTab";
 import { HomeworkTab } from "./tabs/HomeworkTab";
 import { AttendanceTab } from "./tabs/AttendanceTab";
@@ -26,14 +27,17 @@ const WorkspaceInner: React.FC = () => {
       {/* 0-Click Quick Actions Bar */}
       <QuickActions />
 
-      {/* Main 5 View Tabs */}
+      {/* Main 6 View Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5 bg-muted/50 p-1 rounded-xl">
+        <TabsList className="grid w-full grid-cols-6 bg-muted/50 p-1 rounded-xl">
           <TabsTrigger value="overview" className="text-xs font-semibold py-2">
             📊 Tổng quan
           </TabsTrigger>
           <TabsTrigger value="students" className="text-xs font-semibold py-2">
             👥 Học viên
+          </TabsTrigger>
+          <TabsTrigger value="sessions" className="text-xs font-semibold py-2">
+            📅 Lịch học
           </TabsTrigger>
           <TabsTrigger value="grading" className="text-xs font-semibold py-2">
             ✍️ Chấm bài
@@ -51,6 +55,9 @@ const WorkspaceInner: React.FC = () => {
         </TabsContent>
         <TabsContent value="students">
           <StudentsTab />
+        </TabsContent>
+        <TabsContent value="sessions">
+          <SessionsTab />
         </TabsContent>
         <TabsContent value="grading">
           <GradingTab />

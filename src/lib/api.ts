@@ -1546,6 +1546,202 @@ export const classesApi = {
 };
 
 // =============================================
+// SESSIONS API - Quản lý Buổi học (Semi-Auto Scheduling)
+// =============================================
+export type SessionStatus = "PLANNED" | "RESCHEDULED" | "COMPLETED" | "CANCELLED";
+
+export interface ClassSession {
+  id: string;
+  classId: string;
+  sessionNumber: number;
+  plannedDate: string; // YYYY-MM-DD
+  startTime: string;   // HH:MM
+  endTime: string;     // HH:MM
+  status: SessionStatus;
+  rescheduleReason?: string;
+  note?: string;
+  createdAt: string;
+}
+
+/**
+ * Hàm tiện ích: Tự động sinh danh sách ngày học từ lịch hàng tuần
+ * @param startDate - ngày bắt đầu "YYYY-MM-DD"
+ * @param weekdays - mảng số (0=CN, 1=T2, ..., 6=T7)
+ * @param totalSessions - số buổi cần sinh
+ */
+export function generateSessionDates(
+  startDate: string,
+  weekdays: number[],
+  totalSessions: number
+): string[] {
+  if (!startDate || weekdays.length === 0 || totalSessions <= 0) return [];
+
+  const dates: string[] = [];
+  // Parse startDate in local time to avoid UTC offset issues
+  const [y, m, d] = startDate.split("-").map(Number);
+  const cur = new Date(y, m - 1, d);
+
+  while (dates.length < totalSessions) {
+    const dow = cur.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+    if (weekdays.includes(dow)) {
+      const mm = String(cur.getMonth() + 1).padStart(2, "0");
+      const dd = String(cur.getDate()).padStart(2, "0");
+      dates.push(`${cur.getFullYear()}-${mm}-${dd}`);
+    }
+    cur.setDate(cur.getDate() + 1);
+  }
+  return dates;
+}
+
+export const sessionsApi = {
+  list: async (classId: string): Promise<ClassSession[]> => {
+    const { data, error } = await supabase
+      .from("class_sessions")
+      .select("*")
+      .eq("class_id", classId)
+      .order("session_number", { ascending: true });
+
+    if (error) throw error;
+    return (data || []).map((s: any) => ({
+      id: s.id,
+      classId: s.class_id,
+      sessionNumber: s.session_number,
+      plannedDate: s.planned_date,
+      startTime: s.start_time,
+      endTime: s.end_time,
+      status: s.status as SessionStatus,
+      rescheduleReason: s.reschedule_reason,
+      note: s.note,
+      createdAt: s.created_at,
+    }));
+  },
+
+  /** Sinh hàng loạt sessions từ lịch hàng tuần, xóa sessions cũ trước */
+  generateForClass: async (
+    classId: string,
+    options: {
+      startDate: string;
+      weekdays: number[];
+      totalSessions: number;
+      startTime: string;
+      endTime: string;
+    }
+  ): Promise<ClassSession[]> => {
+    // 1. Xóa tất cả sessions cũ của lớp (nếu có)
+    await supabase.from("class_sessions").delete().eq("class_id", classId);
+
+    // 2. Tạo danh sách ngày
+    const dates = generateSessionDates(
+      options.startDate,
+      options.weekdays,
+      options.totalSessions
+    );
+
+    if (dates.length === 0) return [];
+
+    // 3. Build records
+    const records = dates.map((date, i) => ({
+      class_id: classId,
+      session_number: i + 1,
+      planned_date: date,
+      start_time: options.startTime,
+      end_time: options.endTime,
+      status: "PLANNED",
+    }));
+
+    const { data, error } = await supabase
+      .from("class_sessions")
+      .insert(records)
+      .select();
+
+    if (error) throw error;
+    return (data || []).map((s: any) => ({
+      id: s.id,
+      classId: s.class_id,
+      sessionNumber: s.session_number,
+      plannedDate: s.planned_date,
+      startTime: s.start_time,
+      endTime: s.end_time,
+      status: s.status as SessionStatus,
+      createdAt: s.created_at,
+    }));
+  },
+
+  /** Reschedule một buổi học cụ thể */
+  reschedule: async (
+    sessionId: string,
+    newDate: string,
+    reason: string
+  ): Promise<ClassSession> => {
+    const { data, error } = await supabase
+      .from("class_sessions")
+      .update({
+        planned_date: newDate,
+        status: "RESCHEDULED",
+        reschedule_reason: reason,
+      })
+      .eq("id", sessionId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return {
+      id: data.id,
+      classId: data.class_id,
+      sessionNumber: data.session_number,
+      plannedDate: data.planned_date,
+      startTime: data.start_time,
+      endTime: data.end_time,
+      status: data.status as SessionStatus,
+      rescheduleReason: data.reschedule_reason,
+      note: data.note,
+      createdAt: data.created_at,
+    };
+  },
+
+  /** Cập nhật trạng thái buổi học (COMPLETED, CANCELLED, PLANNED) */
+  updateStatus: async (
+    sessionId: string,
+    status: SessionStatus,
+    note?: string
+  ): Promise<ClassSession> => {
+    const payload: any = { status };
+    if (note !== undefined) payload.note = note;
+
+    const { data, error } = await supabase
+      .from("class_sessions")
+      .update(payload)
+      .eq("id", sessionId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return {
+      id: data.id,
+      classId: data.class_id,
+      sessionNumber: data.session_number,
+      plannedDate: data.planned_date,
+      startTime: data.start_time,
+      endTime: data.end_time,
+      status: data.status as SessionStatus,
+      rescheduleReason: data.reschedule_reason,
+      note: data.note,
+      createdAt: data.created_at,
+    };
+  },
+
+  /** Xóa tất cả sessions của lớp */
+  deleteAllForClass: async (classId: string) => {
+    const { error } = await supabase
+      .from("class_sessions")
+      .delete()
+      .eq("class_id", classId);
+    if (error) throw error;
+    return { success: true };
+  },
+};
+
+// =============================================
 // SITE SETTINGS API
 // =============================================
 export const siteSettingsApi = {
@@ -1854,136 +2050,258 @@ export const attendanceApi = {
   },
 };
 
-// NOTIFICATIONS API (Core Notification Engine)
 // =============================================
-export interface NotificationItem {
+// NOTIFICATIONS 3-TIER ARCHITECTURE APIs
+// =============================================
+
+export interface AnnouncementItem {
   id: string;
-  recipient_id?: string;
-  recipient_role: "admin" | "teacher" | "student";
-  type: string;
   title: string;
-  message: string;
-  entity_type?: string;
-  entity_id?: string;
-  action_url: string;
-  priority: "info" | "warning" | "urgent";
-  is_read: boolean;
+  content: string | null;
+  scope_type: "GLOBAL" | "ROLE" | "CLASS";
+  scope_value: string | null;
+  priority: "normal" | "important" | "urgent";
+  is_pinned: boolean;
+  version: number;
+  published_at: string;
+  expires_at?: string | null;
   created_at: string;
-  read_at?: string;
+  has_newer_version?: boolean;
+  is_read?: boolean;
 }
 
-export const notificationsApi = {
-  list: async (scope: "admin" | "teacher" | "student") => {
+export interface ActivityItem {
+  id: string;
+  actor_id?: string;
+  actor_name?: string;
+  action: string;
+  target_type: string;
+  target_id?: string;
+  target_name?: string;
+  metadata?: Record<string, any>;
+  scope_type: "GLOBAL" | "ROLE" | "CLASS" | "USER";
+  scope_value?: string;
+  created_at: string;
+}
+
+export interface AlertItem {
+  id: string;
+  type: string;
+  owner_type: "teacher" | "admin" | "student";
+  owner_id?: string;
+  class_id?: string;
+  priority: "warning" | "urgent";
+  context?: Record<string, any>;
+  status: "open" | "resolved";
+  created_at: string;
+  last_detected: string;
+  resolved_at?: string;
+  age_days?: number;
+}
+
+export const announcementsApi = {
+  list: async (scopeRole: "admin" | "teacher" | "student" = "student", classId?: string): Promise<AnnouncementItem[]> => {
     const { data: { user } } = await supabase.auth.getUser();
 
-    let query = supabase.from("notifications").select("*").order("created_at", { ascending: false });
+    let query = supabase.from("announcements").select("*, announcement_reads!left(reader_id, version_read)");
+    
+    // Published & not expired
+    const now = new Date().toISOString();
+    query = query.lte("published_at", now);
+    
+    const { data, error } = await query.order("is_pinned", { ascending: false }).order("published_at", { ascending: false });
 
-    if (scope === "admin") {
-      query = query.eq("recipient_role", "admin");
-    } else if (user?.id) {
-      query = query.or(`recipient_id.eq.${user.id},and(recipient_role.eq.${scope},recipient_id.is.null)`);
-    } else {
-      query = query.eq("recipient_role", scope);
+    if (error || !data) {
+      // Fallback mock if table doesn't exist
+      return [
+        {
+          id: "ann-1",
+          title: "📢 Trung tâm nghỉ lễ Quốc Khánh 2/9",
+          content: "Toàn bộ học viên và giáo viên nghỉ học từ ngày 01/09 đến hết ngày 03/09.",
+          scope_type: "GLOBAL",
+          scope_value: null,
+          priority: "urgent",
+          is_pinned: true,
+          version: 1,
+          published_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+          is_read: false,
+        },
+        {
+          id: "ann-2",
+          title: "📢 Cập nhật chính sách học bù mới",
+          content: "Học viên xin nghỉ có phép trước 4 tiếng sẽ được sắp xếp học bù ở lớp tương đương.",
+          scope_type: "ROLE",
+          scope_value: "student",
+          priority: "important",
+          is_pinned: false,
+          version: 2,
+          published_at: new Date(Date.now() - 86400000).toISOString(),
+          created_at: new Date(Date.now() - 86400000).toISOString(),
+          has_newer_version: true,
+          is_read: false,
+        },
+      ];
     }
 
-    const { data, error } = await query;
-    if (error) {
-      // Mock Fallback náº¿u chÆ°a táº¡o báº£ng notifications trÃªn CSDL
-      const mockNotifications: NotificationItem[] = scope === "admin" ? [
+    return (data || []).map((item: any) => {
+      const userRead = (item.announcement_reads || []).find((r: any) => r.reader_id === user?.id);
+      const isRead = !!userRead;
+      const hasNewerVersion = userRead ? userRead.version_read < item.version : false;
+
+      return {
+        id: item.id,
+        title: item.title,
+        content: item.content,
+        scope_type: item.scope_type,
+        scope_value: item.scope_value,
+        priority: item.priority,
+        is_pinned: item.is_pinned,
+        version: item.version,
+        published_at: item.published_at,
+        expires_at: item.expires_at,
+        created_at: item.created_at,
+        is_read: isRead,
+        has_newer_version: hasNewerVersion,
+      };
+    });
+  },
+
+  markAsRead: async (announcementId: string, version: number = 1) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase.from("announcement_reads").upsert(
+      {
+        announcement_id: announcementId,
+        reader_id: user.id,
+        version_read: version,
+        read_at: new Date().toISOString(),
+      },
+      { onConflict: "announcement_id,reader_id" }
+    );
+    if (error) console.warn("Failed to mark announcement as read:", error.message);
+  },
+};
+
+export const activityFeedApi = {
+  list: async (scopeRole: "admin" | "teacher" | "student" = "student"): Promise<ActivityItem[]> => {
+    const { data, error } = await supabase
+      .from("activity_feed")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(30);
+
+    if (error || !data) {
+      return [
         {
-          id: "n1",
-          recipient_role: "admin",
-          type: "user_sso",
-          title: "Há»c viÃªn má»›i Ä‘Äƒng nháº­p",
-          message: "Há»c viÃªn Pháº¡m VÄƒn D vá»«a Ä‘Äƒng nháº­p láº§n Ä‘áº§u qua Google SSO.",
-          action_url: "/admin/users?search=student",
-          priority: "info",
-          is_read: false,
+          id: "act-1",
+          actor_name: "Nguyễn Văn An",
+          action: "submitted_hw",
+          target_type: "homework",
+          target_name: "HW 12: IELTS Writing Task 2",
+          scope_type: "ROLE",
+          scope_value: "teacher",
           created_at: new Date().toISOString(),
         },
         {
-          id: "n2",
-          recipient_role: "admin",
-          type: "sla_warning",
-          title: "Cáº£nh bÃ¡o cháº¥m bÃ i cháº­m",
-          message: "GiÃ¡o viÃªn HoÃ ng Anh cÃ³ 12 bÃ i ná»™p chÆ°a cháº¥m quÃ¡ 3 ngÃ y.",
-          action_url: "/admin/teachers",
-          priority: "warning",
-          is_read: false,
+          id: "act-2",
+          actor_name: "Giáo viên Hoàng Anh",
+          action: "graded_hw",
+          target_type: "homework",
+          target_name: "HW 11: Listening Section 4",
+          scope_type: "USER",
           created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
         },
         {
-          id: "n3",
-          recipient_role: "admin",
-          type: "class_complete",
-          title: "Lá»›p há»c hoÃ n táº¥t khÃ³a",
-          message: "Lá»›p Leader K10 Ä‘Ã£ hoÃ n thÃ nh 27/27 buá»•i há»c.",
-          action_url: "/admin/classes",
-          priority: "info",
-          is_read: true,
+          id: "act-3",
+          actor_name: "Hệ thống",
+          action: "opened_hw",
+          target_type: "homework",
+          target_name: "HW 13: Speaking Part 2",
+          scope_type: "GLOBAL",
           created_at: new Date(Date.now() - 3600000 * 5).toISOString(),
         },
-      ] : [
+      ];
+    }
+    return data as ActivityItem[];
+  },
+};
+
+export const alertsApi = {
+  list: async (role: "admin" | "teacher" | "student" = "teacher"): Promise<AlertItem[]> => {
+    const { data, error } = await supabase
+      .from("alerts")
+      .select("*")
+      .eq("status", "open")
+      .order("created_at", { ascending: false });
+
+    if (error || !data) {
+      return [
         {
-          id: "nt1",
-          recipient_role: "teacher",
-          type: "submission",
-          title: "BÃ i ná»™p má»›i Writing Task 2",
-          message: "Há»c viÃªn Nguyá»…n VÄƒn A vá»«a ná»™p bÃ i Writing Task 2 cho Lá»›p Dreamer K31.",
-          action_url: "/teacher/grading",
+          id: "alt-1",
+          type: "ungraded_hw",
+          owner_type: "teacher",
           priority: "urgent",
-          is_read: false,
-          created_at: new Date().toISOString(),
+          context: { count: 15, title: "15 bài tập chưa chấm" },
+          status: "open",
+          created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+          last_detected: new Date().toISOString(),
+          age_days: 2,
         },
         {
-          id: "nt2",
-          recipient_role: "teacher",
-          type: "submission",
-          title: "BÃ i ná»™p má»›i Speaking Part 2",
-          message: "Há»c viÃªn Tráº§n Thá»‹ B vá»«a gá»­i ghi Ã¢m Speaking Part 2.",
-          action_url: "/teacher/grading",
-          priority: "info",
-          is_read: false,
-          created_at: new Date(Date.now() - 3600000 * 1).toISOString(),
-        },
-        {
-          id: "nt3",
-          recipient_role: "teacher",
-          type: "enrollment",
-          title: "Biáº¿n Ä‘á»™ng há»c viÃªn",
-          message: "Admin vá»«a thÃªm 2 há»c viÃªn má»›i vÃ o Lá»›p Master K15 cá»§a báº¡n.",
-          action_url: "/teacher/classes",
-          priority: "info",
-          is_read: true,
-          created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
+          id: "alt-2",
+          type: "consecutive_absent",
+          owner_type: "teacher",
+          priority: "warning",
+          context: { count: 3, title: "3 học viên nghỉ 2+ buổi liên tiếp" },
+          status: "open",
+          created_at: new Date(Date.now() - 86400000 * 1).toISOString(),
+          last_detected: new Date().toISOString(),
+          age_days: 1,
         },
       ];
-      return mockNotifications;
     }
-
-    return (data || []) as NotificationItem[];
+    return (data || []).map((a: any) => ({
+      ...a,
+      age_days: Math.floor((Date.now() - new Date(a.created_at).getTime()) / 86400000),
+    }));
   },
 
-  markAsRead: async (id: string) => {
+  resolve: async (alertId: string) => {
     const { error } = await supabase
-      .from("notifications")
-      .update({ is_read: true, read_at: new Date().toISOString() })
-      .eq("id", id);
+      .from("alerts")
+      .update({ status: "resolved", resolved_at: new Date().toISOString() })
+      .eq("id", alertId);
+    if (error) console.warn("Failed to resolve alert:", error.message);
+  },
+};
 
-    if (error) {
-      console.warn("Failed to mark notification as read in DB:", error.message);
+export const notificationsApi = {
+  list: async (scope: "admin" | "teacher" | "student") => {
+    const [announcements, activities, alerts] = await Promise.all([
+      announcementsApi.list(scope),
+      activityFeedApi.list(scope),
+      alertsApi.list(scope === "admin" ? "admin" : scope === "teacher" ? "teacher" : "student"),
+    ]);
+
+    return {
+      announcements,
+      activities,
+      alerts,
+    };
+  },
+
+  markAsRead: async (id: string, type: "announcement" | "alert" = "announcement", version: number = 1) => {
+    if (type === "announcement") {
+      await announcementsApi.markAsRead(id, version);
+    } else if (type === "alert") {
+      await alertsApi.resolve(id);
     }
     return { success: true };
   },
 
   markAllAsRead: async (scope: "admin" | "teacher" | "student") => {
-    const { data: { user } } = await supabase.auth.getUser();
-    let query = supabase.from("notifications").update({ is_read: true, read_at: new Date().toISOString() });
-
-    if (scope === "admin") {
-      query = query.eq("recipient_role", "admin");
-    } else if (user?.id) {
-      query = query.or(`recipient_id.eq.${user.id},recipient_role.eq.${scope}`);
     }
 
     const { error } = await query;

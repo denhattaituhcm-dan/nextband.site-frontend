@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { classesApi, usersApi, coursesApi } from "@/lib/api";
+import { classesApi, usersApi, coursesApi, sessionsApi, generateSessionDates } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -64,6 +64,17 @@ import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
 
 type SortField = "name" | "createdAt";
 
+// Tên các ngày trong tuần (0=CN, 1=T2 ... 6=T7)
+const WEEKDAY_LABELS = [
+  { value: 1, label: "Thứ 2" },
+  { value: 2, label: "Thứ 3" },
+  { value: 3, label: "Thứ 4" },
+  { value: 4, label: "Thứ 5" },
+  { value: 5, label: "Thứ 6" },
+  { value: 6, label: "Thứ 7" },
+  { value: 0, label: "CN" },
+];
+
 const emptyForm = {
   name: "",
   description: "",
@@ -72,6 +83,10 @@ const emptyForm = {
   startDate: "",
   endDate: "",
   isActive: true,
+  weekdays: [] as number[],
+  startTime: "18:00",
+  endTime: "20:00",
+  totalSessions: 27,
 };
 
 export default function AdminClasses() {
@@ -148,10 +163,30 @@ export default function AdminClasses() {
   const totalStudentsCount = classes.reduce((sum: number, c: any) => sum + (c._count?.students || 0), 0);
 
   const createMutation = useMutation({
-    mutationFn: (body: any) => classesApi.create(body),
+    mutationFn: async (body: any) => {
+      // 1. Tạo lớp
+      const cls = await classesApi.create(body);
+      // 2. Nếu có lịch học → tự động sinh sessions
+      if (
+        cls.id &&
+        body.weekdays?.length > 0 &&
+        body.startDate &&
+        body.startTime &&
+        body.endTime
+      ) {
+        await sessionsApi.generateForClass(cls.id, {
+          startDate: body.startDate,
+          weekdays: body.weekdays,
+          totalSessions: body.totalSessions || 27,
+          startTime: body.startTime,
+          endTime: body.endTime,
+        });
+      }
+      return cls;
+    },
     onSuccess: async () => {
       await queryClient.refetchQueries({ queryKey: ["admin-classes"] });
-      toast({ title: "Tạo lớp học thành công" });
+      toast({ title: "Tạo lớp học thành công", description: "Buổi học đã được tự động sinh theo lịch" });
       setDialogOpen(false);
       setForm(emptyForm);
     },
@@ -546,161 +581,17 @@ export default function AdminClasses() {
         )}
       </div>
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>
-              {editingClass ? "Chỉnh sửa lớp học" : "Tạo lớp học mới"}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Tên lớp *</Label>
-              <Input
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="VD: IELTS Foundation 01"
-              />
-            </div>
-            {/* Course / Program select */}
-            <div className="space-y-2">
-              <Label className="flex items-center gap-1.5 font-bold text-slate-700">
-                <BookOpen className="h-3.5 w-3.5 text-blue-600" />
-                Khóa học / Chương trình đào tạo *
-              </Label>
-              <Select
-                value={form.courseId}
-                onValueChange={(v) =>
-                  setForm({ ...form, courseId: v === "__none__" ? "" : v })
-                }
-              >
-                <SelectTrigger className="bg-slate-50 border-slate-200 font-medium">
-                  <SelectValue placeholder="Chọn Khóa học (STARTER, MASTER, BUILDER...)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">
-                    <span className="text-muted-foreground">— Chọn khóa học —</span>
-                  </SelectItem>
-                  {courses.map((c: any) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      <span className="font-semibold text-slate-800">{c.title}</span>
-                      {c.level ? <span className="text-xs text-muted-foreground ml-2">({c.level})</span> : ""}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Teacher select */}
-            <div className="space-y-2">
-              <Label className="flex items-center gap-1.5">
-                <GraduationCap className="h-3.5 w-3.5" />
-                Giáo viên phụ trách
-              </Label>
-              <Select
-                value={form.teacherId}
-                onValueChange={(v) =>
-                  setForm({ ...form, teacherId: v === "__none__" ? "" : v })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Chọn giáo viên" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">
-                    <span className="text-muted-foreground">
-                      — Không chọn —
-                    </span>
-                  </SelectItem>
-                  {teachers.map((t: any) => (
-                    <SelectItem key={t.id} value={t.id}>
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarImage src={t.avatarUrl || undefined} />
-                          <AvatarFallback className="bg-amber-500/10 text-amber-600 text-xs">
-                            <GraduationCap className="h-3 w-3" />
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col">
-                          <span className="font-medium">
-                            {t.fullName || "Chưa đặt tên"}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {t.email}
-                          </span>
-                        </div>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Dates */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label className="flex items-center gap-1">
-                  <Calendar className="h-3.5 w-3.5" />
-                  Ngày bắt đầu
-                </Label>
-                <Input
-                  type="date"
-                  value={form.startDate}
-                  onChange={(e) =>
-                    setForm({ ...form, startDate: e.target.value })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="flex items-center gap-1">
-                  <Calendar className="h-3.5 w-3.5" />
-                  Ngày kết thúc
-                </Label>
-                <Input
-                  type="date"
-                  value={form.endDate}
-                  onChange={(e) =>
-                    setForm({ ...form, endDate: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <Label>Kích hoạt</Label>
-                <div className="text-sm text-muted-foreground">
-                  Cho phép truy cập lớp học
-                </div>
-              </div>
-              <Switch
-                checked={form.isActive}
-                onCheckedChange={(checked) =>
-                  setForm({ ...form, isActive: checked })
-                }
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Hủy
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={
-                !form.name ||
-                createMutation.isPending ||
-                updateMutation.isPending
-              }
-            >
-              {(createMutation.isPending || updateMutation.isPending) && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              {editingClass ? "Lưu" : "Tạo lớp"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <CreateEditClassDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        editingClass={editingClass}
+        form={form}
+        setForm={setForm}
+        courses={courses}
+        teachers={teachers}
+        onSave={handleSave}
+        isSaving={createMutation.isPending || updateMutation.isPending}
+      />
 
       <DeleteConfirmDialog
         open={!!deleteClass}
@@ -711,5 +602,286 @@ export default function AdminClasses() {
         description={`Bạn có chắc chắn muốn xóa lớp "${deleteClass?.name}"? Tất cả học viên sẽ bị gỡ khỏi lớp.`}
       />
     </div>
+  );
+}
+
+// =============================================
+// CreateEditClassDialog – Form Tạo / Chỉnh sửa Lớp học
+// Bao gồm: Lịch học hàng tuần + Preview buổi học
+// =============================================
+interface ClassForm {
+  name: string;
+  description: string;
+  courseId: string;
+  teacherId: string;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+  weekdays: number[];
+  startTime: string;
+  endTime: string;
+  totalSessions: number;
+}
+
+function CreateEditClassDialog({
+  open,
+  onOpenChange,
+  editingClass,
+  form,
+  setForm,
+  courses,
+  teachers,
+  onSave,
+  isSaving,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  editingClass: any;
+  form: ClassForm;
+  setForm: (f: ClassForm) => void;
+  courses: any[];
+  teachers: any[];
+  onSave: () => void;
+  isSaving: boolean;
+}) {
+  // Preview lịch học – tính realtime khi chọn ngày bắt đầu + thứ
+  const previewDates = useMemo(() => {
+    if (!form.startDate || form.weekdays.length === 0) return [];
+    return generateSessionDates(form.startDate, form.weekdays, form.totalSessions);
+  }, [form.startDate, form.weekdays, form.totalSessions]);
+
+  const toggleWeekday = (day: number) => {
+    const has = form.weekdays.includes(day);
+    setForm({
+      ...form,
+      weekdays: has
+        ? form.weekdays.filter((d) => d !== day)
+        : [...form.weekdays, day].sort((a, b) => (a === 0 ? 7 : a) - (b === 0 ? 7 : b)),
+    });
+  };
+
+  const formatDate = (iso: string) => {
+    const [y, m, d] = iso.split("-");
+    return `${d}/${m}/${y}`;
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>
+            {editingClass ? "Chỉnh sửa lớp học" : "Tạo lớp học mới"}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-5">
+          {/* Tên lớp */}
+          <div className="space-y-2">
+            <Label>Tên lớp *</Label>
+            <Input
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              placeholder="VD: IELTS Foundation 01"
+            />
+          </div>
+
+          {/* Khóa học */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-1.5 font-bold text-slate-700">
+              <BookOpen className="h-3.5 w-3.5 text-blue-600" />
+              Khóa học / Chương trình đào tạo
+            </Label>
+            <Select
+              value={form.courseId}
+              onValueChange={(v) => setForm({ ...form, courseId: v === "__none__" ? "" : v })}
+            >
+              <SelectTrigger className="bg-slate-50 border-slate-200 font-medium">
+                <SelectValue placeholder="Chọn khóa học..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">
+                  <span className="text-muted-foreground">— Chọn khóa học —</span>
+                </SelectItem>
+                {courses.map((c: any) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    <span className="font-semibold text-slate-800">{c.title}</span>
+                    {c.level && <span className="text-xs text-muted-foreground ml-2">({c.level})</span>}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Giáo viên */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-1.5">
+              <GraduationCap className="h-3.5 w-3.5" />
+              Giáo viên phụ trách
+            </Label>
+            <Select
+              value={form.teacherId}
+              onValueChange={(v) => setForm({ ...form, teacherId: v === "__none__" ? "" : v })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn giáo viên" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">
+                  <span className="text-muted-foreground">— Không chọn —</span>
+                </SelectItem>
+                {teachers.map((t: any) => (
+                  <SelectItem key={t.id} value={t.id}>
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={t.avatarUrl || undefined} />
+                        <AvatarFallback className="bg-amber-500/10 text-amber-600 text-xs">
+                          <GraduationCap className="h-3 w-3" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{t.fullName || "Chưa đặt tên"}</span>
+                        <span className="text-xs text-muted-foreground">{t.email}</span>
+                      </div>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Ngày bắt đầu */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-1">
+              <Calendar className="h-3.5 w-3.5" />
+              Ngày bắt đầu
+            </Label>
+            <Input
+              type="date"
+              value={form.startDate}
+              onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+            />
+          </div>
+
+          {/* LỊCH HỌC HÀNG TUẦN */}
+          <div className="space-y-3 rounded-xl border border-emerald-200 bg-emerald-50/40 p-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-bold text-emerald-800 flex items-center gap-1.5">
+                📅 LỊCH HỌC HÀNG TUẦN
+              </Label>
+              {form.weekdays.length > 0 && (
+                <span className="text-xs text-emerald-700 font-medium">
+                  {form.weekdays.length} ngày/tuần
+                </span>
+              )}
+            </div>
+
+            {/* 7 nút toggle ngày */}
+            <div className="flex gap-2 flex-wrap">
+              {WEEKDAY_LABELS.map(({ value, label }) => {
+                const active = form.weekdays.includes(value);
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => toggleWeekday(value)}
+                    className={`px-3 py-2 rounded-lg text-sm font-semibold border-2 transition-all ${
+                      active
+                        ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
+                        : "bg-white text-slate-600 border-slate-200 hover:border-emerald-400"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Giờ học */}
+            <div className="grid grid-cols-3 gap-3 pt-1">
+              <div className="space-y-1.5">
+                <Label className="text-xs text-slate-600">Giờ bắt đầu</Label>
+                <Input
+                  type="time"
+                  value={form.startTime}
+                  onChange={(e) => setForm({ ...form, startTime: e.target.value })}
+                  className="text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-slate-600">Giờ kết thúc</Label>
+                <Input
+                  type="time"
+                  value={form.endTime}
+                  onChange={(e) => setForm({ ...form, endTime: e.target.value })}
+                  className="text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-slate-600">Tổng số buổi</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={form.totalSessions}
+                  onChange={(e) =>
+                    setForm({ ...form, totalSessions: Math.max(1, parseInt(e.target.value) || 1) })
+                  }
+                  className="text-sm"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* PREVIEW lịch học */}
+          {previewDates.length > 0 && (
+            <div className="rounded-xl border bg-muted/30 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold text-slate-700">
+                  📋 Preview lịch học ({previewDates.length} buổi)
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Kết thúc: {formatDate(previewDates[previewDates.length - 1])}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-44 overflow-y-auto">
+                {previewDates.map((date, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-2 rounded-md bg-white border px-2 py-1 text-xs"
+                  >
+                    <span className="text-emerald-600 font-semibold min-w-[44px]">
+                      Buổi {i + 1}
+                    </span>
+                    <span className="text-slate-600">{formatDate(date)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Trạng thái kích hoạt */}
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <Label>Kích hoạt</Label>
+              <div className="text-sm text-muted-foreground">Cho phép truy cập lớp học</div>
+            </div>
+            <Switch
+              checked={form.isActive}
+              onCheckedChange={(checked) => setForm({ ...form, isActive: checked })}
+            />
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Hủy
+          </Button>
+          <Button onClick={onSave} disabled={!form.name || isSaving}>
+            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {editingClass ? "Lưu thay đổi" : "Tạo lớp"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
