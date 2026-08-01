@@ -27,10 +27,17 @@ import {
 // Enum AttendanceStatus chuẩn sản phẩm
 export type AttendanceStatus = "PRESENT" | "LATE" | "EXCUSED" | "ABSENT";
 
+// Enum EnrollmentStatus chuẩn Vòng đời Học viên trong lớp
+export type EnrollmentStatus = "PENDING" | "ACTIVE" | "PAUSED" | "SUSPENDED" | "COMPLETED" | "REMOVED";
+
+// Enum PauseReason chi tiết cho Báo cáo Quản trị
+export type PauseReason = "MEDICAL" | "ACADEMIC" | "PERSONAL" | "FINANCIAL" | "OTHER";
+
 interface StudentAttendanceState {
   status: AttendanceStatus;
   note: string;
   auditTrail?: string[];
+  isManualOverridden?: boolean;
 }
 
 export const AttendanceTab: React.FC = () => {
@@ -46,13 +53,48 @@ export const AttendanceTab: React.FC = () => {
   const [lastSavedAt, setLastSavedAt] = useState<string | null>("08:30");
   const [isSaving, setIsSaving] = useState(false);
 
-  // Student list from workspace or mock
+  // Student list from workspace or mock (bao gồm enrollmentStatus & pauseUntil)
   const students = useMemo(() => {
     return (
       classData?.students || [
-        { id: "1", fullName: "Nguyễn Văn An", email: "an@gmail.com", attendancePct: 95, hwStatus: "HW 12: ✓ Submitted" },
-        { id: "2", fullName: "Trần Thị Bình", email: "binh@gmail.com", attendancePct: 83, hwStatus: "HW 12: ⚠️ Missing" },
-        { id: "3", fullName: "Lê Văn Cường", email: "cuong@gmail.com", attendancePct: 70, hwStatus: "HW 12: ✓ Reviewed" },
+        {
+          id: "1",
+          fullName: "Nguyễn Văn An",
+          email: "an@gmail.com",
+          enrollmentStatus: "ACTIVE",
+          attendancePct: 95,
+          consecutiveAbsences: 0,
+          hwStatus: "HW 12: 🟢 Đã nộp",
+        },
+        {
+          id: "2",
+          fullName: "Trần Thị Bình",
+          email: "binh@gmail.com",
+          enrollmentStatus: "ACTIVE",
+          attendancePct: 83,
+          consecutiveAbsences: 2,
+          hwStatus: "HW 12: 🟠 Chưa nộp",
+        },
+        {
+          id: "3",
+          fullName: "Lê Văn Cường",
+          email: "cuong@gmail.com",
+          enrollmentStatus: "PAUSED",
+          pauseReason: "MEDICAL",
+          pauseUntil: "28/08/2026",
+          attendancePct: 70,
+          consecutiveAbsences: 0,
+          hwStatus: "Đã tạm dừng",
+        },
+        {
+          id: "4",
+          fullName: "Phạm Hoàng Dung",
+          email: "dung@gmail.com",
+          enrollmentStatus: "SUSPENDED",
+          attendancePct: 60,
+          consecutiveAbsences: 0,
+          hwStatus: "Tạm ngưng học phí",
+        },
       ]
     );
   }, [classData]);
@@ -61,29 +103,38 @@ export const AttendanceTab: React.FC = () => {
   const [attendanceMap, setAttendanceMap] = useState<Record<string, StudentAttendanceState>>({
     "1": { status: "PRESENT", note: "" },
     "2": { status: "PRESENT", note: "" },
-    "3": { status: "ABSENT", note: "Xin nghỉ do sốt" },
+    "3": { status: "EXCUSED", note: "Ốm dài hạn (Đang bảo lưu)", isManualOverridden: false },
+    "4": { status: "ABSENT", note: "Tạm ngưng bởi Trung tâm", isManualOverridden: false },
   });
+
+  // Manual Override Map cho giáo viên điểm danh học viên PAUSED / SUSPENDED
+  const [overrideMap, setOverrideMap] = useState<Record<string, boolean>>({});
 
   // Track modified count for Notion-style status
   const [unsavedChangesCount, setUnsavedChangesCount] = useState<number>(0);
 
-  // 1-CLICK: Tất cả có mặt (Mark All Present)
+  // 1-CLICK: Tất cả có mặt (Chỉ áp dụng cho học viên ACTIVE hoặc đã Override)
   const handleMarkAllPresent = () => {
     if (sessionStatus === "FINALIZED") return;
 
     setAttendanceMap((prev) => {
       const next: Record<string, StudentAttendanceState> = {};
       students.forEach((st: any) => {
-        next[st.id] = {
-          status: "PRESENT",
-          note: prev[st.id]?.note || "",
-        };
+        const isPausedOrSuspended = (st.enrollmentStatus === "PAUSED" || st.enrollmentStatus === "SUSPENDED") && !overrideMap[st.id];
+        if (isPausedOrSuspended) {
+          next[st.id] = prev[st.id] || { status: "EXCUSED", note: "" };
+        } else {
+          next[st.id] = {
+            status: "PRESENT",
+            note: prev[st.id]?.note || "",
+          };
+        }
       });
       return next;
     });
 
     setUnsavedChangesCount((prev) => prev + 1);
-    toast.success("Đã đánh dấu TẤT CẢ học viên Có mặt!");
+    toast.success("Đã đánh dấu TẤT CẢ học viên Đang học (ACTIVE) Có mặt!");
   };
 
   // RESET ATTENDANCE
@@ -97,8 +148,21 @@ export const AttendanceTab: React.FC = () => {
       });
       return next;
     });
+    setOverrideMap({});
     setUnsavedChangesCount((prev) => prev + 1);
     toast.info("Đã đặt lại điểm danh về trạng thái mặc định");
+  };
+
+  // TOGGLE OVERRIDE FOR PAUSED/SUSPENDED STUDENT
+  const handleToggleOverride = (studentId: string) => {
+    setOverrideMap((prev) => {
+      const isCurrentlyOverridden = !!prev[studentId];
+      const nextVal = !isCurrentlyOverridden;
+      if (nextVal) {
+        toast.info("Đã mở quyền Điểm danh thủ công (Override) cho học viên này!");
+      }
+      return { ...prev, [studentId]: nextVal };
+    });
   };
 
   // CHANGE INDIVIDUAL STATUS
@@ -125,7 +189,7 @@ export const AttendanceTab: React.FC = () => {
     setUnsavedChangesCount((prev) => prev + 1);
   };
 
-  // CHANGE INDIVIDUAL NOTE
+  // CHANGE INDIVIDUAL NOTE / REASON
   const handleNoteChange = (studentId: string, note: string) => {
     if (sessionStatus === "FINALIZED") return;
 
@@ -161,11 +225,12 @@ export const AttendanceTab: React.FC = () => {
     toast.info(`Đã mở lại điểm danh Buổi ${currentSession} để chỉnh sửa`);
   };
 
-  // STATS CALCULATIONS
-  const presentCount = Object.values(attendanceMap).filter((s) => s.status === "PRESENT").length;
-  const lateCount = Object.values(attendanceMap).filter((s) => s.status === "LATE").length;
-  const excusedCount = Object.values(attendanceMap).filter((s) => s.status === "EXCUSED").length;
-  const absentCount = Object.values(attendanceMap).filter((s) => s.status === "ABSENT").length;
+  // STATS CALCULATIONS (Loại trừ học viên PAUSED / SUSPENDED chưa override khỏi tổng số active)
+  const activeStudentsList = students.filter((s: any) => s.enrollmentStatus === "ACTIVE" || overrideMap[s.id]);
+  const presentCount = activeStudentsList.filter((s: any) => (attendanceMap[s.id]?.status || "PRESENT") === "PRESENT").length;
+  const lateCount = activeStudentsList.filter((s: any) => attendanceMap[s.id]?.status === "LATE").length;
+  const excusedCount = activeStudentsList.filter((s: any) => attendanceMap[s.id]?.status === "EXCUSED").length;
+  const absentCount = activeStudentsList.filter((s: any) => attendanceMap[s.id]?.status === "ABSENT").length;
 
   return (
     <div className="space-y-4 pt-2">
@@ -175,7 +240,7 @@ export const AttendanceTab: React.FC = () => {
         totalSessions={totalSessions}
         sessionDate={new Date().toLocaleDateString("vi-VN")}
         sessionStatus={sessionStatus}
-        totalStudents={students.length}
+        totalStudents={activeStudentsList.length}
         presentCount={presentCount}
         lateCount={lateCount}
         excusedCount={excusedCount}
@@ -270,17 +335,21 @@ export const AttendanceTab: React.FC = () => {
         <Table>
           <TableHeader className="bg-muted/40">
             <TableRow>
-              <TableHead className="w-[220px]">Học viên</TableHead>
-              <TableHead className="w-[130px]">Chuyên cần %</TableHead>
-              <TableHead className="w-[180px]">Homework hiện tại</TableHead>
+              <TableHead className="w-[200px]">Học viên</TableHead>
+              <TableHead className="w-[120px]">Chuyên cần %</TableHead>
+              <TableHead className="w-[110px]">Nghỉ liên tiếp</TableHead>
+              <TableHead className="w-[160px]">Homework hiện tại</TableHead>
               <TableHead className="w-[180px]">Trạng thái điểm danh</TableHead>
-              <TableHead className="text-right">Ghi chú cá nhân 📝</TableHead>
+              <TableHead className="text-right">Lý do & Thao tác 📝</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {students.map((student: any) => {
               const currentData = attendanceMap[student.id] || { status: "PRESENT", note: "" };
               const isLocked = sessionStatus === "FINALIZED";
+              const isPaused = student.enrollmentStatus === "PAUSED";
+              const isSuspended = student.enrollmentStatus === "SUSPENDED";
+              const isOverridden = !!overrideMap[student.id];
 
               // Color badge for Attendance %
               const pct = student.attendancePct || 90;
@@ -291,8 +360,20 @@ export const AttendanceTab: React.FC = () => {
                   ? "bg-amber-50 text-amber-700 border-amber-200"
                   : "bg-rose-50 text-rose-700 border-rose-200";
 
+              // Consecutive absences indicator
+              const consec = student.consecutiveAbsences || 0;
+
               return (
-                <TableRow key={student.id} className={isLocked ? "opacity-90 bg-muted/10" : ""}>
+                <TableRow
+                  key={student.id}
+                  className={
+                    isLocked
+                      ? "opacity-90 bg-muted/10"
+                      : (isPaused || isSuspended) && !isOverridden
+                      ? "bg-muted/30 opacity-75"
+                      : ""
+                  }
+                >
                   {/* Học viên */}
                   <TableCell>
                     <div className="flex items-center gap-2.5">
@@ -303,7 +384,19 @@ export const AttendanceTab: React.FC = () => {
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="font-semibold text-xs">{student.fullName}</div>
+                        <div className="font-semibold text-xs flex items-center gap-1.5">
+                          {student.fullName}
+                          {isPaused && (
+                            <Badge variant="secondary" className="text-[10px] bg-blue-50 text-blue-700 border-blue-200 px-1 py-0 font-normal">
+                              ⏸️ PAUSED
+                            </Badge>
+                          )}
+                          {isSuspended && (
+                            <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-700 border-slate-300 px-1 py-0 font-normal">
+                              🚫 SUSPENDED
+                            </Badge>
+                          )}
+                        </div>
                         <div className="text-[11px] text-muted-foreground">{student.email}</div>
                       </div>
                     </div>
@@ -311,83 +404,159 @@ export const AttendanceTab: React.FC = () => {
 
                   {/* Attendance % */}
                   <TableCell>
-                    <Badge variant="outline" className={`text-xs font-semibold ${pctBadgeClass}`}>
-                      {pct}% {pct < 85 && "⚠️"}
-                    </Badge>
+                    {isPaused || isSuspended ? (
+                      <span className="text-xs font-medium text-muted-foreground">--</span>
+                    ) : (
+                      <Badge variant="outline" className={`text-xs font-semibold ${pctBadgeClass}`}>
+                        {pct}%
+                      </Badge>
+                    )}
+                  </TableCell>
+
+                  {/* Nghỉ liên tiếp */}
+                  <TableCell>
+                    {isPaused || isSuspended ? (
+                      <span className="text-xs text-muted-foreground">--</span>
+                    ) : consec > 0 ? (
+                      <Badge
+                        variant="secondary"
+                        className={`text-xs font-bold ${
+                          consec >= 3
+                            ? "bg-rose-100 text-rose-800 border border-rose-300 animate-pulse"
+                            : "bg-amber-100 text-amber-800"
+                        }`}
+                      >
+                        {consec >= 3 ? `🔥🔥 ${consec}` : `🔥 ${consec}`}
+                      </Badge>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">0</span>
+                    )}
                   </TableCell>
 
                   {/* Homework status */}
                   <TableCell>
                     <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
-                      {student.hwStatus || "HW 12: ✓ Submitted"}
+                      {student.hwStatus || "HW 12: 🟢 Đã nộp"}
                     </span>
                   </TableCell>
 
-                  {/* Status Dropdown (Enum) */}
+                  {/* Status Dropdown (Enum / Blocked unless Overridden) */}
                   <TableCell>
-                    <Select
-                      disabled={isLocked}
-                      value={currentData.status}
-                      onValueChange={(val: AttendanceStatus) => handleStatusChange(student.id, val)}
-                    >
-                      <SelectTrigger className="h-8 text-xs font-medium w-[150px] border">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="PRESENT" className="text-xs font-semibold text-emerald-700">
-                          🟢 Có mặt
-                        </SelectItem>
-                        <SelectItem value="LATE" className="text-xs font-semibold text-amber-700">
-                          🟡 Đi muộn
-                        </SelectItem>
-                        <SelectItem value="EXCUSED" className="text-xs font-semibold text-blue-700">
-                          🔵 Vắng có phép
-                        </SelectItem>
-                        <SelectItem value="ABSENT" className="text-xs font-semibold text-rose-700">
-                          🔴 Vắng không phép
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                    {(isPaused || isSuspended) && !isOverridden ? (
+                      <div className="flex items-center gap-1">
+                        <Badge variant="outline" className="text-xs bg-slate-50 text-slate-700 border-slate-200 py-1 font-medium">
+                          {isPaused ? `⏸️ Tạm nghỉ đến ${student.pauseUntil || "28/08"}` : "🚫 Tạm ngưng học phí"}
+                        </Badge>
+                      </div>
+                    ) : (
+                      <Select
+                        disabled={isLocked}
+                        value={currentData.status}
+                        onValueChange={(val: AttendanceStatus) => handleStatusChange(student.id, val)}
+                      >
+                        <SelectTrigger className="h-8 text-xs font-medium w-[150px] border">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="PRESENT" className="text-xs font-semibold text-emerald-700">
+                            🟢 Có mặt
+                          </SelectItem>
+                          <SelectItem value="LATE" className="text-xs font-semibold text-amber-700">
+                            🟡 Đi muộn
+                          </SelectItem>
+                          <SelectItem value="EXCUSED" className="text-xs font-semibold text-blue-700">
+                            🔵 Vắng có phép
+                          </SelectItem>
+                          <SelectItem value="ABSENT" className="text-xs font-semibold text-rose-700">
+                            🔴 Vắng không phép
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
                   </TableCell>
 
-                  {/* Note Popover */}
+                  {/* Lý do nghỉ, Manual Override & Ghi chú cá nhân */}
                   <TableCell className="text-right">
-                    <Popover>
-                      <PopoverTrigger asChild>
+                    <div className="flex items-center justify-end gap-1.5">
+                      {(isPaused || isSuspended) && (
                         <Button
-                          variant="ghost"
+                          type="button"
+                          variant="outline"
                           size="sm"
-                          className={`h-7 text-xs gap-1 ${
-                            currentData.note
-                              ? "text-emerald-700 bg-emerald-50 hover:bg-emerald-100 font-medium"
-                              : "text-muted-foreground hover:text-foreground"
-                          }`}
-                        >
-                          <MessageSquare className="h-3.5 w-3.5" />
-                          {currentData.note ? currentData.note : "Ghi chú"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-72 p-3 space-y-2" align="end">
-                        <div className="text-xs font-semibold">Ghi chú cho {student.fullName}:</div>
-                        <Textarea
                           disabled={isLocked}
-                          placeholder="Ví dụ: Xin nghỉ thi học kỳ, Đến muộn 15p..."
-                          value={currentData.note}
-                          onChange={(e) => handleNoteChange(student.id, e.target.value)}
-                          className="text-xs min-h-[60px]"
-                        />
-                        {currentData.auditTrail && currentData.auditTrail.length > 0 && (
-                          <div className="pt-1 border-t text-[10px] text-muted-foreground space-y-0.5">
-                            <span className="font-semibold text-slate-600">Audit Trail:</span>
-                            {currentData.auditTrail.map((log, idx) => (
-                              <div key={idx} className="font-mono">
-                                • {log}
-                              </div>
-                            ))}
+                          className={`h-7 text-[11px] px-2 ${
+                            isOverridden
+                              ? "bg-amber-50 text-amber-800 border-amber-300"
+                              : "bg-card text-muted-foreground hover:text-foreground"
+                          }`}
+                          onClick={() => handleToggleOverride(student.id)}
+                        >
+                          {isOverridden ? "⚡ Đã Override" : "⚡ Override điểm danh"}
+                        </Button>
+                      )}
+
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className={`h-7 text-xs gap-1 ${
+                              currentData.note
+                                ? "text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 font-medium"
+                                : "text-muted-foreground hover:text-foreground"
+                            }`}
+                          >
+                            <MessageSquare className="h-3.5 w-3.5" />
+                            {currentData.note ? currentData.note : "Ghi chú"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-72 p-3 space-y-2.5" align="end">
+                          <div className="text-xs font-semibold flex items-center justify-between">
+                            <span>Ghi chú & Lý do ({student.fullName})</span>
                           </div>
-                        )}
-                      </PopoverContent>
-                    </Popover>
+
+                          {/* Quick Reason presets for EXCUSED / ABSENT */}
+                          {(currentData.status === "EXCUSED" || currentData.status === "ABSENT") && (
+                            <div className="space-y-1">
+                              <label className="text-[11px] font-medium text-muted-foreground">Lý do phổ biến:</label>
+                              <div className="flex flex-wrap gap-1">
+                                {["Ốm dài hạn", "Thi ở trường", "Công việc", "Gia đình", "Tài chính"].map((reason) => (
+                                  <Button
+                                    key={reason}
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-6 text-[10px] px-1.5 py-0"
+                                    onClick={() => handleNoteChange(student.id, reason)}
+                                  >
+                                    + {reason}
+                                  </Button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          <Textarea
+                            disabled={isLocked}
+                            placeholder="Nhập chi tiết lý do nghỉ hoặc ghi chú cá nhân..."
+                            value={currentData.note}
+                            onChange={(e) => handleNoteChange(student.id, e.target.value)}
+                            className="text-xs min-h-[60px]"
+                          />
+
+                          {currentData.auditTrail && currentData.auditTrail.length > 0 && (
+                            <div className="pt-1 border-t text-[10px] text-muted-foreground space-y-0.5">
+                              <span className="font-semibold text-slate-600">Audit Trail:</span>
+                              {currentData.auditTrail.map((log, idx) => (
+                                <div key={idx} className="font-mono">
+                                  • {log}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                   </TableCell>
                 </TableRow>
               );
@@ -398,4 +567,5 @@ export const AttendanceTab: React.FC = () => {
     </div>
   );
 };
+
 
