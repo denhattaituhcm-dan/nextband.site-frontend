@@ -378,12 +378,6 @@ export const examsApi = {
   },
 
   getById: async (id: string) => {
-        // DREAMER (605d3bec-7a80-4cb7-ba7f-ecc74e77e1ab -> c1000000-0000-0000-0000-000000000001)
-        { id: "d6a107dc-4319-4a71-bf87-5d875e5d3281", courseId: "c1000000-0000-0000-0000-000000000001", title: "W1 - D1 - WRI", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "a599a87d-2ee1-49b9-96b3-7f7472c2a592", courseId: "c1000000-0000-0000-0000-000000000001", title: "W1 - D2 - LIS", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "0b3121c6-299d-46df-9e5f-cfef796d59c4", courseId: "c1000000-0000-0000-0000-000000000001", title: "W1 - D3 - SPK", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "92cf8047-efc6-44bc-8e8f-0ac76b81ddc4", courseId: "c1000000-0000-0000-0000-000000000001", title: "W2 - D1 - WRI", week: 2, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "282d1ecc-c1af-4a68-b9d7-553e0ea7a30e", courseId: "c1000000-0000-0000-0000-000000000001", title: "W2 - D2 - LIS", week: 2, durationMinutes: 60, is_published: true, is_active: true },
         { id: "157a0eaa-2c10-46e1-b2bc-82d0b0756679", courseId: "c1000000-0000-0000-0000-000000000001", title: "W2 - D3 - SPK", week: 2, durationMinutes: 60, is_published: true, is_active: true },
         { id: "b70a6a10-7526-4cc8-8dcd-06666f0bde5f", courseId: "c1000000-0000-0000-0000-000000000001", title: "W3 - D1 - WRI", week: 3, durationMinutes: 60, is_published: true, is_active: true },
         { id: "4d827565-1cc3-4cdc-9341-c444b613efa3", courseId: "c1000000-0000-0000-0000-000000000001", title: "W3 - D2 - LIS", week: 3, durationMinutes: 60, is_published: true, is_active: true },
