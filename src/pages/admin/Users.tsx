@@ -106,7 +106,7 @@ export default function AdminUsers() {
         page,
         limit: pageSize,
         search: debouncedSearch || undefined,
-        role: roleFilter !== "all" ? roleFilter : undefined,
+        role: "student",
       }),
   });
 
