@@ -128,14 +128,8 @@ export default function TeacherWorkspace() {
       });
     }
 
-    // Fallback danh sách Học viên demo
-    return [
-      { id: "std-1", fullName: "Nguyễn Văn A", email: "anguyen@example.com", avatarUrl: "", hasPending: true, pendingCount: 1, completedCount: 12, totalCount: 27 },
-      { id: "std-2", fullName: "Trần Thị B", email: "btran@example.com", avatarUrl: "", hasPending: true, pendingCount: 2, completedCount: 8, totalCount: 27 },
-      { id: "std-3", fullName: "Lê Văn C", email: "cle@example.com", avatarUrl: "", hasPending: false, pendingCount: 0, completedCount: 18, totalCount: 27 },
-      { id: "std-4", fullName: "Phạm Minh D", email: "dpham@example.com", avatarUrl: "", hasPending: true, pendingCount: 1, completedCount: 5, totalCount: 27 },
-      { id: "std-5", fullName: "Hoàng Thị E", email: "ehoang@example.com", avatarUrl: "", hasPending: false, pendingCount: 0, completedCount: 22, totalCount: 27 },
-    ];
+    // Không dùng fallback demo - trả về mảng rỗng nếu không có dữ liệu thực từ DB
+    return [];
   }, [rawStudents]);
 
   useEffect(() => {
@@ -152,11 +146,12 @@ export default function TeacherWorkspace() {
   }, [students, studentFilter]);
 
   const currentStudent = useMemo(() => {
-    return students.find((s: any) => s.id === selectedStudentId) || students[0];
+    return students.find((s: any) => s.id === selectedStudentId) || null;
   }, [students, selectedStudentId]);
 
   // 3. TẠO SỔ WORKBOOK CỐ ĐỊNH NHÓM THEO BUỔI HỌC (LESSON GROUPING)
   const workbookItems: WorkbookItem[] = useMemo(() => {
+    if (!selectedStudentId) return [];
     return Array.from({ length: 27 }, (_, i) => {
       const index = i + 1;
       const lessonNumber = Math.ceil(index / 2); // 2 bài / 1 buổi học
@@ -166,26 +161,6 @@ export default function TeacherWorkspace() {
         ? `HW ${String(index).padStart(2, "0")}: Writing Task ${index % 4 === 1 ? 1 : 2} Essay`
         : `HW ${String(index).padStart(2, "0")}: Speaking Part ${index % 3 === 0 ? 3 : 2} Practice`;
 
-      let status: WorkbookItem["status"] = "unsubmitted";
-      let isOverdue = false;
-      let score: number | undefined = undefined;
-      let feedback: string | undefined = undefined;
-
-      if (index <= 3) {
-        status = "graded";
-        score = 6.5;
-        feedback = "Bài làm rất tốt, lập luận chặt chẽ. Cần chú ý mở rộng vốn từ vựng Academic hơn.";
-      } else if (index === 4) {
-        status = "in_progress";
-      } else if (index === 5) {
-        status = "submitted"; // Bài chờ chấm
-      } else if (index === 6) {
-        status = "needs_revision";
-      } else if (index === 7) {
-        status = "unsubmitted";
-        isOverdue = true; // Quá hạn
-      }
-
       return {
         id: `hw-${index}`,
         lessonNumber,
@@ -193,16 +168,9 @@ export default function TeacherWorkspace() {
         orderIndex: index,
         title,
         type,
-        dueDate: "2026-07-30",
-        status,
-        isOverdue,
-        score,
-        feedback,
-        submittedAt: status === "submitted" || status === "graded" ? "2026-07-31T09:30:00Z" : undefined,
-        answerText: isWriting
-          ? "In modern society, higher education has been a controversial topic. Many people believe that university education should be free for all students, while others argue that individuals should pay for their own tuition fees..."
-          : undefined,
-        audioUrl: !isWriting ? "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" : undefined,
+        dueDate: "",
+        status: "unsubmitted",
+        isOverdue: false,
       };
     });
   }, [selectedStudentId]);
@@ -507,96 +475,101 @@ export default function TeacherWorkspace() {
               <div>
                 <h3 className="text-xs font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
                   <BookOpen className="h-4 w-4 text-blue-600" />
-                  Sổ Bài Tập: <span className="text-blue-600">{currentStudent?.fullName}</span>
+                  Sổ Bài Tập: <span className="text-blue-600">{currentStudent?.fullName || "Chưa chọn học viên"}</span>
                 </h3>
-                <p className="text-[10px] text-slate-400">Workbook lớp {currentClass?.name || "MASTER"}</p>
+                <p className="text-[10px] text-slate-400">Workbook lớp {currentClass?.name || "IELTS"}</p>
               </div>
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
-                27 Bài tập
-              </span>
-            </div>
 
-            {/* Badges Tóm tắt trạng thái */}
-            <div className="flex items-center gap-2 pt-1">
-              <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                🟢 {workbookSummary.graded}
-              </span>
-              <span className="text-[10px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                🔵 {workbookSummary.pending}
-              </span>
-              <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                ⚪ {workbookSummary.inProgress}
-              </span>
-              {workbookSummary.overdue > 0 && (
-                <span className="text-[10px] font-semibold text-slate-900 bg-slate-900 text-white px-2 py-0.5 rounded">
-                  ⚫ {workbookSummary.overdue}
-                </span>
+              {/* THỐNG KÊ NHANH BADGES */}
+              {currentStudent && (
+                <div className="flex items-center gap-1">
+                  <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] px-1.5 py-0.2">
+                    🟢 {workbookSummary.graded}
+                  </Badge>
+                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] px-1.5 py-0.2">
+                    🔵 {workbookSummary.pending}
+                  </Badge>
+                  <Badge variant="outline" className="bg-slate-100 text-slate-600 border-slate-200 text-[10px] px-1.5 py-0.2">
+                    ⚪ {workbookSummary.inProgress}
+                  </Badge>
+                  {workbookSummary.overdue > 0 && (
+                    <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 text-[10px] px-1.5 py-0.2">
+                      ⚫ {workbookSummary.overdue}
+                    </Badge>
+                  )}
+                </div>
               )}
             </div>
           </div>
 
-          {/* 2. BÀI TẬP NHÓM THEO BUỔI HỌC (LESSON GROUPING) */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-3">
-            {groupedWorkbook.map((group) => (
-              <div key={group.lessonNumber} className="space-y-1.5">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1 flex items-center gap-1.5">
-                  <FolderOpen className="h-3 w-3 text-slate-400" />
-                  {group.lessonTitle}
-                </div>
-
-                <div className="space-y-1.5">
-                  {group.items.map((item) => {
-                    const isSelected = item.id === selectedHomeworkId;
-                    const isReopenOpen = reopenTargetId === item.id;
-                    return (
-                      <div
-                        key={item.id}
-                        onClick={() => setSelectedHomeworkId(item.id)}
-                        className={`p-2.5 rounded-xl border transition-all cursor-pointer space-y-1.5 ${
-                          isSelected
-                            ? "bg-white border-blue-500 shadow-sm ring-1 ring-blue-500/30"
-                            : "bg-white border-slate-200/80 hover:border-slate-300"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-semibold text-slate-800 truncate pr-2">
-                            {item.title}
-                          </span>
-                          {renderStatusBadge(item)}
-                        </div>
-
-                        {/* 5. GIA HẠN TINH GỌN (INLINE DATE TOGGLE) */}
-                        {item.isOverdue && item.status !== "graded" && item.status !== "submitted" && (
-                          <div className="pt-1 border-t border-slate-100 flex items-center justify-between text-[10px]" onClick={(e) => e.stopPropagation()}>
-                            <span className="text-slate-400">Hạn: {item.dueDate}</span>
-                            {!isReopenOpen ? (
-                              <button
-                                onClick={() => setReopenTargetId(item.id)}
-                                className="text-blue-600 font-bold hover:underline"
-                              >
-                                [Gia hạn]
-                              </button>
-                            ) : (
-                              <div className="flex items-center gap-1 bg-slate-50 p-1 rounded border border-slate-200">
-                                <Input
-                                  type="date"
-                                  value={reopenDate}
-                                  onChange={(e) => setReopenDate(e.target.value)}
-                                  className="h-6 text-[9px] w-24 bg-white"
-                                />
-                                <Button size="sm" onClick={() => handleConfirmReopen(item)} className="h-6 text-[9px] px-2 bg-slate-900 text-white">
-                                  Lưu
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+          {/* Danh sách 27 Bài Tập gom theo Buổi học */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-4">
+            {!currentStudent ? (
+              <div className="h-full flex items-center justify-center p-6 text-center text-xs text-slate-400">
+                Chưa có học viên nào trong lớp
               </div>
-            ))}
+            ) : (
+              groupedWorkbook.map((group) => (
+                <div key={group.lessonNumber} className="space-y-1.5">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-200/60 px-2.5 py-1 rounded-md">
+                    📖 BUỔI {group.lessonNumber}: KỸ NĂNG {group.items[0]?.type.toUpperCase()}
+                  </div>
+
+                  <div className="space-y-1">
+                    {group.items.map((item) => {
+                      const isSelected = item.id === selectedHomeworkId;
+                      const isReopenOpen = reopenTargetId === item.id;
+
+                      return (
+                        <div
+                          key={item.id}
+                          onClick={() => setSelectedHomeworkId(item.id)}
+                          className={`p-2.5 rounded-xl border transition-all cursor-pointer space-y-1.5 ${
+                            isSelected
+                              ? "bg-white border-blue-500 shadow-sm ring-1 ring-blue-500/20"
+                              : "bg-white/80 border-slate-200/80 hover:bg-white hover:border-slate-300"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-slate-800 truncate max-w-[200px]">
+                              {item.title}
+                            </span>
+                            {renderStatusBadge(item)}
+                          </div>
+
+                          {/* Dòng Quá hạn -> nút Gia hạn mở Inline */}
+                          {item.isOverdue && item.status !== "graded" && item.status !== "submitted" && (
+                            <div className="text-[10px] text-slate-500 flex items-center justify-between pt-1 border-t border-slate-100">
+                              <span>Hạn: {item.dueDate}</span>
+                              {!isReopenOpen ? (
+                                <button
+                                  onClick={() => setReopenTargetId(item.id)}
+                                  className="text-blue-600 font-bold hover:underline"
+                                >
+                                  [Gia hạn]
+                                </button>
+                              ) : (
+                                <div className="flex items-center gap-1 bg-slate-50 p-1 rounded border border-slate-200">
+                                  <Input
+                                    type="date"
+                                    value={reopenDate}
+                                    onChange={(e) => setReopenDate(e.target.value)}
+                                    className="h-6 text-[9px] w-24 bg-white"
+                                  />
+                                  <Button size="sm" onClick={() => handleConfirmReopen(item)} className="h-6 text-[9px] px-2 bg-slate-900 text-white">
+                                    Lưu
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -604,31 +577,37 @@ export default function TeacherWorkspace() {
         {/* CỘT 3: KHAY CHẤM BÀI VỚI ĐỦ THÔNG TIN ĐỊNH DANH HỌC VIÊN                  */}
         {/* ========================================================================= */}
         <div className="flex-1 bg-white flex flex-col justify-between overflow-hidden">
-          {/* 3. HEADER THÊM ĐỦ THÔNG TIN NHẬN DIỆN HỌC VIÊN & LỚP */}
-          <div className="p-3.5 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between shrink-0">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-900">{currentHomework?.title}</span>
-                {renderStatusBadge(currentHomework)}
-              </div>
-              <div className="text-[11px] text-slate-600 font-medium flex items-center gap-2 mt-1">
-                <span className="font-bold text-blue-700">{currentStudent?.fullName}</span>
-                <span>•</span>
-                <span className="text-slate-500">{currentClass?.name || "Lớp MASTER 01"}</span>
-                <span>•</span>
-                <span className="text-slate-500">{currentHomework?.type === "writing" ? "Writing Task 2" : "Speaking Part 2"}</span>
-              </div>
+          {!currentStudent ? (
+            <div className="h-full flex items-center justify-center p-8 text-center text-xs text-slate-400">
+              Chọn một học viên từ danh sách để xem bài làm và chấm điểm.
             </div>
+          ) : (
+            <>
+              {/* 3. HEADER THÊM ĐỦ THÔNG TIN NHẬN DIỆN HỌC VIÊN & LỚP */}
+              <div className="p-3.5 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between shrink-0">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-900">{currentHomework?.title || "Chưa chọn bài"}</span>
+                    {currentHomework && renderStatusBadge(currentHomework)}
+                  </div>
+                  <div className="text-[11px] text-slate-600 font-medium flex items-center gap-2 mt-1">
+                    <span className="font-bold text-blue-700">{currentStudent?.fullName}</span>
+                    <span>•</span>
+                    <span className="text-slate-500">{currentClass?.name || "Lớp IELTS"}</span>
+                    <span>•</span>
+                    <span className="text-slate-500">{currentHomework?.type === "writing" ? "Writing Task 2" : "Speaking Part 2"}</span>
+                  </div>
+                </div>
 
-            <Button
-              onClick={handleGradeSubmit}
-              disabled={isSubmitting}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold h-8 text-xs px-3 shadow-xs"
-            >
-              {isSubmitting ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Send className="h-3.5 w-3.5 mr-1.5" />}
-              Trả bài 🚀
-            </Button>
-          </div>
+                <Button
+                  onClick={handleGradeSubmit}
+                  disabled={isSubmitting || !currentHomework}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold h-8 text-xs px-3 shadow-xs"
+                >
+                  {isSubmitting ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Send className="h-3.5 w-3.5 mr-1.5" />}
+                  Trả bài 🚀
+                </Button>
+              </div>
 
           {/* Body Nội dung & Form Chấm điểm */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -729,6 +708,8 @@ export default function TeacherWorkspace() {
               </div>
             </Card>
           </div>
+            </>
+          )}
         </div>
       </div>
     </div>
