@@ -359,7 +359,8 @@ export const examsApi = {
     if (params?.isActive !== undefined)
       query = query.eq("is_active", params.isActive);
 
-    const sortField = params?.sortBy || "created_at";
+    let sortField = params?.sortBy || "created_at";
+    if (sortField === "createdAt") sortField = "created_at";
     const ascending = params?.sortOrder === "asc";
     query = query.order(sortField, { ascending }).range(from, to);
 

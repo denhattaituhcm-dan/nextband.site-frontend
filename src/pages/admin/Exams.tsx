@@ -93,6 +93,8 @@ export default function AdminExams() {
         limit: pageSize,
         search: debouncedSearch || undefined,
         courseId: selectedCourseId !== "all" ? selectedCourseId : undefined,
+        sortBy: sortField,
+        sortOrder,
       }),
   });
 
