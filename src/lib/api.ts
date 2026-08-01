@@ -1198,7 +1198,7 @@ export const classesApi = {
   }) => {
     let query = supabase
       .from("classes")
-      .select("*, courses(title), profiles:teacher_id(full_name)", { count: "exact" });
+      .select("*", { count: "exact" });
 
     if (params?.search) {
       query = query.ilike("name", `%${params.search}%`);
@@ -1218,16 +1218,32 @@ export const classesApi = {
     const { data, count, error } = await query;
     if (error) throw error;
 
+    // Fetch related teacher profiles separately to prevent PostgREST relation embed errors
+    const teacherIds = Array.from(
+      new Set((data || []).map((c: any) => c.teacher_id).filter(Boolean))
+    );
+
+    let teacherMap: Record<string, string> = {};
+    if (teacherIds.length > 0) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("user_id, full_name")
+        .in("user_id", teacherIds);
+
+      (profs || []).forEach((p: any) => {
+        if (p.user_id) teacherMap[p.user_id] = p.full_name;
+      });
+    }
+
     const formatted = (data || []).map((c: any) => ({
       id: c.id,
       name: c.name,
       description: c.description || "",
       courseId: c.course_id,
-      courseTitle: c.courses?.title || null,
       teacherId: c.teacher_id,
       teacher: {
         id: c.teacher_id,
-        fullName: c.profiles?.full_name || null,
+        fullName: teacherMap[c.teacher_id] || null,
       },
       startDate: c.start_date,
       endDate: c.end_date,

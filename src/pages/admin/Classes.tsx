@@ -44,6 +44,7 @@ import {
   ClipboardCheck,
   KeyRound,
   BookOpen,
+  AlertCircle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -87,7 +88,7 @@ export default function AdminClasses() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: [
       "admin-classes",
       debouncedSearch,
@@ -132,9 +133,8 @@ export default function AdminClasses() {
         endDate: body.endDate || undefined,
         isActive: body.isActive,
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-classes"] });
-      queryClient.refetchQueries({ queryKey: ["admin-classes"] });
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: ["admin-classes"] });
       toast({ title: "Đã tạo lớp học mới" });
       setDialogOpen(false);
       setForm(emptyForm);
@@ -160,8 +160,8 @@ export default function AdminClasses() {
         endDate: body.endDate || null,
         isActive: body.isActive,
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-classes"] });
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: ["admin-classes"] });
       toast({ title: "Đã cập nhật lớp học" });
       setDialogOpen(false);
       setEditingClass(null);
@@ -314,7 +314,27 @@ export default function AdminClasses() {
             {isLoading ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8">
-                  Đang tải...
+                  <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Đang tải danh sách lớp học...
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : isError ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-8">
+                  <div className="flex flex-col items-center justify-center gap-2 text-destructive">
+                    <AlertCircle className="h-5 w-5" />
+                    <span>Không thể tải danh sách lớp học</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => refetch()}
+                      className="mt-2 text-foreground"
+                    >
+                      Thử lại
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : classes.length === 0 ? (
