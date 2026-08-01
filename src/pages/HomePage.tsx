@@ -410,14 +410,7 @@ export default function HomePage() {
               </Card>
             </div>
           </>
-        )}
-
-        {/* Modal Onboarding Join Class */}
-        <JoinClassModal
-          open={joinModalOpen}
-          onOpenChange={setJoinModalOpen}
-          onSuccess={() => refetchWorkspace()}
-        />
+        {/* Student Hub Page Footer / Spacing */}
       </div>
     </div>
   );
