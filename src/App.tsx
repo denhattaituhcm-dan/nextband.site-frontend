@@ -39,7 +39,7 @@ import AdminCheckAttempt from "@/pages/admin/CheckAttempt";
 import AdminSubmissionGrade from "@/pages/admin/SubmissionGrade";
 import AdminLogViewer from "@/pages/admin/LogViewer";
 import AdminClasses from "@/pages/admin/Classes";
-import AdminClassEdit from "@/pages/admin/ClassEdit";
+import AdminClassEdit from "@/pages/admin/ClassWorkspace";
 import AdminSettings from "@/pages/admin/Settings";
 import TeacherWorkspace from "@/pages/admin/TeacherWorkspace";
 import ClassAttendancePage from "@/pages/admin/ClassAttendancePage";
