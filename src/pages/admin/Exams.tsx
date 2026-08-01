@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { examsApi } from "@/lib/api";
+import { examsApi, coursesApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -22,6 +29,7 @@ import {
   ClipboardList,
   Lock,
   Unlock,
+  BookOpen,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -51,6 +59,8 @@ export default function AdminExams() {
     isLocked?: boolean;
   } | null>(null);  
 
+  const [selectedCourseId, setSelectedCourseId] = useState<string>("all");
+
   // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -60,10 +70,18 @@ export default function AdminExams() {
     return () => clearTimeout(timer);
   }, [search]);
 
+  // Fetch courses list for filtering
+  const { data: coursesData } = useQuery({
+    queryKey: ["courses-list"],
+    queryFn: () => coursesApi.list({ limit: 100 }),
+  });
+  const courses = coursesData?.data || [];
+
   const { data, isLoading } = useQuery({
     queryKey: [
       "admin-exams",
       debouncedSearch,
+      selectedCourseId,
       sortField,
       sortOrder,
       page,
@@ -73,6 +91,8 @@ export default function AdminExams() {
       examsApi.list({
         page,
         limit: pageSize,
+        search: debouncedSearch || undefined,
+        courseId: selectedCourseId !== "all" ? selectedCourseId : undefined,
       }),
   });
 
@@ -168,14 +188,41 @@ export default function AdminExams() {
         </Button>
       </div>
 
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Tìm kiếm..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-10"
-        />
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative max-w-sm flex-1 min-w-[240px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Tìm kiếm bài thi..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+
+        <div className="w-[240px]">
+          <Select
+            value={selectedCourseId}
+            onValueChange={(val) => {
+              setSelectedCourseId(val);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger>
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4 text-muted-foreground" />
+                <SelectValue placeholder="Lọc theo Khóa học" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả khóa học</SelectItem>
+              {courses.map((c: any) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.title} {c.level ? `(${c.level})` : ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="border rounded-lg">
