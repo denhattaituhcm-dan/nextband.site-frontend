@@ -30,11 +30,13 @@ class GlobalErrorBoundary extends Component<Props, State> {
   }
 
   private handleReload = () => {
-    window.location.reload();
+    this.setState({ hasError: false, error: null });
+    window.location.href = window.location.origin + window.location.pathname + "?t=" + Date.now();
   };
 
   private handleGoHome = () => {
-    window.location.href = "/";
+    this.setState({ hasError: false, error: null });
+    window.location.href = "/?t=" + Date.now();
   };
 
   public render() {

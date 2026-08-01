@@ -85,3 +85,5 @@ export function JoinClassModal({ open, onOpenChange, onSuccess }: JoinClassModal
     </Dialog>
   );
 }
+
+export default JoinClassModal;

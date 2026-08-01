@@ -90,7 +90,7 @@ class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, { 
             <button
               onClick={() => {
                 this.setState({ hasError: false, error: null });
-                window.location.reload();
+                window.location.href = window.location.origin + window.location.pathname + "?t=" + Date.now();
               }}
               className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer"
             >
