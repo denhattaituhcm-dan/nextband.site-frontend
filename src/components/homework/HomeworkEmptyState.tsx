@@ -5,50 +5,41 @@ import { CheckCircle2, KeyRound, Sparkles, MessageCircle } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 interface HomeworkEmptyStateProps {
-  onJoinClick: () => void;
-  hasClasses: boolean;
+  onJoinClick?: () => void;
+  hasClasses?: boolean;
+  state?: "NO_ENROLLMENT" | "PENDING_ACTIVATION" | "SUSPENDED_STUDENT" | "ACTIVE_STUDENT";
 }
 
-export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptyStateProps) {
+export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkEmptyStateProps) {
   const { settings } = useSiteSettings();
 
-  if (hasClasses) {
-    return (
-      <Card className="border-blue-100 bg-gradient-to-r from-blue-500 via-indigo-600 to-blue-600 text-white rounded-2xl shadow-lg p-6 md:p-8 text-center space-y-4 border-0">
-        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto text-white backdrop-blur-sm">
-          <CheckCircle2 className="w-6 h-6" />
-        </div>
-        <div className="space-y-1.5 max-w-md mx-auto">
-          <h2 className="text-xl md:text-2xl font-extrabold text-white">
-            Bạn đã hoàn thành tất cả bài tập! 🎉
-          </h2>
-          <p className="text-xs md:text-sm text-blue-100 font-medium">
-            Hiện tại không có bài tập nào tồn đọng. Hãy xem lại các bài học hoặc chuẩn bị cho buổi học tiếp theo.
-          </p>
-        </div>
-        <div className="pt-2 flex justify-center">
-          <Button
-            onClick={onJoinClick}
-            className="bg-white hover:bg-blue-50 text-blue-600 font-extrabold px-6 py-4 rounded-xl shadow-lg flex items-center gap-2 text-sm border-0"
-          >
-            <KeyRound className="w-4 h-4" />
-            Nhập mã Lớp học mới
-          </Button>
-        </div>
-      </Card>
-    );
-  }
+  const isSuspended = state === "SUSPENDED_STUDENT";
+  const isPending = state === "PENDING_ACTIVATION";
 
   return (
     <div className="space-y-6">
-      {/* 1. HERO WELCOME BANNER FOR UNENROLLED STUDENTS (ZERO-CODE FRICTIONLESS ONBOARDING) */}
-      <Card className="border-blue-500 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white rounded-2xl shadow-lg p-6 md:p-8 text-center space-y-4 border-0 relative overflow-hidden">
+      {/* 1. HERO WELCOME BANNER FOR UNENROLLED OR PENDING/SUSPENDED STUDENTS */}
+      <Card className={`border-0 text-white rounded-2xl shadow-lg p-6 md:p-8 text-center space-y-4 relative overflow-hidden ${
+        isSuspended
+          ? "bg-gradient-to-r from-amber-600 via-red-600 to-rose-700"
+          : isPending
+          ? "bg-gradient-to-r from-sky-600 via-indigo-600 to-blue-700"
+          : "bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600"
+      }`}>
         <div className="space-y-2 max-w-xl mx-auto">
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
-            Chào mừng bạn đến với ARIS IELTS (NextBand)
+            {isSuspended
+              ? "Tài khoản Lớp học tạm thời bị tạm dừng"
+              : isPending
+              ? "Tài khoản của bạn đang chờ Giáo viên Kích hoạt"
+              : "Chào mừng bạn đến với ARIS IELTS (NextBand)"}
           </h1>
           <p className="text-xs md:text-sm text-blue-100 font-medium leading-relaxed">
-            Tài khoản Email của bạn chưa được liên kết với Lớp học nào. Vui lòng liên hệ Giáo viên / Trung tâm ARIS IELTS để được xếp lớp.
+            {isSuspended
+              ? "Lớp học của bạn đang ở trạng thái Tạm dừng. Vui lòng liên hệ Giáo viên hoặc Trung tâm để kiểm tra thông tin và mở lại quyền học."
+              : isPending
+              ? "Hệ thống đã ghi nhận lớp học của bạn. Giáo viên sẽ bật Kích hoạt để bạn bắt đầu truy cập bài học."
+              : "Tài khoản Email của bạn chưa được liên kết với Lớp học nào. Vui lòng liên hệ Giáo viên / Trung tâm ARIS IELTS để được xếp lớp."}
           </p>
         </div>
 
@@ -62,7 +53,7 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md text-xs font-semibold transition-all shadow-sm active:scale-95"
             >
               <MessageCircle className="h-4 w-4 text-sky-300" />
-              <span>Support</span>
+              <span>Support / Liên hệ Giáo viên</span>
             </a>
           </div>
         )}
@@ -77,12 +68,12 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses }: HomeworkEmptySta
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2">
             <span className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 font-extrabold text-xs inline-flex items-center justify-center">1</span>
             <div className="font-bold text-xs text-slate-900">Đăng nhập</div>
-            <p className="text-[11px] text-slate-500">Tài khoản được cấp hoặc đăng ký</p>
+            <p className="text-[11px] text-slate-500">Google OAuth hoặc tài khoản được cấp</p>
           </div>
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2">
             <span className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 font-extrabold text-xs inline-flex items-center justify-center">2</span>
-            <div className="font-bold text-xs text-slate-900">Nhập mã lớp</div>
-            <p className="text-[11px] text-slate-500">Mã ngắn do Giáo viên cấp</p>
+            <div className="font-bold text-xs text-slate-900">Giáo viên xếp lớp</div>
+            <p className="text-[11px] text-slate-500">Kích hoạt quyền truy cập lớp</p>
           </div>
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2">
             <span className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 font-extrabold text-xs inline-flex items-center justify-center">3</span>

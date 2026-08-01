@@ -1,11 +1,10 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import { coursesApi, enrollmentsApi, homeworksApi, lessonsApi, submissionsApi } from "@/lib/api";
+import { coursesApi, enrollmentsApi, homeworksApi, lessonsApi, submissionsApi, workspaceApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { JoinClassModal } from "@/components/auth/JoinClassModal";
 import { HomeworkContinueCard } from "@/components/homework/HomeworkContinueCard";
 import { HomeworkEmptyState } from "@/components/homework/HomeworkEmptyState";
 import { HomeworkList } from "@/components/homework/HomeworkList";
@@ -21,14 +20,25 @@ import {
   Lock,
   ArrowRight,
   TrendingUp,
+  Sparkles,
 } from "lucide-react";
 
 export default function HomePage() {
   const { user, isAuthenticated } = useAuth();
-  const [joinModalOpen, setJoinModalOpen] = useState(false);
+  const navigate = useNavigate();
 
-  // 0. Fetch Workspace Data (Safe failover)
-  const { data: workspaceData, refetch: refetchWorkspace } = useQuery({
+  // 0. Fetch Unified Workspace ViewModel (/me/workspace)
+  const { data: studentWorkspaceData } = useQuery({
+    queryKey: ["student-me-workspace"],
+    queryFn: () => workspaceApi.getStudentWorkspace().catch(() => ({ success: false, data: null as any })),
+    enabled: isAuthenticated,
+    retry: false,
+  });
+
+  const workspaceViewModel = studentWorkspaceData?.data;
+
+  // 0b. Legacy Homework Workspace Projection (Safe failover)
+  const { data: workspaceData } = useQuery({
     queryKey: ["student-homework-workspace"],
     queryFn: () => homeworksApi.getWorkspace().catch(() => ({ success: false, data: null as any })),
     enabled: isAuthenticated,
@@ -41,7 +51,7 @@ export default function HomePage() {
   const upcomingTasks = Array.isArray(workspace?.upcoming) ? workspace.upcoming : [];
   const completedTasks = Array.isArray(workspace?.completed) ? workspace.completed : [];
 
-  // 1. Fetch Enrollments & Class Data
+  // 1. Fetch Enrollments
   const { data: enrollments = [] } = useQuery({
     queryKey: ["my-enrollments"],
     queryFn: () => enrollmentsApi.list().catch(() => []),
@@ -50,22 +60,35 @@ export default function HomePage() {
   });
 
   const hasClasses = Array.isArray(enrollments) && enrollments.length > 0;
-  const enrolledClassId = enrollments[0]?.course_id || enrollments[0]?.courses?.id;
+  const enrolledClassId = workspaceViewModel?.classes?.[0]?.id || enrollments[0]?.course_id || enrollments[0]?.courses?.id;
 
-  // 1b. Fetch Class Lessons (ClassSession + Homework + Submission Data)
+  // Evaluate State from ViewModel or fallback
+  const workspaceState = workspaceViewModel?.state || (hasClasses ? "ACTIVE_STUDENT" : "NO_ENROLLMENT");
+  const nextAction = workspaceViewModel?.nextAction;
+
+  // Handler for "Tiếp tục học" dynamic action
+  const handleContinueLearning = () => {
+    if (nextAction?.type === "HOMEWORK" && nextAction.classId) {
+      navigate(`/class/${nextAction.classId}/lessons`);
+    } else if (nextAction?.classId) {
+      navigate(`/class/${nextAction.classId}/lessons`);
+    } else if (enrolledClassId) {
+      navigate(`/class/${enrolledClassId}/lessons`);
+    }
+  };
+
+  // 1b. Fetch Class Lessons
   const { data: classLessonsData } = useQuery({
-    queryKey: ["class-lessons-timeline", enrolledClassId],
+    queryKey: ["class-timeline", enrolledClassId],
     queryFn: () => lessonsApi.getClassLessons(enrolledClassId!).catch(() => ({ success: false, data: null as any })),
     enabled: !!enrolledClassId,
     retry: false,
   });
 
   const classLessons = classLessonsData?.data?.lessons || [];
-  const nextSessionLesson = classLessons.find(
-    (l) => l.sessionDate && new Date(l.sessionDate) >= new Date()
-  ) || classLessons[0];
+  const totalCourseLessons = classLessons.length > 0 ? classLessons.length : 27;
 
-  // 2. Fetch Student Real Submissions for Recent Feedback & Progress (Safe failover)
+  // 2. Fetch Student Real Submissions
   const { data: submissionsData } = useQuery({
     queryKey: ["my-recent-submissions", user?.id],
     queryFn: () => submissionsApi.list({ studentId: user?.id, limit: 50 }).catch(() => ({ data: [] })),
@@ -74,36 +97,26 @@ export default function HomePage() {
   });
 
   const userSubmissions = Array.isArray(submissionsData?.data) ? submissionsData.data : [];
-  const gradedSubmissions = userSubmissions.filter((s: any) => s && s.status === "graded");
   const submittedTasksCount = userSubmissions.filter((s: any) => s && (s.status === "graded" || s.status === "submitted")).length;
-
-  const totalCourseLessons = classLessons.length > 0 ? classLessons.length : 27;
   const completedCount = Math.min(submittedTasksCount, totalCourseLessons);
-  const activeClassName = enrollments[0]?.courses?.title ? `${enrollments[0].courses.title} • STARTER01` : "STARTER01 • 04.2026";
+  const activeClassName = workspaceViewModel?.classes?.[0]?.name || enrollments[0]?.courses?.title || "STARTER01 • 04.2026";
   const progressPercent = Math.min(100, Math.round((completedCount / totalCourseLessons) * 100));
 
-  // State Evaluation
   const isOverdue = dueTodayTasks.length > 0;
-  const isDailyCompleted = hasClasses && dueTodayTasks.length === 0 && !continueTask;
+  const isDailyCompleted = workspaceState === "ACTIVE_STUDENT" && dueTodayTasks.length === 0 && !continueTask;
 
   return (
     <div className="min-h-screen bg-[#F7F9FC] pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 space-y-6">
         
         {/* ========================================================================= */}
-        {/* STATE A: FIRST-TIME STUDENT ONBOARDING (JOIN CLASS WORKSPACE)            */}
+        {/* STATE: NO_ENROLLMENT, PENDING_ACTIVATION or SUSPENDED_STUDENT            */}
         {/* ========================================================================= */}
-        {!hasClasses ? (
-          <HomeworkEmptyState
-            hasClasses={false}
-            onJoinClick={() => setJoinModalOpen(true)}
-          />
+        {workspaceState !== "ACTIVE_STUDENT" ? (
+          <HomeworkEmptyState state={workspaceState} />
         ) : (
           /* ========================================================================= */
-          /* STATE B, C, D: STUDENT WORKSPACE (Dành cho học viên đã có lớp)           */
-          /* ========================================================================= */
-          /* ========================================================================= */
-          /* STATE B, C, D: STUDENT, OVERDUE & COMPLETED STATE                         */
+          /* STATE: ACTIVE_STUDENT (STUDENT WORKSPACE CONTROL TOWER)                   */
           /* ========================================================================= */
           <>
             {/* 1. BRAND IDENTITY HEADER WITH PERSONAL TARGET MATRIX & PROGRESS */}

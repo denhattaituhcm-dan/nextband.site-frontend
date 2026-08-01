@@ -229,13 +229,20 @@ export default function AdminClassEdit() {
     },
   });
 
-  // Remove student mutation
-  const removeStudentMutation = useMutation({
-    mutationFn: (studentId: string) => classesApi.removeStudent(id!, studentId),
+  // Update student status mutation
+  const updateStudentStatusMutation = useMutation({
+    mutationFn: ({ studentId, status }: { studentId: string; status: string }) =>
+      classesApi.updateStudentStatus(id!, studentId, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-class", id] });
-      toast({ title: "Đã xóa học viên khỏi lớp" });
-      setRemoveStudent(null);
+      toast({ title: "Đã cập nhật trạng thái học viên thành công!" });
+    },
+    onError: (err: any) => {
+      toast({
+        variant: "destructive",
+        title: "Cập nhật thất bại",
+        description: err.message,
+      });
     },
   });
 
@@ -967,17 +974,26 @@ export default function AdminClassEdit() {
                         {cs.student?.email}
                       </TableCell>
                       <TableCell>
-                        {isActivated ? (
-                          <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 gap-1 text-[11px]">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                            🟢 Đã kích hoạt
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 gap-1 text-[11px]">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                            🟡 Chờ đăng nhập
-                          </Badge>
-                        )}
+                        <Select
+                          value={cs.status || "ACTIVE"}
+                          onValueChange={(newStatus) =>
+                            updateStudentStatusMutation.mutate({
+                              studentId: cs.studentId,
+                              status: newStatus,
+                            })
+                          }
+                        >
+                          <SelectTrigger className="h-8 w-[160px] text-xs font-semibold">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ACTIVE">🟢 Active (Đang học)</SelectItem>
+                            <SelectItem value="PENDING">🟡 Pending (Chờ KH)</SelectItem>
+                            <SelectItem value="SUSPENDED">🔴 Suspended (Tạm dừng)</SelectItem>
+                            <SelectItem value="COMPLETED">⚫ Completed (Hoàn thành)</SelectItem>
+                            <SelectItem value="INVITED">⚪ Invited (Được mời)</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </TableCell>
                       <TableCell className="text-muted-foreground text-sm">
                         {new Date(cs.joinedAt).toLocaleDateString("vi-VN")}

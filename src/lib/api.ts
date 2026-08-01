@@ -1456,6 +1456,22 @@ export const classesApi = {
     return { success: true };
   },
 
+  updateStudentStatus: async (classId: string, studentId: string, status: string, reason?: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    const response = await fetch(`${API_BASE_URL}/classes/${classId}/students/${studentId}/status`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status, reason }),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Failed to update student status");
+    return result;
+  },
+
   listSchedules: async (classId: string) => {
     const { data, error } = await supabase
       .from("class_schedules")
