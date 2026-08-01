@@ -23,6 +23,8 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
+import { AnnouncementBanner } from "@/components/AnnouncementBanner";
+import { AlertWidget } from "@/components/AlertWidget";
 
 export default function AdminDashboard() {
   const { data: stats } = useQuery({
@@ -131,6 +133,10 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Dashboard</h1>
+
+      {/* Surface 2 Banner & Surface 4 Widget */}
+      <AnnouncementBanner scopeRole="admin" />
+      <AlertWidget role="admin" />
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
