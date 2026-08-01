@@ -134,6 +134,7 @@ export default function AdminClasses() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-classes"] });
+      queryClient.refetchQueries({ queryKey: ["admin-classes"] });
       toast({ title: "Đã tạo lớp học mới" });
       setDialogOpen(false);
       setForm(emptyForm);

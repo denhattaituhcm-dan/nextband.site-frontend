@@ -1196,13 +1196,16 @@ export const classesApi = {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }) => {
-    let query = supabase.from("classes").select("*, courses(title)", { count: "exact" });
+    let query = supabase
+      .from("classes")
+      .select("*, courses(title), profiles:teacher_id(full_name)", { count: "exact" });
 
     if (params?.search) {
       query = query.ilike("name", `%${params.search}%`);
     }
 
-    const sortField = params?.sortBy || "created_at";
+    let sortField = params?.sortBy || "created_at";
+    if (sortField === "createdAt") sortField = "created_at";
     const ascending = params?.sortOrder === "asc";
     query = query.order(sortField, { ascending });
 
@@ -1222,6 +1225,10 @@ export const classesApi = {
       courseId: c.course_id,
       courseTitle: c.courses?.title || null,
       teacherId: c.teacher_id,
+      teacher: {
+        id: c.teacher_id,
+        fullName: c.profiles?.full_name || null,
+      },
       startDate: c.start_date,
       endDate: c.end_date,
       isActive: c.is_active ?? true,
