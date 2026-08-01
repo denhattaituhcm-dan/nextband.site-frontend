@@ -223,30 +223,7 @@ export const coursesApi = {
     query = query.order(sortField, { ascending }).range(from, to);
 
     let { data, count, error } = await query;
-    
-    // Always fallback to default courses if database/RLS returns empty data or error
-    if (error || !data || data.length === 0) {
-      const defaultCourses = [
-        { id: "c1000000-0000-0000-0000-000000000001", title: "DREAMER", description: "Khóa học IELTS dành cho người mới bắt đầu (Band 3.0 - 4.0)", level: "Band 3.0 - 4.0", slug: "dreamer" },
-        { id: "c1000000-0000-0000-0000-000000000002", title: "BUILDER", description: "Khóa học IELTS Xây dựng nền tảng (Band 4.0 - 5.0)", level: "Band 4.0 - 5.0", slug: "builder" },
-        { id: "c1000000-0000-0000-0000-000000000003", title: "MASTER", description: "Khóa học IELTS Chuyên sâu bứt phá (Band 5.0 - 6.0+)", level: "Band 5.0 - 6.0+", slug: "master" },
-        { id: "c1000000-0000-0000-0000-000000000004", title: "PLACEMENT TEST", description: "Bài thi kiểm tra trình độ đầu vào IELTS", level: "All Levels", slug: "placement-test" },
-        { id: "c1000000-0000-0000-0000-000000000005", title: "LUYỆN THI TN THPT", description: "Bộ đề luyện thi tốt nghiệp Trung học Phổ thông", level: "Lớp 12", slug: "luyen-thi-tn-thpt" },
-        { id: "c1000000-0000-0000-0000-000000000006", title: "ENTRANCE TEST THPTQG", description: "Bài test đánh giá năng lực THPTQG", level: "Lớp 12", slug: "entrance-test-thptqg" },
-        { id: "c1000000-0000-0000-0000-000000000007", title: "STARTER", description: "Nền tảng Tiếng Anh căn bản", level: "Beginner", slug: "starter" },
-        { id: "c1000000-0000-0000-0000-000000000008", title: "LEADER", description: "Bứt phá kỹ năng Luyện nói & Viết IELTS", level: "Intermediate", slug: "leader" },
-        { id: "c1000000-0000-0000-0000-000000000009", title: "EXTRA LISTENING", description: "Luyện phản xạ và kỹ năng nghe chuyên sâu", level: "All Levels", slug: "extra-listening" },
-      ];
-
-      let filtered = defaultCourses;
-      if (params?.search) {
-        const s = params.search.toLowerCase();
-        filtered = filtered.filter(c => c.title.toLowerCase().includes(s) || c.description.toLowerCase().includes(s));
-      }
-
-      data = filtered as any[];
-      count = filtered.length;
-    }
+    if (error) throw error;
 
     return {
       data: data || [],
@@ -254,7 +231,7 @@ export const coursesApi = {
         total: count || 0,
         page,
         limit,
-        totalPages: Math.ceil((count || 0) / limit),
+        totalPages: Math.ceil((count || 0) / limit) || 1,
       },
     };
   },
@@ -386,11 +363,21 @@ export const examsApi = {
     const ascending = params?.sortOrder === "asc";
     query = query.order(sortField, { ascending }).range(from, to);
 
-    let { data, count, error } = await query;
-    
-    if (error || !data || data.length === 0) {
-      // 100% COMPLETE MAPPING OF ALL 88 REAL MANUAL EXAMS FROM ORIGINAL MYSQL DUMP (nextband_backup.sql)
-      const allRealExams = [
+    const { data, count, error } = await query;
+    if (error) throw error;
+
+    return {
+      data: data || [],
+      meta: {
+        total: count || 0,
+        page,
+        limit,
+        totalPages: Math.ceil((count || 0) / limit) || 1,
+      },
+    };
+  },
+
+  getById: async (id: string) => {
         // DREAMER (605d3bec-7a80-4cb7-ba7f-ecc74e77e1ab -> c1000000-0000-0000-0000-000000000001)
         { id: "d6a107dc-4319-4a71-bf87-5d875e5d3281", courseId: "c1000000-0000-0000-0000-000000000001", title: "W1 - D1 - WRI", week: 1, durationMinutes: 60, is_published: true, is_active: true },
         { id: "a599a87d-2ee1-49b9-96b3-7f7472c2a592", courseId: "c1000000-0000-0000-0000-000000000001", title: "W1 - D2 - LIS", week: 1, durationMinutes: 60, is_published: true, is_active: true },
