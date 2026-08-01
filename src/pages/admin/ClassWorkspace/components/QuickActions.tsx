@@ -4,7 +4,12 @@ import { Button } from "@/components/ui/button";
 import { UserPlus, Edit3, ClipboardCheck, BookOpen } from "lucide-react";
 
 export const QuickActions: React.FC = () => {
-  const { setActiveTab } = useWorkspace();
+  const { setActiveTab, openAddStudentModal } = useWorkspace();
+
+  const handleAddStudent = () => {
+    setActiveTab("students");
+    openAddStudentModal();
+  };
 
   return (
     <div className="flex items-center gap-2 py-2 border-b bg-muted/20 px-1 rounded-lg">
@@ -13,7 +18,7 @@ export const QuickActions: React.FC = () => {
         variant="outline"
         size="sm"
         className="h-7 text-xs gap-1.5 bg-card hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200"
-        onClick={() => setActiveTab("students")}
+        onClick={handleAddStudent}
       >
         <UserPlus className="h-3.5 w-3.5" />
         ＋ Thêm học viên

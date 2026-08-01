@@ -1,93 +1,393 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useWorkspace } from "../WorkspaceProvider";
 import { AttendanceHeader } from "../features/attendance/AttendanceHeader";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useToast } from "@/hooks/use-toast";
-import { Save, ClipboardCheck } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import {
+  Save,
+  Zap,
+  Send,
+  RotateCcw,
+  MessageSquare,
+  Lock,
+  Unlock,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  XCircle,
+  Loader2,
+} from "lucide-react";
+
+// Enum AttendanceStatus chuẩn sản phẩm
+export type AttendanceStatus = "PRESENT" | "LATE" | "EXCUSED" | "ABSENT";
+
+interface StudentAttendanceState {
+  status: AttendanceStatus;
+  note: string;
+  auditTrail?: string[];
+}
 
 export const AttendanceTab: React.FC = () => {
   const { classData } = useWorkspace();
-  const { toast } = useToast();
 
-  const students = classData?.students || [
-    { id: "1", fullName: "Nguyễn Văn An", email: "an@gmail.com" },
-    { id: "2", fullName: "Trần Thị Bình", email: "binh@gmail.com" },
-    { id: "3", fullName: "Lê Văn Cường", email: "cuong@gmail.com" },
-  ];
+  // Selected session state (Mock buổi 1..27, mặc định buổi 12)
+  const [currentSession, setCurrentSession] = useState(12);
+  const totalSessions = 27;
 
-  const [attendance, setAttendance] = useState<Record<string, "present" | "absent">>({
-    "1": "present",
-    "2": "present",
-    "3": "absent",
+  // Session locked status (DRAFT vs FINALIZED)
+  const [sessionStatus, setSessionStatus] = useState<"DRAFT" | "FINALIZED">("DRAFT");
+  const [classNote, setClassNote] = useState<string>("Hôm nay học Speaking Part 2 & chữa Listening Section 4");
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>("08:30");
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Student list from workspace or mock
+  const students = useMemo(() => {
+    return (
+      classData?.students || [
+        { id: "1", fullName: "Nguyễn Văn An", email: "an@gmail.com", attendancePct: 95, hwStatus: "HW 12: ✓ Submitted" },
+        { id: "2", fullName: "Trần Thị Bình", email: "binh@gmail.com", attendancePct: 83, hwStatus: "HW 12: ⚠️ Missing" },
+        { id: "3", fullName: "Lê Văn Cường", email: "cuong@gmail.com", attendancePct: 70, hwStatus: "HW 12: ✓ Reviewed" },
+      ]
+    );
+  }, [classData]);
+
+  // Initial attendance state map
+  const [attendanceMap, setAttendanceMap] = useState<Record<string, StudentAttendanceState>>({
+    "1": { status: "PRESENT", note: "" },
+    "2": { status: "PRESENT", note: "" },
+    "3": { status: "ABSENT", note: "Xin nghỉ do sốt" },
   });
 
-  const toggleStatus = (id: string, status: "present" | "absent") => {
-    setAttendance((prev) => ({ ...prev, [id]: status }));
+  // Track modified count for Notion-style status
+  const [unsavedChangesCount, setUnsavedChangesCount] = useState<number>(0);
+
+  // 1-CLICK: Tất cả có mặt (Mark All Present)
+  const handleMarkAllPresent = () => {
+    if (sessionStatus === "FINALIZED") return;
+
+    setAttendanceMap((prev) => {
+      const next: Record<string, StudentAttendanceState> = {};
+      students.forEach((st: any) => {
+        next[st.id] = {
+          status: "PRESENT",
+          note: prev[st.id]?.note || "",
+        };
+      });
+      return next;
+    });
+
+    setUnsavedChangesCount((prev) => prev + 1);
+    toast.success("Đã đánh dấu TẤT CẢ học viên Có mặt!");
   };
 
-  const handleSaveAttendance = () => {
-    toast({ title: "Điểm danh thành công!", description: "Dữ liệu điểm danh đã được cập nhật." });
+  // RESET ATTENDANCE
+  const handleResetAttendance = () => {
+    if (sessionStatus === "FINALIZED") return;
+
+    setAttendanceMap((prev) => {
+      const next: Record<string, StudentAttendanceState> = {};
+      students.forEach((st: any) => {
+        next[st.id] = { status: "PRESENT", note: "" };
+      });
+      return next;
+    });
+    setUnsavedChangesCount((prev) => prev + 1);
+    toast.info("Đã đặt lại điểm danh về trạng thái mặc định");
   };
 
-  const presentCount = Object.values(attendance).filter((s) => s === "present").length;
-  const absentCount = Object.values(attendance).filter((s) => s === "absent").length;
+  // CHANGE INDIVIDUAL STATUS
+  const handleStatusChange = (studentId: string, newStatus: AttendanceStatus) => {
+    if (sessionStatus === "FINALIZED") return;
+
+    setAttendanceMap((prev) => {
+      const current = prev[studentId] || { status: "PRESENT", note: "" };
+      if (current.status === newStatus) return prev;
+
+      const now = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+      const auditMsg = `${now}: Changed status ${current.status} → ${newStatus}`;
+
+      return {
+        ...prev,
+        [studentId]: {
+          ...current,
+          status: newStatus,
+          auditTrail: [...(current.auditTrail || []), auditMsg],
+        },
+      };
+    });
+
+    setUnsavedChangesCount((prev) => prev + 1);
+  };
+
+  // CHANGE INDIVIDUAL NOTE
+  const handleNoteChange = (studentId: string, note: string) => {
+    if (sessionStatus === "FINALIZED") return;
+
+    setAttendanceMap((prev) => ({
+      ...prev,
+      [studentId]: {
+        ...(prev[studentId] || { status: "PRESENT", note: "" }),
+        note,
+      },
+    }));
+
+    setUnsavedChangesCount((prev) => prev + 1);
+  };
+
+  // BATCH SAVE ATTENDANCE (1 HTTP Request + Audit Trail)
+  const handleSaveAttendance = async () => {
+    setIsSaving(true);
+    // Simulate batch payload request
+    await new Promise((res) => setTimeout(res, 600));
+
+    setIsSaving(false);
+    setSessionStatus("FINALIZED");
+    setUnsavedChangesCount(0);
+    const nowTime = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+    setLastSavedAt(nowTime);
+
+    toast.success(`Đã khóa & chốt điểm danh Buổi ${currentSession} thành công!`);
+  };
+
+  // UNLOCK SESSION FOR EDITING
+  const handleUnlockSession = () => {
+    setSessionStatus("DRAFT");
+    toast.info(`Đã mở lại điểm danh Buổi ${currentSession} để chỉnh sửa`);
+  };
+
+  // STATS CALCULATIONS
+  const presentCount = Object.values(attendanceMap).filter((s) => s.status === "PRESENT").length;
+  const lateCount = Object.values(attendanceMap).filter((s) => s.status === "LATE").length;
+  const excusedCount = Object.values(attendanceMap).filter((s) => s.status === "EXCUSED").length;
+  const absentCount = Object.values(attendanceMap).filter((s) => s.status === "ABSENT").length;
 
   return (
     <div className="space-y-4 pt-2">
-      {/* Attendance Summary Header */}
+      {/* 1. STICKY HEADER & LESSON TIMELINE */}
       <AttendanceHeader
-        lessonTitle="Lesson 12 / Homework 12"
-        date={new Date().toLocaleDateString("vi-VN")}
+        currentSession={currentSession}
+        totalSessions={totalSessions}
+        sessionDate={new Date().toLocaleDateString("vi-VN")}
+        sessionStatus={sessionStatus}
         totalStudents={students.length}
         presentCount={presentCount}
+        lateCount={lateCount}
+        excusedCount={excusedCount}
         absentCount={absentCount}
+        classNote={classNote}
+        onSaveClassNote={(note) => {
+          setClassNote(note);
+          toast.success("Đã cập nhật Ghi chú chung buổi học!");
+        }}
+        onToggleSessionStatus={() => {
+          if (sessionStatus === "FINALIZED") handleUnlockSession();
+          else handleSaveAttendance();
+        }}
+        onSelectSession={(num) => setCurrentSession(num)}
       />
 
+      {/* 2. ACTION BAR */}
+      <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl border bg-muted/20">
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            disabled={sessionStatus === "FINALIZED"}
+            className="h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 shadow-xs"
+            onClick={handleMarkAllPresent}
+          >
+            <Zap className="h-3.5 w-3.5 fill-current" />
+            ⚡ Tất cả có mặt
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs gap-1.5 bg-card hover:bg-muted"
+            onClick={() => toast.info("Đã gửi thông báo nhắc nhở chuyên cần đến học viên vắng mặt!")}
+          >
+            <Send className="h-3.5 w-3.5 text-blue-600" />
+            📤 Gửi nhắc nhở
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={sessionStatus === "FINALIZED"}
+            className="h-8 text-xs text-muted-foreground hover:text-foreground gap-1"
+            onClick={handleResetAttendance}
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            Đặt lại
+          </Button>
+        </div>
+
+        {/* NOTION-STYLE SAVE INDICATOR */}
+        <div className="flex items-center gap-3 text-xs">
+          {unsavedChangesCount > 0 ? (
+            <span className="text-amber-600 font-medium flex items-center gap-1.5 animate-pulse">
+              <span className="h-2 w-2 rounded-full bg-amber-500" />
+              Có {unsavedChangesCount} thay đổi chưa lưu
+            </span>
+          ) : lastSavedAt ? (
+            <span className="text-muted-foreground flex items-center gap-1">
+              <CheckCircle className="h-3.5 w-3.5 text-emerald-600" />
+              Đã lưu lúc {lastSavedAt}
+            </span>
+          ) : null}
+
+          {sessionStatus === "FINALIZED" ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs gap-1.5 border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100"
+              onClick={handleUnlockSession}
+            >
+              <Unlock className="h-3.5 w-3.5 text-amber-600" />
+              Mở lại điểm danh
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              disabled={isSaving}
+              className="h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 shadow-sm"
+              onClick={handleSaveAttendance}
+            >
+              {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+              {unsavedChangesCount > 0 ? "Lưu kết quả điểm danh" : "Khóa & Chốt điểm danh"}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* 3. STUDENT ATTENDANCE TABLE */}
       <div className="border rounded-xl bg-card overflow-hidden">
         <Table>
           <TableHeader className="bg-muted/40">
             <TableRow>
-              <TableHead>Học viên</TableHead>
-              <TableHead className="text-center">Trạng thái điểm danh</TableHead>
+              <TableHead className="w-[220px]">Học viên</TableHead>
+              <TableHead className="w-[130px]">Chuyên cần %</TableHead>
+              <TableHead className="w-[180px]">Homework hiện tại</TableHead>
+              <TableHead className="w-[180px]">Trạng thái điểm danh</TableHead>
+              <TableHead className="text-right">Ghi chú cá nhân 📝</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {students.map((student: any) => {
-              const currentStatus = attendance[student.id] || "present";
+              const currentData = attendanceMap[student.id] || { status: "PRESENT", note: "" };
+              const isLocked = sessionStatus === "FINALIZED";
+
+              // Color badge for Attendance %
+              const pct = student.attendancePct || 90;
+              const pctBadgeClass =
+                pct >= 90
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : pct >= 80
+                  ? "bg-amber-50 text-amber-700 border-amber-200"
+                  : "bg-rose-50 text-rose-700 border-rose-200";
+
               return (
-                <TableRow key={student.id}>
+                <TableRow key={student.id} className={isLocked ? "opacity-90 bg-muted/10" : ""}>
+                  {/* Học viên */}
                   <TableCell>
                     <div className="flex items-center gap-2.5">
-                      <Avatar className="h-7 w-7">
-                        <AvatarFallback className="text-xs bg-emerald-100 text-emerald-800">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={student.avatarUrl} />
+                        <AvatarFallback className="text-xs bg-emerald-100 text-emerald-800 font-semibold">
                           {student.fullName?.slice(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="font-medium text-sm">{student.fullName}</span>
+                      <div>
+                        <div className="font-semibold text-xs">{student.fullName}</div>
+                        <div className="text-[11px] text-muted-foreground">{student.email}</div>
+                      </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <Button
-                        size="sm"
-                        variant={currentStatus === "present" ? "default" : "outline"}
-                        className={currentStatus === "present" ? "bg-emerald-600 hover:bg-emerald-700 text-xs h-7" : "text-xs h-7"}
-                        onClick={() => toggleStatus(student.id, "present")}
-                      >
-                        ✓ Có mặt
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={currentStatus === "absent" ? "destructive" : "outline"}
-                        className="text-xs h-7"
-                        onClick={() => toggleStatus(student.id, "absent")}
-                      >
-                        ❌ Vắng mặt
-                      </Button>
-                    </div>
+
+                  {/* Attendance % */}
+                  <TableCell>
+                    <Badge variant="outline" className={`text-xs font-semibold ${pctBadgeClass}`}>
+                      {pct}% {pct < 85 && "⚠️"}
+                    </Badge>
+                  </TableCell>
+
+                  {/* Homework status */}
+                  <TableCell>
+                    <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                      {student.hwStatus || "HW 12: ✓ Submitted"}
+                    </span>
+                  </TableCell>
+
+                  {/* Status Dropdown (Enum) */}
+                  <TableCell>
+                    <Select
+                      disabled={isLocked}
+                      value={currentData.status}
+                      onValueChange={(val: AttendanceStatus) => handleStatusChange(student.id, val)}
+                    >
+                      <SelectTrigger className="h-8 text-xs font-medium w-[150px] border">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="PRESENT" className="text-xs font-semibold text-emerald-700">
+                          🟢 Có mặt
+                        </SelectItem>
+                        <SelectItem value="LATE" className="text-xs font-semibold text-amber-700">
+                          🟡 Đi muộn
+                        </SelectItem>
+                        <SelectItem value="EXCUSED" className="text-xs font-semibold text-blue-700">
+                          🔵 Vắng có phép
+                        </SelectItem>
+                        <SelectItem value="ABSENT" className="text-xs font-semibold text-rose-700">
+                          🔴 Vắng không phép
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+
+                  {/* Note Popover */}
+                  <TableCell className="text-right">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`h-7 text-xs gap-1 ${
+                            currentData.note
+                              ? "text-emerald-700 bg-emerald-50 hover:bg-emerald-100 font-medium"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          <MessageSquare className="h-3.5 w-3.5" />
+                          {currentData.note ? currentData.note : "Ghi chú"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-72 p-3 space-y-2" align="end">
+                        <div className="text-xs font-semibold">Ghi chú cho {student.fullName}:</div>
+                        <Textarea
+                          disabled={isLocked}
+                          placeholder="Ví dụ: Xin nghỉ thi học kỳ, Đến muộn 15p..."
+                          value={currentData.note}
+                          onChange={(e) => handleNoteChange(student.id, e.target.value)}
+                          className="text-xs min-h-[60px]"
+                        />
+                        {currentData.auditTrail && currentData.auditTrail.length > 0 && (
+                          <div className="pt-1 border-t text-[10px] text-muted-foreground space-y-0.5">
+                            <span className="font-semibold text-slate-600">Audit Trail:</span>
+                            {currentData.auditTrail.map((log, idx) => (
+                              <div key={idx} className="font-mono">
+                                • {log}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </PopoverContent>
+                    </Popover>
                   </TableCell>
                 </TableRow>
               );
@@ -95,13 +395,7 @@ export const AttendanceTab: React.FC = () => {
           </TableBody>
         </Table>
       </div>
-
-      <div className="flex justify-end">
-        <Button className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs gap-1.5" onClick={handleSaveAttendance}>
-          <Save className="h-3.5 w-3.5" />
-          Lưu kết quả điểm danh
-        </Button>
-      </div>
     </div>
   );
 };
+

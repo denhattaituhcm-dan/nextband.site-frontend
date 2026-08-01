@@ -15,6 +15,9 @@ interface WorkspaceContextType {
   progressPercent: number;
   pendingReviewsCount: number;
   overdueCount: number;
+  isAddStudentModalOpen: boolean;
+  setIsAddStudentModalOpen: (open: boolean) => void;
+  openAddStudentModal: () => void;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
@@ -24,6 +27,7 @@ export const WorkspaceProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ classId, children }) => {
   const [activeTab, setActiveTab] = useState("overview");
+  const [isAddStudentModalOpen, setIsAddStudentModalOpen] = useState(false);
 
   const {
     data: classData,
@@ -35,6 +39,8 @@ export const WorkspaceProvider: React.FC<{
     queryFn: () => classesApi.getById(classId),
     enabled: !!classId,
   });
+
+  const openAddStudentModal = () => setIsAddStudentModalOpen(true);
 
   const currentHomework = 12;
   const totalHomeworks = 27;
@@ -57,6 +63,9 @@ export const WorkspaceProvider: React.FC<{
         progressPercent,
         pendingReviewsCount,
         overdueCount,
+        isAddStudentModalOpen,
+        setIsAddStudentModalOpen,
+        openAddStudentModal,
       }}
     >
       {children}

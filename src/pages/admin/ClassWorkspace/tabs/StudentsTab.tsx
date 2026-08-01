@@ -5,10 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { StudentDrawer } from "../features/students/StudentDrawer";
-import { Users, Eye, CheckCircle2 } from "lucide-react";
+import { AddStudentModal } from "../features/students/AddStudentModal";
+import { Users, Eye, UserPlus } from "lucide-react";
 
 export const StudentsTab: React.FC = () => {
-  const { classData } = useWorkspace();
+  const { classData, isAddStudentModalOpen, setIsAddStudentModalOpen } = useWorkspace();
   const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -30,6 +31,14 @@ export const StudentsTab: React.FC = () => {
           <Users className="h-4 w-4 text-emerald-600" />
           Danh sách học viên lớp ({students.length})
         </h3>
+        <Button
+          size="sm"
+          className="h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 shadow-sm"
+          onClick={() => setIsAddStudentModalOpen(true)}
+        >
+          <UserPlus className="h-3.5 w-3.5" />
+          Thêm học viên vào lớp
+        </Button>
       </div>
 
       <div className="border rounded-xl bg-card overflow-hidden">
@@ -106,6 +115,11 @@ export const StudentsTab: React.FC = () => {
         student={selectedStudent}
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
+      />
+
+      <AddStudentModal
+        open={isAddStudentModalOpen}
+        onOpenChange={setIsAddStudentModalOpen}
       />
     </div>
   );
