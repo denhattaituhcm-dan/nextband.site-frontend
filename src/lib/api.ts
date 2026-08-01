@@ -949,9 +949,11 @@ export const usersApi = {
           ? p.user_roles.map((r: any) => r.role)
           : [params?.role || "student"];
 
+      const targetId = p.user_id || p.id;
+
       return {
-        id: p.id || p.user_id,
-        user_id: p.user_id || p.id,
+        id: targetId,
+        user_id: targetId,
         email: p.email,
         fullName: p.full_name || p.fullName || p.email?.split("@")[0],
         phone: p.phone,
