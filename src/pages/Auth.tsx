@@ -287,9 +287,9 @@ export default function Auth() {
       </div>
 
       {/* Right side - Focal Point Student Login Workspace Form */}
-      <div className="flex-1 flex items-start justify-center px-6 lg:px-12 py-4 lg:py-5">
-        {/* 6. Light Breathing Card */}
-        <Card className="w-full max-w-[450px] border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] rounded-2xl bg-white dark:bg-slate-900 p-6 sm:p-7">
+      <div className="flex-1 flex items-center justify-center px-6 lg:px-12 py-6 lg:py-8">
+        {/* 6. Light Breathing Card (Enlarged width max-w-[520px]) */}
+        <Card className="w-full max-w-[520px] border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] rounded-2xl bg-white dark:bg-slate-900 p-7 sm:p-8">
           <CardHeader className="space-y-1.5 text-center p-0 pb-5">
             <div className="lg:hidden flex items-center justify-center gap-2 mb-3">
               <SiteLogo alt="NextBand Logo" className="max-h-9 w-auto object-contain" />
