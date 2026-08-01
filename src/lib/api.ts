@@ -12,9 +12,9 @@ export const formatStorageUrl = (path: string | null) => {
 };
 
 // =============================================
-// DATA NORMALIZER: Supabase snake_case → Frontend camelCase
-// Đảm bảo ExamInterface, QuestionRenderers, v.v. hoạt động
-// dù data đến từ Supabase (snake_case) hay fallback (camelCase)
+// DATA NORMALIZER: Supabase snake_case â†’ Frontend camelCase
+// Äáº£m báº£o ExamInterface, QuestionRenderers, v.v. hoáº¡t Ä‘á»™ng
+// dÃ¹ data Ä‘áº¿n tá»« Supabase (snake_case) hay fallback (camelCase)
 // =============================================
 export function normalizeExamData(exam: any): any {
   if (!exam) return exam;
@@ -378,161 +378,6 @@ export const examsApi = {
   },
 
   getById: async (id: string) => {
-        { id: "157a0eaa-2c10-46e1-b2bc-82d0b0756679", courseId: "c1000000-0000-0000-0000-000000000001", title: "W2 - D3 - SPK", week: 2, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "b70a6a10-7526-4cc8-8dcd-06666f0bde5f", courseId: "c1000000-0000-0000-0000-000000000001", title: "W3 - D1 - WRI", week: 3, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "4d827565-1cc3-4cdc-9341-c444b613efa3", courseId: "c1000000-0000-0000-0000-000000000001", title: "W3 - D2 - LIS", week: 3, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "0808e5d3-0b57-4400-a224-3eceb21194a2", courseId: "c1000000-0000-0000-0000-000000000001", title: "W3 - D3 - SPK", week: 3, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "45344adc-cd36-41db-859b-d67b3c38ee90", courseId: "c1000000-0000-0000-0000-000000000001", title: "W4 - D1 - WRI", week: 4, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "2ee544a6-b7dd-4cbe-87ae-699204a9eaee", courseId: "c1000000-0000-0000-0000-000000000001", title: "W4 - D2 - LIS", week: 4, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "382374b7-92c9-4ac0-a033-8a490005e9d7", courseId: "c1000000-0000-0000-0000-000000000001", title: "W4 - D3 - REA", week: 4, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "27afe18f-7242-4305-82ee-a9610339561f", courseId: "c1000000-0000-0000-0000-000000000001", title: "W5 - D1 - WRI", week: 5, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "927916ef-5f91-4361-897e-9db28f9d5a32", courseId: "c1000000-0000-0000-0000-000000000001", title: "W5 - D2 - LIS", week: 5, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "b23a5009-0ced-47da-8f9a-0b88c6dea2b7", courseId: "c1000000-0000-0000-0000-000000000001", title: "W5 - D3 - SPK", week: 5, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "2e14663b-6e02-4b74-b32b-2395b8d3b242", courseId: "c1000000-0000-0000-0000-000000000001", title: "W6 - D1 - WRI", week: 6, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "e12f1c50-1cf2-41de-8fe9-8f110135c3d4", courseId: "c1000000-0000-0000-0000-000000000001", title: "W6 - D2 - LIS", week: 6, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "2d04c0c0-693f-4c34-a72d-1cc15df9ebb2", courseId: "c1000000-0000-0000-0000-000000000001", title: "W6 - D3 - WR", week: 6, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "9b1c42de-a575-476d-ab5b-1c6990109db8", courseId: "c1000000-0000-0000-0000-000000000001", title: "W7 - D1 - WRI", week: 7, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "a162d433-4fbb-41d9-b015-9a886b128c65", courseId: "c1000000-0000-0000-0000-000000000001", title: "W7 - D2 - LIS", week: 7, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "660a0330-f5ba-415f-b27c-acb76c00c7b9", courseId: "c1000000-0000-0000-0000-000000000001", title: "W7 - D3 - SPK", week: 7, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "e3cb9e1f-6cf8-4058-931c-a96d5673a0df", courseId: "c1000000-0000-0000-0000-000000000001", title: "W8 - D1 - WRI", week: 8, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "d04563fd-bad0-4a11-b412-21461cfcedc7", courseId: "c1000000-0000-0000-0000-000000000001", title: "W8 - D2 - LIS", week: 8, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "ac12e785-5ac2-43d3-8ea6-30cc9a2c8b84", courseId: "c1000000-0000-0000-0000-000000000001", title: "W8 - D3 - SPK", week: 8, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "f9f1f852-96c6-42af-a067-4be16e912838", courseId: "c1000000-0000-0000-0000-000000000001", title: "W9 - D1 - WRI", week: 9, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "b15091ab-f499-45dd-ada1-513a9a0650bb", courseId: "c1000000-0000-0000-0000-000000000001", title: "W9 - D2 - LIS", week: 9, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "707a6228-4194-4cd8-b911-ea97713585fb", courseId: "c1000000-0000-0000-0000-000000000001", title: "W9 - D3 - SPK", week: 9, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "03c0215e-bbc7-4ac4-9c42-65e16e1c77f5", courseId: "c1000000-0000-0000-0000-000000000001", title: "Final test", week: 10, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "e5c035fe-31b3-48f3-9989-2fa9264190b3", courseId: "c1000000-0000-0000-0000-000000000001", title: "WRITING TEST", week: 11, durationMinutes: 60, is_published: true, is_active: true },
-
-        // STARTER (2e3472a4-23a9-4950-bcf3-b0715e811794 -> c1000000-0000-0000-0000-000000000007)
-        { id: "95a10041-e338-4c04-82bd-e7e4f086b7a7", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 1 - DAY 1 - SPEAKING", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "51fbefd4-c8fe-441a-afd8-67c32be09953", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 1 - DAY 2 - LISTENING", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "b944f2ff-a9d7-4620-9017-8727545b1d33", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 1 - DAY 3 - READING AND WRITING", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "16662925-618d-4155-9d5f-82a11a933277", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 2 - DAY 1 - SPEAKING", week: 2, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "0c47e7ff-b596-436a-8192-fb8a10802adb", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 2 - DAY 2 - LISTENING", week: 2, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "7d9320f3-211e-4dab-8317-6bd8348dd728", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 2 - DAY 3 - READING AND WRITING", week: 2, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "b7075fed-d9d9-4fc6-8b25-769b465eb81d", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 3 - DAY 1 - SPEAKING", week: 3, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "fa6ddeec-55e6-40f8-8809-3cb5c3e5c911", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 3 - DAY 2 - LISTENING", week: 3, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "1f59a2eb-022b-4514-a125-d46c684034dc", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 3 - DAY 3 - READING AND WRITING", week: 3, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "35163ccd-b649-472a-8810-e1ff73339e38", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 4 - DAY 1 - SPEAKING", week: 4, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "349fe6ed-0eb3-4df8-9ead-ee4460b904aa", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 4 - DAY 2 - LISTENING", week: 4, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "113468ae-f476-484a-b062-b477f2467642", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 4 - DAY 3 - READING AND WRITING", week: 4, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "688a4c0e-5476-4284-ae51-9b43af18bd77", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 5 - DAY 1 - SPEAKING", week: 5, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "9c4b3ad5-d3e2-4864-8213-41e9002f1b6e", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 5 - DAY 2 - LISTENING", week: 5, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "643d45a3-5e24-4346-8949-102c74e78db0", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 5 - DAY 3 - READING AND WRITING", week: 5, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "8ef6ae5f-1969-4c3c-b61a-33d4ff8f57c1", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 6 - DAY 1 - SPEAKING", week: 6, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "ab6970f6-b609-4944-8934-a57cb7ac5de3", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 6 - DAY 2 - LISTENING", week: 6, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "1281c8db-64a5-4924-a490-8d29161294c0", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 6 - DAY 3 - READING AND WRITING", week: 6, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "8e908c37-66ed-44e9-a220-1f50e205e443", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 7 - DAY 1 - SPEAKING", week: 7, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "a422dbd2-3729-4774-9374-43b61d37ff0c", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 7 - DAY 2 - LISTENING", week: 7, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "2cd5d418-b43a-4f13-a34b-bcabc44d75e5", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 7 - DAY 3 - READING AND WRITING", week: 7, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "f1df15c0-e4b1-4e49-a722-5112e64be050", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 8 - DAY 1 - SPEAKING", week: 8, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "adf5d1c4-13a0-4853-985c-5e969a693fab", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 8 - DAY 2 - LISTENING", week: 8, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "8e16507c-cdd6-42a6-b2a8-7efbff4f78d5", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 8 - DAY 3 - READING & WRITING*", week: 8, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "2346fddc-ada8-48a9-a960-305bc75f0e47", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 9 - DAY 1 - SPEAKING", week: 9, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "738e0669-76d6-491f-b949-7d49ba4b7b86", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 9 - DAY 2 - LISTENING", week: 9, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "e72acedc-3fa4-4ecc-99d4-5a0ba8f87004", courseId: "c1000000-0000-0000-0000-000000000007", title: "WEEK 9 - DAY 3 - READING AND WRITING", week: 9, durationMinutes: 60, is_published: true, is_active: true },
-
-        // MASTER (86c74efa-2b5e-4676-8a36-ad7cf575d15e -> c1000000-0000-0000-0000-000000000003)
-        { id: "0721ea56-07cb-4e34-96c5-c7f11e40e8c3", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 1 - DAY 1 - WRITING", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "6516498e-83fa-4df1-9ed8-27dac6a65fbc", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 1 - DAY 2 - READING & LISTENING", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "0122d9cf-7f54-4fc2-93bd-ae2e789599ac", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 1 - DAY 3 - SPEAKING", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "e9c0df36-f93a-4c5a-81b5-41f392c8a961", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 2 - DAY 1 - WRITING", week: 2, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "8c3756f6-11ba-429b-9977-42bf93b61d61", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 2 - DAY 2 - READING & LISTENING", week: 2, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "507f2513-03e3-4e49-ae07-cbd2259d1d26", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 2 - DAY 3 - SPEAKING", week: 2, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "62a5a680-1c98-4b00-8a79-528400fe0d55", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 3 - DAY 1 - WRITING", week: 3, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "47d26c4b-90d8-4ded-b6a4-8946364abf97", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 3 - DAY 2 - READING AND LISTENING", week: 3, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "9208f073-0117-40e8-aa18-b6342e7aba70", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 3 - DAY 3 - SPEAKING", week: 3, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "9d5a3c02-028c-4975-aded-659abea1b889", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 4 - DAY 1 - WRITING", week: 4, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "7390cd1f-32bc-4b55-9d81-04911a812003", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 4 - DAY 2", week: 4, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "fe77029c-a131-4cc0-b629-40bd14c29fc7", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 4 - DAY 3 - SPEAKING", week: 4, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "b395ce4e-1ecb-43e9-b73b-334c01866a38", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 5 - DAY 1 - WRITING", week: 5, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "b623455e-efef-4b81-b024-4985a86913b5", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 5 - DAY 2 - READING & LISTENING", week: 5, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "d81463cf-3409-4c69-9c86-c9d637020336", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 5 - DAY 3 - SPEAKING", week: 5, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "69978b48-2da1-446e-86f3-282aad324bcc", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 6 - DAY 1 - WRITING", week: 6, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "9f1b7594-8328-4adf-a970-63585d4afc4d", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 6 - DAY 2 - READING & LISTENING", week: 6, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "84363b44-03d3-4a60-83a6-34cf9266de40", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 6 - DAY 3 - SPEAKING", week: 6, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "90141ec8-a6ba-40d2-9b79-bb97fba2efab", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 7 - DAY 1 - WRITING", week: 7, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "dccc42e9-7bbd-4423-804d-089e6bc1ec0f", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 7 - DAY 2 - READING & LISTENING", week: 7, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "ecc20724-165c-45fa-a66a-646dd593b163", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 7 - DAY 3 - SPEAKING", week: 7, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "43b35c2c-3c7b-4a29-b838-8827d219069d", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 8 - DAY 1 - WRITING", week: 8, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "8228549c-67d9-4759-b39c-15a1e0484575", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 8 - DAY 2 - READING & LISTENING", week: 8, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "41f17477-2dea-4388-acbf-59b11ac24c5a", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 8 - DAY 3 - SPEAKING", week: 8, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "51bf6e58-7b97-4a04-a096-0933324a4e9f", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 9 - DAY 1 - WRITING", week: 9, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "322e75bc-8164-45f8-af17-db8bb90c7a6a", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 9 - DAY 2 - READING & LISTENING", week: 9, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "9d89a12b-94c4-423b-b176-a7490efc5635", courseId: "c1000000-0000-0000-0000-000000000003", title: "WEEK 9 - DAY 3 - SPEAKING", week: 9, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "b77e2f0f-52be-40c5-91ea-9beb8733a355", courseId: "c1000000-0000-0000-0000-000000000003", title: "FINAL TEST", week: 10, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "a01e4765-02da-4bff-8590-6e68aa7aa3d1", courseId: "c1000000-0000-0000-0000-000000000003", title: "EXTRA READING", week: 10, durationMinutes: 60, is_published: true, is_active: true },
-
-        // LEADER (3abdb60a-e2ba-48b1-9661-f56b121cc66d -> c1000000-0000-0000-0000-000000000008)
-        { id: "ea021390-71b9-46ab-ab5b-4a49ee1224aa", courseId: "c1000000-0000-0000-0000-000000000008", title: "W1 - D1 - WRI", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "56385f9e-6285-45ff-bdaa-34bf77894264", courseId: "c1000000-0000-0000-0000-000000000008", title: "W1 - D2 - SPK", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "e6721943-16a5-4e8b-ad35-0037ec28cbfb", courseId: "c1000000-0000-0000-0000-000000000008", title: "W1 - D3 - VOCAB", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "c4090767-c871-4f1a-b099-e60a70f0fc24", courseId: "c1000000-0000-0000-0000-000000000008", title: "W2 - D1 - WRI", week: 2, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "8e015bc4-dbfa-4fc8-b927-c945dede5fb2", courseId: "c1000000-0000-0000-0000-000000000008", title: "W2 - D2 - SPK", week: 2, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "8cfa26fa-8e0f-461e-9d8a-236daf119cc8", courseId: "c1000000-0000-0000-0000-000000000008", title: "W2 - D3 - VOCAB", week: 2, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "87b11c14-d5d0-4b04-b54f-8a3b48c3f152", courseId: "c1000000-0000-0000-0000-000000000008", title: "W3 - D1 - WRI", week: 3, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "4b567984-0b6d-4d59-a7c2-f06935d9fed4", courseId: "c1000000-0000-0000-0000-000000000008", title: "W3 - D2 - SPK", week: 3, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "69b95cec-188b-497e-b281-b55b4d3b52d7", courseId: "c1000000-0000-0000-0000-000000000008", title: "W3 - D3- VOCAB", week: 3, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "f793fcbf-74d1-4a11-8abc-585145e0402b", courseId: "c1000000-0000-0000-0000-000000000008", title: "W4 - D1 - WRI", week: 4, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "4b336779-aaeb-4452-8613-d323a489d522", courseId: "c1000000-0000-0000-0000-000000000008", title: "W4 - D2 - SPK", week: 4, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "b0abf6ce-024c-400e-9319-63c2d9e5036e", courseId: "c1000000-0000-0000-0000-000000000008", title: "W4 - D3 - VOCAB", week: 4, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "ba6f1504-798f-4c0b-a798-18e923e51906", courseId: "c1000000-0000-0000-0000-000000000008", title: "W5 - D1 - WRI", week: 5, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "b5a1018e-ec7c-4ee7-8642-c46c632450cf", courseId: "c1000000-0000-0000-0000-000000000008", title: "W5 -  D3 - VOCAB", week: 5, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "87dc8d13-8884-4d0b-92cb-db312ee6c25e", courseId: "c1000000-0000-0000-0000-000000000008", title: "W6 - D1 - WRI", week: 6, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "972253f9-5ffe-4d4b-94e0-05d58acb64df", courseId: "c1000000-0000-0000-0000-000000000008", title: "W6 - D2 - SPK", week: 6, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "ec511f3d-eb3c-4361-b857-dc7917af0c98", courseId: "c1000000-0000-0000-0000-000000000008", title: "W6 - D3", week: 6, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "bae197ab-a9d2-48a9-8a12-a17cffe55a5d", courseId: "c1000000-0000-0000-0000-000000000008", title: "W7 - D1 - WRI", week: 7, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "77e3a11e-bdaf-4335-b6c2-614c57523076", courseId: "c1000000-0000-0000-0000-000000000008", title: "W7 - D2 - WR", week: 7, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "fa56f40d-1677-4c8a-ab94-37bc0810499b", courseId: "c1000000-0000-0000-0000-000000000008", title: "W7 - D3 - SPK", week: 7, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "d2d0cf25-950d-4eb0-9edb-f415b41c0c53", courseId: "c1000000-0000-0000-0000-000000000008", title: "W8 - D1 - WRI", week: 8, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "370ec730-aec6-4f2f-bcaa-7fed37a77baa", courseId: "c1000000-0000-0000-0000-000000000008", title: "W8 - D2", week: 8, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "a9e41fb6-2f78-47e4-a097-9857176c5fe7", courseId: "c1000000-0000-0000-0000-000000000008", title: "W8 - D3 - SPK", week: 8, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "8dfafbc7-ec0a-48e1-b84f-e63ba8643810", courseId: "c1000000-0000-0000-0000-000000000008", title: "W9 - D1 - WRI", week: 9, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "6f40c0c8-f13c-4e85-b269-83fa9f681804", courseId: "c1000000-0000-0000-0000-000000000008", title: "D9 - D2", week: 9, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "47c105f9-d5e6-439f-995c-52844a0473ef", courseId: "c1000000-0000-0000-0000-000000000008", title: "W9 - D3 - SPK", week: 9, durationMinutes: 60, is_published: true, is_active: true },
-
-        // EXTRA LISTENING (3c8e31cf-750e-4f86-9093-615964ea1ed9 -> c1000000-0000-0000-0000-000000000009)
-        { id: "0ba69a94-3b7a-4ab0-a1dc-8d5a075bd57f", courseId: "c1000000-0000-0000-0000-000000000009", title: "Listening 3.5 - 4.0", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "970c5b13-5ffe-453c-8f03-b69a218d1d8e", courseId: "c1000000-0000-0000-0000-000000000009", title: "Listening 3.5 - 4.0 (P2)", week: 2, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "893c1d30-33ad-4a61-b6f6-63a3e7a95178", courseId: "c1000000-0000-0000-0000-000000000009", title: "Listening 2.5 - 3.0", week: 3, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "0d1c888a-b181-4ce4-95c4-c7a5238ca720", courseId: "c1000000-0000-0000-0000-000000000009", title: "Listening 2.5 - 3.0 (P2)", week: 4, durationMinutes: 60, is_published: true, is_active: true },
-        { id: "8de015fb-5920-4305-ac26-4928600b2e6d", courseId: "c1000000-0000-0000-0000-000000000009", title: "Listening 4.5 - 5.0", week: 5, durationMinutes: 60, is_published: true, is_active: true },
-
-        // PLACEMENT TEST (2b2d1b1d-f984-4b36-810f-52b09733e713 -> c1000000-0000-0000-0000-000000000004)
-        { id: "cce291f7-d88b-4976-8ed3-cc21daca7023", courseId: "c1000000-0000-0000-0000-000000000004", title: "ENTRANCE TEST", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-
-        // LUYỆN THI TN THPT (ce799268-8b91-42cd-8eff-853b4211da12 -> c1000000-0000-0000-0000-000000000005)
-        { id: "0f2b6632-acc8-4d0b-a464-bca19424c177", courseId: "c1000000-0000-0000-0000-000000000005", title: "Đề thi TN THPT 2025 (mã đề: 1101)", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-
-        // ENTRANCE TEST THPTQG (efa7037f-f53f-4216-a84d-6314a4ae7aa0 -> c1000000-0000-0000-0000-000000000006)
-        { id: "53495a87-9393-49bd-b16b-1daf12457b69", courseId: "c1000000-0000-0000-0000-000000000006", title: "Bài test Ngữ pháp THPTQG", week: 1, durationMinutes: 60, is_published: true, is_active: true },
-      ];
-
-      let filtered = allRealExams;
-      if (params?.courseId) {
-        filtered = filtered.filter(e => e.courseId === params.courseId);
-      }
-      if (params?.search) {
-        const s = params.search.toLowerCase();
-        filtered = filtered.filter(e => e.title.toLowerCase().includes(s));
-      }
-
-      data = filtered as any[];
-      count = filtered.length;
-    }
-
-    return {
-      data: data || [],
-      meta: {
-        total: count || 0,
-        page,
-        limit,
-        totalPages: Math.ceil((count || 0) / limit),
-      },
-    };
-  },
-
-  getById: async (id: string) => {
     const { data, error } = await supabase.rpc("get_exam_by_id", {
       p_exam_id: id,
     });
@@ -544,6 +389,7 @@ export const examsApi = {
 
     return normalizeExamData(data);
   },
+
 
   create: async (exam: {
     courseId: string;
@@ -944,8 +790,8 @@ export const submissionsApi = {
       audioUrl?: string;
     }>
   ) => {
-    // Gọi RPC Stored Procedure để thực hiện Atomic Transaction trên Database:
-    // Upsert Answers + Auto Grade + Mark Submitted/Graded trong 1 giao dịch duy nhất.
+    // Gá»i RPC Stored Procedure Ä‘á»ƒ thá»±c hiá»‡n Atomic Transaction trÃªn Database:
+    // Upsert Answers + Auto Grade + Mark Submitted/Graded trong 1 giao dá»‹ch duy nháº¥t.
     const formattedAnswers = (answers || []).map((a) => ({
       question_id: a.questionId,
       answer_text: a.answerText || "",
@@ -958,7 +804,7 @@ export const submissionsApi = {
     });
 
     if (error) {
-      // Fallback đơn giản nếu RPC chưa được tạo trong Supabase SQL Editor
+      // Fallback Ä‘Æ¡n giáº£n náº¿u RPC chÆ°a Ä‘Æ°á»£c táº¡o trong Supabase SQL Editor
       console.warn("RPC submit_exam_transaction fail, fallback to direct update:", error.message);
       await submissionsApi.saveAnswers(id, answers);
       const { data: fallbackData, error: fallbackErr } = await supabase
@@ -1034,7 +880,7 @@ const localUsersStore: any[] = [
     id: "00000000-0000-0000-0000-000000000002",
     user_id: "00000000-0000-0000-0000-000000000002",
     email: "teacher@ielts.com",
-    fullName: "Cô Hoàng Anh (IELTS 8.5)",
+    fullName: "CÃ´ HoÃ ng Anh (IELTS 8.5)",
     phone: "0909876543",
     gender: "female",
     roles: ["teacher"],
@@ -1059,7 +905,7 @@ export const usersApi = {
     const to = from + limit - 1;
     const hasRoleFilter = params?.role && params.role !== "all";
 
-    // BƯỚC 1: Nếu lọc theo role -> lấy danh sách user_id từ user_roles trước
+    // BÆ¯á»šC 1: Náº¿u lá»c theo role -> láº¥y danh sÃ¡ch user_id tá»« user_roles trÆ°á»›c
     let allowedUserIds: string[] | null = null;
     if (hasRoleFilter) {
       const { data: roleRows, error: roleError } = await supabase
@@ -1070,13 +916,13 @@ export const usersApi = {
       if (roleError) throw roleError;
       allowedUserIds = (roleRows || []).map((r: any) => r.user_id);
 
-      // Nếu không có ai có role này -> trả về rỗng ngay
+      // Náº¿u khÃ´ng cÃ³ ai cÃ³ role nÃ y -> tráº£ vá» rá»—ng ngay
       if (allowedUserIds.length === 0) {
         return { data: [], meta: { total: 0, page, limit, totalPages: 1 } };
       }
     }
 
-    // BƯỚC 2: Query profiles
+    // BÆ¯á»šC 2: Query profiles
     let query = supabase
       .from("profiles")
       .select("*, user_roles(role)", { count: "exact" });
@@ -2001,14 +1847,14 @@ export const notificationsApi = {
 
     const { data, error } = await query;
     if (error) {
-      // Mock Fallback nếu chưa tạo bảng notifications trên CSDL
+      // Mock Fallback náº¿u chÆ°a táº¡o báº£ng notifications trÃªn CSDL
       const mockNotifications: NotificationItem[] = scope === "admin" ? [
         {
           id: "n1",
           recipient_role: "admin",
           type: "user_sso",
-          title: "Học viên mới đăng nhập",
-          message: "Học viên Phạm Văn D vừa đăng nhập lần đầu qua Google SSO.",
+          title: "Há»c viÃªn má»›i Ä‘Äƒng nháº­p",
+          message: "Há»c viÃªn Pháº¡m VÄƒn D vá»«a Ä‘Äƒng nháº­p láº§n Ä‘áº§u qua Google SSO.",
           action_url: "/admin/users?search=student",
           priority: "info",
           is_read: false,
@@ -2018,8 +1864,8 @@ export const notificationsApi = {
           id: "n2",
           recipient_role: "admin",
           type: "sla_warning",
-          title: "Cảnh báo chấm bài chậm",
-          message: "Giáo viên Hoàng Anh có 12 bài nộp chưa chấm quá 3 ngày.",
+          title: "Cáº£nh bÃ¡o cháº¥m bÃ i cháº­m",
+          message: "GiÃ¡o viÃªn HoÃ ng Anh cÃ³ 12 bÃ i ná»™p chÆ°a cháº¥m quÃ¡ 3 ngÃ y.",
           action_url: "/admin/teachers",
           priority: "warning",
           is_read: false,
@@ -2029,8 +1875,8 @@ export const notificationsApi = {
           id: "n3",
           recipient_role: "admin",
           type: "class_complete",
-          title: "Lớp học hoàn tất khóa",
-          message: "Lớp Leader K10 đã hoàn thành 27/27 buổi học.",
+          title: "Lá»›p há»c hoÃ n táº¥t khÃ³a",
+          message: "Lá»›p Leader K10 Ä‘Ã£ hoÃ n thÃ nh 27/27 buá»•i há»c.",
           action_url: "/admin/classes",
           priority: "info",
           is_read: true,
@@ -2041,8 +1887,8 @@ export const notificationsApi = {
           id: "nt1",
           recipient_role: "teacher",
           type: "submission",
-          title: "Bài nộp mới Writing Task 2",
-          message: "Học viên Nguyễn Văn A vừa nộp bài Writing Task 2 cho Lớp Dreamer K31.",
+          title: "BÃ i ná»™p má»›i Writing Task 2",
+          message: "Há»c viÃªn Nguyá»…n VÄƒn A vá»«a ná»™p bÃ i Writing Task 2 cho Lá»›p Dreamer K31.",
           action_url: "/teacher/grading",
           priority: "urgent",
           is_read: false,
@@ -2052,8 +1898,8 @@ export const notificationsApi = {
           id: "nt2",
           recipient_role: "teacher",
           type: "submission",
-          title: "Bài nộp mới Speaking Part 2",
-          message: "Học viên Trần Thị B vừa gửi ghi âm Speaking Part 2.",
+          title: "BÃ i ná»™p má»›i Speaking Part 2",
+          message: "Há»c viÃªn Tráº§n Thá»‹ B vá»«a gá»­i ghi Ã¢m Speaking Part 2.",
           action_url: "/teacher/grading",
           priority: "info",
           is_read: false,
@@ -2063,8 +1909,8 @@ export const notificationsApi = {
           id: "nt3",
           recipient_role: "teacher",
           type: "enrollment",
-          title: "Biến động học viên",
-          message: "Admin vừa thêm 2 học viên mới vào Lớp Master K15 của bạn.",
+          title: "Biáº¿n Ä‘á»™ng há»c viÃªn",
+          message: "Admin vá»«a thÃªm 2 há»c viÃªn má»›i vÃ o Lá»›p Master K15 cá»§a báº¡n.",
           action_url: "/teacher/classes",
           priority: "info",
           is_read: true,
