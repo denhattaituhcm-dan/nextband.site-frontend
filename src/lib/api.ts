@@ -922,10 +922,10 @@ export const usersApi = {
       }
     }
 
-    // BÆ¯á»šC 2: Query profiles
+    // BƯỚC 2: Query profiles
     let query = supabase
       .from("profiles")
-      .select("*, user_roles(role)", { count: "exact" });
+      .select("*", { count: "exact" });
 
     if (allowedUserIds !== null) {
       query = query.in("user_id", allowedUserIds);
