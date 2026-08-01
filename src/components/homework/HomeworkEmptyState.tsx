@@ -411,13 +411,13 @@ function TeacherFacultySection() {
   const [imgError, setImgError] = useState(false);
 
   return (
-    <Card className="rounded-2xl border border-slate-100 bg-white p-6 md:p-8 space-y-6 shadow-sm">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-4 gap-3">
+    <div className="rounded-3xl border border-blue-200/60 bg-[#eef6ff] p-6 md:p-8 space-y-6 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-blue-200/50 pb-4 gap-3">
         <div>
-          <h3 className="text-base font-black text-slate-900 tracking-tight">
+          <h3 className="text-lg font-black text-slate-900 tracking-tight">
             Bảng điểm Đội ngũ Giảng dạy ARIS IELTS
           </h3>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-600 mt-0.5 font-medium">
             100% Giảng viên đạt IELTS 8.0+ với Chứng chỉ TRF được xác thực chính thức
           </p>
         </div>
@@ -440,7 +440,7 @@ function TeacherFacultySection() {
               className={`flex items-center gap-2.5 px-4 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
                 isSelected
                   ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20"
-                  : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                  : "bg-white text-slate-700 border-blue-200/60 hover:bg-blue-50/80"
               }`}
             >
               <span
@@ -459,7 +459,7 @@ function TeacherFacultySection() {
       {/* SIDE-BY-SIDE GRID LAYOUT */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
         {/* LEFT COLUMN: SELECTED TEACHER PROFILE CARD */}
-        <div className="md:col-span-5 bg-slate-50/80 p-5 rounded-2xl border border-slate-200/80 flex flex-col justify-between space-y-4">
+        <div className="md:col-span-5 bg-white p-6 rounded-2xl border border-blue-100/90 shadow-sm flex flex-col justify-between space-y-4">
           <div className="space-y-4">
             <div className="flex items-center gap-3.5">
               <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white font-black flex items-center justify-center text-lg shadow-md shadow-blue-500/20">
@@ -478,7 +478,7 @@ function TeacherFacultySection() {
               </div>
             </div>
 
-            <div className="space-y-2 text-xs border-t border-slate-200/60 pt-3">
+            <div className="space-y-2 text-xs border-t border-slate-100 pt-3">
               {currentTeacher.credentials.map((cred, idx) => (
                 <div key={idx} className="flex items-start gap-2 text-slate-700 font-medium">
                   <span className="text-blue-600 font-bold">
@@ -494,7 +494,7 @@ function TeacherFacultySection() {
             href={currentTeacher.pdfUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl font-extrabold text-xs bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 transition-all shadow-xs"
+            className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl font-extrabold text-xs bg-blue-50/80 border border-blue-200/80 text-blue-600 hover:bg-blue-100 transition-all shadow-xs"
           >
             📄 Mở xem Bảng điểm gốc (PDF) ➔
           </a>
@@ -517,7 +517,7 @@ function TeacherFacultySection() {
           </div>
 
           {/* DIRECT FLAT IMAGE VIEW (NO PDF VIEWER FRAME) */}
-          <div className="w-full rounded-2xl bg-white border border-slate-200/90 p-2 sm:p-3 shadow-xs relative overflow-hidden flex items-center justify-center">
+          <div className="w-full rounded-2xl bg-white border border-blue-100/90 p-2 sm:p-3 shadow-sm relative overflow-hidden flex items-center justify-center">
             {!imgError && currentTeacher.imageUrl ? (
               <img
                 key={currentTeacher.id}
@@ -537,6 +537,7 @@ function TeacherFacultySection() {
           </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }
+
