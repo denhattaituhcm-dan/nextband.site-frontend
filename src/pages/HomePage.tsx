@@ -194,12 +194,12 @@ export default function HomePage() {
                   </div>
                 </div>
                 <Button
-                  onClick={() => setJoinModalOpen(true)}
+                  onClick={handleContinueLearning}
                   variant="outline"
                   size="sm"
                   className="w-full border-blue-200 text-blue-600 hover:bg-blue-50 font-bold text-xs rounded-xl"
                 >
-                  + Đăng ký Lớp bổ trợ / Chuyển lớp
+                  Tiếp tục học ➔
                 </Button>
               </div>
             </div>
