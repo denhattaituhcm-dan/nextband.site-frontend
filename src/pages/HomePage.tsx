@@ -393,7 +393,7 @@ export default function HomePage() {
                           </span>
                         </div>
                         <p className="text-xs text-slate-600 truncate italic">
-                          "{sub.feedback || "Cần chú ý danh từ số nhiều và nối âm ở Part 2..."}"
+                          "{sub.feedback || 'Cần chú ý danh từ số nhiều và nối âm ở Part 2...'}"
                         </p>
                       </div>
                       <Link to={`/submissions/${sub.id}`}>
