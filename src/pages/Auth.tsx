@@ -23,6 +23,8 @@ import {
   Award,
   Clock,
   GraduationCap,
+  Mail,
+  Lock,
 } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import { authApi } from "@/lib/api";
@@ -124,126 +126,137 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex bg-slate-50/50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 selection:bg-primary/10 selection:text-primary">
+    <div className="min-h-screen flex bg-slate-50/50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 selection:bg-primary/10 selection:text-primary relative overflow-hidden">
+      {/* 9. Background: Subtle radial glow behind login card */}
+      <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[600px] h-[600px] bg-sky-400/5 dark:bg-sky-500/5 rounded-full blur-3xl pointer-events-none z-0" />
+
       {/* Left side - Education & Academic Branding Panel (Visual 2-Zone Separation) */}
-      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-slate-50 text-slate-900 px-6 xl:px-10 py-6 xl:py-8 flex-col justify-between relative overflow-hidden border-r border-slate-200/80 animate-in fade-in duration-500">
+      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-slate-50/90 text-slate-900 px-8 xl:px-12 py-8 xl:py-10 flex-col justify-between relative overflow-hidden border-r border-slate-200/80 animate-in fade-in duration-500 z-10">
         {/* Subtle Soft Blue Ambient Glow */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Combined Brand Header (Logo + Tagline + Cambridge Badge unified group) */}
-        <div className="relative z-10 space-y-2.5">
-          <div className="flex items-center gap-3 flex-wrap">
-            <SiteLogo alt="NextBand Logo" className="max-h-10 w-auto object-contain" />
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-700 dark:text-amber-400">
-              <Award className="h-3.5 w-3.5 text-amber-500" />
-              Cambridge Standard
-            </span>
+        {/* 4. Unified Brand Header (Logo A + ARIS IELTS + Cambridge Badge + Subtitle) */}
+        <div className="relative z-10 space-y-3">
+          <div className="flex items-center gap-3">
+            <SiteLogo alt="ARIS IELTS" className="max-h-11 w-auto object-contain" />
+            <div className="border-l border-slate-200 pl-3">
+              <div className="font-bold text-slate-900 text-base leading-tight tracking-tight">ARIS IELTS</div>
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400 mt-0.5">
+                <Award className="h-3 w-3 text-amber-500" />
+                Cambridge Standard
+              </span>
+            </div>
           </div>
-          <p className="text-sm font-medium tracking-tight text-slate-500 leading-relaxed max-w-md">
-            {settings.authTagline}
-          </p>
+          <div className="space-y-1">
+            <p className="text-sm font-semibold tracking-tight text-slate-700">
+              {settings.authTagline}
+            </p>
+            <p className="text-xs text-slate-500 leading-relaxed max-w-md">
+              Không gian học tập được thiết kế cho từng buổi học trên lớp.
+            </p>
+          </div>
         </div>
 
-        {/* Content Card (Compact, dense & high-value visualization) */}
-        <div className="relative z-10 w-full max-w-lg my-auto py-2">
-          <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-5">
-            {/* Feature Highlights Grid */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-sky-50/60 border border-sky-100/80">
-                <div className="rounded-lg bg-sky-500/10 p-2 border border-sky-500/20 shrink-0">
-                  <GraduationCap className="h-4.5 w-4.5 text-sky-600" />
+        {/* 1. Left side Content Card - Expanded & pulled up closer to slogan with subtle shadow */}
+        <div className="relative z-10 w-full max-w-xl my-auto py-3">
+          <div className="p-6 sm:p-7 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-sm transition-shadow space-y-6">
+            {/* 3. Feature Highlights Grid - Icon +10%, Title weight 600, Subtitle brighter */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-sky-50/60 border border-sky-100/80">
+                <div className="rounded-lg bg-sky-500/10 p-2.5 border border-sky-500/20 shrink-0">
+                  <GraduationCap className="h-5 w-5 text-sky-600" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-slate-800 text-xs sm:text-sm tracking-tight truncate">
+                  <h3 className="font-semibold text-slate-800 text-sm tracking-tight truncate">
                     Learning Workspace
                   </h3>
-                  <p className="text-[11px] text-slate-500 truncate">
+                  <p className="text-xs text-slate-500 truncate">
                     Lộ trình IELTS chuẩn
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-indigo-50/60 border border-indigo-100/80">
-                <div className="rounded-lg bg-indigo-500/10 p-2 border border-indigo-500/20 shrink-0">
-                  <TrendingUp className="h-4.5 w-4.5 text-indigo-600" />
+              <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-indigo-50/60 border border-indigo-100/80">
+                <div className="rounded-lg bg-indigo-500/10 p-2.5 border border-indigo-500/20 shrink-0">
+                  <TrendingUp className="h-5 w-5 text-indigo-600" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-slate-800 text-xs sm:text-sm tracking-tight truncate">
+                  <h3 className="font-semibold text-slate-800 text-sm tracking-tight truncate">
                     Track Progress
                   </h3>
-                  <p className="text-[11px] text-slate-500 truncate">
+                  <p className="text-xs text-slate-500 truncate">
                     Theo dõi tiến độ
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Academic Curriculum Progression Stepper / Timeline */}
-            <div className="pt-1">
-              <div className="flex items-center justify-between mb-4">
+            {/* 2. Academic Roadmap - Larger (~20%), subtle gray connector line with individual milestone dots */}
+            <div className="pt-2">
+              <div className="flex items-center justify-between mb-5">
                 <h4 className="font-semibold text-slate-800 text-sm tracking-tight">Academic Roadmap</h4>
-                <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200/60 font-medium">5 Levels</span>
+                <span className="text-[11px] font-mono px-2.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200/60 font-medium">5 Levels</span>
               </div>
 
               {/* Connected Step Progression Timeline (Starter -> Leader) */}
-              <div className="relative px-1 pt-1 pb-2">
-                {/* Connector Bar */}
-                <div className="absolute top-[13px] left-4 right-4 h-0.5 bg-gradient-to-r from-pink-300 via-sky-300 via-amber-300 via-emerald-300 to-red-400 z-0" />
+              <div className="relative px-2 pt-2 pb-3">
+                {/* Clean subtle light gray connector line */}
+                <div className="absolute top-[15px] left-6 right-6 h-0.5 bg-slate-200 z-0" />
 
-                <div className="grid grid-cols-5 gap-1 relative z-10 text-center">
+                <div className="grid grid-cols-5 gap-2 relative z-10 text-center">
                   {/* Step 1 */}
-                  <div className="flex flex-col items-center gap-1.5">
-                    <div className="w-5 h-5 rounded-full bg-pink-500 border-2 border-white ring-2 ring-pink-100 flex items-center justify-center text-[10px] text-white font-bold shrink-0">
-                      1
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-pink-500 border-2 border-white ring-2 ring-pink-100 flex items-center justify-center text-[10px] text-white font-bold shrink-0 shadow-xs">
+                      ●
                     </div>
                     <div>
-                      <div className="font-bold text-[11px] text-slate-800">Starter</div>
-                      <div className="text-[10px] font-mono text-pink-600 font-medium mt-0.5">3.0</div>
+                      <div className="font-bold text-xs text-slate-800">Starter</div>
+                      <div className="text-[11px] font-mono text-pink-600 font-semibold mt-0.5">3.0</div>
                     </div>
                   </div>
 
                   {/* Step 2 */}
-                  <div className="flex flex-col items-center gap-1.5">
-                    <div className="w-5 h-5 rounded-full bg-sky-500 border-2 border-white ring-2 ring-sky-100 flex items-center justify-center text-[10px] text-white font-bold shrink-0">
-                      2
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-sky-500 border-2 border-white ring-2 ring-sky-100 flex items-center justify-center text-[10px] text-white font-bold shrink-0 shadow-xs">
+                      ●
                     </div>
                     <div>
-                      <div className="font-bold text-[11px] text-slate-800">Dreamer</div>
-                      <div className="text-[10px] font-mono text-sky-600 font-medium mt-0.5">4.0</div>
+                      <div className="font-bold text-xs text-slate-800">Dreamer</div>
+                      <div className="text-[11px] font-mono text-sky-600 font-semibold mt-0.5">4.0</div>
                     </div>
                   </div>
 
                   {/* Step 3 */}
-                  <div className="flex flex-col items-center gap-1.5">
-                    <div className="w-5 h-5 rounded-full bg-amber-500 border-2 border-white ring-2 ring-amber-100 flex items-center justify-center text-[10px] text-white font-bold shrink-0">
-                      3
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-amber-500 border-2 border-white ring-2 ring-amber-100 flex items-center justify-center text-[10px] text-white font-bold shrink-0 shadow-xs">
+                      ●
                     </div>
                     <div>
-                      <div className="font-bold text-[11px] text-slate-800">Builder</div>
-                      <div className="text-[10px] font-mono text-amber-600 font-medium mt-0.5">5.0</div>
+                      <div className="font-bold text-xs text-slate-800">Builder</div>
+                      <div className="text-[11px] font-mono text-amber-600 font-semibold mt-0.5">5.0</div>
                     </div>
                   </div>
 
                   {/* Step 4 */}
-                  <div className="flex flex-col items-center gap-1.5">
-                    <div className="w-5 h-5 rounded-full bg-emerald-500 border-2 border-white ring-2 ring-emerald-100 flex items-center justify-center text-[10px] text-white font-bold shrink-0">
-                      4
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-emerald-500 border-2 border-white ring-2 ring-emerald-100 flex items-center justify-center text-[10px] text-white font-bold shrink-0 shadow-xs">
+                      ●
                     </div>
                     <div>
-                      <div className="font-bold text-[11px] text-slate-800">Master</div>
-                      <div className="text-[10px] font-mono text-emerald-600 font-medium mt-0.5">6.0</div>
+                      <div className="font-bold text-xs text-slate-800">Master</div>
+                      <div className="text-[11px] font-mono text-emerald-600 font-semibold mt-0.5">6.0</div>
                     </div>
                   </div>
 
                   {/* Step 5 */}
-                  <div className="flex flex-col items-center gap-1.5">
-                    <div className="w-5 h-5 rounded-full bg-red-600 border-2 border-white ring-2 ring-red-100 flex items-center justify-center text-[10px] text-white font-bold shrink-0">
-                      5
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-red-600 border-2 border-white ring-2 ring-red-100 flex items-center justify-center text-[10px] text-white font-bold shrink-0 shadow-xs">
+                      ●
                     </div>
                     <div>
-                      <div className="font-bold text-[11px] text-slate-800">Leader</div>
-                      <div className="text-[10px] font-mono text-red-600 font-medium mt-0.5">6.5+</div>
+                      <div className="font-bold text-xs text-slate-800">Leader</div>
+                      <div className="text-[11px] font-mono text-red-600 font-semibold mt-0.5">6.5+</div>
                     </div>
                   </div>
                 </div>
@@ -274,27 +287,29 @@ export default function Auth() {
       </div>
 
       {/* Right side - Focal Point Student Login Workspace Form */}
-      <div className="flex-1 flex items-center justify-center px-6 lg:px-12 py-6 lg:py-8">
+      <div className="flex-1 flex items-center justify-center px-6 lg:px-12 py-6 lg:py-8 z-10">
         {/* 6. Light Breathing Card (Enlarged width max-w-[520px]) */}
         <Card className="w-full max-w-[520px] border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] rounded-2xl bg-white dark:bg-slate-900 p-7 sm:p-8">
           <CardHeader className="space-y-1.5 text-center p-0 pb-5">
             <div className="lg:hidden flex items-center justify-center gap-2 mb-3">
-              <SiteLogo alt="NextBand Logo" className="max-h-9 w-auto object-contain" />
+              <SiteLogo alt="ARIS IELTS Logo" className="max-h-9 w-auto object-contain" />
             </div>
+            {/* 10. Title font-weight 700 instead of 800 */}
             <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
               Đăng nhập
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-5 p-0">
-            {/* 7. Google Login Primary Entry (DÀNH CHO HỌC VIÊN) */}
+            {/* 7 & 10. Google Login Primary Entry (DÀNH CHO HỌC VIÊN font đậm hơn) */}
             <div className="space-y-3 p-4 sm:p-5 rounded-2xl bg-sky-50/50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900/30">
-              <div className="text-xs font-bold tracking-wider text-sky-700 dark:text-sky-400 uppercase text-center mb-1">
-                🎓 Dành cho Học viên
+              <div className="text-xs font-bold tracking-wider text-sky-800 dark:text-sky-300 uppercase text-center mb-1">
+                🎓 DÀNH CHO HỌC VIÊN
               </div>
+              {/* 5. Google Button: Height h-11 border-radius rounded-xl, light hover */}
               <Button
                 type="button"
                 variant="outline"
-                className="w-full flex items-center justify-center gap-3 border-sky-200 dark:border-sky-800 bg-white dark:bg-slate-900 h-10.5 px-4 text-sm font-semibold hover:bg-sky-50 dark:hover:bg-sky-900/40 text-slate-800 dark:text-slate-200 shadow-xs transition-all duration-150 active:scale-[0.99]"
+                className="w-full flex items-center justify-center gap-3 border-sky-200/90 dark:border-sky-800 bg-white dark:bg-slate-900 h-11 rounded-xl px-4 text-sm font-semibold hover:bg-sky-50/80 hover:border-sky-300 dark:hover:bg-sky-900/40 text-slate-800 dark:text-slate-200 shadow-xs transition-all duration-150 active:scale-[0.99]"
                 onClick={async () => {
                   try {
                     setIsLoading(true);
@@ -335,23 +350,24 @@ export default function Auth() {
               </p>
             </div>
 
-            {/* DIVIDER BETWEEN STUDENT & TEACHER / ADMIN */}
+            {/* 6. Shortened Divider: "Giáo viên & Quản trị" */}
             <div className="relative my-3">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-slate-200 dark:border-slate-800" />
               </div>
               <div className="relative flex justify-center text-xs uppercase tracking-wider">
                 <span className="bg-white dark:bg-slate-900 px-3 text-slate-400 font-semibold">
-                  Hoặc dành cho Giáo viên & Quản trị
+                  Giáo viên & Quản trị
                 </span>
               </div>
             </div>
 
-            {/* Secondary Email/Password Form (DÀNH CHO GIÁO VIÊN & QUẢN TRỊ) */}
+            {/* 7. Secondary Form with clean line icons (Mail & Lock) */}
             <form onSubmit={handleSignIn} className="space-y-4 p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60">
               <div className="space-y-1.5">
-                <Label htmlFor="login-email" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Email
+                <Label htmlFor="login-email" className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                  <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                  <span>Email</span>
                 </Label>
                 <Input
                   id="login-email"
@@ -367,8 +383,9 @@ export default function Auth() {
                 )}
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="login-password" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Mật khẩu
+                <Label htmlFor="login-password" className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                  <Lock className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                  <span>Mật khẩu</span>
                 </Label>
                 <div className="relative">
                   <Input
@@ -399,7 +416,8 @@ export default function Auth() {
                   <p className="text-xs text-destructive mt-1">{errors.password}</p>
                 )}
               </div>
-              <Button type="submit" className="w-full h-10 text-sm font-semibold tracking-tight mt-1.5 bg-slate-900 hover:bg-slate-800 text-white transition-colors" disabled={isLoading}>
+              {/* 8. Subtle Navy Gradient Login Button */}
+              <Button type="submit" className="w-full h-10 text-sm font-semibold tracking-tight mt-1.5 bg-gradient-to-b from-[#1E293B] to-[#0F172A] hover:from-[#0F172A] hover:to-[#020617] text-white shadow-xs transition-all duration-150" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
