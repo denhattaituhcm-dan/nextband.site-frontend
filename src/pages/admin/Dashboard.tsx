@@ -289,6 +289,8 @@ export default function AdminDashboard() {
             </div>
           )}
         </CardContent>
+      </Card>
+
       {/* Academic Programs Quick Check Widget (Cuối Dashboard) */}
       <Card>
         <CardHeader>
