@@ -192,7 +192,7 @@ export default function Auth() {
               </div>
             </div>
 
-            {/* 2. Academic Roadmap - Larger (~20%), subtle gray connector line with individual milestone dots */}
+            {/* 2. Academic Roadmap - Larger (~20%), subtle gray connector line aligned exactly to dot centers */}
             <div className="pt-2">
               <div className="flex items-center justify-between mb-5">
                 <h4 className="font-semibold text-slate-800 text-sm tracking-tight">Academic Roadmap</h4>
@@ -201,8 +201,8 @@ export default function Auth() {
 
               {/* Connected Step Progression Timeline (Starter -> Leader) */}
               <div className="relative px-2 pt-2 pb-3">
-                {/* Clean subtle light gray connector line */}
-                <div className="absolute top-[15px] left-6 right-6 h-0.5 bg-slate-200 z-0" />
+                {/* Clean subtle light gray connector line perfectly centered through w-6 h-6 dots (top 20px) */}
+                <div className="absolute top-[20px] left-[10%] right-[10%] h-0.5 bg-slate-200 z-0" />
 
                 <div className="grid grid-cols-5 gap-2 relative z-10 text-center">
                   {/* Step 1 */}
@@ -267,9 +267,11 @@ export default function Auth() {
 
         {/* Balanced Bottom Footer Anchor */}
         <div className="relative z-10 flex items-center justify-between gap-3 pt-3 border-t border-slate-200/60 text-xs">
-          <div className="text-slate-500 leading-tight">
-            <div>© 2026 ARIS IELTS</div>
-            <div>Dĩ An, TPHCM</div>
+          <div className="space-y-0.5">
+            <div className="font-semibold text-slate-800 tracking-tight">ARIS IELTS</div>
+            <div className="text-slate-500/80 font-normal text-[11px]">
+              © 2026 <span className="mx-1">•</span> Dĩ An, TP.HCM
+            </div>
           </div>
 
           {settings.zaloLink && (
