@@ -192,10 +192,10 @@ export default function Auth() {
               </div>
             </div>
 
-            {/* 2. Academic Roadmap - Larger (~20%), subtle gray connector line aligned exactly to dot centers */}
+            {/* 2. Your Journey Section - Learning Evolution Journey */}
             <div className="pt-2">
               <div className="flex items-center justify-between mb-5">
-                <h4 className="font-semibold text-slate-800 text-sm tracking-tight">Academic Roadmap</h4>
+                <h4 className="font-semibold text-slate-800 text-sm tracking-tight">Your Journey</h4>
                 <span className="text-[11px] font-mono px-2.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200/60 font-medium">5 Levels</span>
               </div>
 
