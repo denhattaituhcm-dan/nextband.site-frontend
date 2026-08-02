@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -23,7 +22,6 @@ import {
   TrendingUp,
   Award,
   Clock,
-  CheckCircle2,
   GraduationCap,
 } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
@@ -256,21 +254,10 @@ export default function Auth() {
 
         {/* Balanced Bottom Footer Anchor */}
         <div className="relative z-10 flex items-center justify-between gap-3 pt-3 border-t border-slate-200/60 text-xs">
-          {settings.completedLessonsStat ? (
-            <div className="flex items-center gap-1.5 text-slate-500">
-              <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-              <span>
-                <strong className="text-slate-800 font-semibold">
-                  {settings.completedLessonsStat}
-                </strong>{" "}
-                lessons completed
-              </span>
-            </div>
-          ) : (
-            <span className="text-slate-400 font-normal">
-              © {new Date().getFullYear()} NextBand. All rights reserved.
-            </span>
-          )}
+          <div className="text-slate-500 leading-tight">
+            <div>© 2026 ARIS IELTS</div>
+            <div>Dĩ An, TPHCM</div>
+          </div>
 
           {settings.zaloLink && (
             <a
@@ -297,9 +284,6 @@ export default function Auth() {
             <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
               Đăng nhập
             </CardTitle>
-            <CardDescription className="text-sm text-slate-500 dark:text-slate-400">
-              Đăng nhập để tiếp tục bài học của bạn
-            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5 p-0">
             {/* 7. Google Login Primary Entry (DÀNH CHO HỌC VIÊN) */}
