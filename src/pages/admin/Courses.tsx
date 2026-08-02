@@ -241,9 +241,9 @@ export default function AdminCourses() {
                     </Badge>
                   </TableCell>
 
-                  {/* LESSONS */}
+                  {/* LESSONS / EXAMS */}
                   <TableCell className="text-xs text-muted-foreground">
-                    <span className="font-medium text-foreground">{course.lessonsCount || 27}</span> buổi học
+                    <span className="font-semibold text-primary">{course.lessonsCount ?? 0}</span> bài tập
                   </TableCell>
 
                   {/* CLASSES (ACTIVE / TOTAL) - ALIGNED RIGHT */}

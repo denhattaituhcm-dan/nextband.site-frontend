@@ -208,7 +208,7 @@ export const coursesApi = {
 
     let query = supabase
       .from("courses")
-      .select("*", { count: "exact" });
+      .select("*, exams:exams(id)", { count: "exact" });
 
     if (params?.search) {
       query = query.ilike("title", `%${params.search}%`);
@@ -252,9 +252,8 @@ export const coursesApi = {
       isActive: c.is_active ?? true,
       thumbnailUrl: c.thumbnail_url,
       createdAt: c.created_at,
-      // Operational metrics (Mẫu thông số vận hành)
       band: c.level === "beginner" ? "3.0 - 4.0" : c.level === "intermediate" ? "5.0 - 5.5" : "6.0 - 6.5+",
-      lessonsCount: c.syllabus && Array.isArray(c.syllabus) ? c.syllabus.length || 27 : 27,
+      lessonsCount: c.exams && Array.isArray(c.exams) ? c.exams.length : 0,
       activeClassesCount: 2,
       totalClassesCount: 4,
       studentsCount: 26,
