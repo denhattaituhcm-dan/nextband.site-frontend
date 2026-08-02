@@ -193,12 +193,7 @@ export default function Auth() {
             </div>
 
             {/* 2. Your Journey Section - High Impact Panorama Learning Evolution */}
-            <div className="pt-2 space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-slate-800 text-sm tracking-tight">Your Journey</h4>
-                <span className="text-[11px] font-mono px-2.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200/60 font-medium">5 Levels</span>
-              </div>
-
+            <div className="pt-2">
               {/* Panorama Learning Journey Image Container */}
               <div className="relative rounded-xl overflow-hidden border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all bg-slate-50">
                 <img
