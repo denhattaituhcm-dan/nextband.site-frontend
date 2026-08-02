@@ -155,44 +155,43 @@ export default function Auth() {
           </div>
         </div>
 
-        {/* 1. Left side Content Card - Expanded & pulled up closer to slogan with subtle shadow */}
+        {/* 1. Left side Primary Content Card (Apple style: White background, soft ambient shadow, no heavy borders) */}
         <div className="relative z-10 w-full max-w-xl my-auto py-3">
-          <div className="p-6 sm:p-7 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-sm transition-shadow space-y-6">
-            {/* 3. Feature Highlights Grid - Icon +10%, Title weight 600, Subtitle brighter */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-sky-50/60 border border-sky-100/80">
-                <div className="rounded-lg bg-sky-500/10 p-2.5 border border-sky-500/20 shrink-0">
-                  <GraduationCap className="h-5 w-5 text-sky-600" />
+          <div className="p-6 sm:p-7 rounded-2xl bg-white shadow-[0_8px_24px_rgba(15,23,42,0.04)] space-y-5">
+            {/* 3. Feature Pillars - Reduced padding, height (~15%), zero heavy shadow */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex items-center gap-3 p-2.5 rounded-xl bg-sky-50/50 border border-sky-100/60">
+                <div className="rounded-lg bg-sky-500/10 p-2 border border-sky-500/15 shrink-0">
+                  <GraduationCap className="h-4.5 w-4.5 text-sky-600" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-slate-800 text-sm tracking-tight truncate">
+                  <h3 className="font-semibold text-slate-800 text-xs sm:text-sm tracking-tight truncate">
                     Learning Workspace
                   </h3>
-                  <p className="text-xs text-slate-500 truncate">
+                  <p className="text-[11px] text-slate-500 truncate">
                     Lộ trình IELTS chuẩn
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-indigo-50/60 border border-indigo-100/80">
-                <div className="rounded-lg bg-indigo-500/10 p-2.5 border border-indigo-500/20 shrink-0">
-                  <TrendingUp className="h-5 w-5 text-indigo-600" />
+              <div className="flex items-center gap-3 p-2.5 rounded-xl bg-indigo-50/50 border border-indigo-100/60">
+                <div className="rounded-lg bg-indigo-500/10 p-2 border border-indigo-500/15 shrink-0">
+                  <TrendingUp className="h-4.5 w-4.5 text-indigo-600" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-slate-800 text-sm tracking-tight truncate">
+                  <h3 className="font-semibold text-slate-800 text-xs sm:text-sm tracking-tight truncate">
                     Track Progress
                   </h3>
-                  <p className="text-xs text-slate-500 truncate">
+                  <p className="text-[11px] text-slate-500 truncate">
                     Theo dõi tiến độ
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* 2. Your Journey Section - High Impact Panorama Learning Evolution */}
-            <div className="pt-2">
-              {/* Panorama Learning Journey Image Container */}
-              <div className="relative rounded-xl overflow-hidden border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all bg-slate-50">
+            {/* 2 & 4. Direct Large Panorama Illustration (No extra card frame, occupying ~90%+ width) */}
+            <div className="pt-1">
+              <div className="relative w-full rounded-xl overflow-hidden">
                 <img
                   src="/your-journey.webp"
                   alt="ARIS IELTS Learning Journey"
@@ -205,11 +204,11 @@ export default function Auth() {
           </div>
         </div>
 
-        {/* Balanced Bottom Footer Anchor */}
-        <div className="relative z-10 flex items-center justify-between gap-3 pt-3 border-t border-slate-200/60 text-xs">
+        {/* 5. Subtler Footer - Smaller font size, softer muted colors */}
+        <div className="relative z-10 flex items-center justify-between gap-3 pt-3 border-t border-slate-200/40 text-[11px]">
           <div className="space-y-0.5">
-            <div className="font-semibold text-slate-800 tracking-tight">ARIS IELTS</div>
-            <div className="text-slate-500/80 font-normal text-[11px]">
+            <div className="font-medium text-slate-700 tracking-tight">ARIS IELTS</div>
+            <div className="text-slate-400 font-normal text-[10px]">
               © 2026 <span className="mx-1">•</span> Dĩ An, TP.HCM
             </div>
           </div>
@@ -219,9 +218,9 @@ export default function Auth() {
               href={settings.zaloLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white hover:bg-slate-100 text-sky-600 border border-slate-200 text-xs font-medium transition-colors shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-white hover:bg-slate-100 text-sky-600 border border-slate-200/80 text-[11px] font-medium transition-colors shadow-2xs"
             >
-              <MessageCircle className="h-3.5 w-3.5 text-sky-500" />
+              <MessageCircle className="h-3 w-3 text-sky-500" />
               <span>Support</span>
             </a>
           )}
