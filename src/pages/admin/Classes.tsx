@@ -347,7 +347,9 @@ export default function AdminClasses() {
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="text-xs font-medium text-muted-foreground">Bài cần chấm</p>
-              <h3 className="text-2xl font-bold mt-1 text-amber-600">15 bài</h3>
+              <h3 className="text-2xl font-bold mt-1 text-amber-600">
+                {classes.reduce((sum: number, c: any) => sum + (c.pendingSubmissionsCount || 0), 0)} bài
+              </h3>
               <p className="text-xs text-muted-foreground mt-0.5">Đang chờ phản hồi</p>
             </div>
             <div className="p-2.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
@@ -360,7 +362,9 @@ export default function AdminClasses() {
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="text-xs font-medium text-muted-foreground">Homework quá hạn</p>
-              <h3 className="text-2xl font-bold mt-1 text-rose-600">3 bài</h3>
+              <h3 className="text-2xl font-bold mt-1 text-rose-600">
+                {classes.reduce((sum: number, c: any) => sum + (c.overdueCount || 0), 0)} bài
+              </h3>
               <p className="text-xs text-muted-foreground mt-0.5">Cần nhắc nhở HV</p>
             </div>
             <div className="p-2.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300">
@@ -447,10 +451,11 @@ export default function AdminClasses() {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredClasses.map((cls: any, index: number) => {
-                const currentHw = Math.min((index + 1) * 4, 27);
-                const progressPercent = Math.round((currentHw / 27) * 100);
-                const pendingCount = index % 2 === 0 ? (index === 0 ? 15 : 3) : 0;
+              filteredClasses.map((cls: any) => {
+                const totalSessions = cls.totalSessions || 27;
+                const currentHw = cls.completedSessions || cls.homeworkCount || 0;
+                const progressPercent = totalSessions > 0 ? Math.min(100, Math.round((currentHw / totalSessions) * 100)) : 0;
+                const pendingCount = cls.pendingSubmissionsCount || 0;
 
                 return (
                   <TableRow
