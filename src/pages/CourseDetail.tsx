@@ -37,15 +37,13 @@ export default function CourseDetail() {
 
   // 2. Fetch Exams in Course
   const { data: examsData, isLoading: examsLoading } = useQuery({
-    queryKey: ["course-exams", slug],
+    queryKey: ["course-exams", course?.id || slug],
     queryFn: () =>
       examsApi.list({
-        courseId: slug,
+        courseId: course?.id || slug,
         limit: 100,
-        isPublished: true,
-        isActive: true,
       }),
-    enabled: !!slug,
+    enabled: !!course?.id || !!slug,
   });
 
   // 3. Fetch Submissions for Progress & Status

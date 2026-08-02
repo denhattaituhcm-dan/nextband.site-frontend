@@ -43,7 +43,7 @@ export default function CourseExamsList({ courseId }: CourseExamsListProps) {
   const [sortField, setSortField] = useState<SortField>("week");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(50);
   const [deleteExam, setDeleteExam] = useState<{
     id: string;
     title: string;
