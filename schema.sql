@@ -284,46 +284,84 @@ CREATE OR REPLACE FUNCTION public.admin_create_user(
   p_full_name text DEFAULT NULL,
   p_phone text DEFAULT NULL,
   p_gender text DEFAULT NULL,
-  p_role text DEFAULT 'student'
+  p_role text DEFAULT 'student',
+  p_password text DEFAULT 'nextband123'
 )
 RETURNS json
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, auth, extensions
 AS $$
 DECLARE
   v_new_id uuid := gen_random_uuid();
   v_existing_id uuid;
   v_result json;
+  v_encrypted_pw text;
 BEGIN
-  SELECT id INTO v_existing_id FROM public.profiles WHERE email = p_email LIMIT 1;
-  
+  -- 1. Check if user already exists in auth.users or profiles (Idempotency Check)
+  SELECT id INTO v_existing_id FROM auth.users WHERE email = p_email LIMIT 1;
+  IF v_existing_id IS NULL THEN
+    SELECT user_id INTO v_existing_id FROM public.profiles WHERE email = p_email LIMIT 1;
+  END IF;
+
   IF v_existing_id IS NOT NULL THEN
+    -- Update existing profile & role without creating duplicates
     UPDATE public.profiles
     SET full_name = COALESCE(p_full_name, full_name),
         phone = COALESCE(p_phone, phone),
         gender = COALESCE(p_gender, gender),
         is_active = true,
         updated_at = now()
-    WHERE id = v_existing_id;
+    WHERE user_id = v_existing_id OR id = v_existing_id;
 
     INSERT INTO public.user_roles (user_id, role)
     VALUES (v_existing_id, p_role::app_role)
     ON CONFLICT (user_id, role) DO NOTHING;
 
-    SELECT row_to_json(p) INTO v_result FROM public.profiles p WHERE id = v_existing_id;
+    SELECT row_to_json(p) INTO v_result FROM public.profiles p WHERE user_id = v_existing_id OR id = v_existing_id LIMIT 1;
     RETURN v_result;
   END IF;
 
-  INSERT INTO public.profiles (id, user_id, email, full_name, phone, gender, is_active)
-  VALUES (v_new_id, v_new_id, p_email, p_full_name, p_phone, p_gender, true);
+  -- 2. Create Root Identity in auth.users with encrypted password
+  v_encrypted_pw := extensions.crypt(COALESCE(p_password, 'nextband123'), extensions.gen_salt('bf'));
 
+  INSERT INTO auth.users (
+    id, instance_id, email, encrypted_password, email_confirmed_at,
+    raw_app_meta_data, raw_user_meta_data, is_super_admin, role, aud,
+    created_at, updated_at
+  ) VALUES (
+    v_new_id,
+    '00000000-0000-0000-0000-000000000000',
+    p_email,
+    v_encrypted_pw,
+    now(),
+    '{"provider": "email", "providers": ["email"]}'::jsonb,
+    jsonb_build_object('full_name', p_full_name),
+    false,
+    'authenticated',
+    'authenticated',
+    now(),
+    now()
+  );
+
+  -- 3. Create or update profile record matching auth.users(id)
+  INSERT INTO public.profiles (id, user_id, email, full_name, phone, gender, is_active)
+  VALUES (v_new_id, v_new_id, p_email, p_full_name, p_phone, p_gender, true)
+  ON CONFLICT (user_id) DO UPDATE
+  SET full_name = EXCLUDED.full_name,
+      phone = EXCLUDED.phone,
+      gender = EXCLUDED.gender;
+
+  -- 4. Create user role mapping
   INSERT INTO public.user_roles (user_id, role)
   VALUES (v_new_id, p_role::app_role)
-  ON CONFLICT DO NOTHING;
+  ON CONFLICT (user_id, role) DO NOTHING;
 
-  SELECT row_to_json(p) INTO v_result FROM public.profiles p WHERE id = v_new_id;
+  SELECT row_to_json(p) INTO v_result FROM public.profiles p WHERE user_id = v_new_id;
   RETURN v_result;
+EXCEPTION WHEN OTHERS THEN
+  -- Atomic PostgreSQL transaction rollback automatically cleans up auth.users, profiles, and user_roles
+  RAISE;
 END;
 $$;
 
