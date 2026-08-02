@@ -229,24 +229,34 @@ export default function AdminExamEdit() {
                           section.sectionType as keyof typeof sectionColors
                         ] || "bg-muted";
 
+                      const groups = section.questionGroups || section.question_groups || [];
+                      const groupCount = groups.length;
+                      const totalQuestions = groups.reduce(
+                        (sum: number, g: any) => sum + (g.questions?.length || 0),
+                        0
+                      );
+                      const isComplete = totalQuestions > 0;
+
                       return (
                         <Card
                           key={section.id}
-                          className="hover:shadow-md transition-shadow"
+                          className="hover:shadow-md transition-shadow border-slate-200"
                         >
                           <CardHeader className="pb-3">
                             <div className="flex items-center justify-between gap-2">
                               <div className="flex items-center gap-2">
                                 <Badge className={colorClass}>
                                   <Icon className="mr-1 h-3 w-3" />
-                                  {section.sectionType.toUpperCase()}
+                                  {(section.sectionType || "").toUpperCase()}
                                 </Badge>
-                                {section.questionGroups?.some(
-                                  (g: any) => (g.questions?.length || 0) > 0,
-                                ) && (
-                                  <Badge className="bg-green-500 hover:bg-green-600 text-white border-0">
+                                {isComplete ? (
+                                  <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white border-0 font-medium">
                                     <Check className="h-3 w-3 mr-1" />
-                                    Filled
+                                    Complete
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="outline" className="text-amber-600 border-amber-300 bg-amber-50 font-medium">
+                                    Empty
                                   </Badge>
                                 )}
                               </div>
@@ -292,17 +302,25 @@ export default function AdminExamEdit() {
                                 </Button>
                               </div>
                             </div>
-                            <CardTitle className="text-lg mt-2">
+                            <CardTitle className="text-lg mt-2 font-bold text-slate-800">
                               {section.title}
                             </CardTitle>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-sm text-muted-foreground space-y-1">
-                              {section.durationMinutes && (
-                                <p>Thời gian: {section.durationMinutes} phút</p>
-                              )}
+                            <div className="text-sm text-muted-foreground space-y-2">
+                              <div className="flex items-center gap-3 text-xs font-semibold text-slate-600 bg-slate-50 p-2 rounded-md border border-slate-100">
+                                <span>📦 {groupCount} Groups</span>
+                                <span>•</span>
+                                <span>❓ {totalQuestions} Questions</span>
+                                {section.durationMinutes ? (
+                                  <>
+                                    <span>•</span>
+                                    <span>⏱️ {section.durationMinutes} phút</span>
+                                  </>
+                                ) : null}
+                              </div>
                               {section.instructions && (
-                                <p className="line-clamp-2">
+                                <p className="line-clamp-2 text-xs text-slate-500 pt-1">
                                   {section.instructions.replace(/<[^>]*>/g, "")}
                                 </p>
                               )}
