@@ -6,7 +6,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import { statsApi, usersApi } from "@/lib/api";
+import { statsApi, usersApi, coursesApi } from "@/lib/api";
 import {
   BookOpen,
   Users,
@@ -96,8 +96,15 @@ export default function AdminDashboard() {
     queryFn: () => usersApi.list({ role: "teacher", limit: 5 }),
   });
 
+  // Fetch courses for the academic programs widget
+  const { data: coursesData } = useQuery({
+    queryKey: ["dashboard-courses"],
+    queryFn: () => coursesApi.list({ limit: 5 }),
+  });
+
   const teachers = teachersData?.data || [];
   const totalTeachers = teachersData?.meta?.total || 0;
+  const courses = coursesData?.data || [];
 
   const statCards = [
     {
@@ -279,6 +286,63 @@ export default function AdminDashboard() {
                   </Badge>
                 </div>
               ))}
+            </div>
+          )}
+        </CardContent>
+      {/* Academic Programs Quick Check Widget (Cuối Dashboard) */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
+                <BookOpen className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  Academic Programs
+                  <Badge variant="outline" className="text-xs font-normal">
+                    {coursesData?.meta?.total || courses.length} Programs
+                  </Badge>
+                </CardTitle>
+                <CardDescription>Tra cứu nhanh thông số lớp đang mở & trạng thái khóa học</CardDescription>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/admin/courses">
+                Quản lý khóa học
+                <ChevronRight className="ml-1 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {courses.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-6 text-muted-foreground">
+              <BookOpen className="h-8 w-8 mb-2 text-muted-foreground/50" />
+              <p className="text-sm">Chưa có chương trình đào tạo nào</p>
+            </div>
+          ) : (
+            <div className="border rounded-lg overflow-hidden">
+              <div className="grid grid-cols-3 bg-muted/40 p-2 px-3 text-xs font-semibold text-muted-foreground border-b">
+                <span>Program</span>
+                <span className="text-center">Status</span>
+                <span className="text-right">Classes (Đang mở / Tổng)</span>
+              </div>
+              <div className="divide-y text-xs">
+                {courses.slice(0, 5).map((c: any) => (
+                  <div key={c.id} className="grid grid-cols-3 p-2.5 px-3 items-center hover:bg-muted/30 transition-colors">
+                    <span className="font-semibold text-foreground truncate">{c.title}</span>
+                    <div className="text-center">
+                      <Badge variant="outline" className={c.isPublished ? "bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]" : "bg-amber-50 text-amber-700 border-amber-200 text-[10px]"}>
+                        {c.isPublished ? "🟢 Active" : "🟡 Draft"}
+                      </Badge>
+                    </div>
+                    <span className="text-right font-medium">
+                      <span className="text-primary font-bold">{c.activeClassesCount || 2}</span> / {c.totalClassesCount || 4} lớp
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </CardContent>

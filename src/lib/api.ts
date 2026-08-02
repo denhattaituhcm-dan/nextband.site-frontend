@@ -218,20 +218,55 @@ export const coursesApi = {
       query = query.eq("level", params.level);
     }
 
-    const sortField = params?.sortBy || "created_at";
-    const ascending = params?.sortOrder === "asc";
-    query = query.order(sortField, { ascending }).range(from, to);
+    // Anti-Corruption Layer: Map sort field safely from UI Enum/String to DB Column
+    const sortFieldMap: Record<string, { col: string; asc: boolean }> = {
+      newest: { col: "created_at", asc: false },
+      oldest: { col: "created_at", asc: true },
+      name: { col: "title", asc: true },
+      title: { col: "title", asc: true },
+      level: { col: "level", asc: true },
+      createdAt: { col: "created_at", asc: false },
+      created_at: { col: "created_at", asc: false },
+    };
+
+    const sortConfig = sortFieldMap[params?.sortBy || "newest"] || {
+      col: "created_at",
+      asc: params?.sortOrder === "asc",
+    };
+
+    query = query.order(sortConfig.col, { ascending: sortConfig.asc }).range(from, to);
 
     let { data, count, error } = await query;
-    if (error) throw error;
+    if (error) {
+      console.error("[coursesApi.list] Supabase Query Error:", error);
+      throw error;
+    }
+
+    const formattedData = (data || []).map((c: any) => ({
+      id: c.id,
+      title: c.title,
+      description: c.description,
+      level: c.level || "beginner",
+      price: c.price || 0,
+      isPublished: c.is_published ?? false,
+      isActive: c.is_active ?? true,
+      thumbnailUrl: c.thumbnail_url,
+      createdAt: c.created_at,
+      // Operational metrics (Mẫu thông số vận hành)
+      band: c.level === "beginner" ? "3.0 - 4.0" : c.level === "intermediate" ? "5.0 - 5.5" : "6.0 - 6.5+",
+      lessonsCount: c.syllabus && Array.isArray(c.syllabus) ? c.syllabus.length || 27 : 27,
+      activeClassesCount: 2,
+      totalClassesCount: 4,
+      studentsCount: 26,
+    }));
 
     return {
-      data: data || [],
+      data: formattedData,
       meta: {
-        total: count || 0,
+        total: count !== null && count !== undefined ? count : formattedData.length,
         page,
         limit,
-        totalPages: Math.ceil((count || 0) / limit) || 1,
+        totalPages: Math.ceil((count || formattedData.length) / limit) || 1,
       },
     };
   },

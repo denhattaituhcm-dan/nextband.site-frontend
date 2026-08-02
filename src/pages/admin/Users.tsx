@@ -263,9 +263,11 @@ export default function AdminUsers() {
     );
   };
 
-  const usersList = data?.users || [];
-  const total = data?.total || 0;
-  const totalPages = data?.totalPages || 1;
+  // Tận gốc rễ: API `usersApi.list` trả về cấu trúc `{ data: [...], meta: { total, totalPages } }`.
+  // Sử dụng fallback an toàn (supports cả data.data, data.users, data) để không bao giờ bị rỗng khi API trả về thành công.
+  const usersList = data?.data || data?.users || (Array.isArray(data) ? data : []);
+  const total = data?.meta?.total ?? data?.total ?? usersList.length;
+  const totalPages = data?.meta?.totalPages ?? data?.totalPages ?? 1;
 
   // Render Operational Academic Health Badge
   const renderAcademicHealth = (score: number = 82) => {

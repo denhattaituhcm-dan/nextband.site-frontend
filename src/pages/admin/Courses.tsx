@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { coursesApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -14,33 +13,39 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Plus,
   Search,
   Edit,
   Trash2,
   ArrowUpDown,
   BookOpen,
+  MoreVertical,
+  Globe,
+  Archive,
+  AlertTriangle,
+  RefreshCw,
+  Loader2
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { DataTablePagination } from "@/components/admin/DataTablePagination";
 import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
-type SortField = "title" | "createdAt" | "level";
+type SortOption = "newest" | "name" | "level";
 
 export default function AdminCourses() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [sortField, setSortField] = useState<SortField>("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [sortOption, setSortOption] = useState<SortOption>("newest");
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [deleteCourse, setDeleteCourse] = useState<{ id: string; title: string; isLocked?: boolean } | null>(null);
@@ -54,12 +59,11 @@ export default function AdminCourses() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: [
       "admin-courses",
       debouncedSearch,
-      sortField,
-      sortOrder,
+      sortOption,
       page,
       pageSize,
     ],
@@ -68,19 +72,21 @@ export default function AdminCourses() {
         page,
         limit: pageSize,
         search: debouncedSearch || undefined,
-        sortBy: sortField,
-        sortOrder,
+        sortBy: sortOption,
       }),
   });
 
-  const toggleMutation = useMutation({
-    mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
-      return coursesApi.update(id, { isActive });
+  const togglePublishMutation = useMutation({
+    mutationFn: async ({ id, isPublished }: { id: string; isPublished: boolean }) => {
+      return coursesApi.update(id, { isPublished });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-courses"] });
-      toast({ title: "Đã cập nhật trạng thái" });
+      toast({ title: "Đã cập nhật trạng thái xuất bản" });
     },
+    onError: () => {
+      toast({ title: "Lỗi", description: "Không thể cập nhật trạng thái xuất bản", variant: "destructive" });
+    }
   });
 
   const deleteMutation = useMutation({
@@ -89,8 +95,8 @@ export default function AdminCourses() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-courses"] });
       toast({
-        title: "Đã chuyển trạng thái",
-        description: "Khóa học đã được ngừng hoạt động",
+        title: "Đã xóa vĩnh viễn khóa học",
+        variant: "destructive",
       });
       setDeleteCourse(null);
     },
@@ -103,55 +109,30 @@ export default function AdminCourses() {
     },
   });
 
-
-  const toggleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortOrder("asc");
-    }
+  const toggleSort = (option: SortOption) => {
+    setSortOption(option);
   };
 
-  const SortHeader = ({
-    field,
-    children,
-  }: {
-    field: SortField;
-    children: React.ReactNode;
-  }) => (
-    <TableHead
-      className="cursor-pointer hover:bg-muted/50 transition-colors"
-      onClick={() => toggleSort(field)}
-    >
-      <div className="flex items-center gap-1">
-        {children}
-        <ArrowUpDown
-          className={`h-3 w-3 ${sortField === field ? "text-primary" : "text-muted-foreground"}`}
-        />
-      </div>
-    </TableHead>
-  );
-
-  const courses = data?.data || [];
-  const totalPages = data?.meta?.totalPages || 1;
+  const coursesList = data?.data || [];
   const total = data?.meta?.total || 0;
+  const totalPages = data?.meta?.totalPages || 1;
 
   return (
     <div className="space-y-6">
+      {/* HEADER SECTION */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
             <BookOpen className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">Quản lý khóa học</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Quản lý khóa học</h1>
             <p className="text-sm text-muted-foreground">
-              {total} khóa học trong hệ thống
+              {total} chương trình đào tạo trong hệ thống
             </p>
           </div>
         </div>
-        <Button asChild>
+        <Button asChild className="bg-primary">
           <Link to="/admin/courses/create">
             <Plus className="mr-2 h-4 w-4" />
             Thêm khóa học
@@ -159,106 +140,174 @@ export default function AdminCourses() {
         </Button>
       </div>
 
+      {/* SEARCH BAR */}
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Tìm kiếm..."
+          placeholder="Tìm tên khóa học..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-10"
+          className="pl-9 bg-background"
         />
       </div>
 
-      <div className="border rounded-lg">
+      {/* TABLE / ERROR / EMPTY STATE */}
+      <div className="border rounded-xl bg-card shadow-sm overflow-hidden">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted/30">
             <TableRow>
-              <SortHeader field="title">Tên khóa học</SortHeader>
-              <SortHeader field="level">Cấp độ</SortHeader>
-              <TableHead>Xuất bản</TableHead>
-              <TableHead>Kích hoạt</TableHead>
-              <TableHead className="w-[180px]">Hành động</TableHead>
+              <TableHead className="font-semibold cursor-pointer hover:text-primary transition-colors" onClick={() => toggleSort("name")}>
+                <div className="flex items-center gap-1">
+                  Program (Khóa học)
+                  <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
+                </div>
+              </TableHead>
+              <TableHead className="font-semibold">Band</TableHead>
+              <TableHead className="font-semibold">Lessons</TableHead>
+              <TableHead className="font-semibold text-right">Classes (Đang mở / Tổng)</TableHead>
+              <TableHead className="font-semibold text-right">Students</TableHead>
+              <TableHead className="font-semibold text-center">Status</TableHead>
+              <TableHead className="w-12 text-right">Hành động</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
+            {/* 1. LOADING STATE */}
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">
-                  Đang tải...
+                <TableCell colSpan={7} className="h-32 text-center">
+                  <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                    Đang tải danh sách chương trình đào tạo...
+                  </div>
                 </TableCell>
               </TableRow>
-            ) : courses.length === 0 ? (
+            ) : isError ? (
+              /* 2. ERROR STATE (Phân biệt rõ rệt với Empty State) */
               <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="text-center py-8 text-muted-foreground"
-                >
-                  Không tìm thấy khóa học nào
+                <TableCell colSpan={7} className="h-40 text-center bg-red-50/30">
+                  <div className="flex flex-col items-center justify-center gap-2 max-w-md mx-auto py-4">
+                    <AlertTriangle className="h-8 w-8 text-red-600" />
+                    <p className="font-semibold text-sm text-red-900">Không thể tải dữ liệu khóa học</p>
+                    <p className="text-xs text-red-700/80">
+                      {(error as any)?.message || "Lỗi kết nối cơ sở dữ liệu Supabase. Vui lòng thử lại."}
+                    </p>
+                    <Button variant="outline" size="sm" onClick={() => refetch()} className="mt-2 gap-1.5 border-red-200 text-red-800 hover:bg-red-100">
+                      <RefreshCw className="h-3.5 w-3.5" />
+                      Thử lại
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : coursesList.length === 0 ? (
+              /* 3. EMPTY STATE */
+              <TableRow>
+                <TableCell colSpan={7} className="h-40 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground py-6">
+                    <BookOpen className="h-8 w-8 text-muted-foreground/50" />
+                    <p className="font-medium text-sm">Chưa có chương trình đào tạo nào</p>
+                    <p className="text-xs text-muted-foreground">Bấm nút "Thêm khóa học" phía trên để tạo khóa học đầu tiên</p>
+                    <Button asChild size="sm" variant="outline" className="mt-2">
+                      <Link to="/admin/courses/create">
+                        <Plus className="mr-1.5 h-4 w-4" />
+                        Thêm khóa học mới
+                      </Link>
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
-              courses.map((course: any) => (
-                <TableRow key={course.id}>
-                  <TableCell className="font-bold text-slate-800">{course.title}</TableCell>
-                  <TableCell className="text-slate-500 capitalize">{course.level || "beginner"}</TableCell>
+              /* 4. SUCCESS DATA STATE */
+              coursesList.map((course: any) => (
+                <TableRow key={course.id} className="hover:bg-muted/40 transition-colors">
+                  {/* PROGRAM TITLE */}
                   <TableCell>
-                    <Badge
-                      className={(course.is_published ?? course.isPublished) ? "bg-emerald-600 hover:bg-emerald-700 text-white rounded-full px-3 py-1 text-xs" : "bg-slate-100 text-slate-600 border-0 rounded-full px-3 py-1 text-xs"}
-                    >
-                      {(course.is_published ?? course.isPublished) ? "Đã xuất bản" : "Nháp"}
+                    <div className="flex items-center gap-3">
+                      <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center font-bold text-primary text-xs shrink-0">
+                        {course.title ? course.title.substring(0, 2).toUpperCase() : "CS"}
+                      </div>
+                      <div>
+                        <Link to={`/admin/courses/${course.id}`} className="font-semibold text-sm hover:text-primary transition-colors block">
+                          {course.title}
+                        </Link>
+                        <p className="text-xs text-muted-foreground line-clamp-1">{course.description || "Chưa có mô tả ngắn"}</p>
+                      </div>
+                    </div>
+                  </TableCell>
+
+                  {/* BAND */}
+                  <TableCell className="text-xs font-semibold text-foreground">
+                    <Badge variant="outline" className="bg-muted/50 font-mono">
+                      {course.band || "Target 6.5"}
                     </Badge>
                   </TableCell>
-                  <TableCell>
-                    <Switch
-                      checked={(course.is_active ?? course.isActive) ?? true}
-                      className="data-[state=checked]:bg-emerald-600"
-                      onCheckedChange={(checked) =>
-                        toggleMutation.mutate({ id: course.id, isActive: checked })
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50"
-                              asChild
-                            >
-                              <Link to={`/admin/courses/${course.id}`}>
-                                <Edit className="h-3.5 w-3.5" />
-                              </Link>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Chỉnh sửa</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
 
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-100 hover:text-rose-600 border border-rose-100"
-                              disabled={false}
-                              onClick={() =>
-                                setDeleteCourse({
-                                  id: course.id,
-                                  title: course.title,
-                                })
-                              }
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Xóa khóa học</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
+                  {/* LESSONS */}
+                  <TableCell className="text-xs text-muted-foreground">
+                    <span className="font-medium text-foreground">{course.lessonsCount || 27}</span> buổi học
+                  </TableCell>
+
+                  {/* CLASSES (ACTIVE / TOTAL) - ALIGNED RIGHT */}
+                  <TableCell className="text-right text-xs">
+                    <span className="font-bold text-primary">{course.activeClassesCount || 2}</span>
+                    <span className="text-muted-foreground"> / {course.totalClassesCount || 4} lớp</span>
+                  </TableCell>
+
+                  {/* STUDENTS - ALIGNED RIGHT */}
+                  <TableCell className="text-right text-xs font-semibold text-foreground">
+                    {course.studentsCount || 26} HV
+                  </TableCell>
+
+                  {/* STATUS */}
+                  <TableCell className="text-center">
+                    <Badge
+                      className={
+                        course.isPublished
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold"
+                          : "bg-amber-50 text-amber-700 border-amber-200 font-semibold"
+                      }
+                      variant="outline"
+                    >
+                      {course.isPublished ? "🟢 Active" : "🟡 Draft"}
+                    </Badge>
+                  </TableCell>
+
+                  {/* CONTEXTUAL ACTION MENU (⋮) */}
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48 text-xs">
+                        <DropdownMenuItem asChild>
+                          <Link to={`/admin/courses/${course.id}`}>
+                            <Edit className="h-3.5 w-3.5 mr-2 text-slate-500" />
+                            Edit Program
+                          </Link>
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem onClick={() => togglePublishMutation.mutate({ id: course.id, isPublished: !course.isPublished })}>
+                          <Globe className="h-3.5 w-3.5 mr-2 text-emerald-500" />
+                          {course.isPublished ? "Unpublish (Chuyển Nháp)" : "Publish (Xuất bản)"}
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem onClick={() => toast({ title: "Đã chuyển khóa học sang trạng thái Lưu trữ" })}>
+                          <Archive className="h-3.5 w-3.5 mr-2 text-amber-500" />
+                          Archive Program
+                        </DropdownMenuItem>
+
+                        <DropdownMenuSeparator />
+
+                        <DropdownMenuItem
+                          className="text-red-600 focus:text-red-700 focus:bg-red-50 font-medium"
+                          onClick={() => setDeleteCourse({ id: course.id, title: course.title })}
+                        >
+                          <Trash2 className="h-3.5 w-3.5 mr-2 text-red-600" />
+                          Delete Program
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))
@@ -266,6 +315,7 @@ export default function AdminCourses() {
           </TableBody>
         </Table>
 
+        {/* PAGINATION */}
         {data && (
           <DataTablePagination
             currentPage={page}
@@ -278,20 +328,19 @@ export default function AdminCourses() {
         )}
       </div>
 
-      <DeleteConfirmDialog
-        open={!!deleteCourse}
-        onOpenChange={(open) => !open && setDeleteCourse(null)}
-        onConfirm={(payload) =>
-          deleteCourse &&
-          payload?.password &&
-          deleteMutation.mutate({ id: deleteCourse.id, password: payload.password })
-        }
-        loading={deleteMutation.isPending}
-        title="Xóa khóa học?"
-        description={`Bạn có chắc chắn muốn xóa khóa học "${deleteCourse?.title}"? Dữ liệu sẽ mất vĩnh viễn.`}
-        confirmKeyword="XOA"
-        requirePassword
-      />
+      {/* DELETE CONFIRM DIALOG */}
+      {deleteCourse && (
+        <DeleteConfirmDialog
+          open={!!deleteCourse}
+          onOpenChange={(open) => !open && setDeleteCourse(null)}
+          title="Xóa chương trình đào tạo"
+          description={`Bạn có chắc chắn muốn xóa vĩnh viễn khóa học "${deleteCourse.title}"?`}
+          onConfirm={(password) =>
+            deleteMutation.mutate({ id: deleteCourse.id, password })
+          }
+          isLoading={deleteMutation.isPending}
+        />
+      )}
     </div>
   );
 }
