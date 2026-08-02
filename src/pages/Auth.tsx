@@ -152,9 +152,6 @@ export default function Auth() {
             <p className="text-sm font-semibold tracking-tight text-slate-700">
               {settings.authTagline}
             </p>
-            <p className="text-xs text-slate-500 leading-relaxed max-w-md">
-              Không gian học tập được thiết kế cho từng buổi học trên lớp.
-            </p>
           </div>
         </div>
 
@@ -197,9 +194,11 @@ export default function Auth() {
               {/* Panorama Learning Journey Image Container */}
               <div className="relative rounded-xl overflow-hidden border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all bg-slate-50">
                 <img
-                  src="/your-journey.png"
+                  src="/your-journey.webp"
                   alt="ARIS IELTS Learning Journey"
                   className="w-full h-auto object-contain rounded-xl"
+                  loading="eager"
+                  decoding="async"
                 />
               </div>
             </div>
