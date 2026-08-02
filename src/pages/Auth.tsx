@@ -192,74 +192,20 @@ export default function Auth() {
               </div>
             </div>
 
-            {/* 2. Your Journey Section - Learning Evolution Journey */}
-            <div className="pt-2">
-              <div className="flex items-center justify-between mb-5">
+            {/* 2. Your Journey Section - High Impact Panorama Learning Evolution */}
+            <div className="pt-2 space-y-3">
+              <div className="flex items-center justify-between">
                 <h4 className="font-semibold text-slate-800 text-sm tracking-tight">Your Journey</h4>
                 <span className="text-[11px] font-mono px-2.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200/60 font-medium">5 Levels</span>
               </div>
 
-              {/* Connected Step Progression Timeline (Starter -> Leader) */}
-              <div className="relative px-2 pt-2 pb-3">
-                {/* Clean subtle light gray connector line perfectly centered through w-6 h-6 dots (top 20px) */}
-                <div className="absolute top-[20px] left-[10%] right-[10%] h-0.5 bg-slate-200 z-0" />
-
-                <div className="grid grid-cols-5 gap-2 relative z-10 text-center">
-                  {/* Step 1 */}
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-pink-500 border-2 border-white ring-2 ring-pink-100 flex items-center justify-center text-[10px] text-white font-bold shrink-0 shadow-xs">
-                      ●
-                    </div>
-                    <div>
-                      <div className="font-bold text-xs text-slate-800">Starter</div>
-                      <div className="text-[11px] font-mono text-pink-600 font-semibold mt-0.5">3.0</div>
-                    </div>
-                  </div>
-
-                  {/* Step 2 */}
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-sky-500 border-2 border-white ring-2 ring-sky-100 flex items-center justify-center text-[10px] text-white font-bold shrink-0 shadow-xs">
-                      ●
-                    </div>
-                    <div>
-                      <div className="font-bold text-xs text-slate-800">Dreamer</div>
-                      <div className="text-[11px] font-mono text-sky-600 font-semibold mt-0.5">4.0</div>
-                    </div>
-                  </div>
-
-                  {/* Step 3 */}
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-amber-500 border-2 border-white ring-2 ring-amber-100 flex items-center justify-center text-[10px] text-white font-bold shrink-0 shadow-xs">
-                      ●
-                    </div>
-                    <div>
-                      <div className="font-bold text-xs text-slate-800">Builder</div>
-                      <div className="text-[11px] font-mono text-amber-600 font-semibold mt-0.5">5.0</div>
-                    </div>
-                  </div>
-
-                  {/* Step 4 */}
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-emerald-500 border-2 border-white ring-2 ring-emerald-100 flex items-center justify-center text-[10px] text-white font-bold shrink-0 shadow-xs">
-                      ●
-                    </div>
-                    <div>
-                      <div className="font-bold text-xs text-slate-800">Master</div>
-                      <div className="text-[11px] font-mono text-emerald-600 font-semibold mt-0.5">6.0</div>
-                    </div>
-                  </div>
-
-                  {/* Step 5 */}
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-red-600 border-2 border-white ring-2 ring-red-100 flex items-center justify-center text-[10px] text-white font-bold shrink-0 shadow-xs">
-                      ●
-                    </div>
-                    <div>
-                      <div className="font-bold text-xs text-slate-800">Leader</div>
-                      <div className="text-[11px] font-mono text-red-600 font-semibold mt-0.5">6.5+</div>
-                    </div>
-                  </div>
-                </div>
+              {/* Panorama Learning Journey Image Container */}
+              <div className="relative rounded-xl overflow-hidden border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all bg-slate-50">
+                <img
+                  src="/your-journey.png"
+                  alt="ARIS IELTS Learning Journey"
+                  className="w-full h-auto object-contain rounded-xl"
+                />
               </div>
             </div>
           </div>
