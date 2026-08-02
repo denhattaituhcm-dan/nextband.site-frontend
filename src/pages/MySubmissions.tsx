@@ -352,16 +352,11 @@ export default function MySubmissions() {
       ) : (
         <div className="text-center py-16 border rounded-2xl bg-muted/30">
           <ClipboardList className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-          <h3 className="text-lg font-medium text-foreground mb-2">
+          <h3 className="text-lg font-medium text-foreground mb-6">
             {debouncedSearch || statusFilter !== "all"
               ? "Không tìm thấy bài tập nào phù hợp"
               : "Bạn chưa làm bài tập nào"}
           </h3>
-          <p className="text-muted-foreground mb-6">
-            {debouncedSearch || statusFilter !== "all"
-              ? "Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm"
-              : "Hãy vào khóa học và bắt đầu làm bài tập đầu tiên của bạn"}
-          </p>
           {!debouncedSearch && statusFilter === "all" && (
             <Button asChild>
               <Link to="/">Khám phá khóa học</Link>

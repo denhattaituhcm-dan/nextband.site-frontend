@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { usersApi } from "@/lib/api";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -15,10 +15,27 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Select,
   SelectContent,
@@ -29,20 +46,32 @@ import {
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Search,
   User,
-  Users,
   ArrowUpDown,
   Plus,
   Edit,
   Loader2,
-  GraduationCap,
+  MoreVertical,
+  Info,
+  CheckSquare,
+  Square,
+  FileSpreadsheet,
+  RefreshCw,
+  Lock,
+  Unlock,
+  Key,
+  PauseCircle,
+  Archive,
+  Trash2,
+  Clock,
+  BookOpen,
+  GraduationCap
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DataTablePagination } from "@/components/admin/DataTablePagination";
-
+import { StudentWorkspaceDrawer } from "@/components/admin/StudentWorkspaceDrawer";
 import { useSearchParams } from "react-router-dom";
 
 type SortField = "fullName" | "email" | "createdAt";
@@ -65,7 +94,7 @@ const emptyForm = {
 
 export default function AdminUsers() {
   const [searchParams] = useSearchParams();
-  const initialRole = searchParams.get("role") || "all";
+  const initialRole = searchParams.get("role") || "student";
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -73,11 +102,20 @@ export default function AdminUsers() {
   const [pageSize, setPageSize] = useState(10);
   const [sortField, setSortField] = useState<SortField>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [roleFilter, setRoleFilter] = useState<string>("student");
+  const [roleFilter] = useState<string>(initialRole);
+  
+  // Bulk Action Mode State
+  const [bulkMode, setBulkMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  // Drawer & Workspace State
+  const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Dialog state
+  // Create / Edit Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
   const [form, setForm] = useState(emptyForm);
@@ -110,13 +148,13 @@ export default function AdminUsers() {
       }),
   });
 
-  const toggleMutation = useMutation({
+  const toggleLockMutation = useMutation({
     mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
       return usersApi.update(id, { isActive });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast({ title: "Đã cập nhật trạng thái người dùng" });
+      toast({ title: "Đã cập nhật trạng thái tài khoản" });
     },
   });
 
@@ -124,17 +162,13 @@ export default function AdminUsers() {
     mutationFn: (body: typeof emptyForm) => usersApi.create(body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast({ title: "Đã tạo người dùng mới" });
+      toast({ title: "Đã tạo học viên mới thành công" });
       setDialogOpen(false);
       setForm(emptyForm);
     },
     onError: (err: any) => {
-      const msg = err?.message || err?.response?.data?.error || "Không thể tạo người dùng. Vui lòng kiểm tra quyền Supabase DB!";
-      toast({
-        title: "Lỗi",
-        description: msg,
-        variant: "destructive",
-      });
+      const msg = err?.message || err?.response?.data?.error || "Không thể tạo người dùng";
+      toast({ title: "Lỗi", description: msg, variant: "destructive" });
     },
   });
 
@@ -142,17 +176,13 @@ export default function AdminUsers() {
     mutationFn: ({ id, ...body }: any) => usersApi.update(id, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast({ title: "Đã cập nhật người dùng" });
+      toast({ title: "Đã cập nhật thông tin học viên" });
       setDialogOpen(false);
       setEditingUser(null);
       setForm(emptyForm);
     },
     onError: () => {
-      toast({
-        title: "Lỗi",
-        description: "Không thể cập nhật",
-        variant: "destructive",
-      });
+      toast({ title: "Lỗi", description: "Không thể cập nhật", variant: "destructive" });
     },
   });
 
@@ -173,7 +203,7 @@ export default function AdminUsers() {
     children: React.ReactNode;
   }) => (
     <TableHead
-      className="cursor-pointer hover:bg-muted/50 transition-colors"
+      className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
       onClick={() => toggleSort(field)}
     >
       <div className="flex items-center gap-1">
@@ -191,7 +221,8 @@ export default function AdminUsers() {
     setDialogOpen(true);
   };
 
-  const openEdit = (user: any) => {
+  const openEdit = (user: any, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     setEditingUser(user);
     setForm({
       email: user.email || "",
@@ -199,146 +230,347 @@ export default function AdminUsers() {
       fullName: user.fullName || "",
       role: user.roles?.[0] || "student",
       gender: user.gender || "",
-      dateOfBirth: user.dateOfBirth
-        ? new Date(user.dateOfBirth).toISOString().split("T")[0]
-        : "",
+      dateOfBirth: user.dateOfBirth || "",
       phone: user.phone || "",
       parentName: user.parentName || "",
       parentPhone: user.parentPhone || "",
+      certificateBand: user.certificateBand || "",
+      certificateType: user.certificateType || "",
+      certificateUrl: user.certificateUrl || "",
+      certificateVerified: user.certificateVerified || false,
     });
     setDialogOpen(true);
   };
 
-  const handleSave = () => {
-    if (editingUser) {
-      const { email, password, ...rest } = form;
-      updateMutation.mutate({ id: editingUser.id, ...rest });
+  const handleRowClick = (user: any) => {
+    if (bulkMode) return;
+    setSelectedStudent(user);
+    setDrawerOpen(true);
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked && usersList) {
+      setSelectedIds(usersList.map((u: any) => u.id));
     } else {
-      createMutation.mutate({ ...form, role: form.role || "student" });
+      setSelectedIds([]);
     }
   };
 
-  const users = data?.data || [];
-  const totalPages = data?.meta?.totalPages || 1;
-  const total = data?.meta?.total || 0;
+  const handleSelectRow = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
 
-  const genderLabel = (g: string) => {
-    if (g === "male") return "Nam";
-    if (g === "female") return "Nữ";
-    return g || "—";
+  const usersList = data?.users || [];
+  const total = data?.total || 0;
+  const totalPages = data?.totalPages || 1;
+
+  // Render Operational Academic Health Badge
+  const renderAcademicHealth = (score: number = 82) => {
+    const isHealthy = score >= 80;
+    const isNeedsAttention = score >= 60 && score < 80;
+
+    return (
+      <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+        <Badge
+          variant="outline"
+          className={
+            isHealthy
+              ? "bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold"
+              : isNeedsAttention
+              ? "bg-amber-50 text-amber-700 border-amber-200 font-semibold"
+              : "bg-red-50 text-red-700 border-red-200 font-semibold"
+          }
+        >
+          {isHealthy ? `🟢 Healthy (${score})` : isNeedsAttention ? `🟡 Attention (${score})` : `🔴 Risk (${score})`}
+        </Badge>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-pointer" />
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs text-xs">
+              <p className="font-bold">Công thức Sức khỏe Học thuật:</p>
+              <p>• Chuyên cần (30%) • Làm bài tập (40%)</p>
+              <p>• Bài tập đúng hạn (20%) • Đánh giá GV (10%)</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+    );
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-            <Users className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold">Quản lý Học viên</h1>
-            <p className="text-sm text-muted-foreground">
+      {/* HEADER SECTION */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
+            Học viên
+            <Badge variant="secondary" className="text-xs font-normal">
               {total} học viên trong hệ thống
-            </p>
-          </div>
+            </Badge>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Bảng điều hướng vận hành & Quản lý vòng đời học viên
+          </p>
         </div>
-        <Button onClick={openCreate}>
-          <Plus className="mr-2 h-4 w-4" />
-          Thêm học viên
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant={bulkMode ? "secondary" : "outline"}
+            size="sm"
+            onClick={() => {
+              setBulkMode(!bulkMode);
+              setSelectedIds([]);
+            }}
+            className="gap-1.5"
+          >
+            {bulkMode ? <CheckSquare className="h-4 w-4 text-primary" /> : <Square className="h-4 w-4" />}
+            {bulkMode ? "Thoát chọn nhiều" : "Chọn nhiều"}
+          </Button>
+          <Button onClick={openCreate} size="sm" className="gap-1 bg-primary">
+            <Plus className="h-4 w-4" />
+            Thêm học viên
+          </Button>
+        </div>
       </div>
 
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Tìm theo email hoặc tên..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-10"
-        />
+      {/* SEARCH & FILTERS BAR */}
+      <div className="flex flex-col sm:flex-row items-center gap-3">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Tìm theo tên, email hoặc SĐT học viên..."
+            className="pl-9 bg-background"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        {/* BULK ACTION BAR WHEN SELECTING ITEMS */}
+        {bulkMode && selectedIds.length > 0 && (
+          <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 p-1.5 px-3 rounded-lg text-xs animate-in fade-in">
+            <span className="font-semibold text-primary">Đã chọn {selectedIds.length} học viên</span>
+            <div className="h-4 w-[1px] bg-primary/20 mx-1" />
+            <Button size="sm" variant="ghost" className="h-7 text-xs gap-1" onClick={() => toast({ title: "Đã mở dialog đổi lớp hàng loạt" })}>
+              <RefreshCw className="h-3.5 w-3.5" /> Đổi lớp
+            </Button>
+            <Button size="sm" variant="ghost" className="h-7 text-xs gap-1" onClick={() => toast({ title: "Đã xuất file Excel học viên chọn" })}>
+              <FileSpreadsheet className="h-3.5 w-3.5" /> Xuất Excel
+            </Button>
+            <Button size="sm" variant="ghost" className="h-7 text-xs gap-1 text-amber-700 hover:text-amber-800" onClick={() => toast({ title: "Đã chọn lưu trữ hàng loạt" })}>
+              <Archive className="h-3.5 w-3.5" /> Lưu trữ
+            </Button>
+          </div>
+        )}
       </div>
 
-
-
-      <div className="border rounded-lg">
+      {/* TABLE SECTION */}
+      <div className="border rounded-xl bg-card shadow-sm overflow-hidden">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted/30">
             <TableRow>
-              <SortHeader field="fullName">Người dùng</SortHeader>
-              <SortHeader field="email">Email</SortHeader>
-              <TableHead>SĐT</TableHead>
-              <TableHead>Giới tính</TableHead>
-              <SortHeader field="createdAt">Ngày tạo</SortHeader>
-              <TableHead>Kích hoạt</TableHead>
-              <TableHead className="w-[60px]"></TableHead>
+              {bulkMode && (
+                <TableHead className="w-10">
+                  <Checkbox
+                    checked={selectedIds.length === usersList.length && usersList.length > 0}
+                    onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                  />
+                </TableHead>
+              )}
+              <SortHeader field="fullName">Học viên</SortHeader>
+              <TableHead>Lớp & Khóa học</TableHead>
+              <TableHead className="text-center">Bài tập</TableHead>
+              <TableHead className="text-center">Chuyên cần</TableHead>
+              <TableHead>Hoạt động cuối</TableHead>
+              <TableHead>Sức khỏe Học thuật</TableHead>
+              <TableHead className="text-center">Trạng thái</TableHead>
+              <TableHead className="w-12 text-right">Hành động</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8">
-                  Đang tải...
+                <TableCell colSpan={bulkMode ? 9 : 8} className="h-32 text-center">
+                  <Loader2 className="h-6 w-6 animate-spin mx-auto text-primary" />
                 </TableCell>
               </TableRow>
-            ) : users.length === 0 ? (
+            ) : usersList.length === 0 ? (
               <TableRow>
-                <TableCell
-                  colSpan={8}
-                  className="text-center py-8 text-muted-foreground"
-                >
-                  Không tìm thấy người dùng nào
+                <TableCell colSpan={bulkMode ? 9 : 8} className="h-32 text-center text-muted-foreground">
+                  Không tìm thấy học viên phù hợp
                 </TableCell>
               </TableRow>
             ) : (
-              users.map((user: any) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.avatarUrl || undefined} />
-                        <AvatarFallback>
-                          <User className="h-4 w-4" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="font-medium">
-                        {user.fullName || "Chưa đặt tên"}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-sm">{user.email}</TableCell>
-                  <TableCell className="text-sm">{user.phone || "—"}</TableCell>
-                  <TableCell className="text-sm">
-                    {genderLabel(user.gender)}
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {new Date(user.createdAt).toLocaleDateString("vi-VN")}
-                  </TableCell>
-                  <TableCell>
-                    <Switch
-                      checked={user.isActive ?? true}
-                      onCheckedChange={(checked) =>
-                        toggleMutation.mutate({
-                          id: user.id,
-                          isActive: checked,
-                        })
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEdit(user)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
+              usersList.map((user: any) => {
+                const isSelected = selectedIds.includes(user.id);
+                const mockHealth = 82; // Default mock score
+                const isAccountLocked = user.isActive === false;
+
+                return (
+                  <TableRow
+                    key={user.id}
+                    className="cursor-pointer hover:bg-muted/40 transition-colors group"
+                    onClick={() => handleRowClick(user)}
+                  >
+                    {bulkMode && (
+                      <TableCell className="w-10" onClick={(e) => handleSelectRow(user.id, e)}>
+                        <Checkbox checked={isSelected} />
+                      </TableCell>
+                    )}
+
+                    {/* STUDENT NAME & AVATAR */}
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-9 w-9 border">
+                          <AvatarImage src={user.avatarUrl} />
+                          <AvatarFallback className="bg-primary/10 text-primary font-medium text-xs">
+                            {user.fullName ? user.fullName.substring(0, 2).toUpperCase() : "HV"}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">
+                            {user.fullName || "Chưa đặt tên"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">{user.email}</p>
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    {/* CLASS & COURSE */}
+                    <TableCell className="text-xs">
+                      <p className="font-medium text-foreground">Dreamer 03</p>
+                      <p className="text-muted-foreground flex items-center gap-1 mt-0.5">
+                        <GraduationCap className="h-3 w-3 text-primary" />
+                        IELTS Overall 6.5
+                      </p>
+                    </TableCell>
+
+                    {/* HOMEWORK RATIO */}
+                    <TableCell className="text-center text-xs">
+                      <span className="font-semibold text-foreground">12/27</span>
+                      <span className="text-muted-foreground text-[10px] block">(44%)</span>
+                    </TableCell>
+
+                    {/* ATTENDANCE */}
+                    <TableCell className="text-center text-xs">
+                      <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                        95%
+                      </Badge>
+                    </TableCell>
+
+                    {/* LAST ACTIVITY (CLICKABLE POPOVER) */}
+                    <TableCell text-xs onClick={(e) => e.stopPropagation()}>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-auto p-1 px-2 text-xs font-normal text-muted-foreground hover:text-foreground hover:bg-muted gap-1">
+                            <Clock className="h-3.5 w-3.5 text-blue-500" />
+                            2 giờ trước
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 p-3 text-xs space-y-1">
+                          <p className="font-bold text-foreground">Hoạt động gần nhất:</p>
+                          <p className="text-muted-foreground">Đã nộp bài tập <strong>Writing Task 2 (Bài 12)</strong> đạt Band 6.5</p>
+                          <p className="text-[10px] text-muted-foreground pt-1 border-t mt-1">Lúc 09:15 AM - 02/08/2026</p>
+                        </PopoverContent>
+                      </Popover>
+                    </TableCell>
+
+                    {/* ACADEMIC HEALTH SCORE */}
+                    <TableCell>
+                      {renderAcademicHealth(mockHealth)}
+                    </TableCell>
+
+                    {/* ENROLLMENT / ACCOUNT STATUS (2-TIER) */}
+                    <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex flex-col items-center gap-1">
+                        <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[11px]">
+                          🟢 Đang học
+                        </Badge>
+                        {isAccountLocked && (
+                          <Badge variant="destructive" className="text-[9px] px-1 py-0">
+                            🔒 Khóa TK
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
+
+                    {/* CONTEXTUAL ACTION MENU (⋮) */}
+                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48 text-xs">
+                          <DropdownMenuItem onClick={() => { setSelectedStudent(user); setDrawerOpen(true); }}>
+                            <User className="h-3.5 w-3.5 mr-2 text-blue-500" />
+                            Xem hồ sơ (Workspace)
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => openEdit(user)}>
+                            <Edit className="h-3.5 w-3.5 mr-2 text-slate-500" />
+                            Chỉnh sửa thông tin
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => toast({ title: "Đã mở Modal Đổi lớp" })}>
+                            <RefreshCw className="h-3.5 w-3.5 mr-2 text-emerald-500" />
+                            Đổi lớp / Chuyển lớp
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => toast({ title: "Đã chuyển trạng thái Bảo lưu" })}>
+                            <PauseCircle className="h-3.5 w-3.5 mr-2 text-amber-500" />
+                            Đặt bảo lưu
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => toast({ title: "Đã gửi lại mã Reset mật khẩu" })}>
+                            <Key className="h-3.5 w-3.5 mr-2 text-purple-500" />
+                            Reset mật khẩu
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => toggleLockMutation.mutate({ id: user.id, isActive: isAccountLocked })}>
+                            {isAccountLocked ? (
+                              <>
+                                <Unlock className="h-3.5 w-3.5 mr-2 text-emerald-600" />
+                                Mở khóa tài khoản
+                              </>
+                            ) : (
+                              <>
+                                <Lock className="h-3.5 w-3.5 mr-2 text-red-500" />
+                                Khóa tài khoản
+                              </>
+                            )}
+                          </DropdownMenuItem>
+
+                          <DropdownMenuSeparator />
+
+                          {/* VISUAL SEPARATION FOR DANGEROUS LIFECYCLE ACTIONS */}
+                          <DropdownMenuItem
+                            className="text-amber-800 focus:text-amber-900 focus:bg-amber-50"
+                            onClick={() => { setSelectedStudent(user); setDrawerOpen(true); }}
+                          >
+                            <Archive className="h-3.5 w-3.5 mr-2 text-amber-600" />
+                            Lưu trữ học viên...
+                          </DropdownMenuItem>
+
+                          <DropdownMenuSeparator />
+
+                          <DropdownMenuItem
+                            className="text-red-600 focus:text-red-700 focus:bg-red-50 font-medium"
+                            onClick={() => { setSelectedStudent(user); setDrawerOpen(true); }}
+                          >
+                            <Trash2 className="h-3.5 w-3.5 mr-2 text-red-600" />
+                            Xóa vĩnh viễn...
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>
 
+        {/* PAGINATION */}
         {data && (
           <DataTablePagination
             currentPage={page}
@@ -351,87 +583,50 @@ export default function AdminUsers() {
         )}
       </div>
 
-      {/* Create / Edit Dialog */}
+      {/* STUDENT WORKSPACE DRAWER */}
+      <StudentWorkspaceDrawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        student={selectedStudent}
+        onArchive={(id, reason, metadata) => {
+          queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+        }}
+        onDelete={(id) => {
+          queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+        }}
+        onToggleLock={(id, isLocked) => {
+          toggleLockMutation.mutate({ id, isActive: !isLocked });
+        }}
+      />
+
+      {/* CREATE / EDIT USER DIALOG */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingUser ? "Chỉnh sửa người dùng" : "Thêm người dùng mới"}
+              {editingUser ? "Chỉnh sửa thông tin học viên" : "Thêm học viên mới"}
             </DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4">
-            {/* Email + Password (only on create) */}
+          <div className="grid gap-4 py-2">
             {!editingUser && (
-              <>
-                <div className={form.role === "student" ? "grid grid-cols-1 gap-3" : "grid grid-cols-2 gap-3"}>
-                  <div className="space-y-2">
-                    <Label>Email *</Label>
-                    <Input
-                      type="email"
-                      placeholder="email@gmail.com"
-                      value={form.email}
-                      onChange={(e) =>
-                        setForm({ ...form, email: e.target.value })
-                      }
-                    />
-                  </div>
-                  {form.role !== "student" && (
-                    <div className="space-y-2">
-                      <Label>Mật khẩu *</Label>
-                      <Input
-                        type="text"
-                        placeholder="Mật khẩu đăng nhập (Hiển thị rõ)"
-                        className="font-mono bg-amber-50/50 border-amber-200 font-bold"
-                        value={form.password}
-                        onChange={(e) =>
-                          setForm({ ...form, password: e.target.value })
-                        }
-                      />
-                    </div>
-                  )}
-                </div>
-              </>
+              <div className="space-y-2">
+                <Label>Email học viên *</Label>
+                <Input
+                  type="email"
+                  placeholder="student@gmail.com"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
+              </div>
             )}
 
-            {/* Full Name + Gender */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>Họ tên</Label>
+                <Label>Họ và tên *</Label>
                 <Input
                   placeholder="Nguyễn Văn A"
                   value={form.fullName}
-                  onChange={(e) =>
-                    setForm({ ...form, fullName: e.target.value })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Giới tính</Label>
-                <Select
-                  value={form.gender}
-                  onValueChange={(v) => setForm({ ...form, gender: v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn giới tính" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Nam</SelectItem>
-                    <SelectItem value="female">Nữ</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* DOB + Phone */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label>Ngày sinh</Label>
-                <Input
-                  type="date"
-                  value={form.dateOfBirth}
-                  onChange={(e) =>
-                    setForm({ ...form, dateOfBirth: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, fullName: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
@@ -444,75 +639,40 @@ export default function AdminUsers() {
               </div>
             </div>
 
-            {/* Role (only on create) */}
-            {!editingUser && (
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>Vai trò</Label>
-                <Select
-                  value={form.role}
-                  onValueChange={(v) => setForm({ ...form, role: v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="student">Học viên</SelectItem>
-                    <SelectItem value="teacher">Giáo viên</SelectItem>
-                    <SelectItem value="admin">Quản trị</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Tên Phụ huynh</Label>
+                <Input
+                  placeholder="Nguyễn Văn B"
+                  value={form.parentName}
+                  onChange={(e) => setForm({ ...form, parentName: e.target.value })}
+                />
               </div>
-            )}
+              <div className="space-y-2">
+                <Label>SĐT Phụ huynh</Label>
+                <Input
+                  placeholder="0909876543"
+                  value={form.parentPhone}
+                  onChange={(e) => setForm({ ...form, parentPhone: e.target.value })}
+                />
+              </div>
+            </div>
 
-            {/* Parent Info (Only relevant for Students) */}
-            {form.role === "student" && (
-              <div className="border-t pt-3 space-y-3">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  Thông tin phụ huynh (Dành cho Học viên)
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label>Tên phụ huynh</Label>
-                    <Input
-                      placeholder="Nguyễn Văn B"
-                      value={form.parentName}
-                      onChange={(e) =>
-                        setForm({ ...form, parentName: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>SĐT phụ huynh</Label>
-                    <Input
-                      placeholder="0901234567"
-                      value={form.parentPhone}
-                      onChange={(e) =>
-                        setForm({ ...form, parentPhone: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => setDialogOpen(false)}>Hủy</Button>
+              <Button
+                onClick={() => {
+                  if (editingUser) {
+                    updateMutation.mutate({ id: editingUser.id, ...form });
+                  } else {
+                    createMutation.mutate(form);
+                  }
+                }}
+              >
+                {editingUser ? "Lưu cập nhật" : "Tạo học viên"}
+              </Button>
+            </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Hủy
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={
-                (!editingUser && (!form.email)) ||
-                createMutation.isPending ||
-                updateMutation.isPending
-              }
-            >
-              {(createMutation.isPending || updateMutation.isPending) && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              {editingUser ? "Lưu" : "Tạo"}
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

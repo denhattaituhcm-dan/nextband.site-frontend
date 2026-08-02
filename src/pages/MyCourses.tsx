@@ -55,12 +55,9 @@ export default function MyCourses() {
       ) : (
         <div className="text-center py-16 border rounded-2xl bg-muted/30">
           <GraduationCap className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-          <h3 className="text-lg font-medium text-foreground mb-2">
+          <h3 className="text-lg font-medium text-foreground mb-6">
             Bạn chưa đăng ký khóa học nào
           </h3>
-          <p className="text-muted-foreground mb-6">
-            Khám phá các khóa học IELTS chất lượng cao của chúng tôi
-          </p>
           <Button asChild>
             <Link to="/">
               <BookOpen className="mr-2 h-4 w-4" />
