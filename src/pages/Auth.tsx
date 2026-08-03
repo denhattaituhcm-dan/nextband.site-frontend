@@ -155,52 +155,48 @@ export default function Auth() {
           </div>
         </div>
 
-        {/* 1. Left side Primary Content Card (Apple style: White background, soft ambient shadow, no heavy borders) */}
-        <div className="relative z-10 w-full max-w-xl my-auto py-3">
-          <div className="p-6 sm:p-7 rounded-2xl bg-white shadow-[0_8px_24px_rgba(15,23,42,0.04)] space-y-5">
-            {/* 3. Feature Pillars - Reduced padding, height (~15%), zero heavy shadow */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex items-center gap-3 p-2.5 rounded-xl bg-sky-50/50 border border-sky-100/60">
-                <div className="rounded-lg bg-sky-500/10 p-2 border border-sky-500/15 shrink-0">
-                  <GraduationCap className="h-4.5 w-4.5 text-sky-600" />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="font-semibold text-slate-800 text-xs sm:text-sm tracking-tight truncate">
-                    Learning Workspace
-                  </h3>
-                  <p className="text-[11px] text-slate-500 truncate">
-                    Lộ trình IELTS chuẩn
-                  </p>
-                </div>
+        {/* Left side Primary Content (Whitespace as layout, no outer card frame) */}
+        <div className="relative z-10 w-full max-w-xl my-auto py-3 space-y-6">
+          {/* Feature Pillars - Lightweight with subtle shadow, ~10-15% opacity border */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/15 dark:border-slate-800/20 shadow-sm">
+              <div className="rounded-lg bg-sky-500/10 p-2 shrink-0">
+                <GraduationCap className="h-4.5 w-4.5 text-sky-600" />
               </div>
-
-              <div className="flex items-center gap-3 p-2.5 rounded-xl bg-indigo-50/50 border border-indigo-100/60">
-                <div className="rounded-lg bg-indigo-500/10 p-2 border border-indigo-500/15 shrink-0">
-                  <TrendingUp className="h-4.5 w-4.5 text-indigo-600" />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="font-semibold text-slate-800 text-xs sm:text-sm tracking-tight truncate">
-                    Track Progress
-                  </h3>
-                  <p className="text-[11px] text-slate-500 truncate">
-                    Theo dõi tiến độ
-                  </p>
-                </div>
+              <div className="min-w-0">
+                <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-sm tracking-tight truncate">
+                  Learning Workspace
+                </h3>
+                <p className="text-[11px] text-slate-500 truncate">
+                  Lộ trình IELTS chuẩn
+                </p>
               </div>
             </div>
 
-            {/* 2 & 4. Direct Large Panorama Illustration (No extra card frame, occupying ~90%+ width) */}
-            <div className="pt-1">
-              <div className="relative w-full rounded-xl overflow-hidden">
-                <img
-                  src="/your-journey.webp"
-                  alt="ARIS IELTS Learning Journey"
-                  className="w-full h-auto object-contain rounded-xl"
-                  loading="eager"
-                  decoding="async"
-                />
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/15 dark:border-slate-800/20 shadow-sm">
+              <div className="rounded-lg bg-indigo-500/10 p-2 shrink-0">
+                <TrendingUp className="h-4.5 w-4.5 text-indigo-600" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-sm tracking-tight truncate">
+                  Track Progress
+                </h3>
+                <p className="text-[11px] text-slate-500 truncate">
+                  Theo dõi tiến độ
+                </p>
               </div>
             </div>
+          </div>
+
+          {/* Hero Illustration directly with rounded-3xl corners (no encapsulating card) */}
+          <div className="w-full rounded-[24px] overflow-hidden">
+            <img
+              src="/your-journey.webp"
+              alt="ARIS IELTS Learning Journey"
+              className="w-full h-auto object-contain rounded-[24px]"
+              loading="eager"
+              decoding="async"
+            />
           </div>
         </div>
 
@@ -229,28 +225,26 @@ export default function Auth() {
 
       {/* Right side - Focal Point Student Login Workspace Form */}
       <div className="flex-1 flex items-center justify-center px-6 lg:px-12 py-6 lg:py-8 z-10">
-        {/* 6. Light Breathing Card (Enlarged width max-w-[520px]) */}
+        {/* 1. Login Card (Kept as focal point) */}
         <Card className="w-full max-w-[520px] border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] rounded-2xl bg-white dark:bg-slate-900 p-7 sm:p-8">
           <CardHeader className="space-y-1.5 text-center p-0 pb-5">
             <div className="lg:hidden flex items-center justify-center gap-2 mb-3">
               <SiteLogo alt="ARIS IELTS Logo" className="max-h-9 w-auto object-contain" />
             </div>
-            {/* 10. Title font-weight 700 instead of 800 */}
             <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
               Đăng nhập
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-5 p-0">
-            {/* 7 & 10. Google Login Primary Entry (DÀNH CHO HỌC VIÊN font đậm hơn) */}
-            <div className="space-y-3 p-4 sm:p-5 rounded-2xl bg-sky-50/50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900/30">
-              <div className="text-xs font-bold tracking-wider text-sky-800 dark:text-sky-300 uppercase text-center mb-1">
+          <CardContent className="space-y-6 p-0">
+            {/* 2. DÀNH CHO HỌC VIÊN + Google Button (No background container box, clean whitespace) */}
+            <div className="space-y-3">
+              <div className="text-xs font-bold tracking-wider text-sky-800 dark:text-sky-300 uppercase text-center">
                 🎓 DÀNH CHO HỌC VIÊN
               </div>
-              {/* 5. Google Button: Height h-11 border-radius rounded-xl, light hover */}
               <Button
                 type="button"
                 variant="outline"
-                className="w-full flex items-center justify-center gap-3 border-sky-200/90 dark:border-sky-800 bg-white dark:bg-slate-900 h-11 rounded-xl px-4 text-sm font-semibold hover:bg-sky-50/80 hover:border-sky-300 dark:hover:bg-sky-900/40 text-slate-800 dark:text-slate-200 shadow-xs transition-all duration-150 active:scale-[0.99]"
+                className="w-full flex items-center justify-center gap-3 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 h-11 rounded-xl px-4 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-800 dark:text-slate-200 shadow-xs transition-all duration-150 active:scale-[0.99]"
                 onClick={async () => {
                   try {
                     setIsLoading(true);
@@ -291,8 +285,8 @@ export default function Auth() {
               </p>
             </div>
 
-            {/* 6. Shortened Divider: "Giáo viên & Quản trị" */}
-            <div className="relative my-3">
+            {/* Divider */}
+            <div className="relative my-2">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-slate-200 dark:border-slate-800" />
               </div>
@@ -303,8 +297,8 @@ export default function Auth() {
               </div>
             </div>
 
-            {/* 7. Secondary Form with clean line icons (Mail & Lock) */}
-            <form onSubmit={handleSignIn} className="space-y-4 p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60">
+            {/* 3. Teacher & Admin Form (Removed background container box) */}
+            <form onSubmit={handleSignIn} className="space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="login-email" className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                   <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0" />
