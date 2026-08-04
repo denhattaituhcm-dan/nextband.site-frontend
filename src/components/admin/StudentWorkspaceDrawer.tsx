@@ -115,7 +115,6 @@ export function StudentWorkspaceDrawer({
     onDelete(student.id);
     setDeleteDialogOpen(false);
     onOpenChange(false);
-    toast({ title: "Đã xóa vĩnh viễn dữ liệu học viên", variant: "destructive" });
   };
 
   return (
