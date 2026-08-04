@@ -186,6 +186,19 @@ export default function AdminUsers() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => usersApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      toast({ title: "Đã xóa vĩnh viễn dữ liệu học viên" });
+    },
+    onError: (err: any) => {
+      const msg = err?.message || err?.response?.data?.error || "Không thể xóa dữ liệu học viên";
+      toast({ title: "Lỗi", description: msg, variant: "destructive" });
+    },
+  });
+
+
   const toggleSort = (field: SortField) => {
     if (sortField === field) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -594,7 +607,7 @@ export default function AdminUsers() {
           queryClient.invalidateQueries({ queryKey: ["admin-users"] });
         }}
         onDelete={(id) => {
-          queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+          deleteMutation.mutate(id);
         }}
         onToggleLock={(id, isLocked) => {
           toggleLockMutation.mutate({ id, isActive: !isLocked });
