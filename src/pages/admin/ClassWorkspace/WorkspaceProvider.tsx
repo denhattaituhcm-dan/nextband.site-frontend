@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { classesApi } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
 
 interface WorkspaceContextType {
   classId: string;
@@ -36,17 +37,68 @@ export const WorkspaceProvider: React.FC<{
     refetch: refetchClass,
   } = useQuery({
     queryKey: ["admin-class-workspace", classId],
-    queryFn: () => classesApi.getById(classId),
+    queryFn: async () => {
+      const cls = await classesApi.getById(classId);
+      
+      // Fetch detailed student profiles
+      const studentIds = (cls.class_students || []).map((cs: any) => cs.student_id).filter(Boolean);
+      let students: any[] = [];
+      if (studentIds.length > 0) {
+        const { data: profs } = await supabase
+          .from("profiles")
+          .select("*")
+          .in("id", studentIds);
+        students = profs || [];
+      }
+
+      // Fetch course lessons (total homework count) if course_id exists
+      let lessons: any[] = [];
+      if (cls.course_id) {
+        const { data: lessonData } = await supabase
+          .from("course_lessons")
+          .select("id, title, order_index")
+          .eq("course_id", cls.course_id)
+          .order("order_index", { ascending: true });
+        lessons = lessonData || [];
+      }
+
+      // Fetch submissions for this class
+      const { data: subs } = await supabase
+        .from("submissions")
+        .select("id, status, grade_status, created_at, student_id, homework_id")
+        .eq("class_id", classId);
+
+      const submissions = subs || [];
+
+      return {
+        ...cls,
+        students,
+        lessons,
+        submissions,
+      };
+    },
     enabled: !!classId,
   });
 
   const openAddStudentModal = () => setIsAddStudentModalOpen(true);
 
-  const currentHomework = 12;
-  const totalHomeworks = 27;
-  const progressPercent = Math.round((currentHomework / totalHomeworks) * 100);
-  const pendingReviewsCount = 15;
-  const overdueCount = 3;
+  const totalHomeworks = classData?.lessons?.length || 0;
+  const submissions = classData?.submissions || [];
+  
+  const pendingReviewsCount = submissions.filter(
+    (s: any) => s.grade_status === "pending" || s.status === "submitted"
+  ).length;
+
+  const overdueCount = submissions.filter(
+    (s: any) => s.status === "overdue"
+  ).length;
+
+  const gradedSubmissionsCount = submissions.filter(
+    (s: any) => s.grade_status === "graded" || s.status === "graded"
+  ).length;
+
+  const currentHomework = totalHomeworks > 0 ? Math.min(gradedSubmissionsCount + 1, totalHomeworks) : 0;
+  const progressPercent = totalHomeworks > 0 ? Math.round((gradedSubmissionsCount / (totalHomeworks * Math.max(1, classData?.students?.length || 1))) * 100) : 0;
 
   return (
     <WorkspaceContext.Provider
@@ -60,7 +112,7 @@ export const WorkspaceProvider: React.FC<{
         refetchClass,
         currentHomework,
         totalHomeworks,
-        progressPercent,
+        progressPercent: Math.min(100, progressPercent),
         pendingReviewsCount,
         overdueCount,
         isAddStudentModalOpen,

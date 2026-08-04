@@ -49,7 +49,7 @@ export const FixedHeader: React.FC = () => {
               <span>•</span>
               <span className="flex items-center gap-1 text-emerald-600 font-medium">
                 <BookOpen className="h-3.5 w-3.5" />
-                Homework {currentHomework} / {totalHomeworks}
+                {totalHomeworks > 0 ? `Homework ${currentHomework} / ${totalHomeworks}` : "Chưa có bài tập"}
               </span>
             </div>
           </div>

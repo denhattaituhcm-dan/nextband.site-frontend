@@ -43,69 +43,31 @@ interface StudentAttendanceState {
 export const AttendanceTab: React.FC = () => {
   const { classData } = useWorkspace();
 
-  // Selected session state (Mock buổi 1..27, mặc định buổi 12)
-  const [currentSession, setCurrentSession] = useState(12);
-  const totalSessions = 27;
+  const lessons = classData?.lessons || [];
+  const totalSessions = lessons.length;
+  const [currentSession, setCurrentSession] = useState(totalSessions > 0 ? 1 : 0);
 
   // Session locked status (DRAFT vs FINALIZED)
   const [sessionStatus, setSessionStatus] = useState<"DRAFT" | "FINALIZED">("DRAFT");
-  const [classNote, setClassNote] = useState<string>("Hôm nay học Speaking Part 2 & chữa Listening Section 4");
-  const [lastSavedAt, setLastSavedAt] = useState<string | null>("08:30");
+  const [classNote, setClassNote] = useState<string>("");
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Student list from workspace or mock (bao gồm enrollmentStatus & pauseUntil)
+  // Student list from workspace
   const students = useMemo(() => {
-    return (
-      classData?.students || [
-        {
-          id: "1",
-          fullName: "Nguyễn Văn An",
-          email: "an@gmail.com",
-          enrollmentStatus: "ACTIVE",
-          attendancePct: 95,
-          consecutiveAbsences: 0,
-          hwStatus: "HW 12: 🟢 Đã nộp",
-        },
-        {
-          id: "2",
-          fullName: "Trần Thị Bình",
-          email: "binh@gmail.com",
-          enrollmentStatus: "ACTIVE",
-          attendancePct: 83,
-          consecutiveAbsences: 2,
-          hwStatus: "HW 12: 🟠 Chưa nộp",
-        },
-        {
-          id: "3",
-          fullName: "Lê Văn Cường",
-          email: "cuong@gmail.com",
-          enrollmentStatus: "PAUSED",
-          pauseReason: "MEDICAL",
-          pauseUntil: "28/08/2026",
-          attendancePct: 70,
-          consecutiveAbsences: 0,
-          hwStatus: "Đã tạm dừng",
-        },
-        {
-          id: "4",
-          fullName: "Phạm Hoàng Dung",
-          email: "dung@gmail.com",
-          enrollmentStatus: "SUSPENDED",
-          attendancePct: 60,
-          consecutiveAbsences: 0,
-          hwStatus: "Tạm ngưng học phí",
-        },
-      ]
-    );
+    return (classData?.students || []).map((s: any) => ({
+      id: s.id,
+      fullName: s.full_name || s.fullName || s.email,
+      email: s.email,
+      enrollmentStatus: s.is_active === false ? "PAUSED" : "ACTIVE",
+      attendancePct: 100,
+      consecutiveAbsences: 0,
+      hwStatus: "—",
+    }));
   }, [classData]);
 
   // Initial attendance state map
-  const [attendanceMap, setAttendanceMap] = useState<Record<string, StudentAttendanceState>>({
-    "1": { status: "PRESENT", note: "" },
-    "2": { status: "PRESENT", note: "" },
-    "3": { status: "EXCUSED", note: "Ốm dài hạn (Đang bảo lưu)", isManualOverridden: false },
-    "4": { status: "ABSENT", note: "Tạm ngưng bởi Trung tâm", isManualOverridden: false },
-  });
+  const [attendanceMap, setAttendanceMap] = useState<Record<string, StudentAttendanceState>>({});
 
   // Manual Override Map cho giáo viên điểm danh học viên PAUSED / SUSPENDED
   const [overrideMap, setOverrideMap] = useState<Record<string, boolean>>({});

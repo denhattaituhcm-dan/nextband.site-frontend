@@ -4,17 +4,31 @@ import { HomeworkReviewForm } from "../features/grading/HomeworkReviewForm";
 import { Input } from "@/components/ui/input";
 import { Search, Edit3, CheckCircle2 } from "lucide-react";
 
-const INITIAL_QUEUE: SubmissionItem[] = [
-  { id: "1", studentName: "Nguyễn Văn An", homeworkTitle: "Homework 12", submittedAt: "09:15", waitingTime: "2 giờ", status: "overdue", attemptsCount: 1 },
-  { id: "2", studentName: "Trần Thị Bình", homeworkTitle: "Homework 12", submittedAt: "08:30", waitingTime: "3 giờ", status: "new", attemptsCount: 2 },
-  { id: "3", studentName: "Lê Văn Cường", homeworkTitle: "Homework 11", submittedAt: "Hôm qua", waitingTime: "18 giờ", status: "overdue", attemptsCount: 1 },
-  { id: "4", studentName: "Phạm Minh Đức", homeworkTitle: "Homework 12", submittedAt: "10:00", waitingTime: "1 giờ", status: "new", attemptsCount: 1 },
-];
+
 
 export const GradingTab: React.FC = () => {
-  const [queue, setQueue] = useState<SubmissionItem[]>(INITIAL_QUEUE);
-  const [selectedItem, setSelectedItem] = useState<SubmissionItem | null>(INITIAL_QUEUE[0] || null);
+  const { classData } = useWorkspace();
   const [searchQuery, setSearchQuery] = useState("");
+
+  const submissions = classData?.submissions || [];
+  const students = classData?.students || [];
+
+  const queue: SubmissionItem[] = submissions
+    .filter((s: any) => s.grade_status === "pending" || s.status === "submitted" || s.status === "overdue")
+    .map((s: any) => {
+      const student = students.find((st: any) => st.id === s.student_id);
+      return {
+        id: s.id,
+        studentName: student?.full_name || student?.fullName || student?.email || "Học viên",
+        homeworkTitle: s.homework_title || s.title || "Homework",
+        submittedAt: s.created_at ? new Date(s.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Chưa xác định",
+        waitingTime: "1 giờ",
+        status: s.status === "overdue" ? "overdue" : "new",
+        attemptsCount: 1,
+      };
+    });
+
+  const [selectedItem, setSelectedItem] = useState<SubmissionItem | null>(queue[0] || null);
 
   const filteredQueue = queue.filter((item) =>
     item.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -22,10 +36,7 @@ export const GradingTab: React.FC = () => {
   );
 
   const handleGradedSuccess = () => {
-    if (!selectedItem) return;
-    const updated = queue.filter((item) => item.id !== selectedItem.id);
-    setQueue(updated);
-    setSelectedItem(updated[0] || null);
+    // Selection auto updates on query refetch
   };
 
   return (
@@ -54,7 +65,7 @@ export const GradingTab: React.FC = () => {
             <div className="p-8 border rounded-xl bg-card text-center space-y-2">
               <span className="text-2xl">🎉</span>
               <p className="text-xs font-semibold text-emerald-600">Tuyệt vời!</p>
-              <p className="text-[11px] text-muted-foreground">Tất cả homework đã được phản hồi.</p>
+              <p className="text-[11px] text-muted-foreground">Tất cả homework đã được phản hồi hoặc chưa có bài mới nộp.</p>
             </div>
           ) : (
             <div className="space-y-2 max-h-[460px] overflow-y-auto pr-1">
@@ -73,7 +84,7 @@ export const GradingTab: React.FC = () => {
         {/* Right Column: Homework Review Form */}
         <div className="md:col-span-8">
           <HomeworkReviewForm
-            submission={selectedItem}
+            submission={selectedItem || filteredQueue[0] || null}
             onGradedSuccess={handleGradedSuccess}
           />
         </div>
