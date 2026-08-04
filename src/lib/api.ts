@@ -978,6 +978,39 @@ export const usersApi = {
 
     if (error) throw error;
 
+    const targetUserIds = (data || []).map((p: any) => p.user_id || p.id).filter(Boolean);
+
+    // Fetch batch activeClassesCount & pendingSubmissionsCount in parallel (No N+1)
+    let classCountsMap: Record<string, number> = {};
+    let pendingSubmissionsMap: Record<string, number> = {};
+
+    if (targetUserIds.length > 0) {
+      const [{ data: classesData }, { data: submissionsData }] = await Promise.all([
+        supabase
+          .from("classes")
+          .select("teacher_id")
+          .in("teacher_id", targetUserIds)
+          .eq("is_active", true),
+        supabase
+          .from("submissions")
+          .select("teacher_id")
+          .in("teacher_id", targetUserIds)
+          .eq("grade_status", "pending"),
+      ]);
+
+      (classesData || []).forEach((c: any) => {
+        if (c.teacher_id) {
+          classCountsMap[c.teacher_id] = (classCountsMap[c.teacher_id] || 0) + 1;
+        }
+      });
+
+      (submissionsData || []).forEach((s: any) => {
+        if (s.teacher_id) {
+          pendingSubmissionsMap[s.teacher_id] = (pendingSubmissionsMap[s.teacher_id] || 0) + 1;
+        }
+      });
+    }
+
     const formattedData = (data || []).map((p: any) => {
       const extractedRoles =
         p.user_roles && Array.isArray(p.user_roles) && p.user_roles.length > 0
@@ -991,11 +1024,15 @@ export const usersApi = {
         user_id: targetId,
         email: p.email,
         fullName: p.full_name || p.fullName || p.email?.split("@")[0],
+        avatarUrl: p.avatar_url || p.avatarUrl || null,
         phone: p.phone,
         gender: p.gender,
         roles: extractedRoles,
         role: extractedRoles[0] || "student",
         isActive: p.is_active ?? true,
+        activeClassesCount: classCountsMap[targetId] || 0,
+        pendingSubmissionsCount: pendingSubmissionsMap[targetId] || 0,
+        lastLoginAt: p.last_login_at || null,
         createdAt: p.created_at,
       };
     });
