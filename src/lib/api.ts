@@ -1017,15 +1017,13 @@ export const usersApi = {
           ? p.user_roles.map((r: any) => r.role)
           : [params?.role || "student"];
 
-      const isTeacherRole = extractedRoles.includes("teacher") || params?.role === "teacher";
-      // System Invariant Core-008: Student primary ID is ALWAYS profile.id (PK)
-      // Teacher ID follows ADR-001 (user_id for auth reference)
-      const primaryId = isTeacherRole ? (p.user_id || p.id) : p.id;
+      // Option 1 Invariant: Primary ID for DB foreign key class_students_student_id_fkey is ALWAYS user_id (Auth User ID)
+      const authUserId = p.user_id || p.id;
 
       return {
-        id: primaryId,
+        id: authUserId,
         profile_id: p.id,
-        user_id: p.user_id || p.id,
+        user_id: authUserId,
         email: p.email,
         fullName: p.full_name || p.fullName || p.email?.split("@")[0],
         avatarUrl: p.avatar_url || p.avatarUrl || null,
@@ -1034,8 +1032,8 @@ export const usersApi = {
         roles: extractedRoles,
         role: extractedRoles[0] || "student",
         isActive: p.is_active ?? true,
-        activeClassesCount: classCountsMap[primaryId] || 0,
-        pendingSubmissionsCount: pendingSubmissionsMap[primaryId] || 0,
+        activeClassesCount: classCountsMap[authUserId] || 0,
+        pendingSubmissionsCount: pendingSubmissionsMap[authUserId] || 0,
         lastLoginAt: p.last_login_at || null,
         createdAt: p.created_at,
       };
@@ -1349,20 +1347,20 @@ export const classesApi = {
 
     if (error) throw error;
 
-    // Data enrichment for student profiles according to System Invariant Core-008
+    // Data enrichment for student profiles matching DB FK (profiles.user_id)
     const studentIds = (data.class_students || []).map((cs: any) => cs.student_id).filter(Boolean);
     let students: any[] = [];
     if (studentIds.length > 0) {
       const { data: profs } = await supabase
         .from("profiles")
         .select("*")
-        .in("id", studentIds);
+        .in("user_id", studentIds);
       students = profs || [];
     }
 
     // Map profiles into class_students array items as cs.student for UI components
     const classStudentsWithProfiles = (data.class_students || []).map((cs: any) => {
-      const matchedProfile = students.find((p: any) => p.id === cs.student_id);
+      const matchedProfile = students.find((p: any) => (p.user_id || p.id) === cs.student_id);
       return {
         ...cs,
         student: matchedProfile || null,
@@ -1479,19 +1477,20 @@ export const classesApi = {
         .eq("email", email)
         .maybeSingle();
 
-      let profileId = profile?.id;
+      let studentAuthUserId = profile?.user_id || profile?.id;
 
       // 2. Pre-provision profile if not found
       if (!profile) {
-        const newProfileId = crypto.randomUUID();
+        const newId = crypto.randomUUID();
         const { data: createdProfile, error: createErr } = await supabase
           .from("profiles")
           .insert({
-            id: newProfileId,
+            id: newId,
+            user_id: newId,
             email: email,
             full_name: email.split("@")[0],
           })
-          .select("id, email")
+          .select("id, user_id, email")
           .single();
 
         if (createErr) {
@@ -1499,18 +1498,18 @@ export const classesApi = {
           continue;
         }
 
-        profileId = createdProfile.id;
-        addedProfiles.push({ id: profileId, email, isNew: true });
+        studentAuthUserId = createdProfile.user_id || createdProfile.id;
+        addedProfiles.push({ id: studentAuthUserId, email, isNew: true });
       } else {
-        addedProfiles.push({ id: profileId, email, isNew: false });
+        addedProfiles.push({ id: studentAuthUserId, email, isNew: false });
       }
 
-      // 3. Link profile.id to class_students
-      if (profileId) {
+      // 3. Link studentAuthUserId to class_students
+      if (studentAuthUserId) {
         await supabase
           .from("class_students")
           .upsert(
-            { class_id: classId, student_id: profileId },
+            { class_id: classId, student_id: studentAuthUserId },
             { onConflict: "class_id,student_id" }
           );
       }

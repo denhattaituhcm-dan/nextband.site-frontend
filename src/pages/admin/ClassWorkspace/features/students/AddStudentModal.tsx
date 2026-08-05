@@ -42,7 +42,7 @@ export const AddStudentModal: React.FC<AddStudentModalProps> = ({
 
   // Existing student IDs already in this class
   const existingStudentIds = new Set(
-    (classData?.students || []).map((s: any) => s.id || s.profile_id || s.user_id)
+    (classData?.students || []).map((s: any) => s.user_id || s.id)
   );
 
   // Query center students list
