@@ -243,7 +243,7 @@ export default function AdminSectionEdit() {
   });
 
   const section = sectionData;
-  const questionGroups = section?.questionGroups || [];
+  const questionGroups = section?.question_groups || section?.questionGroups || [];
 
   const getNextOrderIndexForGroup = (groupId: string) => {
     const group = questionGroups.find((g: any) => g.id === groupId);
@@ -819,12 +819,12 @@ export default function AdminSectionEdit() {
                     </AccordionTrigger>
                     <AccordionContent className="pt-4 pb-6 border-t mt-2">
                       {/* Group Audio (For Listening sections) */}
-                      {group.audioUrl && (
+                      {(group.audioUrl || group.audio_url) && (
                         <div className="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/20 flex items-center gap-3">
                           <Headphones className="h-5 w-5 text-primary" />
                           <div className="flex-1">
                             <audio
-                              src={group.audioUrl}
+                              src={group.audioUrl || group.audio_url}
                               controls
                               className="h-8 w-full outline-none"
                             />
