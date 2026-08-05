@@ -879,17 +879,27 @@ export default function AdminSectionEdit() {
                                 <div
                                   className="font-medium text-sm line-clamp-2 prose prose-sm max-w-none"
                                   dangerouslySetInnerHTML={{
-                                    __html: q.questionText,
+                                    __html: q.question_text || q.questionText || "Nội dung câu hỏi",
                                   }}
                                 />
+                                {(q.options || q.options) && Array.isArray(q.options) && q.options.length > 0 && (
+                                  <div className="mt-2 space-y-1 text-xs text-muted-foreground bg-muted/20 p-2 rounded border">
+                                    {q.options.map((opt: string, optIdx: number) => (
+                                      <div key={optIdx} className="flex items-center gap-1.5">
+                                        <span className="font-semibold text-primary">{String.fromCharCode(65 + optIdx)}.</span>
+                                        <span>{opt}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
                                 <div className="flex items-center gap-2 mt-2">
                                   <Badge
                                     variant="secondary"
                                     className="text-[10px] px-1.5 h-4"
                                   >
                                     {ALL_QUESTION_TYPES.find(
-                                      (t) => t.value === q.questionType,
-                                    )?.label || q.questionType}
+                                      (t) => t.value === (q.question_type || q.questionType),
+                                    )?.label || q.question_type || q.questionType}
                                   </Badge>
                                   <span className="text-[10px] text-muted-foreground">
                                     {q.points} điểm
