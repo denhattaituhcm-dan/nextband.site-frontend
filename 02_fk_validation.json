@@ -1,0 +1,8 @@
+{
+  "sections_valid_fk": 314,
+  "sections_orphan": 0,
+  "groups_valid_fk": 29,
+  "groups_orphan": 23,
+  "questions_valid_fk": 92,
+  "questions_orphan": 185
+}

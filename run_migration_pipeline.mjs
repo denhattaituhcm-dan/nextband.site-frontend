@@ -3,75 +3,41 @@ import fs from "fs";
 import path from "path";
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || "https://gzpdlqxjggyxlkeatvvf.supabase.co";
-const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || "";
+const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6cGRscXhqZ2d5eGxrZWF0dnZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUyOTc3NjMsImV4cCI6MjEwMDg3Mzc2M30.M7uMAo2qJCDQtxQMP-_58VKF1LfSBdwR31gpvqcCN6I";
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const SQL_FILE = "d:\\handover\\ielts\\nextband_backup.sql";
 
-function parseInsertStatements(sqlContent, tableName) {
-  const regex = new RegExp(`INSERT INTO \`?${tableName}\`?\\s*\\(([^)]+)\\)\\s*VALUES\\s*(.+?);`, "gis");
-  const matches = [...sqlContent.matchAll(regex)];
-  
-  if (matches.length === 0) return [];
+function parseLineTuples(line) {
+  if (!line) return [];
+  const tuples = [];
+  let current = "";
+  let inStr = false;
+  let inTuple = false;
 
-  const records = [];
-  for (const match of matches) {
-    const columns = match[1].split(",").map((c) => c.trim().replace(/`/g, ""));
-    const rawValues = match[2];
-    
-    // Parse tuples: (val1, val2, ...), (val1, val2, ...)
-    const valueTuples = rawValues.match(/\((?:[^()']|'[^']*')*\)/g);
-    if (!valueTuples) continue;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    const pr = line[i - 1];
 
-    for (const tuple of valueTuples) {
-      const inner = tuple.slice(1, -1);
-      const values = [];
-      let current = "";
-      let inString = false;
-      let quoteChar = "";
+    if (ch === "'" && pr !== "\\") inStr = !inStr;
 
-      for (let i = 0; i < inner.length; i++) {
-        const char = inner[i];
-        if ((char === "'" || char === '"') && (i === 0 || inner[i - 1] !== "\\")) {
-          if (!inString) {
-            inString = true;
-            quoteChar = char;
-          } else if (char === quoteChar) {
-            inString = false;
-          } else {
-            current += char;
-          }
-        } else if (char === "," && !inString) {
-          values.push(current.trim());
-          current = "";
-        } else {
-          current += char;
-        }
-      }
-      values.push(current.trim());
-
-      const obj = {};
-      columns.forEach((col, idx) => {
-        let val = values[idx];
-        if (val === undefined || val === "NULL" || val === "null") {
-          obj[col] = null;
-        } else if (val.startsWith("'") && val.endsWith("'")) {
-          obj[col] = val.slice(1, -1).replace(/\\'/g, "'").replace(/\\\\/g, "\\");
-        } else if (val === "true" || val === "1") {
-          obj[col] = true;
-        } else if (val === "false" || val === "0") {
-          obj[col] = false;
-        } else if (!isNaN(Number(val)) && val !== "") {
-          obj[col] = Number(val);
-        } else {
-          obj[col] = val;
-        }
-      });
-      records.push(obj);
+    if (!inStr && ch === "(" && !inTuple) {
+      inTuple = true;
+      current = "";
+      continue;
     }
-  }
 
-  return records;
+    if (!inStr && ch === ")" && inTuple) {
+      inTuple = false;
+      const parts = current.split(/,(?=(?:[^\']*\'[^\']*\')*[^\']*$)/).map((p) => p.trim().replace(/^'|'$/g, ""));
+      tuples.push(parts);
+      current = "";
+      continue;
+    }
+
+    if (inTuple) current += ch;
+  }
+  return tuples;
 }
 
 async function runPipeline() {
@@ -95,11 +61,12 @@ async function runPipeline() {
 
   // PHASE 1: Data Audit
   console.log("\n📌 [PHASE 1] Auditing Source Data Records...");
-  const rawCourses = parseInsertStatements(sqlContent, "courses");
-  const rawExams = parseInsertStatements(sqlContent, "exams");
-  const rawSections = parseInsertStatements(sqlContent, "exam_sections");
-  const rawGroups = parseInsertStatements(sqlContent, "question_groups");
-  const rawQuestions = parseInsertStatements(sqlContent, "questions");
+  const lines = sqlContent.split("\n");
+  const rawCourses = parseLineTuples(lines[252]).filter((c) => c[0] && c[0].length === 36);
+  const rawExams = parseLineTuples(lines[398]).filter((e) => e[0] && e[0].length === 36);
+  const rawSections = parseLineTuples(lines[319]).filter((s) => s[0] && s[0].length === 36);
+  const rawGroups = parseLineTuples(lines[466]).filter((g) => g[0] && g[0].length === 36);
+  const rawQuestions = parseLineTuples(lines[500]).filter((q) => q[0] && q[0].length === 36);
 
   console.log(`  ✓ Courses in SQL: ${rawCourses.length}`);
   console.log(`  ✓ Exams in SQL: ${rawExams.length}`);
@@ -118,16 +85,10 @@ async function runPipeline() {
   let migratedCourses = 0;
   for (const c of rawCourses) {
     const payload = {
-      id: c.id,
-      title: c.title || c.name || "Untitled Course",
-      description: c.description || "",
-      thumbnail_url: c.thumbnail_url || c.thumbnailUrl || "",
-      level: c.level || "Beginner",
-      price: c.price || 0,
-      is_published: c.is_published ?? c.isPublished ?? true,
-      is_active: c.is_active ?? c.isActive ?? true,
-      is_locked: c.is_locked ?? c.isLocked ?? false,
-      slug: c.slug || (c.title ? c.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") : `course-${c.id}`),
+      id: c[0],
+      title: c[1] || "Untitled Course",
+      description: c[2] || "",
+      level: c[4] || "beginner",
     };
     const { error } = await supabase.from("courses").upsert(payload, { onConflict: "id" });
     if (error) {
@@ -139,28 +100,18 @@ async function runPipeline() {
   }
   console.log(`  ✓ Courses migrated: ${migratedCourses}/${rawCourses.length}`);
 
-  // Fetch valid course IDs
-  const validCourseIds = new Set(rawCourses.map((c) => c.id));
+  const validCourseIds = new Set(rawCourses.map((c) => c[0]));
 
   // 2. Exams
   console.log("  Step 2/5: Migrating Exams...");
   let migratedExams = 0;
-  const filteredExams = rawExams.filter((e) => validCourseIds.has(e.course_id || e.courseId));
+  const filteredExams = rawExams.filter((e) => validCourseIds.has(e[1]));
   for (const e of filteredExams) {
     const payload = {
-      id: e.id,
-      course_id: e.course_id || e.courseId,
-      title: e.title || "Untitled Exam",
-      description: e.description || "",
-      week: e.week || 1,
-      duration_minutes: e.duration_minutes || e.durationMinutes || 60,
-      is_published: e.is_published ?? e.isPublished ?? true,
-      is_active: e.is_active ?? e.isActive ?? true,
-      is_locked: e.is_locked ?? e.isLocked ?? false,
-      is_open: e.is_open ?? e.isOpen ?? false,
-      max_participants: e.max_participants || e.maxParticipants || null,
-      current_participants: e.current_participants || e.currentParticipants || 0,
-      exam_type: e.exam_type || e.examType || "homework",
+      id: e[0],
+      course_id: e[1],
+      title: e[2] || "Untitled Exam",
+      description: e[3] || "",
     };
     const { error } = await supabase.from("exams").upsert(payload, { onConflict: "id" });
     if (error) {
@@ -172,24 +123,19 @@ async function runPipeline() {
   }
   console.log(`  ✓ Exams migrated: ${migratedExams}/${filteredExams.length}`);
 
-  const validExamIds = new Set(filteredExams.map((e) => e.id));
+  const validExamIds = new Set(filteredExams.map((e) => e[0]));
 
   // 3. Exam Sections
   console.log("  Step 3/5: Migrating Exam Sections...");
   let migratedSections = 0;
-  const filteredSections = rawSections.filter((s) => validExamIds.has(s.exam_id || s.examId));
+  const filteredSections = rawSections.filter((s) => validExamIds.has(s[1]));
   for (const s of filteredSections) {
     const payload = {
-      id: s.id,
-      exam_id: s.exam_id || s.examId,
-      section_type: s.section_type || s.sectionType || "general",
-      title: s.title || "Section",
-      instructions: s.instructions || "",
-      content: s.content ? (typeof s.content === "string" ? JSON.parse(s.content) : s.content) : null,
-      audio_url: s.audio_url || s.audioUrl || "",
-      audio_script: s.audio_script || s.audioScript || "",
-      duration_minutes: s.duration_minutes || s.durationMinutes || 15,
-      order_index: s.order_index || s.orderIndex || 0,
+      id: s[0],
+      exam_id: s[1],
+      section_type: s[2] || "general",
+      title: s[3] || "Section",
+      instructions: s[4] || "",
     };
     const { error } = await supabase.from("exam_sections").upsert(payload, { onConflict: "id" });
     if (error) {
@@ -201,25 +147,22 @@ async function runPipeline() {
   }
   console.log(`  ✓ Exam Sections migrated: ${migratedSections}/${filteredSections.length}`);
 
-  const validSectionIds = new Set(filteredSections.map((s) => s.id));
+  const validSectionIds = new Set(filteredSections.map((s) => s[0]));
 
   // 4. Question Groups
   console.log("  Step 4/5: Migrating Question Groups...");
   let migratedGroups = 0;
-  const filteredGroups = rawGroups.filter((g) => validSectionIds.has(g.section_id || g.sectionId));
+  const filteredGroups = rawGroups.filter((g) => validSectionIds.has(g[1]));
   for (const g of filteredGroups) {
     const payload = {
-      id: g.id,
-      section_id: g.section_id || g.sectionId,
-      title: g.title || "",
-      instructions: g.instructions || "",
-      passage: g.passage || "",
-      audio_url: g.audio_url || g.audioUrl || "",
-      order_index: g.order_index || g.orderIndex || 0,
+      id: g[0],
+      section_id: g[1],
+      title: g[2] || "",
+      instructions: g[3] || "",
     };
     const { error } = await supabase.from("question_groups").upsert(payload, { onConflict: "id" });
     if (error) {
-      console.error(`    ❌ Question Group error [${payload.id}]:`, error.message);
+      console.error(`    ❌ Group error [${payload.id}]:`, error.message);
       errorCount++;
     } else {
       migratedGroups++;
@@ -227,37 +170,28 @@ async function runPipeline() {
   }
   console.log(`  ✓ Question Groups migrated: ${migratedGroups}/${filteredGroups.length}`);
 
-  const validGroupIds = new Set(filteredGroups.map((g) => g.id));
+  const validGroupIds = new Set(filteredGroups.map((g) => g[0]));
 
-  // 5. Questions (In Batches of 500)
-  console.log("  Step 5/5: Migrating Questions (Batch Size = 500)...");
+  // 5. Questions
+  console.log("  Step 5/5: Migrating Questions...");
   let migratedQuestions = 0;
-  const filteredQuestions = rawQuestions.filter((q) => validGroupIds.has(q.group_id || q.groupId));
-  
-  const BATCH_SIZE = 500;
-  for (let i = 0; i < filteredQuestions.length; i += BATCH_SIZE) {
-    const chunk = filteredQuestions.slice(i, i + BATCH_SIZE).map((q) => ({
-      id: q.id,
-      group_id: q.group_id || q.groupId,
-      question_type: q.question_type || q.questionType || "multiple_choice",
-      question_text: q.question_text || q.questionText || "",
-      options: q.options ? (typeof q.options === "string" ? JSON.parse(q.options) : q.options) : null,
-      correct_answer: q.correct_answer || q.correctAnswer || "",
-      audio_url: q.audio_url || q.audioUrl || "",
-      points: q.points || 1.0,
-      order_index: q.order_index || q.orderIndex || 0,
-    }));
-
-    const { error } = await supabase.from("questions").upsert(chunk, { onConflict: "id" });
+  const filteredQuestions = rawQuestions.filter((q) => validGroupIds.has(q[1]));
+  for (const q of filteredQuestions) {
+    const payload = {
+      id: q[0],
+      group_id: q[1],
+      question_type: q[2] || "essay",
+      question_text: q[3] || "",
+    };
+    const { error } = await supabase.from("questions").upsert(payload, { onConflict: "id" });
     if (error) {
-      console.error(`    ❌ Questions Batch Error [Range ${i}-${i + chunk.length}]:`, error.message);
-      errorCount += chunk.length;
+      console.error(`    ❌ Question error [${payload.id}]:`, error.message);
+      errorCount++;
     } else {
-      migratedQuestions += chunk.length;
-      console.log(`    ✓ Batch ${Math.floor(i / BATCH_SIZE) + 1} (${migratedQuestions}/${filteredQuestions.length}) processed.`);
+      migratedQuestions++;
     }
   }
-  console.log(`  ✓ Total Questions migrated: ${migratedQuestions}/${filteredQuestions.length}`);
+  console.log(`  ✓ Questions migrated: ${migratedQuestions}/${filteredQuestions.length}`);
 
   // PHASE 3: Foreign Key & Integrity Validation
   console.log("\n📌 [PHASE 3] Validating Foreign Key Integrity & Data Health...");
