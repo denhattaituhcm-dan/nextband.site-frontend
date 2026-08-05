@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { classesApi, usersApi } from "@/lib/api";
+import { classesApi, usersApi, invalidateClassQueries } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -194,8 +194,7 @@ export default function AdminClassEdit() {
       endDate?: string | null;
     }) => classesApi.update(id!, body),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-class", id] });
-      queryClient.invalidateQueries({ queryKey: ["admin-classes"] });
+      invalidateClassQueries(queryClient, id!);
       toast({ title: "Đã cập nhật lớp học" });
     },
     onError: () => {
@@ -212,7 +211,7 @@ export default function AdminClassEdit() {
     mutationFn: (studentIds: string[]) =>
       classesApi.addStudents(id!, studentIds),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["admin-class", id] });
+      invalidateClassQueries(queryClient, id!);
       toast({
         title: "Đã thêm học viên",
         description: `${data.added} học viên được thêm vào lớp`,
@@ -234,7 +233,7 @@ export default function AdminClassEdit() {
     mutationFn: ({ studentId, status }: { studentId: string; status: string }) =>
       classesApi.updateStudentStatus(id!, studentId, status),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-class", id] });
+      invalidateClassQueries(queryClient, id!);
       toast({ title: "Đã cập nhật trạng thái học viên thành công!" });
     },
     onError: (err: any) => {

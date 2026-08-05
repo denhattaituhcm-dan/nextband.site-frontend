@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import { usersApi, classesApi } from "@/lib/api";
+import { usersApi, classesApi, invalidateClassQueries } from "@/lib/api";
 import { Search, UserPlus, Mail, CheckCircle, Loader2 } from "lucide-react";
 import { useWorkspace } from "../../WorkspaceProvider";
 import { toast } from "sonner";
@@ -29,6 +29,7 @@ export const AddStudentModal: React.FC<AddStudentModalProps> = ({
   open,
   onOpenChange,
 }) => {
+  const queryClient = useQueryClient();
   const { classId, classData, refetchClass } = useWorkspace();
   const [activeTab, setActiveTab] = useState<"search" | "batch">("search");
 
@@ -41,7 +42,7 @@ export const AddStudentModal: React.FC<AddStudentModalProps> = ({
 
   // Existing student IDs already in this class
   const existingStudentIds = new Set(
-    (classData?.students || []).map((s: any) => s.id || s.user_id || s.student_id)
+    (classData?.students || []).map((s: any) => s.id || s.profile_id || s.user_id)
   );
 
   // Query center students list
@@ -87,6 +88,7 @@ export const AddStudentModal: React.FC<AddStudentModalProps> = ({
     onSuccess: () => {
       toast.success(`Đã thêm ${selectedUserIds.length} học viên vào lớp!`);
       setSelectedUserIds([]);
+      invalidateClassQueries(queryClient, classId);
       refetchClass();
       onOpenChange(false);
     },
@@ -112,6 +114,7 @@ export const AddStudentModal: React.FC<AddStudentModalProps> = ({
     onSuccess: (res: any) => {
       toast.success(`Đã xử lý thêm ${res.added || 0} học viên theo Email!`);
       setEmailsText("");
+      invalidateClassQueries(queryClient, classId);
       refetchClass();
       onOpenChange(false);
     },

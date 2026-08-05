@@ -39,17 +39,7 @@ export const WorkspaceProvider: React.FC<{
     queryKey: ["admin-class-workspace", classId],
     queryFn: async () => {
       const cls = await classesApi.getById(classId);
-      
-      // Fetch detailed student profiles
-      const studentIds = (cls.class_students || []).map((cs: any) => cs.student_id).filter(Boolean);
-      let students: any[] = [];
-      if (studentIds.length > 0) {
-        const { data: profs } = await supabase
-          .from("profiles")
-          .select("*")
-          .in("id", studentIds);
-        students = profs || [];
-      }
+      const students = cls.students || [];
 
       // Fetch course lessons (total homework count) if course_id exists
       let lessons: any[] = [];

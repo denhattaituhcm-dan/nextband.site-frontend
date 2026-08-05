@@ -1017,11 +1017,15 @@ export const usersApi = {
           ? p.user_roles.map((r: any) => r.role)
           : [params?.role || "student"];
 
-      const targetId = p.user_id || p.id;
+      const isTeacherRole = extractedRoles.includes("teacher") || params?.role === "teacher";
+      // System Invariant Core-008: Student primary ID is ALWAYS profile.id (PK)
+      // Teacher ID follows ADR-001 (user_id for auth reference)
+      const primaryId = isTeacherRole ? (p.user_id || p.id) : p.id;
 
       return {
-        id: targetId,
-        user_id: targetId,
+        id: primaryId,
+        profile_id: p.id,
+        user_id: p.user_id || p.id,
         email: p.email,
         fullName: p.full_name || p.fullName || p.email?.split("@")[0],
         avatarUrl: p.avatar_url || p.avatarUrl || null,
@@ -1030,8 +1034,8 @@ export const usersApi = {
         roles: extractedRoles,
         role: extractedRoles[0] || "student",
         isActive: p.is_active ?? true,
-        activeClassesCount: classCountsMap[targetId] || 0,
-        pendingSubmissionsCount: pendingSubmissionsMap[targetId] || 0,
+        activeClassesCount: classCountsMap[primaryId] || 0,
+        pendingSubmissionsCount: pendingSubmissionsMap[primaryId] || 0,
         lastLoginAt: p.last_login_at || null,
         createdAt: p.created_at,
       };
@@ -1344,8 +1348,31 @@ export const classesApi = {
       .single();
 
     if (error) throw error;
+
+    // Data enrichment for student profiles according to System Invariant Core-008
+    const studentIds = (data.class_students || []).map((cs: any) => cs.student_id).filter(Boolean);
+    let students: any[] = [];
+    if (studentIds.length > 0) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("*")
+        .in("id", studentIds);
+      students = profs || [];
+    }
+
+    // Map profiles into class_students array items as cs.student for UI components
+    const classStudentsWithProfiles = (data.class_students || []).map((cs: any) => {
+      const matchedProfile = students.find((p: any) => p.id === cs.student_id);
+      return {
+        ...cs,
+        student: matchedProfile || null,
+      };
+    });
+
     return {
       ...data,
+      class_students: classStudentsWithProfiles,
+      students,
       courseId: data.course_id,
       teacherId: data.teacher_id,
       startDate: data.start_date,
@@ -1614,6 +1641,17 @@ export const classesApi = {
     if (error) throw error;
     return data;
   },
+};
+
+/**
+ * Standardized Cache Invalidation Helper for Class Module
+ */
+export const invalidateClassQueries = (queryClient: any, classId: string) => {
+  if (!queryClient || !classId) return;
+  queryClient.invalidateQueries({ queryKey: ["admin-class", classId] });
+  queryClient.invalidateQueries({ queryKey: ["admin-class-workspace", classId] });
+  queryClient.invalidateQueries({ queryKey: ["admin-classes"] });
+  queryClient.invalidateQueries({ queryKey: ["class-attendance", classId] });
 };
 
 // =============================================
