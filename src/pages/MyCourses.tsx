@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { enrollmentsApi } from "@/lib/api";
+import { classStudentsApi } from "@/lib/api";
 import { CourseCard } from "@/components/courses/CourseCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BookOpen, GraduationCap } from "lucide-react";
@@ -10,15 +10,15 @@ import { Link } from "react-router-dom";
 export default function MyCourses() {
   const { isAuthenticated } = useAuth();
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["my-enrollments"],
-    queryFn: () => enrollmentsApi.list(),
+  const { data: rawEnrollments, isLoading } = useQuery({
+    queryKey: ["my-class-memberships"],
+    queryFn: () => classStudentsApi.getMyClasses(),
     enabled: isAuthenticated,
     refetchInterval: 10_000,
     refetchIntervalInBackground: true,
   });
 
-  const enrollments = data?.data || [];
+  const enrollments = Array.isArray(rawEnrollments) ? rawEnrollments : [];
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -46,7 +46,7 @@ export default function MyCourses() {
           {enrollments.map((enrollment: any) => (
             <CourseCard
               key={enrollment.id}
-              course={enrollment.course}
+              course={enrollment.courses || enrollment.course}
               progress={enrollment.progressPercent || 0}
               enrolled
             />

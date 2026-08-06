@@ -1111,8 +1111,53 @@ export const usersApi = {
 // =============================================
 // ENROLLMENTS API
 // =============================================
+// =============================================
+// CLASS MEMBERSHIP SERVICE (SINGLE SOURCE OF TRUTH)
+// =============================================
+export const classStudentsApi = {
+  getMyClasses: async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return [];
+
+    const { data, error } = await supabase
+      .from("class_students")
+      .select("id, created_at, classes(*, courses(*))")
+      .eq("student_id", user.id);
+
+    if (error) throw error;
+
+    return (data || [])
+      .filter((cs: any) => Boolean(cs.classes))
+      .map((cs: any) => {
+        const cls = cs.classes;
+        const course = cls.courses;
+        const className = cls.name || course?.title || "Lớp học";
+
+        return {
+          id: cs.id,
+          classId: cls.id,
+          className: className,
+          courseId: cls.course_id,
+          courseTitle: course?.title || className,
+          courses: course || { id: cls.course_id, title: className },
+          joinedAt: cs.created_at,
+        };
+      });
+  },
+};
+
+// =============================================
+// ENROLLMENTS API (LEGACY DIRECT COURSE PURCHASES ONLY - DO NOT USE FOR CLASS ACCESS)
+// =============================================
 export const enrollmentsApi = {
-  list: async () => {
+  /**
+   * @deprecated DO NOT USE FOR CLASS MEMBERSHIP OR ACCESS CONTROL.
+   * Use `classStudentsApi.getMyClasses()` for all student class access rights.
+   * This method is preserved only for legacy direct course purchase history logs.
+   */
+  listDirectPurchases: async () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -1124,7 +1169,12 @@ export const enrollmentsApi = {
       .eq("student_id", user.id);
 
     if (error) throw error;
-    return data;
+    return data || [];
+  },
+
+  list: async () => {
+    // Forward to unified classStudentsApi.getMyClasses for backward compatibility
+    return classStudentsApi.getMyClasses();
   },
 
   listByCourse: async (courseId: string) => {
@@ -1579,6 +1629,8 @@ export const classesApi = {
       .maybeSingle();
 
     if (existingProfile) {
+      const oldIds = [existingProfile.id, existingProfile.user_id].filter(Boolean);
+
       // If user_id is not set or different, update it to claim ownership
       if (existingProfile.user_id !== authUser.id) {
         await supabase
@@ -1589,6 +1641,21 @@ export const classesApi = {
             avatar_url: authUser.user_metadata?.avatar_url || null,
           })
           .eq("id", existingProfile.id);
+      }
+
+      // Migrate any class_students or enrollments created with pre-provisioned profile IDs
+      for (const oldId of oldIds) {
+        if (oldId && oldId !== authUser.id) {
+          await supabase
+            .from("class_students")
+            .update({ student_id: authUser.id })
+            .eq("student_id", oldId);
+
+          await supabase
+            .from("enrollments")
+            .update({ student_id: authUser.id })
+            .eq("student_id", oldId);
+        }
       }
     }
   },

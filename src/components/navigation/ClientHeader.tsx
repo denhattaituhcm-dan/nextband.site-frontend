@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
-import { enrollmentsApi } from "@/lib/api";
+import { classStudentsApi } from "@/lib/api";
 
 import { NotificationBell } from "./NotificationBell";
 
@@ -21,17 +21,19 @@ export function ClientHeader() {
   const { user, signOut, isAdmin, isAuthenticated, isTeacher } = useAuth();
   const navigate = useNavigate();
 
-  // Fetch student enrollments to evaluate active class name
+  // Fetch student class memberships via unified classStudentsApi
   const { data: enrollments = [] } = useQuery({
-    queryKey: ["my-enrollments-header"],
-    queryFn: () => enrollmentsApi.list().catch(() => []),
+    queryKey: ["my-class-memberships-header"],
+    queryFn: () => classStudentsApi.getMyClasses().catch(() => []),
     enabled: isAuthenticated,
     retry: false,
   });
 
   const hasClasses = enrollments.length > 0;
-  const activeClassName = enrollments[0]?.courses?.title
-    ? `${enrollments[0].courses.title} • STARTER01`
+  const activeClassName = enrollments[0]?.className
+    ? enrollments[0].className
+    : enrollments[0]?.courses?.title
+    ? enrollments[0].courses.title
     : null;
 
   const handleSignOut = async () => {

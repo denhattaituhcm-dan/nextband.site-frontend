@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { enrollmentsApi, workspaceApi } from "@/lib/api";
+import { classStudentsApi, workspaceApi } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 
 export type StudentLifecycleState = "PRE_ENROLLMENT" | "ENROLLED" | "ACTIVE_LEARNING";
@@ -7,10 +7,10 @@ export type StudentLifecycleState = "PRE_ENROLLMENT" | "ENROLLED" | "ACTIVE_LEAR
 export function useStudentLifecycle() {
   const { user, isAuthenticated } = useAuth();
 
-  // 1. Fetch Enrollments (Source of truth)
+  // 1. Fetch Class Memberships (Single source of truth)
   const { data: enrollments = [], isLoading: isLoadingEnrollments } = useQuery({
-    queryKey: ["my-enrollments", user?.id],
-    queryFn: () => enrollmentsApi.list().catch(() => []),
+    queryKey: ["my-class-memberships", user?.id],
+    queryFn: () => classStudentsApi.getMyClasses().catch(() => []),
     enabled: !!isAuthenticated && !!user?.id,
     staleTime: 1000 * 60 * 2,
   });
