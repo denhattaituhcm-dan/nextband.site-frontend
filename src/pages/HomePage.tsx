@@ -1,122 +1,29 @@
-// Student IELTS Practice Hub - Course-Driven Action-Oriented Dashboard
+// Student Welcome & Class Entry Portal
 import { useAuth } from "@/hooks/useAuth";
-import { useQuery } from "@tanstack/react-query";
-import { lessonsApi, submissionsApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { HomeworkEmptyState } from "@/components/homework/HomeworkEmptyState";
 import { useStudentLifecycle } from "@/hooks/useStudentLifecycle";
 import {
-  FileText,
-  Headphones,
   BookOpen,
-  Mic,
   ArrowRight,
-  HelpCircle,
-  Edit3,
   Sparkles,
-  MessageSquare,
+  GraduationCap,
+  CheckCircle2,
 } from "lucide-react";
 
 export default function HomePage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { enrollments } = useStudentLifecycle();
 
   const hasClasses = Array.isArray(enrollments) && enrollments.length > 0;
-  const enrolledClassId = enrollments[0]?.classId || enrollments[0]?.class_id;
-  const activeClassName = enrollments[0]?.className || enrollments[0]?.courses?.title || "Lớp học";
-
-  // Fetch Class Lessons / Homeworks from Supabase directly
-  const { data: classLessonsData, isLoading } = useQuery({
-    queryKey: ["class-timeline", enrolledClassId],
-    queryFn: () => lessonsApi.getClassLessons(enrolledClassId!).catch(() => ({ success: false, data: null as any })),
-    enabled: !!enrolledClassId,
-    retry: false,
-  });
-
-  // Fetch Student Submissions
-  const { data: submissionsData } = useQuery({
-    queryKey: ["my-recent-submissions", user?.id],
-    queryFn: () => submissionsApi.list({ studentId: user?.id, limit: 100 }).catch(() => ({ data: [] })),
-    enabled: !!user?.id,
-    retry: false,
-  });
-
-  const classData = classLessonsData?.data;
-  const lessons = Array.isArray(classData?.lessons) ? classData.lessons : [];
-  const userSubmissions = Array.isArray(submissionsData?.data) ? submissionsData.data : [];
-
-  // Map submissions to homeworks
-  const submissionsMap: Record<string, any> = {};
-  userSubmissions.forEach((s: any) => {
-    if (s.homework_id || s.exam_id) {
-      submissionsMap[s.homework_id || s.exam_id] = s;
-    }
-  });
-
-  // Homework items formatted for Practice Platform
-  const homeworkList = lessons.map((item: any, idx: number) => {
-    const sub = submissionsMap[item.id] || item.submission;
-    let status: "NOT_STARTED" | "IN_PROGRESS" | "SUBMITTED" | "REVIEWED" = "NOT_STARTED";
-
-    if (sub?.grade_status === "graded" || sub?.status === "graded") {
-      status = "REVIEWED";
-    } else if (sub?.status === "submitted" || sub?.grade_status === "pending") {
-      status = "SUBMITTED";
-    } else if (sub?.status === "in_progress") {
-      status = "IN_PROGRESS";
-    }
-
-    return {
-      id: item.id,
-      hwNum: String(idx + 1).padStart(2, "0"),
-      title: item.title || `Homework ${String(idx + 1).padStart(2, "0")}`,
-      description: item.description || `Bài tập buổi ${idx + 1}`,
-      status,
-      resources: item.resources || [],
-      submission: sub,
-    };
-  });
-
-  // Find next homework to do ("Tiếp tục học / Tiếp tục làm bài")
-  const nextHomework = homeworkList.find((hw) => hw.status === "NOT_STARTED" || hw.status === "IN_PROGRESS") || homeworkList[0];
-
-  const notStartedCount = homeworkList.filter((hw) => hw.status === "NOT_STARTED").length;
-  const submittedCount = homeworkList.filter((hw) => hw.status === "SUBMITTED").length;
-  const reviewedCount = homeworkList.filter((hw) => hw.status === "REVIEWED").length;
-
-  const gradedSubmissions = userSubmissions.filter((s: any) => s.status === "graded" || s.grade_status === "graded");
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "REVIEWED":
-        return <Badge className="bg-emerald-600 text-white text-[11px] font-bold">🟢 Đã nhận xét</Badge>;
-      case "SUBMITTED":
-        return <Badge className="bg-amber-500 text-white text-[11px] font-bold">🟡 Đã nộp (Chờ phản hồi)</Badge>;
-      case "IN_PROGRESS":
-        return <Badge className="bg-blue-600 text-white text-[11px] font-bold">🔵 Đang làm</Badge>;
-      default:
-        return <Badge variant="outline" className="text-slate-600 border-slate-300 text-[11px] font-semibold">○ Chưa làm</Badge>;
-    }
-  };
-
-  const getSkillIcon = (type: string) => {
-    switch (type.toLowerCase()) {
-      case "listening":
-        return <Headphones className="h-3.5 w-3.5 text-blue-600" />;
-      case "reading":
-        return <BookOpen className="h-3.5 w-3.5 text-emerald-600" />;
-      case "writing":
-        return <FileText className="h-3.5 w-3.5 text-purple-600" />;
-      case "speaking":
-        return <Mic className="h-3.5 w-3.5 text-amber-600" />;
-      default:
-        return <HelpCircle className="h-3.5 w-3.5 text-slate-600" />;
-    }
-  };
+  const enrolledClass = enrollments[0];
+  const enrolledClassId = enrolledClass?.classId || enrolledClass?.class_id;
+  const activeClassName = enrolledClass?.className || enrolledClass?.courses?.title || "M01 07.2026";
+  const courseTitle = enrolledClass?.courseTitle || enrolledClass?.courses?.title || "MASTER";
 
   return (
     <div className="min-h-screen bg-[#F7F9FC] pb-16">
@@ -124,196 +31,121 @@ export default function HomePage() {
         {!hasClasses ? (
           <HomeworkEmptyState state="NO_ENROLLMENT" />
         ) : (
-          <>
-            {/* HERO SECTION: "TIẾP TỤC LUYỆN TẬP" (ACTION-DRIVEN HERO CARD) */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-              <div className="md:col-span-8 bg-gradient-to-r from-emerald-700 via-teal-700 to-emerald-800 text-white p-6 md:p-8 rounded-2xl shadow-md flex flex-col justify-between space-y-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-white/20 text-white border border-white/25 backdrop-blur-md">
-                      {activeClassName}
-                    </span>
-                    <span className="text-xs text-emerald-200">•</span>
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-500 text-white">
-                      NỀN TẢNG LUYỆN THI IELTS
-                    </span>
-                  </div>
-                  <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
-                    Xin chào, {user?.fullName || "Học viên"}! Sẵn sàng luyện tập hôm nay ✍️
-                  </h1>
-                  <p className="text-xs md:text-sm text-emerald-100 mt-1">
-                    Toàn bộ bài tập của khóa học được mở hoàn toàn. Hãy chọn bài tập để bắt đầu rèn luyện kỹ năng ngay.
-                  </p>
-                </div>
-
-                {nextHomework && (
-                  <div className="pt-3 border-t border-white/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-200">
-                        Bài tập cần làm tiếp theo:
-                      </span>
-                      <h3 className="text-lg font-bold text-white flex items-center gap-2 mt-0.5">
-                        {nextHomework.title}
-                        {getStatusBadge(nextHomework.status)}
-                      </h3>
-                    </div>
-
-                    <Button
-                      onClick={() => navigate(`/exam/${nextHomework.id}`)}
-                      className="bg-white text-emerald-800 hover:bg-emerald-50 font-extrabold px-6 py-2.5 rounded-xl text-xs shadow-md shrink-0"
-                    >
-                      ✍️ Làm bài ngay
-                      <ArrowRight className="w-4 h-4 ml-1.5" />
-                    </Button>
-                  </div>
-                )}
+          /* ========================================================================= */
+          /* WELCOME SCREEN FOR ENROLLED STUDENTS (SHOWS CLASS ENTRY CARD)              */
+          /* ========================================================================= */
+          <div className="space-y-6">
+            {/* HERO WELCOME BANNER */}
+            <Card className="border-0 text-white rounded-2xl shadow-lg p-6 md:p-8 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 space-y-4">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 text-white border border-white/20 text-xs font-bold backdrop-blur-md">
+                <Sparkles className="w-4 h-4 text-sky-300" />
+                <span>Mã Lớp học: {activeClassName}</span>
+              </div>
+              
+              <div className="space-y-2 max-w-3xl">
+                <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                  Xin chào, {user?.fullName || "Học viên"}! Bạn đã được xếp vào lớp thành công 🎉
+                </h1>
+                <p className="text-xs md:text-sm text-blue-100 font-medium leading-relaxed">
+                  Bạn hiện là học viên chính thức của lớp <strong className="text-white font-bold">{activeClassName}</strong> ({courseTitle}). Click vào Lớp học bên dưới để bắt đầu làm bài tập ngay!
+                </p>
               </div>
 
-              {/* SIDEBAR KPI SUMMARY */}
-              <div className="md:col-span-4 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between space-y-4">
-                <div className="flex items-center justify-between border-b pb-3">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Tình trạng Bài tập cá nhân
-                  </h3>
-                  <Sparkles className="w-4 h-4 text-emerald-600" />
-                </div>
-
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                    <span className="text-[10px] text-slate-500 font-medium block">Chưa làm</span>
-                    <div className="font-extrabold text-slate-800 text-base mt-1">{notStartedCount}</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                    <span className="text-[10px] text-amber-600 font-medium block">Đã nộp</span>
-                    <div className="font-extrabold text-amber-600 text-base mt-1">{submittedCount}</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                    <span className="text-[10px] text-emerald-600 font-medium block">Đã nhận xét</span>
-                    <div className="font-extrabold text-emerald-600 text-base mt-1">{reviewedCount}</div>
-                  </div>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-100 text-xs text-emerald-800 font-medium leading-relaxed">
-                  💡 <strong>Gợi ý:</strong> Nộp bài tập luyện viết & nói sớm để nhận phản hồi nhận xét chi tiết từ giáo viên.
-                </div>
-              </div>
-            </div>
-
-            {/* MAIN PRACTICE LIST SECTION (DANH SÁCH BÀI TẬP LUYỆN TẬP) */}
-            <div className="space-y-4 pt-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <Edit3 className="w-5 h-5 text-emerald-600" />
-                    Danh sách Bài tập Luyện tập ({homeworkList.length} Homework)
-                  </h2>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Click chọn bài tập bất kỳ để vào màn hình thực hành kỹ năng.
-                  </p>
-                </div>
-              </div>
-
-              {isLoading ? (
-                <div className="p-8 text-center text-slate-500 text-xs">Đang tải danh sách bài tập...</div>
-              ) : homeworkList.length === 0 ? (
-                <div className="p-8 border rounded-2xl bg-white text-center text-slate-500 text-xs">
-                  Chưa có bài tập nào thuộc khóa học này.
-                </div>
-              ) : (
-                <div className="grid gap-3">
-                  {homeworkList.map((hw) => (
-                    <Card
-                      key={hw.id}
-                      className="p-4 rounded-xl border border-slate-200 bg-white hover:border-emerald-400 hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                    >
-                      <div className="space-y-1.5 flex-1">
-                        <div className="flex items-center gap-2.5">
-                          <h3 className="font-extrabold text-sm text-slate-900">{hw.title}</h3>
-                          {getStatusBadge(hw.status)}
-                        </div>
-
-                        {/* Activities Checklist preview */}
-                        {hw.resources && hw.resources.length > 0 ? (
-                          <div className="flex flex-wrap items-center gap-2 pt-1">
-                            <span className="text-[11px] font-medium text-slate-500">Hoạt động:</span>
-                            {hw.resources.map((res: any, idx: number) => (
-                              <span
-                                key={idx}
-                                className="inline-flex items-center gap-1 text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md"
-                              >
-                                {getSkillIcon(res.type)}
-                                {res.type?.toUpperCase()}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <p className="text-xs text-slate-500">{hw.description}</p>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-2 shrink-0">
-                        <Button
-                          size="sm"
-                          className={`font-bold text-xs gap-1.5 ${
-                            hw.status === "REVIEWED"
-                              ? "bg-slate-800 hover:bg-slate-900 text-white"
-                              : hw.status === "SUBMITTED"
-                              ? "bg-amber-600 hover:bg-amber-700 text-white"
-                              : "bg-emerald-600 hover:bg-emerald-700 text-white"
-                          }`}
-                          onClick={() => navigate(`/exam/${hw.id}`)}
-                        >
-                          {hw.status === "REVIEWED"
-                            ? "🔍 Xem phản hồi"
-                            : hw.status === "SUBMITTED"
-                            ? "🔍 Xem bài làm"
-                            : "✍️ Làm bài ngay"}
-                        </Button>
-                      </div>
-                    </Card>
-                  ))}
+              {enrolledClassId && (
+                <div className="pt-2">
+                  <Button
+                    onClick={() => navigate(`/class/${enrolledClassId}/lessons`)}
+                    className="rounded-full bg-white text-blue-700 hover:bg-blue-50 font-extrabold px-6 py-3 shadow-md active:scale-95 text-xs transition-all gap-2"
+                  >
+                    <BookOpen className="h-4 w-4 text-blue-600" />
+                    <span>🏫 Vào Lớp {activeClassName} để Làm bài</span>
+                    <ArrowRight className="w-4 h-4 text-blue-600" />
+                  </Button>
                 </div>
               )}
-            </div>
+            </Card>
 
-            {/* FEEDBACK MỚI NHẤT TỪ GIÁO VIÊN */}
-            <div className="space-y-3 pt-2">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-emerald-600" />
-                Nhận xét & Feedback gần đây từ Giáo viên
+            {/* ENROLLED CLASS CARDS LIST */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                <GraduationCap className="w-4 h-4 text-blue-600" />
+                Lớp học của bạn ({enrollments.length} Lớp)
               </h3>
-              <Card className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm space-y-3">
-                {gradedSubmissions.length > 0 ? (
-                  gradedSubmissions.slice(0, 3).map((sub: any) => (
-                    <div key={sub.id} className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-4">
-                      <div className="space-y-1 flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-slate-900 text-sm truncate">
-                            {sub.exams?.title || "Listening Session 11"}
-                          </span>
-                          <span className="text-xs font-extrabold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-md">
-                            Band {sub.total_score ?? "7.5"}
-                          </span>
+
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {enrollments.map((item: any, idx: number) => {
+                  const clsId = item.classId || item.class_id;
+                  const clsName = item.className || item.courses?.title || `Lớp ${idx + 1}`;
+                  const crsTitle = item.courseTitle || item.courses?.title || "MASTER";
+
+                  return (
+                    <Card
+                      key={clsId || idx}
+                      className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-blue-500 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Badge variant="outline" className="text-xs font-extrabold text-blue-700 border-blue-200 bg-blue-50">
+                            {clsName}
+                          </Badge>
+                          <Badge className="bg-emerald-600 text-white text-[10px] font-bold">
+                            Đã kích hoạt
+                          </Badge>
                         </div>
-                        <p className="text-xs text-slate-600 truncate italic">
-                          "{sub.feedback || 'Cần chú ý danh từ số nhiều và nối âm ở Part 2...'}"
+                        <h4 className="text-base font-extrabold text-slate-900">
+                          Khóa học {crsTitle}
+                        </h4>
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                          Toàn bộ bài tập luyện tập của khóa {crsTitle} đã mở hoàn toàn. Hãy vào lớp để chọn bài làm ngay.
                         </p>
                       </div>
-                      <Link to={`/submissions/${sub.id}`}>
-                        <Button variant="ghost" size="sm" className="text-xs font-bold text-emerald-600 hover:text-emerald-700">
-                          Chi tiết ➔
-                        </Button>
-                      </Link>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-slate-400 text-xs py-4 text-center">
-                    Chưa có nhận xét mới từ giáo viên. Hãy làm và nộp bài tập để nhận bài chấm chi tiết!
-                  </div>
-                )}
-              </Card>
+
+                      <Button
+                        onClick={() => navigate(`/class/${clsId}/lessons`)}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl gap-2 shadow-sm"
+                      >
+                        <BookOpen className="w-4 h-4" />
+                        Vào Lớp làm bài ngay ➔
+                      </Button>
+                    </Card>
+                  );
+                })}
+              </div>
             </div>
-          </>
+
+            {/* 5-STEP WORKFLOW GUIDELINE */}
+            <Card className="rounded-2xl border border-slate-100 bg-white p-6 md:p-8 space-y-5 shadow-sm">
+              <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider text-center">
+                Hệ thống hoạt động như thế nào? (5 Bước đơn giản)
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-2">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2 flex flex-col items-center justify-center">
+                  <span className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-xs inline-flex items-center justify-center">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </span>
+                  <div className="font-bold text-xs text-slate-900">1. Đăng nhập</div>
+                </div>
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2 flex flex-col items-center justify-center">
+                  <span className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-xs inline-flex items-center justify-center">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </span>
+                  <div className="font-bold text-xs text-slate-900">2. Giáo viên xếp lớp</div>
+                </div>
+                <div className="p-4 rounded-xl bg-blue-600 text-white shadow-md text-center space-y-2 flex flex-col items-center justify-center scale-105">
+                  <span className="w-7 h-7 rounded-full bg-white text-blue-700 font-extrabold text-xs inline-flex items-center justify-center">3</span>
+                  <div className="font-bold text-xs">3. Vào Lớp làm bài</div>
+                </div>
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2 flex flex-col items-center justify-center">
+                  <span className="w-7 h-7 rounded-full bg-slate-200 text-slate-600 font-extrabold text-xs inline-flex items-center justify-center">4</span>
+                  <div className="font-bold text-xs text-slate-900">4. Làm & Nộp bài</div>
+                </div>
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2 flex flex-col items-center justify-center">
+                  <span className="w-7 h-7 rounded-full bg-slate-200 text-slate-600 font-extrabold text-xs inline-flex items-center justify-center">5</span>
+                  <div className="font-bold text-xs text-slate-900">5. Giáo viên nhận xét</div>
+                </div>
+              </div>
+            </Card>
+          </div>
         )}
       </div>
     </div>
