@@ -111,9 +111,9 @@ export default function StudentLessonViewerPage() {
             </h3>
 
             <div className="space-y-2">
-              {lessons.map((lesson) => {
+              {lessons.map((lesson, idx) => {
                 const isSelected = activeLesson?.id === lesson.id;
-                const isCompleted = lesson.progress.lessonCompleted;
+                const isCompleted = lesson.status === "COMPLETED";
 
                 return (
                   <Card
@@ -136,7 +136,7 @@ export default function StudentLessonViewerPage() {
                               : "bg-slate-100 text-slate-600"
                           }`}
                         >
-                          {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : lesson.lessonOrder}
+                          {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : lesson.week || idx + 1}
                         </div>
 
                         <div>
@@ -200,33 +200,28 @@ export default function StudentLessonViewerPage() {
                   )}
                 </div>
 
-                {/* HOMEWORK ATTACHED */}
+                {/* HOMEWORK ATTACHED & DO EXERCISE BUTTON */}
                 <div className="space-y-3 border-t pt-4">
                   <h4 className="font-bold text-xs uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                     <FileCheck className="w-4 h-4 text-emerald-600" />
-                    Bài tập về nhà liên quan
+                    Thực hành bài tập
                   </h4>
 
-                  {activeLesson.homework ? (
-                    <Card className="rounded-xl border-slate-200 bg-slate-50 p-4 flex items-center justify-between">
-                      <div>
-                        <h5 className="font-bold text-sm text-slate-900">{activeLesson.homework.title}</h5>
-                        {activeLesson.homework.deadline && (
-                          <span className="text-xs text-slate-400">
-                            Hạn nộp: {new Date(activeLesson.homework.deadline).toLocaleDateString("vi-VN")}
-                          </span>
-                        )}
-                      </div>
-                      <Button
-                        size="sm"
-                        onClick={() => navigate(`/exam/${activeLesson.homework?.id}`)}
-                      >
-                        {activeLesson.homework.status === "GRADED" ? "Xem điểm" : "Làm bài"}
-                      </Button>
-                    </Card>
-                  ) : (
-                    <p className="text-xs text-slate-400 py-2">Không có bài tập cho buổi học này.</p>
-                  )}
+                  <Card className="rounded-xl border-slate-200 bg-slate-50 p-4 flex items-center justify-between">
+                    <div>
+                      <h5 className="font-bold text-sm text-slate-900">{activeLesson.title}</h5>
+                      <span className="text-xs text-slate-500">
+                        {activeLesson.resources?.length || 0} Hoạt động luyện tập (Checklist)
+                      </span>
+                    </div>
+                    <Button
+                      size="sm"
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
+                      onClick={() => navigate(`/exam/${activeLesson.id}`)}
+                    >
+                      {activeLesson.status === "COMPLETED" ? "Xem kết quả" : "✍️ Làm bài ngay"}
+                    </Button>
+                  </Card>
                 </div>
               </Card>
             ) : (

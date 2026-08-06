@@ -31,14 +31,7 @@ export function useStudentLifecycle() {
   const homeworkCount = dueTodayTasks.length + upcomingTasks.length + completedTasks.length;
 
   // Pure derived state calculation
-  let state: StudentLifecycleState = "PRE_ENROLLMENT";
-  if (hasEnrollments) {
-    if (homeworkCount > 0) {
-      state = "ACTIVE_LEARNING";
-    } else {
-      state = "ENROLLED";
-    }
-  }
+  const state: StudentLifecycleState = hasEnrollments ? "ENROLLED" : "PRE_ENROLLMENT";
 
   return {
     state,
