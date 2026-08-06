@@ -21,10 +21,11 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/useAuth";
+import { useStudentLifecycle } from "@/hooks/useStudentLifecycle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SiteLogo } from "@/components/common/SiteLogo";
 
-const navigationItems = [
+const fullNavigationItems = [
   {
     title: "Bài tập",
     url: "/",
@@ -51,11 +52,31 @@ const navigationItems = [
   },
 ];
 
+const preEnrollmentNavigationItems = [
+  {
+    title: "Chào mừng",
+    url: "/",
+    icon: Home,
+    description: "Trang hỗ trợ & Kích hoạt",
+  },
+  {
+    title: "Cá nhân",
+    url: "/profile",
+    icon: User,
+    description: "Thông tin cá nhân",
+  },
+];
+
 export function ClientSidebar() {
   const location = useLocation();
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const { user } = useAuth();
+  const { state: lifecycleState } = useStudentLifecycle();
+
+  const navigationItems = lifecycleState === "PRE_ENROLLMENT"
+    ? preEnrollmentNavigationItems
+    : fullNavigationItems;
 
   const isActive = (path: string) => location.pathname === path;
 

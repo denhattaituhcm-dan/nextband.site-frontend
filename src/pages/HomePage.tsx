@@ -9,6 +9,7 @@ import { useState } from "react";
 import { HomeworkContinueCard } from "@/components/homework/HomeworkContinueCard";
 import { HomeworkEmptyState } from "@/components/homework/HomeworkEmptyState";
 import { HomeworkList } from "@/components/homework/HomeworkList";
+import { useStudentLifecycle } from "@/hooks/useStudentLifecycle";
 import {
   BookOpen,
   Target,
@@ -27,6 +28,7 @@ import {
 export default function HomePage() {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { state: lifecycleState, enrollments, workspace, dueTodayTasks, upcomingTasks, completedTasks } = useStudentLifecycle();
 
   // 0. Fetch Unified Workspace ViewModel (/me/workspace)
   const { data: studentWorkspaceData } = useQuery({
@@ -38,33 +40,11 @@ export default function HomePage() {
 
   const workspaceViewModel = studentWorkspaceData?.data;
 
-  // 0b. Legacy Homework Workspace Projection (Safe failover)
-  const { data: workspaceData } = useQuery({
-    queryKey: ["student-homework-workspace"],
-    queryFn: () => homeworksApi.getWorkspace().catch(() => ({ success: false, data: null as any })),
-    enabled: isAuthenticated,
-    retry: false,
-  });
-
-  const workspace = workspaceData?.data;
   const continueTask = workspace?.continue || null;
-  const dueTodayTasks = Array.isArray(workspace?.dueToday) ? workspace.dueToday : [];
-  const upcomingTasks = Array.isArray(workspace?.upcoming) ? workspace.upcoming : [];
-  const completedTasks = Array.isArray(workspace?.completed) ? workspace.completed : [];
-
-  // 1. Fetch Enrollments
-  const { data: enrollments = [] } = useQuery({
-    queryKey: ["my-enrollments"],
-    queryFn: () => enrollmentsApi.list().catch(() => []),
-    enabled: isAuthenticated,
-    retry: false,
-  });
 
   const hasClasses = Array.isArray(enrollments) && enrollments.length > 0;
   const enrolledClassId = workspaceViewModel?.classes?.[0]?.id || enrollments[0]?.course_id || enrollments[0]?.courses?.id;
 
-  // Evaluate State from ViewModel or fallback
-  const workspaceState = workspaceViewModel?.state || (hasClasses ? "ACTIVE_STUDENT" : "NO_ENROLLMENT");
   const nextAction = workspaceViewModel?.nextAction;
 
   // Handler for "Tiếp tục học" dynamic action
@@ -86,7 +66,7 @@ export default function HomePage() {
     retry: false,
   });
 
-  const classLessons = classLessonsData?.data?.lessons || [];
+  const classLessons = Array.isArray(classLessonsData?.data) ? classLessonsData.data : [];
   const totalCourseLessons = classLessons.length > 0 ? classLessons.length : 27;
 
   // 2. Fetch Student Real Submissions
@@ -104,20 +84,53 @@ export default function HomePage() {
   const progressPercent = Math.min(100, Math.round((completedCount / totalCourseLessons) * 100));
 
   const isOverdue = dueTodayTasks.length > 0;
-  const isDailyCompleted = workspaceState === "ACTIVE_STUDENT" && dueTodayTasks.length === 0 && !continueTask;
+  const isDailyCompleted = lifecycleState === "ACTIVE_LEARNING" && dueTodayTasks.length === 0 && !continueTask;
 
   return (
     <div className="min-h-screen bg-[#F7F9FC] pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 space-y-6">
         
         {/* ========================================================================= */}
-        {/* STATE: NO_ENROLLMENT, PENDING_ACTIVATION or SUSPENDED_STUDENT            */}
+        {/* STATE 1: PRE_ENROLLMENT (WAITING ROOM FOR UNENROLLED STUDENTS)           */}
         {/* ========================================================================= */}
-        {workspaceState !== "ACTIVE_STUDENT" ? (
-          <HomeworkEmptyState state={workspaceState} />
+        {lifecycleState === "PRE_ENROLLMENT" ? (
+          <HomeworkEmptyState state="NO_ENROLLMENT" />
+        ) : lifecycleState === "ENROLLED" ? (
+          /* ========================================================================= */
+          /* STATE 2: ENROLLED (CLASS ASSIGNED, BUT NO HOMEWORK YET)                  */
+          /* ========================================================================= */
+          <div className="space-y-6">
+            <Card className="border-0 text-white rounded-2xl shadow-lg p-6 md:p-8 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-center space-y-4">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 text-white border border-white/20 text-xs font-bold backdrop-blur-md">
+                <BookOpen className="w-4 h-4 text-sky-300" />
+                <span>{activeClassName}</span>
+              </div>
+              <div className="space-y-2 max-w-3xl mx-auto">
+                <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+                  Xin chào, {user?.fullName || "Học viên"}! Bạn đã được xếp vào lớp thành công 🎉
+                </h1>
+                <p className="text-xs md:text-sm text-blue-100 font-medium leading-relaxed">
+                  Giáo viên hiện chưa giao bài tập cho buổi học này. Bạn đã sẵn sàng cho lộ trình học tập tiếp theo!
+                </p>
+              </div>
+              {enrolledClassId && (
+                <div className="pt-2 flex justify-center">
+                  <Button
+                    onClick={() => navigate(`/class/${enrolledClassId}/lessons`)}
+                    className="rounded-full bg-white text-blue-700 hover:bg-blue-50 font-bold px-6 py-2.5 shadow-md active:scale-95 text-xs transition-all"
+                  >
+                    <BookOpen className="h-4 w-4 mr-2 text-blue-600" />
+                    <span>Xem chương trình học</span>
+                  </Button>
+                </div>
+              )}
+            </Card>
+
+            <HomeworkEmptyState hasClasses={true} state="ACTIVE_STUDENT" />
+          </div>
         ) : (
           /* ========================================================================= */
-          /* STATE: ACTIVE_STUDENT (STUDENT WORKSPACE CONTROL TOWER)                   */
+          /* STATE 3: ACTIVE_LEARNING (FULL DASHBOARD WITH TASKS & PROGRESS)          */
           /* ========================================================================= */
           <>
             {/* 1. BRAND IDENTITY HEADER WITH PERSONAL TARGET MATRIX & PROGRESS */}

@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, KeyRound, Sparkles, MessageCircle } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { JoinClassModal } from "@/components/auth/JoinClassModal";
 
 interface HomeworkEmptyStateProps {
   onJoinClick?: () => void;
@@ -12,14 +13,25 @@ interface HomeworkEmptyStateProps {
 
 export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkEmptyStateProps) {
   const { settings } = useSiteSettings();
+  const [joinModalOpen, setJoinModalOpen] = useState(false);
 
   const isSuspended = state === "SUSPENDED_STUDENT";
   const isPending = state === "PENDING_ACTIVATION";
 
+  const handleOpenJoinModal = () => {
+    if (onJoinClick) {
+      onJoinClick();
+    } else {
+      setJoinModalOpen(true);
+    }
+  };
+
   return (
     <div className="space-y-6">
+      <JoinClassModal open={joinModalOpen} onOpenChange={setJoinModalOpen} />
+
       {/* 1. HERO WELCOME BANNER FOR UNENROLLED OR PENDING/SUSPENDED STUDENTS */}
-      <Card className={`border-0 text-white rounded-2xl shadow-lg p-6 md:p-8 text-center space-y-4 relative overflow-hidden ${
+      <Card className={`border-0 text-white rounded-2xl shadow-lg p-6 md:p-8 text-center space-y-5 relative overflow-hidden ${
         isSuspended
           ? "bg-gradient-to-r from-amber-600 via-red-600 to-rose-700"
           : isPending
@@ -39,24 +51,32 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
               ? "Lớp học của bạn đang ở trạng thái Tạm dừng. Vui lòng liên hệ Giáo viên hoặc Trung tâm để kiểm tra thông tin và mở lại quyền học."
               : isPending
               ? "Hệ thống đã ghi nhận lớp học của bạn. Giáo viên sẽ bật Kích hoạt để bạn bắt đầu truy cập bài học."
-              : "Tài khoản Email của bạn chưa được liên kết với Lớp học nào. Vui lòng liên hệ Giáo viên / Trung tâm ARIS IELTS để được xếp lớp."}
+              : "Tài khoản Email của bạn chưa được liên kết với Lớp học nào. Vui lòng liên hệ Giáo viên / Trung tâm ARIS IELTS hoặc nhập mã lớp được cấp để xếp lớp."}
           </p>
         </div>
 
-        {/* SUPPORT BUTTON MATCHING LOGIN PAGE STYLE */}
-        {settings.zaloLink && (
-          <div className="flex justify-center pt-1">
+        {/* DUAL ACTION CTAS matching Student Lifecycle Job-to-be-Done */}
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <Button
+            onClick={handleOpenJoinModal}
+            className="rounded-full bg-white text-blue-700 hover:bg-blue-50 font-bold px-5 py-2.5 shadow-md active:scale-95 text-xs transition-all"
+          >
+            <KeyRound className="h-4 w-4 mr-1.5 text-blue-600" />
+            <span>Nhập mã lớp học</span>
+          </Button>
+
+          {settings.zaloLink && (
             <a
               href={settings.zaloLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md text-xs font-semibold transition-all shadow-sm active:scale-95"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/25 backdrop-blur-md text-xs font-semibold transition-all shadow-sm active:scale-95"
             >
               <MessageCircle className="h-4 w-4 text-sky-300" />
               <span>Support / Liên hệ Giáo viên</span>
             </a>
-          </div>
-        )}
+          )}
+        </div>
       </Card>
 
       {/* 2. 5-STEP GUIDELINE WORKFLOW */}
