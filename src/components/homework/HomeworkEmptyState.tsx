@@ -26,7 +26,7 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
           ? "bg-gradient-to-r from-sky-600 via-indigo-600 to-blue-700"
           : "bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600"
       }`}>
-        <div className="space-y-2 max-w-xl mx-auto">
+        <div className="space-y-2 max-w-3xl mx-auto">
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             {isSuspended
               ? "Tài khoản Lớp học tạm thời bị tạm dừng"
@@ -65,37 +65,32 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
           Hệ thống hoạt động như thế nào? (5 Bước đơn giản)
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-2">
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2 flex flex-col items-center justify-center">
             <span className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 font-extrabold text-xs inline-flex items-center justify-center">1</span>
             <div className="font-bold text-xs text-slate-900">Đăng nhập</div>
-            <p className="text-[11px] text-slate-500">Google OAuth hoặc tài khoản được cấp</p>
           </div>
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2 flex flex-col items-center justify-center">
             <span className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 font-extrabold text-xs inline-flex items-center justify-center">2</span>
             <div className="font-bold text-xs text-slate-900">Giáo viên xếp lớp</div>
-            <p className="text-[11px] text-slate-500">Kích hoạt quyền truy cập lớp</p>
           </div>
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2 flex flex-col items-center justify-center">
             <span className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 font-extrabold text-xs inline-flex items-center justify-center">3</span>
             <div className="font-bold text-xs text-slate-900">Nhận bài tập</div>
-            <p className="text-[11px] text-slate-500">Theo đúng lộ trình từng buổi</p>
           </div>
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2 flex flex-col items-center justify-center">
             <span className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 font-extrabold text-xs inline-flex items-center justify-center">4</span>
             <div className="font-bold text-xs text-slate-900">Làm & Nộp bài</div>
-            <p className="text-[11px] text-slate-500">Ghi âm, trắc nghiệm & tự luận</p>
           </div>
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-2 flex flex-col items-center justify-center">
             <span className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 font-extrabold text-xs inline-flex items-center justify-center">5</span>
             <div className="font-bold text-xs text-slate-900">Giáo viên nhận xét</div>
-            <p className="text-[11px] text-slate-500">Chấm điểm & chữa bài chi tiết</p>
           </div>
         </div>
       </Card>
 
       {/* 3. 5-LEVEL IELTS ROADMAP SUMMARY - YOUR IELTS GROWTH PATH (BUILDER JOURNEY METAPHOR) */}
       <Card className="rounded-2xl border border-slate-100 bg-white p-6 md:p-8 space-y-6 shadow-sm overflow-hidden">
-        <div className="text-center space-y-1.5 max-w-xl mx-auto">
+        <div className="text-center space-y-1.5 max-w-3xl mx-auto">
           <h3 className="text-lg md:text-xl font-black text-slate-900 tracking-tight">
             YOUR IELTS GROWTH PATH
           </h3>
