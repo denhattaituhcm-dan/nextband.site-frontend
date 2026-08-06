@@ -1,0 +1,2767 @@
+{
+  "version": "v1.0.0",
+  "generated_at": "2026-08-06T18:56:10.010Z",
+  "assets": [
+    {
+      "asset_id": "audio-1771142569913-957d67b8-b58a-41e8-848f-e1f55b2fd019.mp3",
+      "type": "audio",
+      "checksum": "83b5147721d0dadbd1d2e5d434271735feea035a30f381f90f63d4c50cf6c856",
+      "size_bytes": 102018,
+      "source_path": "uploads/audio/1771142569913-957d67b8-b58a-41e8-848f-e1f55b2fd019.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.012Z"
+    },
+    {
+      "asset_id": "audio-1771497413068-ba7b0404-3135-477a-8135-4c970281c193.mp3",
+      "type": "audio",
+      "checksum": "20fc6b427a1210da5ae9dd7b7ef25cbd28d74b633050fa4c491349b652a1ddcc",
+      "size_bytes": 463787,
+      "source_path": "uploads/audio/1771497413068-ba7b0404-3135-477a-8135-4c970281c193.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.013Z"
+    },
+    {
+      "asset_id": "audio-1771671970786-29f7c71f-a1b5-4e6d-9c3b-ffb02ffc7191.mp3",
+      "type": "audio",
+      "checksum": "ec7fa0b7455df9582e5191d0ba353af6e75440aa5c97496892874c0281e206e6",
+      "size_bytes": 313344,
+      "source_path": "uploads/audio/1771671970786-29f7c71f-a1b5-4e6d-9c3b-ffb02ffc7191.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.014Z"
+    },
+    {
+      "asset_id": "audio-1771685093234-211cbb06-c83d-4dff-953d-8e53735bf8ce.mp3",
+      "type": "audio",
+      "checksum": "ec7fa0b7455df9582e5191d0ba353af6e75440aa5c97496892874c0281e206e6",
+      "size_bytes": 313344,
+      "source_path": "uploads/audio/1771685093234-211cbb06-c83d-4dff-953d-8e53735bf8ce.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.014Z"
+    },
+    {
+      "asset_id": "audio-1771686175955-593e5180-5db3-4bf1-9961-cb7a63b1cda8.mp3",
+      "type": "audio",
+      "checksum": "ec7fa0b7455df9582e5191d0ba353af6e75440aa5c97496892874c0281e206e6",
+      "size_bytes": 313344,
+      "source_path": "uploads/audio/1771686175955-593e5180-5db3-4bf1-9961-cb7a63b1cda8.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.015Z"
+    },
+    {
+      "asset_id": "audio-1771686847214-42b79140-94cb-4357-9708-2dfaa8865147.mp3",
+      "type": "audio",
+      "checksum": "ec7fa0b7455df9582e5191d0ba353af6e75440aa5c97496892874c0281e206e6",
+      "size_bytes": 313344,
+      "source_path": "uploads/audio/1771686847214-42b79140-94cb-4357-9708-2dfaa8865147.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.016Z"
+    },
+    {
+      "asset_id": "audio-1771687607831-af75b187-1cc2-43e5-b628-d3302ca7b930.mp3",
+      "type": "audio",
+      "checksum": "ec7fa0b7455df9582e5191d0ba353af6e75440aa5c97496892874c0281e206e6",
+      "size_bytes": 313344,
+      "source_path": "uploads/audio/1771687607831-af75b187-1cc2-43e5-b628-d3302ca7b930.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.017Z"
+    },
+    {
+      "asset_id": "audio-1771687633429-7fa08be0-7079-4749-97a5-df06113f0a23.mp3",
+      "type": "audio",
+      "checksum": "ec7fa0b7455df9582e5191d0ba353af6e75440aa5c97496892874c0281e206e6",
+      "size_bytes": 313344,
+      "source_path": "uploads/audio/1771687633429-7fa08be0-7079-4749-97a5-df06113f0a23.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.018Z"
+    },
+    {
+      "asset_id": "audio-1771690567978-16865918-6921-4901-a951-977e406ffe37.mp3",
+      "type": "audio",
+      "checksum": "ec7fa0b7455df9582e5191d0ba353af6e75440aa5c97496892874c0281e206e6",
+      "size_bytes": 313344,
+      "source_path": "uploads/audio/1771690567978-16865918-6921-4901-a951-977e406ffe37.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.019Z"
+    },
+    {
+      "asset_id": "audio-1771729712652-ccb24d11-f5f8-4841-82fe-17b702089d33.mp3",
+      "type": "audio",
+      "checksum": "ec7fa0b7455df9582e5191d0ba353af6e75440aa5c97496892874c0281e206e6",
+      "size_bytes": 313344,
+      "source_path": "uploads/audio/1771729712652-ccb24d11-f5f8-4841-82fe-17b702089d33.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.020Z"
+    },
+    {
+      "asset_id": "audio-1771772037812-d2340c82-dbb3-4bb6-a82a-df0a93d74856.mp3",
+      "type": "audio",
+      "checksum": "088975c320ce490ad3d28645f79f54c7c7df55c5bf16871df1e8fc8f6f356b76",
+      "size_bytes": 406946,
+      "source_path": "uploads/audio/1771772037812-d2340c82-dbb3-4bb6-a82a-df0a93d74856.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.021Z"
+    },
+    {
+      "asset_id": "audio-1771772050535-3c0d04b1-8ae5-44e5-a8d4-a315dbee32fe.mp3",
+      "type": "audio",
+      "checksum": "088975c320ce490ad3d28645f79f54c7c7df55c5bf16871df1e8fc8f6f356b76",
+      "size_bytes": 406946,
+      "source_path": "uploads/audio/1771772050535-3c0d04b1-8ae5-44e5-a8d4-a315dbee32fe.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.022Z"
+    },
+    {
+      "asset_id": "audio-1771774544333-ee313659-5d8e-47f9-ab38-c48900a0a2c9.mp3",
+      "type": "audio",
+      "checksum": "088975c320ce490ad3d28645f79f54c7c7df55c5bf16871df1e8fc8f6f356b76",
+      "size_bytes": 406946,
+      "source_path": "uploads/audio/1771774544333-ee313659-5d8e-47f9-ab38-c48900a0a2c9.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.022Z"
+    },
+    {
+      "asset_id": "audio-1772072091902-c1ea0160-c771-41e0-acaa-31e8e1cb7876.mp3",
+      "type": "audio",
+      "checksum": "088975c320ce490ad3d28645f79f54c7c7df55c5bf16871df1e8fc8f6f356b76",
+      "size_bytes": 406946,
+      "source_path": "uploads/audio/1772072091902-c1ea0160-c771-41e0-acaa-31e8e1cb7876.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.023Z"
+    },
+    {
+      "asset_id": "audio-1772072111020-19fc1a70-9811-4738-ac8c-5dd58fca2411.mp3",
+      "type": "audio",
+      "checksum": "ec7fa0b7455df9582e5191d0ba353af6e75440aa5c97496892874c0281e206e6",
+      "size_bytes": 313344,
+      "source_path": "uploads/audio/1772072111020-19fc1a70-9811-4738-ac8c-5dd58fca2411.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.024Z"
+    },
+    {
+      "asset_id": "audio-1772072464043-0d74e706-1c61-4dd6-b714-17bebfebbaf9.mp3",
+      "type": "audio",
+      "checksum": "088975c320ce490ad3d28645f79f54c7c7df55c5bf16871df1e8fc8f6f356b76",
+      "size_bytes": 406946,
+      "source_path": "uploads/audio/1772072464043-0d74e706-1c61-4dd6-b714-17bebfebbaf9.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.025Z"
+    },
+    {
+      "asset_id": "audio-1772072483784-31c78b3b-d06d-403b-8576-8b695f4ba3f2.mp3",
+      "type": "audio",
+      "checksum": "ec7fa0b7455df9582e5191d0ba353af6e75440aa5c97496892874c0281e206e6",
+      "size_bytes": 313344,
+      "source_path": "uploads/audio/1772072483784-31c78b3b-d06d-403b-8576-8b695f4ba3f2.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.026Z"
+    },
+    {
+      "asset_id": "audio-1772694090673-422171c1-0032-469c-9c1f-e4c50e17c287.mp3",
+      "type": "audio",
+      "checksum": "4f8664b5afc5ecbaf1c2d42e45bfa25ef92eba2aed88a969bc0756fc8cd6c81e",
+      "size_bytes": 128560,
+      "source_path": "uploads/audio/1772694090673-422171c1-0032-469c-9c1f-e4c50e17c287.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.028Z"
+    },
+    {
+      "asset_id": "audio-1772737549609-5306927d-c8c2-4a23-8bfd-cc050602c6c1.wav",
+      "type": "audio",
+      "checksum": "84d3c0a8772b9534ae1df359993090d00e92bb6a57651be939418e1316ee386f",
+      "size_bytes": 4169631,
+      "source_path": "uploads/audio/1772737549609-5306927d-c8c2-4a23-8bfd-cc050602c6c1.wav",
+      "mime": "audio/wav",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.031Z"
+    },
+    {
+      "asset_id": "audio-1772741370549-a5516be2-77e5-44dc-b0d1-b62e30680689.wav",
+      "type": "audio",
+      "checksum": "84d3c0a8772b9534ae1df359993090d00e92bb6a57651be939418e1316ee386f",
+      "size_bytes": 4169631,
+      "source_path": "uploads/audio/1772741370549-a5516be2-77e5-44dc-b0d1-b62e30680689.wav",
+      "mime": "audio/wav",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.036Z"
+    },
+    {
+      "asset_id": "audio-1772863471806-fdcc1311-31a0-4ecb-9fe4-d6235e068a8c.mp3",
+      "type": "audio",
+      "checksum": "b55f19a5a05fa3b328acbbde3a81e9efd14314a743a51f107ebd58f56ff721ce",
+      "size_bytes": 41836,
+      "source_path": "uploads/audio/1772863471806-fdcc1311-31a0-4ecb-9fe4-d6235e068a8c.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.036Z"
+    },
+    {
+      "asset_id": "audio-1772885270478-e3717d91-f1f7-4fc3-bf7d-9db467a23f1e.wav",
+      "type": "audio",
+      "checksum": "84d3c0a8772b9534ae1df359993090d00e92bb6a57651be939418e1316ee386f",
+      "size_bytes": 4169631,
+      "source_path": "uploads/audio/1772885270478-e3717d91-f1f7-4fc3-bf7d-9db467a23f1e.wav",
+      "mime": "audio/wav",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.040Z"
+    },
+    {
+      "asset_id": "audio-1772895061331-5488d1c6-d3ce-4d51-83d3-92d26816fdf9.mp3",
+      "type": "audio",
+      "checksum": "b55f19a5a05fa3b328acbbde3a81e9efd14314a743a51f107ebd58f56ff721ce",
+      "size_bytes": 41836,
+      "source_path": "uploads/audio/1772895061331-5488d1c6-d3ce-4d51-83d3-92d26816fdf9.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.041Z"
+    },
+    {
+      "asset_id": "audio-1772989691871-14a204f2-6d7d-4897-bd05-5e59115fa112.mp3",
+      "type": "audio",
+      "checksum": "aa9894b9a2d8dcefe239240ccc2baa19c2a751980e42cce136dcfe4c9004a187",
+      "size_bytes": 966356,
+      "source_path": "uploads/audio/1772989691871-14a204f2-6d7d-4897-bd05-5e59115fa112.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.043Z"
+    },
+    {
+      "asset_id": "audio-1772990574385-5c9b3b46-afc7-4fb2-8bbf-8dfa33b5c716.wav",
+      "type": "audio",
+      "checksum": "84d3c0a8772b9534ae1df359993090d00e92bb6a57651be939418e1316ee386f",
+      "size_bytes": 4169631,
+      "source_path": "uploads/audio/1772990574385-5c9b3b46-afc7-4fb2-8bbf-8dfa33b5c716.wav",
+      "mime": "audio/wav",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.047Z"
+    },
+    {
+      "asset_id": "audio-1772990658211-e3cc94a9-056d-4815-8db2-dbeb5984b4a2.wav",
+      "type": "audio",
+      "checksum": "84d3c0a8772b9534ae1df359993090d00e92bb6a57651be939418e1316ee386f",
+      "size_bytes": 4169631,
+      "source_path": "uploads/audio/1772990658211-e3cc94a9-056d-4815-8db2-dbeb5984b4a2.wav",
+      "mime": "audio/wav",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.051Z"
+    },
+    {
+      "asset_id": "audio-1773025082896-76fae110-7c74-440a-8260-6ffa2b0aef51.mp3",
+      "type": "audio",
+      "checksum": "088975c320ce490ad3d28645f79f54c7c7df55c5bf16871df1e8fc8f6f356b76",
+      "size_bytes": 406946,
+      "source_path": "uploads/audio/1773025082896-76fae110-7c74-440a-8260-6ffa2b0aef51.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.052Z"
+    },
+    {
+      "asset_id": "audio-1773025096765-6f2b19c3-55fc-4add-8320-612c5ad71aea.mp3",
+      "type": "audio",
+      "checksum": "ec7fa0b7455df9582e5191d0ba353af6e75440aa5c97496892874c0281e206e6",
+      "size_bytes": 313344,
+      "source_path": "uploads/audio/1773025096765-6f2b19c3-55fc-4add-8320-612c5ad71aea.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.053Z"
+    },
+    {
+      "asset_id": "audio-1773025117784-4877da53-5aa2-4bf8-93d6-1794a06df435.mp3",
+      "type": "audio",
+      "checksum": "088975c320ce490ad3d28645f79f54c7c7df55c5bf16871df1e8fc8f6f356b76",
+      "size_bytes": 406946,
+      "source_path": "uploads/audio/1773025117784-4877da53-5aa2-4bf8-93d6-1794a06df435.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.054Z"
+    },
+    {
+      "asset_id": "audio-1773025256737-163f894c-7556-425d-b607-b464323fe6c1.mp3",
+      "type": "audio",
+      "checksum": "ec7fa0b7455df9582e5191d0ba353af6e75440aa5c97496892874c0281e206e6",
+      "size_bytes": 313344,
+      "source_path": "uploads/audio/1773025256737-163f894c-7556-425d-b607-b464323fe6c1.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.055Z"
+    },
+    {
+      "asset_id": "audio-1773069434980-862511c9-2ff8-454a-b2fd-7e656a1ef063.mp3",
+      "type": "audio",
+      "checksum": "088975c320ce490ad3d28645f79f54c7c7df55c5bf16871df1e8fc8f6f356b76",
+      "size_bytes": 406946,
+      "source_path": "uploads/audio/1773069434980-862511c9-2ff8-454a-b2fd-7e656a1ef063.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.055Z"
+    },
+    {
+      "asset_id": "audio-1773069874151-e0cedcdc-f953-41d6-be74-44b9964638a5.mp3",
+      "type": "audio",
+      "checksum": "ec7fa0b7455df9582e5191d0ba353af6e75440aa5c97496892874c0281e206e6",
+      "size_bytes": 313344,
+      "source_path": "uploads/audio/1773069874151-e0cedcdc-f953-41d6-be74-44b9964638a5.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.056Z"
+    },
+    {
+      "asset_id": "audio-1773069952107-f5d6c9a4-d129-473e-9499-92f5527f18b1.mp3",
+      "type": "audio",
+      "checksum": "ec7fa0b7455df9582e5191d0ba353af6e75440aa5c97496892874c0281e206e6",
+      "size_bytes": 313344,
+      "source_path": "uploads/audio/1773069952107-f5d6c9a4-d129-473e-9499-92f5527f18b1.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.057Z"
+    },
+    {
+      "asset_id": "audio-1773073202508-535ad1cb-169e-43a1-b60a-e1055eb24a6a.mp3",
+      "type": "audio",
+      "checksum": "28ba523931fb2e0b1951f4e922bbf187c5c196a9a7992a0b03be26ce7552d1b7",
+      "size_bytes": 88853,
+      "source_path": "uploads/audio/1773073202508-535ad1cb-169e-43a1-b60a-e1055eb24a6a.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.058Z"
+    },
+    {
+      "asset_id": "audio-1773073268388-cf0f01a1-a4a0-4b59-a343-d4f23008e2bd.mp3",
+      "type": "audio",
+      "checksum": "33699314cab6e1da5e6793557bf1811157b3e6815e785ce631b084204ea33c52",
+      "size_bytes": 141934,
+      "source_path": "uploads/audio/1773073268388-cf0f01a1-a4a0-4b59-a343-d4f23008e2bd.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.058Z"
+    },
+    {
+      "asset_id": "audio-1773073618148-8f04f291-a986-4fd3-b768-1848dd50b84b.mp3",
+      "type": "audio",
+      "checksum": "33699314cab6e1da5e6793557bf1811157b3e6815e785ce631b084204ea33c52",
+      "size_bytes": 141934,
+      "source_path": "uploads/audio/1773073618148-8f04f291-a986-4fd3-b768-1848dd50b84b.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.059Z"
+    },
+    {
+      "asset_id": "audio-1773073699232-be1d5bec-da58-4849-8f4d-bc2d68fd8fbb.mp3",
+      "type": "audio",
+      "checksum": "fa9a36419438d48827dcb6749aeaadfd127c2f33331c31f18c85b64b35def496",
+      "size_bytes": 74642,
+      "source_path": "uploads/audio/1773073699232-be1d5bec-da58-4849-8f4d-bc2d68fd8fbb.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.060Z"
+    },
+    {
+      "asset_id": "audio-1773073746922-6d5118f1-6d32-461c-83f4-c7b42a8a6502.mp3",
+      "type": "audio",
+      "checksum": "62b22dde41c9c09ce2b81ace6db9c45427c4f9571c4236079377f3dc87b2a9cb",
+      "size_bytes": 87390,
+      "source_path": "uploads/audio/1773073746922-6d5118f1-6d32-461c-83f4-c7b42a8a6502.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.060Z"
+    },
+    {
+      "asset_id": "audio-1773073791293-96275aae-3f2a-4749-b0ad-af5cef0d1ba2.mp3",
+      "type": "audio",
+      "checksum": "95488299aa0b8152ef2e82b0e5477eab7ed3165cdc16d647a5fa5c71391a0ba3",
+      "size_bytes": 98675,
+      "source_path": "uploads/audio/1773073791293-96275aae-3f2a-4749-b0ad-af5cef0d1ba2.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.061Z"
+    },
+    {
+      "asset_id": "audio-1773073827663-b33d4324-ae4c-4c01-b1c0-acb4b874a871.mp3",
+      "type": "audio",
+      "checksum": "91cbcd3b1f43ef6f903bc60c74745bf1292def517cd7cb72d7c1a064a53c0385",
+      "size_bytes": 75687,
+      "source_path": "uploads/audio/1773073827663-b33d4324-ae4c-4c01-b1c0-acb4b874a871.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.062Z"
+    },
+    {
+      "asset_id": "audio-1773217563510-8a2c433a-2536-4274-a1bb-c33efd8119cb.mp3",
+      "type": "audio",
+      "checksum": "07dd4b800adc9723215032322dea5afe5a1cd9aad9d1c6de68ffccb56fe9956c",
+      "size_bytes": 127514,
+      "source_path": "uploads/audio/1773217563510-8a2c433a-2536-4274-a1bb-c33efd8119cb.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.062Z"
+    },
+    {
+      "asset_id": "audio-1773217661536-fe656a7b-df2c-4ca1-a116-0fbe3e208390.mp3",
+      "type": "audio",
+      "checksum": "a5d6133be69666d3bf2b8e3f5f640da0053ae0d68f41f8afbee45f44685ed6e0",
+      "size_bytes": 124171,
+      "source_path": "uploads/audio/1773217661536-fe656a7b-df2c-4ca1-a116-0fbe3e208390.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.063Z"
+    },
+    {
+      "asset_id": "audio-1773217747814-19481d87-19a8-4de8-a95d-bece39d471d6.mp3",
+      "type": "audio",
+      "checksum": "4e59be61623061bcd04496d49680300d7f8f54bfe7990786189d0b24ae46977e",
+      "size_bytes": 86763,
+      "source_path": "uploads/audio/1773217747814-19481d87-19a8-4de8-a95d-bece39d471d6.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.064Z"
+    },
+    {
+      "asset_id": "audio-1773217809355-12c19004-1854-4644-93fc-c0d0124782df.mp3",
+      "type": "audio",
+      "checksum": "5353425439e7c5383ab5897098fe1df484369ef593e0d7015ba58c87780fd2bc",
+      "size_bytes": 89062,
+      "source_path": "uploads/audio/1773217809355-12c19004-1854-4644-93fc-c0d0124782df.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.064Z"
+    },
+    {
+      "asset_id": "audio-1773217866539-0c2de703-8436-4cca-b574-f34d60c7d5f4.mp3",
+      "type": "audio",
+      "checksum": "ceedeb3357602f452ea81fe4af5043f026f7dc09de5b4a1ed196133969237bbd",
+      "size_bytes": 103900,
+      "source_path": "uploads/audio/1773217866539-0c2de703-8436-4cca-b574-f34d60c7d5f4.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.065Z"
+    },
+    {
+      "asset_id": "audio-1773217917194-5374dd62-0f38-4695-80f2-d2854c84d576.mp3",
+      "type": "audio",
+      "checksum": "2e62f3440491c27e3574349fbc0f49492d0d1b98ccd7f352aa01be1836c79669",
+      "size_bytes": 158025,
+      "source_path": "uploads/audio/1773217917194-5374dd62-0f38-4695-80f2-d2854c84d576.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.066Z"
+    },
+    {
+      "asset_id": "audio-1773218559598-c1db2898-da67-43dd-8eca-590174c4398b.mp3",
+      "type": "audio",
+      "checksum": "5dddd9e6ad9ae51fefc0dd64e846a7fca5044b3d867249f9b561e8b6fc4d2a13",
+      "size_bytes": 520185,
+      "source_path": "uploads/audio/1773218559598-c1db2898-da67-43dd-8eca-590174c4398b.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.067Z"
+    },
+    {
+      "asset_id": "audio-1773218815247-9da36945-fe3a-4341-b37d-bed348aba61c.mp3",
+      "type": "audio",
+      "checksum": "5dddd9e6ad9ae51fefc0dd64e846a7fca5044b3d867249f9b561e8b6fc4d2a13",
+      "size_bytes": 520185,
+      "source_path": "uploads/audio/1773218815247-9da36945-fe3a-4341-b37d-bed348aba61c.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.068Z"
+    },
+    {
+      "asset_id": "audio-1773219972900-e613ecc6-5f15-490d-a660-8098c424036d.mp3",
+      "type": "audio",
+      "checksum": "690ff2e5d3899bb0cc9b625b0d1d0e995dec18b5163df911836def7f616ca042",
+      "size_bytes": 33685,
+      "source_path": "uploads/audio/1773219972900-e613ecc6-5f15-490d-a660-8098c424036d.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.069Z"
+    },
+    {
+      "asset_id": "audio-1773220045954-8ba4746a-2643-4f26-8785-0ca0a04e7e42.mp3",
+      "type": "audio",
+      "checksum": "9a20cc6495f21c0a525236914b607c543609f87044eff87d72d3bebaedb2a263",
+      "size_bytes": 30759,
+      "source_path": "uploads/audio/1773220045954-8ba4746a-2643-4f26-8785-0ca0a04e7e42.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.069Z"
+    },
+    {
+      "asset_id": "audio-1773220096735-f42b8f12-5f55-4672-b0d3-b8e582b3cbe0.mp3",
+      "type": "audio",
+      "checksum": "a03c6070149b4aaecf6dadda0e077c33b1b21ef766dcfac8a25dde1f761ab1f0",
+      "size_bytes": 28878,
+      "source_path": "uploads/audio/1773220096735-f42b8f12-5f55-4672-b0d3-b8e582b3cbe0.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.070Z"
+    },
+    {
+      "asset_id": "audio-1773220125853-69610978-0124-4d87-bd38-48b78b81c384.mp3",
+      "type": "audio",
+      "checksum": "34698a3000b49d38d16760d0cea1c708acd4e2be5e29ab96289cdcb7899169c6",
+      "size_bytes": 31177,
+      "source_path": "uploads/audio/1773220125853-69610978-0124-4d87-bd38-48b78b81c384.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.070Z"
+    },
+    {
+      "asset_id": "audio-1773220239511-7cc0fd36-2fc5-419c-965e-f97a2c7f2fe6.mp3",
+      "type": "audio",
+      "checksum": "c8a5741f0ff85ee209b7ccca3a7da0965a5873ee08b5d47dc3cb24455171525b",
+      "size_bytes": 31177,
+      "source_path": "uploads/audio/1773220239511-7cc0fd36-2fc5-419c-965e-f97a2c7f2fe6.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.071Z"
+    },
+    {
+      "asset_id": "audio-1773220306057-025454ce-f44b-4cde-a606-2cdcc4c6d8af.mp3",
+      "type": "audio",
+      "checksum": "ae556730acfc1cb6c7bc9dff0d631f998c235f617afc1bd4c32189b475e707cd",
+      "size_bytes": 35983,
+      "source_path": "uploads/audio/1773220306057-025454ce-f44b-4cde-a606-2cdcc4c6d8af.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.072Z"
+    },
+    {
+      "asset_id": "audio-1773220346397-32861c0e-b0a4-438c-aa45-df8e8c45b664.mp3",
+      "type": "audio",
+      "checksum": "e6af9a4e8f0c2f7bc08e9537cf2c5cc99b1469aee343f1fef800b04fc4c8e814",
+      "size_bytes": 28878,
+      "source_path": "uploads/audio/1773220346397-32861c0e-b0a4-438c-aa45-df8e8c45b664.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.072Z"
+    },
+    {
+      "asset_id": "audio-1773220381830-65853915-2ce1-407d-9567-3d2dd61c5462.mp3",
+      "type": "audio",
+      "checksum": "73f9425aed6b8898fb1e219300c16607167f596042795ecdbee5457e5a9d677e",
+      "size_bytes": 30341,
+      "source_path": "uploads/audio/1773220381830-65853915-2ce1-407d-9567-3d2dd61c5462.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.073Z"
+    },
+    {
+      "asset_id": "audio-1773220419885-54934e64-b147-4fbd-ab18-b74b42dd5cea.mp3",
+      "type": "audio",
+      "checksum": "abf56118f0cfd5653ce1ea302d8e40bd89a7031698f10c684bb8ef36efa7edba",
+      "size_bytes": 28460,
+      "source_path": "uploads/audio/1773220419885-54934e64-b147-4fbd-ab18-b74b42dd5cea.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.073Z"
+    },
+    {
+      "asset_id": "audio-1773220444106-c17d982a-be8b-45e5-84a7-9b33758b0b9d.mp3",
+      "type": "audio",
+      "checksum": "34254b4a273fae19fc965fc7bf1b7f7a41750b3ec3e18952ecccc37686b70135",
+      "size_bytes": 30550,
+      "source_path": "uploads/audio/1773220444106-c17d982a-be8b-45e5-84a7-9b33758b0b9d.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.074Z"
+    },
+    {
+      "asset_id": "audio-1773220732092-a720a2d5-d69c-49b0-ba49-e68f8ceda74a.mp3",
+      "type": "audio",
+      "checksum": "c1ac0cf69085d8b7498a48ec4b1451ab2d48803a7277f081b5fc9d93131301ad",
+      "size_bytes": 82168,
+      "source_path": "uploads/audio/1773220732092-a720a2d5-d69c-49b0-ba49-e68f8ceda74a.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.075Z"
+    },
+    {
+      "asset_id": "audio-1773220833975-25ba8a8c-5569-40d1-a370-11892ea09886.mp3",
+      "type": "audio",
+      "checksum": "0d5674c9c5a3db40b4d9a847a444b682cfeed1d9cf71dd4f10f81033c481eb1d",
+      "size_bytes": 86763,
+      "source_path": "uploads/audio/1773220833975-25ba8a8c-5569-40d1-a370-11892ea09886.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.075Z"
+    },
+    {
+      "asset_id": "audio-1773220861997-3fe644d7-601a-4c69-923a-82e64516a332.mp3",
+      "type": "audio",
+      "checksum": "d3dc149aa1eafca69d705837ec31825745a20eb5b76243b15afe30117f44219f",
+      "size_bytes": 68375,
+      "source_path": "uploads/audio/1773220861997-3fe644d7-601a-4c69-923a-82e64516a332.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.076Z"
+    },
+    {
+      "asset_id": "audio-1773220955251-6ff7a4ba-fc21-43df-988b-644e70db59ff.mp3",
+      "type": "audio",
+      "checksum": "8f8555526af45e088c55288af324c5646c4a0f36f1601a1377523c6732de80da",
+      "size_bytes": 60014,
+      "source_path": "uploads/audio/1773220955251-6ff7a4ba-fc21-43df-988b-644e70db59ff.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.076Z"
+    },
+    {
+      "asset_id": "audio-1773221163944-3c4797b1-8848-4413-93d8-9156d1af57d5.mp3",
+      "type": "audio",
+      "checksum": "5dccbcec80c386015a54f904d464b951c5b759b5d84a6bb0091e8d2315bd4db9",
+      "size_bytes": 57508,
+      "source_path": "uploads/audio/1773221163944-3c4797b1-8848-4413-93d8-9156d1af57d5.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.077Z"
+    },
+    {
+      "asset_id": "audio-1773221266199-2628898f-b19a-41d5-836a-41cdfaab3b8a.mp3",
+      "type": "audio",
+      "checksum": "cced04fddf272a1c5f858ced86ad4e38ec6a098a3a5db104c079bd7998e283f1",
+      "size_bytes": 70881,
+      "source_path": "uploads/audio/1773221266199-2628898f-b19a-41d5-836a-41cdfaab3b8a.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.077Z"
+    },
+    {
+      "asset_id": "audio-1773221422956-4c9764e3-a1e1-49c2-93f3-68cba6ad2dc3.mp3",
+      "type": "audio",
+      "checksum": "99abbe502903db4657c7c14d8cdf38f77c3d4e90695d86368e74fc6874715e05",
+      "size_bytes": 69209,
+      "source_path": "uploads/audio/1773221422956-4c9764e3-a1e1-49c2-93f3-68cba6ad2dc3.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.078Z"
+    },
+    {
+      "asset_id": "audio-1773221482610-0a3fb123-f36a-481a-b8c7-860d208a0d65.mp3",
+      "type": "audio",
+      "checksum": "99abbe502903db4657c7c14d8cdf38f77c3d4e90695d86368e74fc6874715e05",
+      "size_bytes": 69209,
+      "source_path": "uploads/audio/1773221482610-0a3fb123-f36a-481a-b8c7-860d208a0d65.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.078Z"
+    },
+    {
+      "asset_id": "audio-1773236531599-5b01364a-ac7f-4cde-a429-425c552a7474.mp3",
+      "type": "audio",
+      "checksum": "a546ad271ac883cab5635a5d8b6f4027c8b5267b922edba4a1b34f262018595f",
+      "size_bytes": 68164,
+      "source_path": "uploads/audio/1773236531599-5b01364a-ac7f-4cde-a429-425c552a7474.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.079Z"
+    },
+    {
+      "asset_id": "audio-1773236717325-0f07be99-74be-4753-8b0e-db12df5e7f87.mp3",
+      "type": "audio",
+      "checksum": "5a3de30cc01bbd8085481a97a7de33aa7f93686036e59016001ed18aac134550",
+      "size_bytes": 34101,
+      "source_path": "uploads/audio/1773236717325-0f07be99-74be-4753-8b0e-db12df5e7f87.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.080Z"
+    },
+    {
+      "asset_id": "audio-1773236774310-24315e79-7ee9-4e23-b8f4-55ab3ff4daec.mp3",
+      "type": "audio",
+      "checksum": "5a3de30cc01bbd8085481a97a7de33aa7f93686036e59016001ed18aac134550",
+      "size_bytes": 34101,
+      "source_path": "uploads/audio/1773236774310-24315e79-7ee9-4e23-b8f4-55ab3ff4daec.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.080Z"
+    },
+    {
+      "asset_id": "audio-1773237464791-00991dee-12b6-4cb8-af4f-0886c53495c0.mp3",
+      "type": "audio",
+      "checksum": "3ac522edb0bc3aa77bb2bb83d45efb4fe481555124e90b361cbdbcb2b86fbe72",
+      "size_bytes": 39328,
+      "source_path": "uploads/audio/1773237464791-00991dee-12b6-4cb8-af4f-0886c53495c0.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.081Z"
+    },
+    {
+      "asset_id": "audio-1773237557682-0048fdce-6bf8-48cb-ae04-832ba5930c58.mp3",
+      "type": "audio",
+      "checksum": "ba3ba11f3511cb99ea3fca361a7ad941711d8cb80af26d72b0a92381972f3ea8",
+      "size_bytes": 44760,
+      "source_path": "uploads/audio/1773237557682-0048fdce-6bf8-48cb-ae04-832ba5930c58.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.081Z"
+    },
+    {
+      "asset_id": "audio-1773237604173-8d8785d3-0ab5-44d2-9387-695195dcb054.mp3",
+      "type": "audio",
+      "checksum": "ef151dfbcd9c38dbd2f02ffc35093a9dd2564b151f51e234ac9f95d9193cf4e8",
+      "size_bytes": 46015,
+      "source_path": "uploads/audio/1773237604173-8d8785d3-0ab5-44d2-9387-695195dcb054.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.082Z"
+    },
+    {
+      "asset_id": "audio-1773237681610-9b1bfd16-630a-487e-b153-dfeb3a4f6ab0.mp3",
+      "type": "audio",
+      "checksum": "24a095adf05bde036e59e4bcc9b941f91bd7c410544963d73f3931ec0f1a568e",
+      "size_bytes": 47268,
+      "source_path": "uploads/audio/1773237681610-9b1bfd16-630a-487e-b153-dfeb3a4f6ab0.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.082Z"
+    },
+    {
+      "asset_id": "audio-1773237699677-556fc55f-4107-4a37-9131-df5f611c36e6.mp3",
+      "type": "audio",
+      "checksum": "7c79b21ac571a1fedb0f4c15d3e006249eba7d5b83cd404b4aacdc876ca8c3a0",
+      "size_bytes": 45596,
+      "source_path": "uploads/audio/1773237699677-556fc55f-4107-4a37-9131-df5f611c36e6.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.083Z"
+    },
+    {
+      "asset_id": "audio-1773239716809-e149ea4c-4083-4bb7-83e5-d0eba19c2318.mp3",
+      "type": "audio",
+      "checksum": "ed41e13ff56084df4a5b1f07fd5360c7a4aba09b2b80bc288f814b488298726f",
+      "size_bytes": 64196,
+      "source_path": "uploads/audio/1773239716809-e149ea4c-4083-4bb7-83e5-d0eba19c2318.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.084Z"
+    },
+    {
+      "asset_id": "audio-1773239931973-95f956ad-7f83-48c9-a26e-2f89e8d4b9c7.mp3",
+      "type": "audio",
+      "checksum": "19451134aedb4f97a74b6ddb5ae21d9590e830a37a75bc09d047786a6515db35",
+      "size_bytes": 72555,
+      "source_path": "uploads/audio/1773239931973-95f956ad-7f83-48c9-a26e-2f89e8d4b9c7.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.084Z"
+    },
+    {
+      "asset_id": "audio-1773239970552-576efda9-82dd-4647-8f3e-aeb79a56c0b7.mp3",
+      "type": "audio",
+      "checksum": "76abc7454d54abdd78f71cd6e5a3426d2c21f75ae3239280dd785650b4941711",
+      "size_bytes": 74435,
+      "source_path": "uploads/audio/1773239970552-576efda9-82dd-4647-8f3e-aeb79a56c0b7.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.085Z"
+    },
+    {
+      "asset_id": "audio-1773239993495-3337321f-8196-4e1e-b275-88fe120f61eb.mp3",
+      "type": "audio",
+      "checksum": "1c4b3f5403a59c6631db6b3d0720e42cb2740f09ededf62cfb4a4daec5ded682",
+      "size_bytes": 65449,
+      "source_path": "uploads/audio/1773239993495-3337321f-8196-4e1e-b275-88fe120f61eb.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.086Z"
+    },
+    {
+      "asset_id": "audio-1773240010604-a89e0910-088b-4e47-85a2-c3bbca6b4c89.mp3",
+      "type": "audio",
+      "checksum": "3527802da97cf88e241f86aac4cdf693457a8bc6c653e3baec9cc42e83f099b2",
+      "size_bytes": 74226,
+      "source_path": "uploads/audio/1773240010604-a89e0910-088b-4e47-85a2-c3bbca6b4c89.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.086Z"
+    },
+    {
+      "asset_id": "audio-1773241319755-bc1b66fd-3eed-49e7-845e-6cc9ee705aac.mp3",
+      "type": "audio",
+      "checksum": "5f239efaadd67c3daccd91b04cc85c11985e35368fea98259f4ec8fadd11998f",
+      "size_bytes": 663129,
+      "source_path": "uploads/audio/1773241319755-bc1b66fd-3eed-49e7-845e-6cc9ee705aac.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.088Z"
+    },
+    {
+      "asset_id": "audio-1773242576178-c28909dd-79b6-4385-be50-186827ccc0da.mp3",
+      "type": "audio",
+      "checksum": "15841fcb2138f861a5cfc3a70a8b1b5d65828368ce3ba8548fd388818604c27d",
+      "size_bytes": 32429,
+      "source_path": "uploads/audio/1773242576178-c28909dd-79b6-4385-be50-186827ccc0da.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.088Z"
+    },
+    {
+      "asset_id": "audio-1773242676242-fcbad984-417b-4454-aed4-ead1ae865e7c.mp3",
+      "type": "audio",
+      "checksum": "1e7a18d4cd66fd72a936a73a488acc7b3637524ce1e6a0ac3a11d77fc21019f7",
+      "size_bytes": 32638,
+      "source_path": "uploads/audio/1773242676242-fcbad984-417b-4454-aed4-ead1ae865e7c.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.089Z"
+    },
+    {
+      "asset_id": "audio-1773242716236-5e546f58-334f-4d4b-9a01-559f13c418fa.mp3",
+      "type": "audio",
+      "checksum": "fdb1f2a47016c4da803e84bd39dcc019c8f16d00ae2d1695a33f04481cfddcf0",
+      "size_bytes": 51028,
+      "source_path": "uploads/audio/1773242716236-5e546f58-334f-4d4b-9a01-559f13c418fa.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.089Z"
+    },
+    {
+      "asset_id": "audio-1773242780805-838beadd-ab5a-41df-b240-91a2f1e3c739.mp3",
+      "type": "audio",
+      "checksum": "edb6aaf60d21e495c4beb969310b6a31e2c089b31323c1eaa9757f59a120b4c6",
+      "size_bytes": 51237,
+      "source_path": "uploads/audio/1773242780805-838beadd-ab5a-41df-b240-91a2f1e3c739.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.090Z"
+    },
+    {
+      "asset_id": "audio-1773242864783-f1d98c55-60ec-409d-8a73-e55266df2116.mp3",
+      "type": "audio",
+      "checksum": "7e46bb9fda6f6f7d720303f0917faac2dc11234a579105652ab929d7fd780796",
+      "size_bytes": 53326,
+      "source_path": "uploads/audio/1773242864783-f1d98c55-60ec-409d-8a73-e55266df2116.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.091Z"
+    },
+    {
+      "asset_id": "audio-1773243264240-732f3910-9661-4ca4-b814-83af0b2e6551.mp3",
+      "type": "audio",
+      "checksum": "28de8e67d8cc4a44c302b3f2a6ff6dae4b3ae5fc43a36688d3984d121b706854",
+      "size_bytes": 1176666,
+      "source_path": "uploads/audio/1773243264240-732f3910-9661-4ca4-b814-83af0b2e6551.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.092Z"
+    },
+    {
+      "asset_id": "audio-1773244327696-21fa7f8f-8711-421d-ad8c-f8dd3aa5f7a9.mp3",
+      "type": "audio",
+      "checksum": "58656408a4501d3c5065de99dd489f0190195323c8f2e197dfd81e74082857c2",
+      "size_bytes": 1128106,
+      "source_path": "uploads/audio/1773244327696-21fa7f8f-8711-421d-ad8c-f8dd3aa5f7a9.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.093Z"
+    },
+    {
+      "asset_id": "audio-1773245276855-07f1cc5b-ddda-48ca-beda-8ccef0d6312d.mp3",
+      "type": "audio",
+      "checksum": "c9aafdf1e129e783b69547fd752b3dcfb8faa5ef6a2ab93093ed07f85cf677ee",
+      "size_bytes": 118110,
+      "source_path": "uploads/audio/1773245276855-07f1cc5b-ddda-48ca-beda-8ccef0d6312d.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.094Z"
+    },
+    {
+      "asset_id": "audio-1773245337345-95842e81-2a33-41af-aff3-0e383a1c6258.mp3",
+      "type": "audio",
+      "checksum": "05015342b22545cfadd0b2b7be194796f03af58c6ade5361e04b3d6d45fb8e84",
+      "size_bytes": 167326,
+      "source_path": "uploads/audio/1773245337345-95842e81-2a33-41af-aff3-0e383a1c6258.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.094Z"
+    },
+    {
+      "asset_id": "audio-1773245367284-e4d5c9e3-8743-429e-8bd7-6bf6b7cf55ac.mp3",
+      "type": "audio",
+      "checksum": "806a5c5c220a127784fde4c89828e7e84eb3a3728d2d9516c9fecc4f70ed66aa",
+      "size_bytes": 189896,
+      "source_path": "uploads/audio/1773245367284-e4d5c9e3-8743-429e-8bd7-6bf6b7cf55ac.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.095Z"
+    },
+    {
+      "asset_id": "audio-1773245376034-5430b014-fa73-4312-a1c9-389da7f901b3.mp3",
+      "type": "audio",
+      "checksum": "806a5c5c220a127784fde4c89828e7e84eb3a3728d2d9516c9fecc4f70ed66aa",
+      "size_bytes": 189896,
+      "source_path": "uploads/audio/1773245376034-5430b014-fa73-4312-a1c9-389da7f901b3.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.096Z"
+    },
+    {
+      "asset_id": "audio-1773245435616-6a11af13-0789-417d-b246-5cb74bf40e20.mp3",
+      "type": "audio",
+      "checksum": "42f209ca9bea17d47dc4dd179f85574cecdff234df1ad81699ca7ef94c345d6c",
+      "size_bytes": 135037,
+      "source_path": "uploads/audio/1773245435616-6a11af13-0789-417d-b246-5cb74bf40e20.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.096Z"
+    },
+    {
+      "asset_id": "audio-1773245474049-eb6c1204-62f9-4b28-a6a6-9ae53956ec7a.mp3",
+      "type": "audio",
+      "checksum": "ea49a38f4948d7ab11001153f3b34fcdb30cc546253eed7edc5a7653a2bcd4e0",
+      "size_bytes": 199300,
+      "source_path": "uploads/audio/1773245474049-eb6c1204-62f9-4b28-a6a6-9ae53956ec7a.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.097Z"
+    },
+    {
+      "asset_id": "audio-1773245603643-bdfa6b4b-9d82-4f3e-91f1-66a2fb996578.mp3",
+      "type": "audio",
+      "checksum": "51cbb42725fa667288b174d5242d1399cf49573d0acbbc6b098c23301810fe4a",
+      "size_bytes": 233468,
+      "source_path": "uploads/audio/1773245603643-bdfa6b4b-9d82-4f3e-91f1-66a2fb996578.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.098Z"
+    },
+    {
+      "asset_id": "audio-1773245643984-17f19c44-6beb-4ebd-a907-def6d38779c1.mp3",
+      "type": "audio",
+      "checksum": "94b04e1ac9b126430101b0fdfcb6d84f74f900d87b61957fe8ad1829b071b4c0",
+      "size_bytes": 96796,
+      "source_path": "uploads/audio/1773245643984-17f19c44-6beb-4ebd-a907-def6d38779c1.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.098Z"
+    },
+    {
+      "asset_id": "audio-1773245675521-82e4c36a-128d-4f75-9fbc-630b439f0846.mp3",
+      "type": "audio",
+      "checksum": "24ceb8a9d0c73e99573136e7ecf11e96c3b9930f1a165accb8d58ea5c09c2fba",
+      "size_bytes": 99928,
+      "source_path": "uploads/audio/1773245675521-82e4c36a-128d-4f75-9fbc-630b439f0846.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.099Z"
+    },
+    {
+      "asset_id": "audio-1773246616812-cc352a8a-1740-4c9c-b016-85e3d3d334aa.mp3",
+      "type": "audio",
+      "checksum": "c49d82500b7ce7396254e9bce46a572f012aa0318102ed2172d3e9c26a9211dd",
+      "size_bytes": 74672,
+      "source_path": "uploads/audio/1773246616812-cc352a8a-1740-4c9c-b016-85e3d3d334aa.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.100Z"
+    },
+    {
+      "asset_id": "audio-1773246827543-38e7df70-56f9-48de-80e4-edec1dcf032c.mp3",
+      "type": "audio",
+      "checksum": "e44c3829dd7982fd70f0872e95743ef8b05c0a098ca05c154d913a8934cb2c8c",
+      "size_bytes": 72344,
+      "source_path": "uploads/audio/1773246827543-38e7df70-56f9-48de-80e4-edec1dcf032c.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.100Z"
+    },
+    {
+      "asset_id": "audio-1773247071718-2f142bde-583b-49fd-a0a9-2c59c01c7884.mp3",
+      "type": "audio",
+      "checksum": "a74bdd1706d8ce0ed6e5e807d9578b378011bf129834620ef890be8f76303c11",
+      "size_bytes": 56583,
+      "source_path": "uploads/audio/1773247071718-2f142bde-583b-49fd-a0a9-2c59c01c7884.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.102Z"
+    },
+    {
+      "asset_id": "audio-1773247606310-0c9baa89-2e10-4b55-bf16-85a7df7645d4.mp3",
+      "type": "audio",
+      "checksum": "a80921233aa261d18dfadee08e14a0fcf33ffc04a6f5abe961d40e5a10c04d38",
+      "size_bytes": 498869,
+      "source_path": "uploads/audio/1773247606310-0c9baa89-2e10-4b55-bf16-85a7df7645d4.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.103Z"
+    },
+    {
+      "asset_id": "audio-1773295121471-d5beb23c-0056-4e31-b0ca-76465203943f.mp3",
+      "type": "audio",
+      "checksum": "559d10a40cd466a9e0a93cd42b6d5072276a7d550ce74996b9ccf1054aa822f2",
+      "size_bytes": 209485,
+      "source_path": "uploads/audio/1773295121471-d5beb23c-0056-4e31-b0ca-76465203943f.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.104Z"
+    },
+    {
+      "asset_id": "audio-1773295873555-4c807a7c-f987-4450-b446-e6e78d2cc993.mp3",
+      "type": "audio",
+      "checksum": "4e3a6a479fd603d3fd120cb473fa05481fcc46098d454e54f9809e308a127278",
+      "size_bytes": 142192,
+      "source_path": "uploads/audio/1773295873555-4c807a7c-f987-4450-b446-e6e78d2cc993.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.104Z"
+    },
+    {
+      "asset_id": "audio-1773326484757-cf82e434-d62b-4b74-ad09-2b81659e6ca4.mp3",
+      "type": "audio",
+      "checksum": "38c702004b7b05046a443762404e5f801e615d4fdc943870272b9f0682561317",
+      "size_bytes": 1752294,
+      "source_path": "uploads/audio/1773326484757-cf82e434-d62b-4b74-ad09-2b81659e6ca4.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.106Z"
+    },
+    {
+      "asset_id": "audio-1773641886457-eece9cd5-f0ae-4c5c-8992-5cf3b7eae36e.mp3",
+      "type": "audio",
+      "checksum": "cde0317cd18431cb9714fbc58654d512b990cb4adf7fa0dbdd07f0adc71487ac",
+      "size_bytes": 702833,
+      "source_path": "uploads/audio/1773641886457-eece9cd5-f0ae-4c5c-8992-5cf3b7eae36e.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.108Z"
+    },
+    {
+      "asset_id": "audio-1773642715056-17212c17-1164-4819-a3b8-4944ae1094ba.mp3",
+      "type": "audio",
+      "checksum": "b9a7f8382746f24a5cad285c539b7b31f5166aaa87c51f453df5f38540bee5c7",
+      "size_bytes": 44342,
+      "source_path": "uploads/audio/1773642715056-17212c17-1164-4819-a3b8-4944ae1094ba.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.108Z"
+    },
+    {
+      "asset_id": "audio-1773642725804-4031265a-6df1-49da-ab40-6d73a080c8f1.mp3",
+      "type": "audio",
+      "checksum": "7363a1ef3b7d2564eeab45d9d563a3d9c8c8bea85b0b936ec0c05e9b1a5fd03e",
+      "size_bytes": 37028,
+      "source_path": "uploads/audio/1773642725804-4031265a-6df1-49da-ab40-6d73a080c8f1.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.109Z"
+    },
+    {
+      "asset_id": "audio-1773642737008-e250b929-4a24-4304-8036-577af85e611c.mp3",
+      "type": "audio",
+      "checksum": "4d11ea5f86965c8ce3573e599642969cb67e6a28ab0774d1adebfd50bedd8581",
+      "size_bytes": 35983,
+      "source_path": "uploads/audio/1773642737008-e250b929-4a24-4304-8036-577af85e611c.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.109Z"
+    },
+    {
+      "asset_id": "audio-1773642765573-595f8071-1667-494f-b2be-6fe6bd0e8e46.mp3",
+      "type": "audio",
+      "checksum": "d507189e5b9621296b365ef4d53abfc086adb401a1905958dc2090f726fa6904",
+      "size_bytes": 34311,
+      "source_path": "uploads/audio/1773642765573-595f8071-1667-494f-b2be-6fe6bd0e8e46.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.110Z"
+    },
+    {
+      "asset_id": "audio-1773642782708-3a01405d-0e52-45eb-b908-60344e69f394.mp3",
+      "type": "audio",
+      "checksum": "688ffda894bdebbaab63923ebf104f105ee8287c8c51d54f3f6095cf91a6cb76",
+      "size_bytes": 34311,
+      "source_path": "uploads/audio/1773642782708-3a01405d-0e52-45eb-b908-60344e69f394.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.110Z"
+    },
+    {
+      "asset_id": "audio-1773642793578-fc22e0dc-3cb9-473e-8384-f44ad3264903.mp3",
+      "type": "audio",
+      "checksum": "662e578ee5cefc687cdbe652a472aa822616def3a30e3f910e76e4230f4b6fb3",
+      "size_bytes": 33266,
+      "source_path": "uploads/audio/1773642793578-fc22e0dc-3cb9-473e-8384-f44ad3264903.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.111Z"
+    },
+    {
+      "asset_id": "audio-1773642808870-1ce45b6e-a0b5-450d-9318-a9bec73c12fe.mp3",
+      "type": "audio",
+      "checksum": "c5d54dfbfab2eee886e3f80313679e5a4b248ccdff238b48434f995ebf85f402",
+      "size_bytes": 42671,
+      "source_path": "uploads/audio/1773642808870-1ce45b6e-a0b5-450d-9318-a9bec73c12fe.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.112Z"
+    },
+    {
+      "asset_id": "audio-1773642861651-9053b0f9-c0c2-47a2-9d61-f84a750bc9be.mp3",
+      "type": "audio",
+      "checksum": "326510f76c42479dc68f26a7a4fe2c8ceb694402d087d1cd1559a75aa7df5d60",
+      "size_bytes": 33893,
+      "source_path": "uploads/audio/1773642861651-9053b0f9-c0c2-47a2-9d61-f84a750bc9be.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.112Z"
+    },
+    {
+      "asset_id": "audio-1773642873434-3a588cec-94d1-4450-90ef-9491ddb9043e.mp3",
+      "type": "audio",
+      "checksum": "f6bda08fe4d9c404600544bd6539c8ff5c2a6c323e0360f971f287a5a89074f4",
+      "size_bytes": 32848,
+      "source_path": "uploads/audio/1773642873434-3a588cec-94d1-4450-90ef-9491ddb9043e.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.113Z"
+    },
+    {
+      "asset_id": "audio-1773729966543-82ef47ab-4678-4d41-8575-34f930e44920.mp3",
+      "type": "audio",
+      "checksum": "d73694637fe95357d7204eb611eeafb472022db89d05e29124d867477a5e3aa6",
+      "size_bytes": 2576688,
+      "source_path": "uploads/audio/1773729966543-82ef47ab-4678-4d41-8575-34f930e44920.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.116Z"
+    },
+    {
+      "asset_id": "audio-1773730013748-c8d0db8c-8c56-4607-8641-d8037e6f9a52.mp3",
+      "type": "audio",
+      "checksum": "75a68a63483da18e08585ba25909c97587bce1e48f2865a5fcd7a46b7ca8c4b9",
+      "size_bytes": 2687193,
+      "source_path": "uploads/audio/1773730013748-c8d0db8c-8c56-4607-8641-d8037e6f9a52.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.118Z"
+    },
+    {
+      "asset_id": "audio-1773754731902-7bc5fb56-eda1-4b31-b56a-dc9894a19440.webm",
+      "type": "audio",
+      "checksum": "547e062c3c51c31cad00b6a9625c87842b3ab367fe1c2c3ca866421c2e007310",
+      "size_bytes": 53103,
+      "source_path": "uploads/audio/1773754731902-7bc5fb56-eda1-4b31-b56a-dc9894a19440.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.119Z"
+    },
+    {
+      "asset_id": "audio-1773754738602-066e8532-066e-4474-bb62-cdbbb819f899.webm",
+      "type": "audio",
+      "checksum": "bfc2b26984f42980948f72f3db41363bd940c363b9de7b11637d9f4230c0f3ca",
+      "size_bytes": 52739,
+      "source_path": "uploads/audio/1773754738602-066e8532-066e-4474-bb62-cdbbb819f899.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.120Z"
+    },
+    {
+      "asset_id": "audio-1773762152807-05df3210-ca2b-46b6-9c47-f27dabffa21c.mp3",
+      "type": "audio",
+      "checksum": "088975c320ce490ad3d28645f79f54c7c7df55c5bf16871df1e8fc8f6f356b76",
+      "size_bytes": 406946,
+      "source_path": "uploads/audio/1773762152807-05df3210-ca2b-46b6-9c47-f27dabffa21c.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.121Z"
+    },
+    {
+      "asset_id": "audio-1773767189919-e4deb7ad-30fb-4b36-b407-1bbd2472cf1e.mp3",
+      "type": "audio",
+      "checksum": "769158231df1b766639998d4d650070dc74d826d6d9c269bae574168b1a3de12",
+      "size_bytes": 6246243,
+      "source_path": "uploads/audio/1773767189919-e4deb7ad-30fb-4b36-b407-1bbd2472cf1e.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.126Z"
+    },
+    {
+      "asset_id": "audio-1774025209009-881fca46-6dcf-4940-bc59-e8bd1213349b.mp3",
+      "type": "audio",
+      "checksum": "891a489d616453ad342160c14d22720e3bd9249a1ec4bc49e090cc447450124e",
+      "size_bytes": 4379666,
+      "source_path": "uploads/audio/1774025209009-881fca46-6dcf-4940-bc59-e8bd1213349b.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.130Z"
+    },
+    {
+      "asset_id": "audio-1774158686027-05dbc93d-cc06-4b53-92b3-e97acc2b1998.wav",
+      "type": "audio",
+      "checksum": "84d3c0a8772b9534ae1df359993090d00e92bb6a57651be939418e1316ee386f",
+      "size_bytes": 4169631,
+      "source_path": "uploads/audio/1774158686027-05dbc93d-cc06-4b53-92b3-e97acc2b1998.wav",
+      "mime": "audio/wav",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.134Z"
+    },
+    {
+      "asset_id": "audio-1774164643532-b16d2f9b-cdc0-4f55-904e-21c4ff8d4ab5.wav",
+      "type": "audio",
+      "checksum": "84d3c0a8772b9534ae1df359993090d00e92bb6a57651be939418e1316ee386f",
+      "size_bytes": 4169631,
+      "source_path": "uploads/audio/1774164643532-b16d2f9b-cdc0-4f55-904e-21c4ff8d4ab5.wav",
+      "mime": "audio/wav",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.138Z"
+    },
+    {
+      "asset_id": "audio-1774281261324-7b54ca86-5d6d-4d0a-97d9-3ad92bd0005f.mp3",
+      "type": "audio",
+      "checksum": "6d2f974bcad007fa3e82a1f51178c3cd41ad33d549ef2c438e1565032cc84255",
+      "size_bytes": 6317967,
+      "source_path": "uploads/audio/1774281261324-7b54ca86-5d6d-4d0a-97d9-3ad92bd0005f.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.145Z"
+    },
+    {
+      "asset_id": "audio-1774287019552-82a4e966-d0e7-4020-b5f1-937c0b0d7a4a.webm",
+      "type": "audio",
+      "checksum": "2b331da57395388fd04090acef0bb7f6eb95ec17511476105260262f22ac9ba8",
+      "size_bytes": 316387,
+      "source_path": "uploads/audio/1774287019552-82a4e966-d0e7-4020-b5f1-937c0b0d7a4a.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.146Z"
+    },
+    {
+      "asset_id": "audio-1774329660304-50ecf915-b6d5-4c18-9ef5-0eee9e4dc20f.webm",
+      "type": "audio",
+      "checksum": "f8cc558aad198d0f4d611eaeb2f2fd97559be12f958b454da1a8c3196080c258",
+      "size_bytes": 127745,
+      "source_path": "uploads/audio/1774329660304-50ecf915-b6d5-4c18-9ef5-0eee9e4dc20f.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.147Z"
+    },
+    {
+      "asset_id": "audio-1774330632489-efdaa099-f032-4508-944a-c2e863f656a5.webm",
+      "type": "audio",
+      "checksum": "afae29f0634a003a3564c0ac59040633c02c5f20f9bc6ffcc4a093fd9d833e2f",
+      "size_bytes": 138451,
+      "source_path": "uploads/audio/1774330632489-efdaa099-f032-4508-944a-c2e863f656a5.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.147Z"
+    },
+    {
+      "asset_id": "audio-1774353120859-7d710676-eda3-405a-8a5a-42a182e128e6.webm",
+      "type": "audio",
+      "checksum": "aed89e841ddac6d3260fa8a060ecbac7e88c67653518ce8127de12ea68fdb5af",
+      "size_bytes": 186273,
+      "source_path": "uploads/audio/1774353120859-7d710676-eda3-405a-8a5a-42a182e128e6.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.148Z"
+    },
+    {
+      "asset_id": "audio-1774353196862-97c6970b-7c7b-4059-882f-832fb190d213.webm",
+      "type": "audio",
+      "checksum": "a2ba310b78f10a126cbf8fa426dbba61afc787e01351d0ca005ff09857ee869b",
+      "size_bytes": 1172338,
+      "source_path": "uploads/audio/1774353196862-97c6970b-7c7b-4059-882f-832fb190d213.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.150Z"
+    },
+    {
+      "asset_id": "audio-1774353249088-4b6f90e5-4125-4035-9851-9d0d424e5614.webm",
+      "type": "audio",
+      "checksum": "f65756c491275125c0f5d1e3607e27e3d16f2a3c10a24750140cee97847e22bc",
+      "size_bytes": 620997,
+      "source_path": "uploads/audio/1774353249088-4b6f90e5-4125-4035-9851-9d0d424e5614.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.151Z"
+    },
+    {
+      "asset_id": "audio-1774502540517-0e3459a9-6653-4f7f-8adf-a53025624e5e.mp3",
+      "type": "audio",
+      "checksum": "53858c6fc0994726820444222d24f4249761182869a9292f0fbdb4567ef3ec58",
+      "size_bytes": 4212400,
+      "source_path": "uploads/audio/1774502540517-0e3459a9-6653-4f7f-8adf-a53025624e5e.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.157Z"
+    },
+    {
+      "asset_id": "audio-1774502562669-2e945e92-53e2-43fd-ace7-8a92a5796a1a.mp3",
+      "type": "audio",
+      "checksum": "5e76486f24ed737ca2afc9d55d96d2841d4dcaaa1a4d803e37d718fab86dfd12",
+      "size_bytes": 3497063,
+      "source_path": "uploads/audio/1774502562669-2e945e92-53e2-43fd-ace7-8a92a5796a1a.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.161Z"
+    },
+    {
+      "asset_id": "audio-1774502929194-68c9b1d4-1fd7-4c03-8161-445271abdb20.mp3",
+      "type": "audio",
+      "checksum": "74d3c06f6aa9cefe2f2350cb1fdb29444b4c274001394cb173e3473eccd66e61",
+      "size_bytes": 3624332,
+      "source_path": "uploads/audio/1774502929194-68c9b1d4-1fd7-4c03-8161-445271abdb20.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.164Z"
+    },
+    {
+      "asset_id": "audio-1774503437774-2fcf4f5d-d256-43b8-b501-1ab0859b6ad7.mp3",
+      "type": "audio",
+      "checksum": "9057b75854f7af12e7eda1c11c349a29bce6ae980b9b86fdcb4c4789b9daec32",
+      "size_bytes": 7359460,
+      "source_path": "uploads/audio/1774503437774-2fcf4f5d-d256-43b8-b501-1ab0859b6ad7.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.172Z"
+    },
+    {
+      "asset_id": "audio-1774504267959-b3a4cc58-8fbb-44aa-883e-6d02214ae2e8.mp3",
+      "type": "audio",
+      "checksum": "70a041866bfe89e73cc52a70eab96faae5a1c59acd5d6e58be30167d87d9e3a4",
+      "size_bytes": 427397,
+      "source_path": "uploads/audio/1774504267959-b3a4cc58-8fbb-44aa-883e-6d02214ae2e8.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.173Z"
+    },
+    {
+      "asset_id": "audio-1774504781458-f60b208a-4079-4f77-8c72-7e3beaf72707.mp3",
+      "type": "audio",
+      "checksum": "4d6b71fd02b7d01752e203a7db2ffa92361ca463076fbae2e18d7c05df502047",
+      "size_bytes": 2898608,
+      "source_path": "uploads/audio/1774504781458-f60b208a-4079-4f77-8c72-7e3beaf72707.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.176Z"
+    },
+    {
+      "asset_id": "audio-1774505920263-3e2382b6-0b5f-425c-a6e9-332957f75d97.mp3",
+      "type": "audio",
+      "checksum": "9662cbf8e661998202ccb79d0e65222ef09bb50b4c4e841e8235a712edababa5",
+      "size_bytes": 3257216,
+      "source_path": "uploads/audio/1774505920263-3e2382b6-0b5f-425c-a6e9-332957f75d97.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.180Z"
+    },
+    {
+      "asset_id": "audio-1774506204727-7201e5d4-0929-4e1f-b379-620a296893e5.mp3",
+      "type": "audio",
+      "checksum": "fd0f92051fed8784d45b854de012e66dc6f7f42754602047390f20f9741364e7",
+      "size_bytes": 3154816,
+      "source_path": "uploads/audio/1774506204727-7201e5d4-0929-4e1f-b379-620a296893e5.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.183Z"
+    },
+    {
+      "asset_id": "audio-1774506588838-471c68f1-8819-452f-a42a-7f90aadd504d.mp3",
+      "type": "audio",
+      "checksum": "474cdb28e14228333cb2562356b79f3aade9cf0a9c7d1924de8f5c53df60cd52",
+      "size_bytes": 2175567,
+      "source_path": "uploads/audio/1774506588838-471c68f1-8819-452f-a42a-7f90aadd504d.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.186Z"
+    },
+    {
+      "asset_id": "audio-1774507803904-0d3c523b-5416-425f-95b8-2590083ab29c.mp3",
+      "type": "audio",
+      "checksum": "49a53f58c349f7abfb90f08fea6cf35c60db5dbad660219f9576094ba4c1e8dc",
+      "size_bytes": 3330777,
+      "source_path": "uploads/audio/1774507803904-0d3c523b-5416-425f-95b8-2590083ab29c.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.190Z"
+    },
+    {
+      "asset_id": "audio-1774794137409-76468077-0895-42f2-b538-0f43b93e768b.mp3",
+      "type": "audio",
+      "checksum": "e395393d5c698ab368c95f1c687c641352f2177d070bf03d1cee327ed0f31db4",
+      "size_bytes": 633241,
+      "source_path": "uploads/audio/1774794137409-76468077-0895-42f2-b538-0f43b93e768b.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.193Z"
+    },
+    {
+      "asset_id": "audio-1774794617322-35ff12ea-3629-40a4-930c-7fb5e68a3437.mp3",
+      "type": "audio",
+      "checksum": "45fae5830356915900ee15294398718312c78a568cec920b573fedfe88b3057d",
+      "size_bytes": 518302,
+      "source_path": "uploads/audio/1774794617322-35ff12ea-3629-40a4-930c-7fb5e68a3437.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.196Z"
+    },
+    {
+      "asset_id": "audio-1774795682139-6bd74810-3fdb-406d-96ab-06e941791258.mp3",
+      "type": "audio",
+      "checksum": "79df4fef49f4da71f528c7d50b83509e4dcc2c29fda5dcecf0eb749ab71e8fe7",
+      "size_bytes": 46221,
+      "source_path": "uploads/audio/1774795682139-6bd74810-3fdb-406d-96ab-06e941791258.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.197Z"
+    },
+    {
+      "asset_id": "audio-1774795711373-a4c69226-b78c-4499-990c-49ca9a20436f.mp3",
+      "type": "audio",
+      "checksum": "6fa646567e9004564e9cc0f9392a429499084ef0aec62c4f4b38b14765ba3c07",
+      "size_bytes": 58968,
+      "source_path": "uploads/audio/1774795711373-a4c69226-b78c-4499-990c-49ca9a20436f.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.197Z"
+    },
+    {
+      "asset_id": "audio-1774795749274-096f4851-964f-445e-8495-90e74597ff14.mp3",
+      "type": "audio",
+      "checksum": "76fdec5547a558c91d1acac801ed5e16620fa786387ac949b0c6074767550307",
+      "size_bytes": 45175,
+      "source_path": "uploads/audio/1774795749274-096f4851-964f-445e-8495-90e74597ff14.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.198Z"
+    },
+    {
+      "asset_id": "audio-1774795774626-6df6679c-5007-4ea4-a259-285e3c507195.mp3",
+      "type": "audio",
+      "checksum": "34bcc2bfe81f932f6b1c9f9181effbba5044e957e103db3f208a8ed04c098a52",
+      "size_bytes": 64610,
+      "source_path": "uploads/audio/1774795774626-6df6679c-5007-4ea4-a259-285e3c507195.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.198Z"
+    },
+    {
+      "asset_id": "audio-1774795792321-bddcf3b5-a53a-4211-af9a-17a4b2a642b5.mp3",
+      "type": "audio",
+      "checksum": "04e042e4cb5424950fd16f0a1287626b123fe6666afe61bf5b34f3631644d2ab",
+      "size_bytes": 66909,
+      "source_path": "uploads/audio/1774795792321-bddcf3b5-a53a-4211-af9a-17a4b2a642b5.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.199Z"
+    },
+    {
+      "asset_id": "audio-1774795813102-58aac564-1bf4-4f35-a3ab-16baac866b3a.mp3",
+      "type": "audio",
+      "checksum": "31aea20057f79d7fe53e09f013586d5582f70413f9a2b889cfee1c5ea1bda10a",
+      "size_bytes": 53325,
+      "source_path": "uploads/audio/1774795813102-58aac564-1bf4-4f35-a3ab-16baac866b3a.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.199Z"
+    },
+    {
+      "asset_id": "audio-1774796069448-7b145713-ab8d-44f4-8aed-238fbcddc84e.mp3",
+      "type": "audio",
+      "checksum": "8aee35b3a3df3874138df5013c8959fbb2feeceafb67da4861a98ba627e8cbdf",
+      "size_bytes": 122499,
+      "source_path": "uploads/audio/1774796069448-7b145713-ab8d-44f4-8aed-238fbcddc84e.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.200Z"
+    },
+    {
+      "asset_id": "audio-1774796091146-1b4c6762-8db9-4900-8856-2f9bd82760fa.mp3",
+      "type": "audio",
+      "checksum": "f5fdcfa242533bb2bc778bad5f18ecaf04275d461cc2f6381b0c710bd7f9240d",
+      "size_bytes": 95121,
+      "source_path": "uploads/audio/1774796091146-1b4c6762-8db9-4900-8856-2f9bd82760fa.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.201Z"
+    },
+    {
+      "asset_id": "audio-1774796147834-066c8cbb-ba39-4663-9e4d-d6a93f77826b.mp3",
+      "type": "audio",
+      "checksum": "59aff2765402b9b64d64fed1a2ea0fe8f78cffc027e0b3d14144595cd838c49b",
+      "size_bytes": 75895,
+      "source_path": "uploads/audio/1774796147834-066c8cbb-ba39-4663-9e4d-d6a93f77826b.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.201Z"
+    },
+    {
+      "asset_id": "audio-1774796189664-98b3d0b1-ea34-48d4-b453-a665270532b5.mp3",
+      "type": "audio",
+      "checksum": "90b565f061b6e0efc8085009688438905692e574d055e514bb69551a62b545ed",
+      "size_bytes": 149874,
+      "source_path": "uploads/audio/1774796189664-98b3d0b1-ea34-48d4-b453-a665270532b5.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.202Z"
+    },
+    {
+      "asset_id": "audio-1774796218437-09088449-b4c5-4aec-baed-2cd275825ca4.mp3",
+      "type": "audio",
+      "checksum": "f7f76ee9620864426d9039dbe66be65f6fbff2f86f437167270b624907136652",
+      "size_bytes": 160743,
+      "source_path": "uploads/audio/1774796218437-09088449-b4c5-4aec-baed-2cd275825ca4.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.202Z"
+    },
+    {
+      "asset_id": "audio-1774796270807-70be6c17-aee1-4ab4-b667-7e49633669fd.mp3",
+      "type": "audio",
+      "checksum": "2f44fa4a799810d6ac45c30ce44e59c7182d789f753ce025aa8265e6396e18a9",
+      "size_bytes": 158026,
+      "source_path": "uploads/audio/1774796270807-70be6c17-aee1-4ab4-b667-7e49633669fd.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.203Z"
+    },
+    {
+      "asset_id": "audio-1774796298502-a5fa8ff0-ab9c-4ceb-bab1-f1cadfd2d1c2.mp3",
+      "type": "audio",
+      "checksum": "91c473cc13a3b86eb64e24806852086b43bea2233094247e09b4d183ac873eb6",
+      "size_bytes": 109750,
+      "source_path": "uploads/audio/1774796298502-a5fa8ff0-ab9c-4ceb-bab1-f1cadfd2d1c2.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.204Z"
+    },
+    {
+      "asset_id": "audio-1774796356672-ed48c584-fd89-4adb-85b7-673948c1caa1.mp3",
+      "type": "audio",
+      "checksum": "a35a851b20867f4c2937a255199e319328a57f9fecd671aa23e3a3644a1da35f",
+      "size_bytes": 93241,
+      "source_path": "uploads/audio/1774796356672-ed48c584-fd89-4adb-85b7-673948c1caa1.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.204Z"
+    },
+    {
+      "asset_id": "audio-1774796600413-75b53f03-c2e8-4f45-8222-40d8eb23964a.mp3",
+      "type": "audio",
+      "checksum": "92a2b9d5b95e8d5d4e9cdf63d604b67260077fd502fd5654c64e19cbe6dc211f",
+      "size_bytes": 543383,
+      "source_path": "uploads/audio/1774796600413-75b53f03-c2e8-4f45-8222-40d8eb23964a.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.206Z"
+    },
+    {
+      "asset_id": "audio-1774876117767-97382561-e1fe-4dea-be9c-492731c226b3.webm",
+      "type": "audio",
+      "checksum": "1126a0efadef3ff4ea1de4d5c6eca09dc81d422aa051cbece1f986140d1f6dd7",
+      "size_bytes": 113127,
+      "source_path": "uploads/audio/1774876117767-97382561-e1fe-4dea-be9c-492731c226b3.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.206Z"
+    },
+    {
+      "asset_id": "audio-1775362729927-4b9cc41e-dd4c-46c1-8fa8-ea403a301794.mp3",
+      "type": "audio",
+      "checksum": "8dd4cf283578dc2a1bdaa0a46bc769df8dab76a834e7bbfee83b16d44ef778da",
+      "size_bytes": 3075761,
+      "source_path": "uploads/audio/1775362729927-4b9cc41e-dd4c-46c1-8fa8-ea403a301794.mp3",
+      "mime": "audio/mpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.209Z"
+    },
+    {
+      "asset_id": "audio-1775458599124-72822949-1b62-4e3d-8d06-3883f4720378.webm",
+      "type": "audio",
+      "checksum": "fb488350b7a445c3493f8761a2f90428c1c034c384bab5c2a1e10b3a4828d237",
+      "size_bytes": 84271,
+      "source_path": "uploads/audio/1775458599124-72822949-1b62-4e3d-8d06-3883f4720378.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.210Z"
+    },
+    {
+      "asset_id": "audio-1775458615984-55b51478-a000-4274-9c2f-9fbeeed36e76.webm",
+      "type": "audio",
+      "checksum": "83043d06b821639f9e5fd1087f3c4d1de678e532f2f174cc7f193089b65ae9a4",
+      "size_bytes": 192029,
+      "source_path": "uploads/audio/1775458615984-55b51478-a000-4274-9c2f-9fbeeed36e76.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.211Z"
+    },
+    {
+      "asset_id": "audio-1775469939255-a333893f-58cc-43f5-b776-d2ea189e9732.webm",
+      "type": "audio",
+      "checksum": "3a179db1d178c7edcbaa834dd039e83ca8bd16238dc8f9c4cd0e782240ab301e",
+      "size_bytes": 86523,
+      "source_path": "uploads/audio/1775469939255-a333893f-58cc-43f5-b776-d2ea189e9732.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.211Z"
+    },
+    {
+      "asset_id": "audio-1775475345098-190d4975-c19b-4065-b9c0-2f871f84128a.webm",
+      "type": "audio",
+      "checksum": "ab6e5a2d7cc6ef90ba2cf73f8b2ff6c6fc176a2c844077088487dd364e806ae9",
+      "size_bytes": 17043,
+      "source_path": "uploads/audio/1775475345098-190d4975-c19b-4065-b9c0-2f871f84128a.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.212Z"
+    },
+    {
+      "asset_id": "audio-1775826592637-d512f275-eecc-43d4-99a5-0a7b45d86263.webm",
+      "type": "audio",
+      "checksum": "788b74dadfedbd6dcddb7d9b450cab8d11331e9207fe6fe1c12a5c527eb94c0b",
+      "size_bytes": 334233,
+      "source_path": "uploads/audio/1775826592637-d512f275-eecc-43d4-99a5-0a7b45d86263.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.212Z"
+    },
+    {
+      "asset_id": "audio-1775922096569-6f599234-29a3-473d-8682-e06a687d7046.webm",
+      "type": "audio",
+      "checksum": "61637970069f8c2c2fad39a1b61a12aee5d365c4a2939c805d172abca5740f8b",
+      "size_bytes": 259227,
+      "source_path": "uploads/audio/1775922096569-6f599234-29a3-473d-8682-e06a687d7046.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.213Z"
+    },
+    {
+      "asset_id": "audio-1775922115942-66d76359-a137-4b7b-942b-91d7e2f93739.webm",
+      "type": "audio",
+      "checksum": "8af1157e70e3fd50069dcfc5f2264f1609700f8b5efc49d30679082996b73865",
+      "size_bytes": 241695,
+      "source_path": "uploads/audio/1775922115942-66d76359-a137-4b7b-942b-91d7e2f93739.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.214Z"
+    },
+    {
+      "asset_id": "audio-1779282716495-b2a32669-663f-455e-8b38-25d701389e3a.webm",
+      "type": "audio",
+      "checksum": "d0d125f660b150089314250ab060c17872bac20df95713b853427036a3e553cd",
+      "size_bytes": 230989,
+      "source_path": "uploads/audio/1779282716495-b2a32669-663f-455e-8b38-25d701389e3a.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.214Z"
+    },
+    {
+      "asset_id": "audio-1779984067249-8e4bdd72-7b14-4003-9d66-2eecd0f3ec90.webm",
+      "type": "audio",
+      "checksum": "512a76090b63b6906d92aebe47530bbb6e566c494bf5b08a6d3dc7c8bfb95300",
+      "size_bytes": 355661,
+      "source_path": "uploads/audio/1779984067249-8e4bdd72-7b14-4003-9d66-2eecd0f3ec90.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.215Z"
+    },
+    {
+      "asset_id": "audio-1785254628068-0bdc1ea1-86b1-4165-8972-7f0caf14fc9f.webm",
+      "type": "audio",
+      "checksum": "0bdb29defa9298973ac6ae021022154d78d7001538ed36e6bdbf5b3a16dd5273",
+      "size_bytes": 61513,
+      "source_path": "uploads/audio/1785254628068-0bdc1ea1-86b1-4165-8972-7f0caf14fc9f.webm",
+      "mime": "audio/webm",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.216Z"
+    },
+    {
+      "asset_id": "image-1770984847157-b6486c7c-8b10-440b-8ecc-c918cf54830f.jpg",
+      "type": "image",
+      "checksum": "1e761b6401c34aa1c88e46e3eec1661080ded996aa8f31ce96f8b324bccafff0",
+      "size_bytes": 307021,
+      "source_path": "uploads/images/1770984847157-b6486c7c-8b10-440b-8ecc-c918cf54830f.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.218Z"
+    },
+    {
+      "asset_id": "image-1770985063764-dd9d6ae8-d380-493c-8ecf-4ab84bde6d00.jpg",
+      "type": "image",
+      "checksum": "1e761b6401c34aa1c88e46e3eec1661080ded996aa8f31ce96f8b324bccafff0",
+      "size_bytes": 307021,
+      "source_path": "uploads/images/1770985063764-dd9d6ae8-d380-493c-8ecf-4ab84bde6d00.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.220Z"
+    },
+    {
+      "asset_id": "image-1770985277563-b68fcfa8-c97f-478a-99ad-025e0edea08d.jpg",
+      "type": "image",
+      "checksum": "1e761b6401c34aa1c88e46e3eec1661080ded996aa8f31ce96f8b324bccafff0",
+      "size_bytes": 307021,
+      "source_path": "uploads/images/1770985277563-b68fcfa8-c97f-478a-99ad-025e0edea08d.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.222Z"
+    },
+    {
+      "asset_id": "image-1770985374229-6ba6b8d0-1c2b-4f43-88a7-a166137cc8aa.jpg",
+      "type": "image",
+      "checksum": "1e761b6401c34aa1c88e46e3eec1661080ded996aa8f31ce96f8b324bccafff0",
+      "size_bytes": 307021,
+      "source_path": "uploads/images/1770985374229-6ba6b8d0-1c2b-4f43-88a7-a166137cc8aa.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.224Z"
+    },
+    {
+      "asset_id": "image-1771144193018-9c54d44c-f0bc-4760-ac3c-824491fd0192.jpg",
+      "type": "image",
+      "checksum": "e1169f7c009013bc034f9ac8ea449796f63abfccfe788fed8b5902cd78607ee0",
+      "size_bytes": 28148,
+      "source_path": "uploads/images/1771144193018-9c54d44c-f0bc-4760-ac3c-824491fd0192.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.226Z"
+    },
+    {
+      "asset_id": "image-1772072069482-8769ba55-e3e7-4263-9650-b8b560776340.jpg",
+      "type": "image",
+      "checksum": "1e761b6401c34aa1c88e46e3eec1661080ded996aa8f31ce96f8b324bccafff0",
+      "size_bytes": 307021,
+      "source_path": "uploads/images/1772072069482-8769ba55-e3e7-4263-9650-b8b560776340.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.227Z"
+    },
+    {
+      "asset_id": "image-1772610125252-a426605c-c0e9-4830-89d5-4f66f35ef139.jpeg",
+      "type": "image",
+      "checksum": "29cff0d8064a6bca62085d05be9cda192773300b2ff0a5b8d68b8006d78b0290",
+      "size_bytes": 42503,
+      "source_path": "uploads/images/1772610125252-a426605c-c0e9-4830-89d5-4f66f35ef139.jpeg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.228Z"
+    },
+    {
+      "asset_id": "image-1772645899152-3b1f6c73-3283-42ae-b072-6920f2eca0de.png",
+      "type": "image",
+      "checksum": "4f1e35ebd32b02d17889fb9f047e033818ed58218a504077021ce7c0c7718249",
+      "size_bytes": 14725,
+      "source_path": "uploads/images/1772645899152-3b1f6c73-3283-42ae-b072-6920f2eca0de.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.230Z"
+    },
+    {
+      "asset_id": "image-1772646033098-54605057-845a-436a-966d-76a749133cc5.jpg",
+      "type": "image",
+      "checksum": "0b4f41f59417259e51a56f6299ad290af0210a46783ac5e5e337498fb6413e38",
+      "size_bytes": 445205,
+      "source_path": "uploads/images/1772646033098-54605057-845a-436a-966d-76a749133cc5.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.232Z"
+    },
+    {
+      "asset_id": "image-1772688765663-650df675-9533-45f3-818e-9aff7bde317a.png",
+      "type": "image",
+      "checksum": "9c0b4d671fc8546f7aeeda71c9556b2506b6fd5a86f56bee91d52770480c479c",
+      "size_bytes": 3611298,
+      "source_path": "uploads/images/1772688765663-650df675-9533-45f3-818e-9aff7bde317a.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.238Z"
+    },
+    {
+      "asset_id": "image-1772688907579-0dd7ad50-6c3d-443d-b182-775098d81b16.jpeg",
+      "type": "image",
+      "checksum": "2dfbe27274b361c54fbfd2815b390266cf8263dbaa760d173fc236f0d674cdea",
+      "size_bytes": 130611,
+      "source_path": "uploads/images/1772688907579-0dd7ad50-6c3d-443d-b182-775098d81b16.jpeg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.240Z"
+    },
+    {
+      "asset_id": "image-1772691183410-84fe4ad9-6144-43da-a36f-ec3a09cf2b02.png",
+      "type": "image",
+      "checksum": "d5d287be17822ef576715edbbb99c09f1ca4a4da1eb4cc9d532b2b492bee4a57",
+      "size_bytes": 1712186,
+      "source_path": "uploads/images/1772691183410-84fe4ad9-6144-43da-a36f-ec3a09cf2b02.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.244Z"
+    },
+    {
+      "asset_id": "image-1772691199841-24cefa06-3e92-4d85-bd31-5d4b79fd038a.png",
+      "type": "image",
+      "checksum": "637e534fff20c570f94c610e37c63bbf94b1582f40b5d21a3c7738456e2adffb",
+      "size_bytes": 1849786,
+      "source_path": "uploads/images/1772691199841-24cefa06-3e92-4d85-bd31-5d4b79fd038a.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.247Z"
+    },
+    {
+      "asset_id": "image-1772691209886-2d101112-476d-4777-9ef1-7055aa8125d5.png",
+      "type": "image",
+      "checksum": "5bcf63f90e10278501aa575c1f820204f3ca9093445ee1e363d1962386ac7b80",
+      "size_bytes": 1981513,
+      "source_path": "uploads/images/1772691209886-2d101112-476d-4777-9ef1-7055aa8125d5.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.252Z"
+    },
+    {
+      "asset_id": "image-1772691223925-5aa5823d-00ee-4e53-b166-69608d30fa6a.png",
+      "type": "image",
+      "checksum": "21f37a410cea44fe18d176ebedc360d897612978ff551c7e50c03e0891d73992",
+      "size_bytes": 1930225,
+      "source_path": "uploads/images/1772691223925-5aa5823d-00ee-4e53-b166-69608d30fa6a.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.256Z"
+    },
+    {
+      "asset_id": "image-1772691234663-a1b60005-a326-4193-85e4-ba750ed21f2f.png",
+      "type": "image",
+      "checksum": "8b88c9b406ad646200f588716f151cd155e68a8b9b8a01f91cb2be7ad8ac5764",
+      "size_bytes": 2153148,
+      "source_path": "uploads/images/1772691234663-a1b60005-a326-4193-85e4-ba750ed21f2f.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.260Z"
+    },
+    {
+      "asset_id": "image-1772894356718-da0543e6-bb2e-40de-81ee-36171eeaa1d1.png",
+      "type": "image",
+      "checksum": "7c3c9cd88fa9e7cf0e21dffe7e50c472c5daa9803fc50ccd8d10882fcc48673c",
+      "size_bytes": 2644950,
+      "source_path": "uploads/images/1772894356718-da0543e6-bb2e-40de-81ee-36171eeaa1d1.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.266Z"
+    },
+    {
+      "asset_id": "image-1773024986008-4e071351-a562-442d-a2d9-8e3521be4450.jpg",
+      "type": "image",
+      "checksum": "1e761b6401c34aa1c88e46e3eec1661080ded996aa8f31ce96f8b324bccafff0",
+      "size_bytes": 307021,
+      "source_path": "uploads/images/1773024986008-4e071351-a562-442d-a2d9-8e3521be4450.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.268Z"
+    },
+    {
+      "asset_id": "image-1773063981182-dbe6a61f-2e30-4032-9fb2-082095ba72c1.png",
+      "type": "image",
+      "checksum": "4d7a8879a6d5f35589279b50acdb4a6c50999ab08daa0f0af0dce01b2b44dc08",
+      "size_bytes": 2293214,
+      "source_path": "uploads/images/1773063981182-dbe6a61f-2e30-4032-9fb2-082095ba72c1.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.272Z"
+    },
+    {
+      "asset_id": "image-1773139964304-59c351df-ba05-440e-ae42-47c1ed85b2d1.jpeg",
+      "type": "image",
+      "checksum": "2d8a2fbaeb322d24dcfb0e2b5db0d3b6ca7d3a94dc4d9782de7067314f94df78",
+      "size_bytes": 28227,
+      "source_path": "uploads/images/1773139964304-59c351df-ba05-440e-ae42-47c1ed85b2d1.jpeg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.274Z"
+    },
+    {
+      "asset_id": "image-1773139986411-319bcde4-2f96-46f2-83a5-064452fe1e58.jpeg",
+      "type": "image",
+      "checksum": "2d8a2fbaeb322d24dcfb0e2b5db0d3b6ca7d3a94dc4d9782de7067314f94df78",
+      "size_bytes": 28227,
+      "source_path": "uploads/images/1773139986411-319bcde4-2f96-46f2-83a5-064452fe1e58.jpeg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.275Z"
+    },
+    {
+      "asset_id": "image-1773166068155-4be19c5d-fc3f-4646-8c7c-e68a127916b2.png",
+      "type": "image",
+      "checksum": "55cf131d87857d01e3e972540a8fcc1d7d0f10f1baa93194c0578763b05eb9c8",
+      "size_bytes": 841039,
+      "source_path": "uploads/images/1773166068155-4be19c5d-fc3f-4646-8c7c-e68a127916b2.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.277Z"
+    },
+    {
+      "asset_id": "image-1773166112382-989f42ab-7f72-426f-aa15-e2a3304eab8e.png",
+      "type": "image",
+      "checksum": "55cf131d87857d01e3e972540a8fcc1d7d0f10f1baa93194c0578763b05eb9c8",
+      "size_bytes": 841039,
+      "source_path": "uploads/images/1773166112382-989f42ab-7f72-426f-aa15-e2a3304eab8e.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.279Z"
+    },
+    {
+      "asset_id": "image-1773166118775-974a24ae-07ca-49d0-b45d-0aecdae2517b.png",
+      "type": "image",
+      "checksum": "55cf131d87857d01e3e972540a8fcc1d7d0f10f1baa93194c0578763b05eb9c8",
+      "size_bytes": 841039,
+      "source_path": "uploads/images/1773166118775-974a24ae-07ca-49d0-b45d-0aecdae2517b.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.281Z"
+    },
+    {
+      "asset_id": "image-1773204125286-bdef6211-b96c-462b-ab5c-4af79da827ac.png",
+      "type": "image",
+      "checksum": "4f1e35ebd32b02d17889fb9f047e033818ed58218a504077021ce7c0c7718249",
+      "size_bytes": 14725,
+      "source_path": "uploads/images/1773204125286-bdef6211-b96c-462b-ab5c-4af79da827ac.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.282Z"
+    },
+    {
+      "asset_id": "image-1773204131498-3c90d021-8e78-4435-a816-0dbc8db34966.png",
+      "type": "image",
+      "checksum": "4f1e35ebd32b02d17889fb9f047e033818ed58218a504077021ce7c0c7718249",
+      "size_bytes": 14725,
+      "source_path": "uploads/images/1773204131498-3c90d021-8e78-4435-a816-0dbc8db34966.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.283Z"
+    },
+    {
+      "asset_id": "image-1773204351351-82f3aeae-8adb-494c-80b9-c47cf3daae96.png",
+      "type": "image",
+      "checksum": "55cf131d87857d01e3e972540a8fcc1d7d0f10f1baa93194c0578763b05eb9c8",
+      "size_bytes": 841039,
+      "source_path": "uploads/images/1773204351351-82f3aeae-8adb-494c-80b9-c47cf3daae96.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.286Z"
+    },
+    {
+      "asset_id": "image-1773204363980-14cda9bc-115e-47f2-8a91-97daa2898519.png",
+      "type": "image",
+      "checksum": "55cf131d87857d01e3e972540a8fcc1d7d0f10f1baa93194c0578763b05eb9c8",
+      "size_bytes": 841039,
+      "source_path": "uploads/images/1773204363980-14cda9bc-115e-47f2-8a91-97daa2898519.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.289Z"
+    },
+    {
+      "asset_id": "image-1773204452403-d9e52e36-9b93-45fb-8c24-bcc901762c73.png",
+      "type": "image",
+      "checksum": "55cf131d87857d01e3e972540a8fcc1d7d0f10f1baa93194c0578763b05eb9c8",
+      "size_bytes": 841039,
+      "source_path": "uploads/images/1773204452403-d9e52e36-9b93-45fb-8c24-bcc901762c73.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.291Z"
+    },
+    {
+      "asset_id": "image-1773204455207-f170ec6f-1c4b-4312-8295-da0f94991bf6.png",
+      "type": "image",
+      "checksum": "55cf131d87857d01e3e972540a8fcc1d7d0f10f1baa93194c0578763b05eb9c8",
+      "size_bytes": 841039,
+      "source_path": "uploads/images/1773204455207-f170ec6f-1c4b-4312-8295-da0f94991bf6.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.293Z"
+    },
+    {
+      "asset_id": "image-1773204476831-3f658ad4-d6b0-4d97-a646-d7086141300c.png",
+      "type": "image",
+      "checksum": "55cf131d87857d01e3e972540a8fcc1d7d0f10f1baa93194c0578763b05eb9c8",
+      "size_bytes": 841039,
+      "source_path": "uploads/images/1773204476831-3f658ad4-d6b0-4d97-a646-d7086141300c.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.295Z"
+    },
+    {
+      "asset_id": "image-1773239160649-cad42f32-8e0e-4de5-98a2-ce925d87ca3d.png",
+      "type": "image",
+      "checksum": "a49e89d955bd0a40b7c8983143baba782b82f81647f8f4197168c61a11312ace",
+      "size_bytes": 344624,
+      "source_path": "uploads/images/1773239160649-cad42f32-8e0e-4de5-98a2-ce925d87ca3d.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.297Z"
+    },
+    {
+      "asset_id": "image-1773239164140-6409195d-18e0-4e92-bef1-cb2f424e3642.png",
+      "type": "image",
+      "checksum": "a49e89d955bd0a40b7c8983143baba782b82f81647f8f4197168c61a11312ace",
+      "size_bytes": 344624,
+      "source_path": "uploads/images/1773239164140-6409195d-18e0-4e92-bef1-cb2f424e3642.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.299Z"
+    },
+    {
+      "asset_id": "image-1773244894806-6889b66b-0f82-4021-9b30-cc363b53de61.jpg",
+      "type": "image",
+      "checksum": "2d6497dc221b05a40dd23b96dc78cad91242ff12f0fa16535b0ce1f27f29601b",
+      "size_bytes": 133399,
+      "source_path": "uploads/images/1773244894806-6889b66b-0f82-4021-9b30-cc363b53de61.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.300Z"
+    },
+    {
+      "asset_id": "image-1773289454458-99998c0e-ebfa-41dd-84d5-46f55c2682a6.png",
+      "type": "image",
+      "checksum": "a49e89d955bd0a40b7c8983143baba782b82f81647f8f4197168c61a11312ace",
+      "size_bytes": 344624,
+      "source_path": "uploads/images/1773289454458-99998c0e-ebfa-41dd-84d5-46f55c2682a6.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.302Z"
+    },
+    {
+      "asset_id": "image-1773333683448-554d7a3f-9810-4632-8637-353a8548be71.png",
+      "type": "image",
+      "checksum": "a6d150863ab8bdb66abec3da8f4e577c0dae28451f8e3e63d11f51630ee63275",
+      "size_bytes": 1094458,
+      "source_path": "uploads/images/1773333683448-554d7a3f-9810-4632-8637-353a8548be71.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.305Z"
+    },
+    {
+      "asset_id": "image-1773348466149-8c8d848a-b579-49ca-a899-272bfab0b714.png",
+      "type": "image",
+      "checksum": "af951d84fd50783dc33941d01852e63793a2f77a9ceab4c19c4f86568c5de6cd",
+      "size_bytes": 1365401,
+      "source_path": "uploads/images/1773348466149-8c8d848a-b579-49ca-a899-272bfab0b714.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.308Z"
+    },
+    {
+      "asset_id": "image-1773348474511-1ba697af-499c-40e8-b89a-2c8964519afc.png",
+      "type": "image",
+      "checksum": "af951d84fd50783dc33941d01852e63793a2f77a9ceab4c19c4f86568c5de6cd",
+      "size_bytes": 1365401,
+      "source_path": "uploads/images/1773348474511-1ba697af-499c-40e8-b89a-2c8964519afc.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.315Z"
+    },
+    {
+      "asset_id": "image-1773375200162-e59b2a5f-8b76-4053-a1a4-8cc1a1e5a4e3.png",
+      "type": "image",
+      "checksum": "09295bb7356ec832f69b2436495d39cc7235837c0ade6a73851912952fae888e",
+      "size_bytes": 3230054,
+      "source_path": "uploads/images/1773375200162-e59b2a5f-8b76-4053-a1a4-8cc1a1e5a4e3.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.322Z"
+    },
+    {
+      "asset_id": "image-1773375335918-a7f0e2fd-8e00-41d5-bee6-5ed57c7f414f.png",
+      "type": "image",
+      "checksum": "3b5a0ffcd17ff736a733071604e17ee40615f530dd45d4247a8f221ef5305880",
+      "size_bytes": 1163793,
+      "source_path": "uploads/images/1773375335918-a7f0e2fd-8e00-41d5-bee6-5ed57c7f414f.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.326Z"
+    },
+    {
+      "asset_id": "image-1773375929795-3a0c2df3-2381-43de-82f8-1ab75b4e81eb.png",
+      "type": "image",
+      "checksum": "3b5a0ffcd17ff736a733071604e17ee40615f530dd45d4247a8f221ef5305880",
+      "size_bytes": 1163793,
+      "source_path": "uploads/images/1773375929795-3a0c2df3-2381-43de-82f8-1ab75b4e81eb.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.329Z"
+    },
+    {
+      "asset_id": "image-1773375932467-1f8645f7-199a-4179-ba5b-52327fa0e9ef.png",
+      "type": "image",
+      "checksum": "3b5a0ffcd17ff736a733071604e17ee40615f530dd45d4247a8f221ef5305880",
+      "size_bytes": 1163793,
+      "source_path": "uploads/images/1773375932467-1f8645f7-199a-4179-ba5b-52327fa0e9ef.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.332Z"
+    },
+    {
+      "asset_id": "image-1773375937867-2d430df4-15ae-491d-8240-32e252d88f30.png",
+      "type": "image",
+      "checksum": "3b5a0ffcd17ff736a733071604e17ee40615f530dd45d4247a8f221ef5305880",
+      "size_bytes": 1163793,
+      "source_path": "uploads/images/1773375937867-2d430df4-15ae-491d-8240-32e252d88f30.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.334Z"
+    },
+    {
+      "asset_id": "image-1773375940168-1af23ffb-20de-4add-9abc-77b9eab95733.png",
+      "type": "image",
+      "checksum": "3b5a0ffcd17ff736a733071604e17ee40615f530dd45d4247a8f221ef5305880",
+      "size_bytes": 1163793,
+      "source_path": "uploads/images/1773375940168-1af23ffb-20de-4add-9abc-77b9eab95733.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.339Z"
+    },
+    {
+      "asset_id": "image-1773375985831-7a280b17-1774-4482-9844-91dcfc26bd12.png",
+      "type": "image",
+      "checksum": "3b5a0ffcd17ff736a733071604e17ee40615f530dd45d4247a8f221ef5305880",
+      "size_bytes": 1163793,
+      "source_path": "uploads/images/1773375985831-7a280b17-1774-4482-9844-91dcfc26bd12.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.343Z"
+    },
+    {
+      "asset_id": "image-1773375988675-5df36c8d-ebf5-49b3-bfcd-81b35cbcf46b.png",
+      "type": "image",
+      "checksum": "3b5a0ffcd17ff736a733071604e17ee40615f530dd45d4247a8f221ef5305880",
+      "size_bytes": 1163793,
+      "source_path": "uploads/images/1773375988675-5df36c8d-ebf5-49b3-bfcd-81b35cbcf46b.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.346Z"
+    },
+    {
+      "asset_id": "image-1773376186942-858aa193-67c1-40cd-ae7f-63c6cbffbcb3.png",
+      "type": "image",
+      "checksum": "3b5a0ffcd17ff736a733071604e17ee40615f530dd45d4247a8f221ef5305880",
+      "size_bytes": 1163793,
+      "source_path": "uploads/images/1773376186942-858aa193-67c1-40cd-ae7f-63c6cbffbcb3.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.349Z"
+    },
+    {
+      "asset_id": "image-1773376189312-ebfabee9-2c70-4a92-9fe8-806475dc84a5.png",
+      "type": "image",
+      "checksum": "3b5a0ffcd17ff736a733071604e17ee40615f530dd45d4247a8f221ef5305880",
+      "size_bytes": 1163793,
+      "source_path": "uploads/images/1773376189312-ebfabee9-2c70-4a92-9fe8-806475dc84a5.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.352Z"
+    },
+    {
+      "asset_id": "image-1773376273396-8adeaac4-04e0-4b75-ad90-9948df1288c9.png",
+      "type": "image",
+      "checksum": "3b5a0ffcd17ff736a733071604e17ee40615f530dd45d4247a8f221ef5305880",
+      "size_bytes": 1163793,
+      "source_path": "uploads/images/1773376273396-8adeaac4-04e0-4b75-ad90-9948df1288c9.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.357Z"
+    },
+    {
+      "asset_id": "image-1773376286629-ee09f8bb-445c-47db-9aa4-002544094b82.png",
+      "type": "image",
+      "checksum": "3b5a0ffcd17ff736a733071604e17ee40615f530dd45d4247a8f221ef5305880",
+      "size_bytes": 1163793,
+      "source_path": "uploads/images/1773376286629-ee09f8bb-445c-47db-9aa4-002544094b82.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.362Z"
+    },
+    {
+      "asset_id": "image-1773376462167-5031754a-7e8a-4caf-acaf-0c4c2ec500d9.png",
+      "type": "image",
+      "checksum": "3b5a0ffcd17ff736a733071604e17ee40615f530dd45d4247a8f221ef5305880",
+      "size_bytes": 1163793,
+      "source_path": "uploads/images/1773376462167-5031754a-7e8a-4caf-acaf-0c4c2ec500d9.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.366Z"
+    },
+    {
+      "asset_id": "image-1773376560244-1189f3a8-9bd9-492d-9e04-1a0d0523ac0e.png",
+      "type": "image",
+      "checksum": "c4f1300816d7e7e7f88feda0a0f0938ca586107dc05c6813ae74cfd76a382fef",
+      "size_bytes": 863478,
+      "source_path": "uploads/images/1773376560244-1189f3a8-9bd9-492d-9e04-1a0d0523ac0e.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.369Z"
+    },
+    {
+      "asset_id": "image-1773377106186-c1c5f88a-42b5-483d-97e0-7576de680207.png",
+      "type": "image",
+      "checksum": "c4f1300816d7e7e7f88feda0a0f0938ca586107dc05c6813ae74cfd76a382fef",
+      "size_bytes": 863478,
+      "source_path": "uploads/images/1773377106186-c1c5f88a-42b5-483d-97e0-7576de680207.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.371Z"
+    },
+    {
+      "asset_id": "image-1773377240770-ba30c689-5d86-4ce2-a6c6-fa6f69e17e84.png",
+      "type": "image",
+      "checksum": "027f50b9995f6b31d443db859085357b4b33958ec66d0f81cd01be37133d86c4",
+      "size_bytes": 896551,
+      "source_path": "uploads/images/1773377240770-ba30c689-5d86-4ce2-a6c6-fa6f69e17e84.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.375Z"
+    },
+    {
+      "asset_id": "image-1773377490553-7084c852-e481-410e-936b-122effde0a57.png",
+      "type": "image",
+      "checksum": "027f50b9995f6b31d443db859085357b4b33958ec66d0f81cd01be37133d86c4",
+      "size_bytes": 896551,
+      "source_path": "uploads/images/1773377490553-7084c852-e481-410e-936b-122effde0a57.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.378Z"
+    },
+    {
+      "asset_id": "image-1773377493231-0375952a-722c-419b-a882-704371ea0a60.png",
+      "type": "image",
+      "checksum": "027f50b9995f6b31d443db859085357b4b33958ec66d0f81cd01be37133d86c4",
+      "size_bytes": 896551,
+      "source_path": "uploads/images/1773377493231-0375952a-722c-419b-a882-704371ea0a60.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.380Z"
+    },
+    {
+      "asset_id": "image-1773377924652-35be85ef-9a45-4f6d-99a6-5b96d3a260d5.png",
+      "type": "image",
+      "checksum": "027f50b9995f6b31d443db859085357b4b33958ec66d0f81cd01be37133d86c4",
+      "size_bytes": 896551,
+      "source_path": "uploads/images/1773377924652-35be85ef-9a45-4f6d-99a6-5b96d3a260d5.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.384Z"
+    },
+    {
+      "asset_id": "image-1773377967277-e7c8bc25-662b-4a1f-979c-4dea235e451e.png",
+      "type": "image",
+      "checksum": "ac710fa71e8eca2222b5d4f8b5cbbb99c2b41500d7a67eae64da2385bec3bc3d",
+      "size_bytes": 1535579,
+      "source_path": "uploads/images/1773377967277-e7c8bc25-662b-4a1f-979c-4dea235e451e.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.388Z"
+    },
+    {
+      "asset_id": "image-1773377972730-5f5b1a0d-3249-4d12-8e33-8c0571184584.png",
+      "type": "image",
+      "checksum": "ac710fa71e8eca2222b5d4f8b5cbbb99c2b41500d7a67eae64da2385bec3bc3d",
+      "size_bytes": 1535579,
+      "source_path": "uploads/images/1773377972730-5f5b1a0d-3249-4d12-8e33-8c0571184584.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.392Z"
+    },
+    {
+      "asset_id": "image-1773377984047-012dda88-6df0-4684-bb18-a2a75d3b8532.png",
+      "type": "image",
+      "checksum": "ac710fa71e8eca2222b5d4f8b5cbbb99c2b41500d7a67eae64da2385bec3bc3d",
+      "size_bytes": 1535579,
+      "source_path": "uploads/images/1773377984047-012dda88-6df0-4684-bb18-a2a75d3b8532.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.398Z"
+    },
+    {
+      "asset_id": "image-1773378038669-bc80df10-7130-4b5f-84a3-442c9972df49.png",
+      "type": "image",
+      "checksum": "210d9886e7eba6f43401747697bf9be548465c8fc57b3f609c3609e304731bf9",
+      "size_bytes": 794728,
+      "source_path": "uploads/images/1773378038669-bc80df10-7130-4b5f-84a3-442c9972df49.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.401Z"
+    },
+    {
+      "asset_id": "image-1773378060526-38a361f9-f45c-44be-b5a8-ef33b5b60178.png",
+      "type": "image",
+      "checksum": "210d9886e7eba6f43401747697bf9be548465c8fc57b3f609c3609e304731bf9",
+      "size_bytes": 794728,
+      "source_path": "uploads/images/1773378060526-38a361f9-f45c-44be-b5a8-ef33b5b60178.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.403Z"
+    },
+    {
+      "asset_id": "image-1773378063048-4c6d5406-333b-4e1d-bfa2-fd759ef33163.png",
+      "type": "image",
+      "checksum": "210d9886e7eba6f43401747697bf9be548465c8fc57b3f609c3609e304731bf9",
+      "size_bytes": 794728,
+      "source_path": "uploads/images/1773378063048-4c6d5406-333b-4e1d-bfa2-fd759ef33163.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.406Z"
+    },
+    {
+      "asset_id": "image-1773499028167-e6a20848-c3e0-440d-a8a2-391f281c492e.jpg",
+      "type": "image",
+      "checksum": "5b26c9e5b829b45f2dcb5f1d58bbd21a0042a803ec6248fa93e19ac200ddd7f6",
+      "size_bytes": 423006,
+      "source_path": "uploads/images/1773499028167-e6a20848-c3e0-440d-a8a2-391f281c492e.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.408Z"
+    },
+    {
+      "asset_id": "image-1773499038023-d3cc6ecd-6cc9-42c8-a49a-776a00d8f151.png",
+      "type": "image",
+      "checksum": "c3ec0ebe68757d902410bbcd83254126c9bf16681d7c97810175158bdff9bb46",
+      "size_bytes": 1761357,
+      "source_path": "uploads/images/1773499038023-d3cc6ecd-6cc9-42c8-a49a-776a00d8f151.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.412Z"
+    },
+    {
+      "asset_id": "image-1773499051959-f797359e-21bc-4b42-9dde-e09e3a1cb802.png",
+      "type": "image",
+      "checksum": "9c0b4d671fc8546f7aeeda71c9556b2506b6fd5a86f56bee91d52770480c479c",
+      "size_bytes": 3611298,
+      "source_path": "uploads/images/1773499051959-f797359e-21bc-4b42-9dde-e09e3a1cb802.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.421Z"
+    },
+    {
+      "asset_id": "image-1773499606130-f39b9fb1-37d4-45db-92f5-bc8794f6166c.jpg",
+      "type": "image",
+      "checksum": "5b26c9e5b829b45f2dcb5f1d58bbd21a0042a803ec6248fa93e19ac200ddd7f6",
+      "size_bytes": 423006,
+      "source_path": "uploads/images/1773499606130-f39b9fb1-37d4-45db-92f5-bc8794f6166c.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.423Z"
+    },
+    {
+      "asset_id": "image-1773499621442-22fada9b-a1ce-44d2-884a-b5d7ec924132.jpg",
+      "type": "image",
+      "checksum": "5b26c9e5b829b45f2dcb5f1d58bbd21a0042a803ec6248fa93e19ac200ddd7f6",
+      "size_bytes": 423006,
+      "source_path": "uploads/images/1773499621442-22fada9b-a1ce-44d2-884a-b5d7ec924132.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.424Z"
+    },
+    {
+      "asset_id": "image-1773499643329-129b0361-1ddb-422f-8b87-5b278461f2c1.png",
+      "type": "image",
+      "checksum": "4f1e35ebd32b02d17889fb9f047e033818ed58218a504077021ce7c0c7718249",
+      "size_bytes": 14725,
+      "source_path": "uploads/images/1773499643329-129b0361-1ddb-422f-8b87-5b278461f2c1.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.425Z"
+    },
+    {
+      "asset_id": "image-1773499713863-b90181c0-a40d-4ee0-a336-9b2ee12d67bb.jpg",
+      "type": "image",
+      "checksum": "5b26c9e5b829b45f2dcb5f1d58bbd21a0042a803ec6248fa93e19ac200ddd7f6",
+      "size_bytes": 423006,
+      "source_path": "uploads/images/1773499713863-b90181c0-a40d-4ee0-a336-9b2ee12d67bb.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.427Z"
+    },
+    {
+      "asset_id": "image-1773499849032-76be276a-db6f-4228-be92-ffd5ad6b894e.jpg",
+      "type": "image",
+      "checksum": "d8ab475e19dccaa808137f71023d4ce608ed6b0c1af24ab87c62a66a7284ff9d",
+      "size_bytes": 1865906,
+      "source_path": "uploads/images/1773499849032-76be276a-db6f-4228-be92-ffd5ad6b894e.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.431Z"
+    },
+    {
+      "asset_id": "image-1773499857046-7d9ab7c4-c265-408e-a486-9130da02a2f0.jpg",
+      "type": "image",
+      "checksum": "5b26c9e5b829b45f2dcb5f1d58bbd21a0042a803ec6248fa93e19ac200ddd7f6",
+      "size_bytes": 423006,
+      "source_path": "uploads/images/1773499857046-7d9ab7c4-c265-408e-a486-9130da02a2f0.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.433Z"
+    },
+    {
+      "asset_id": "image-1773499866246-aea8893f-05cf-43f1-870d-65a6d35a033b.png",
+      "type": "image",
+      "checksum": "4f1e35ebd32b02d17889fb9f047e033818ed58218a504077021ce7c0c7718249",
+      "size_bytes": 14725,
+      "source_path": "uploads/images/1773499866246-aea8893f-05cf-43f1-870d-65a6d35a033b.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.434Z"
+    },
+    {
+      "asset_id": "image-1773499915525-6f4d293f-43be-4a20-8c32-3be31cc71c3f.jpg",
+      "type": "image",
+      "checksum": "5b26c9e5b829b45f2dcb5f1d58bbd21a0042a803ec6248fa93e19ac200ddd7f6",
+      "size_bytes": 423006,
+      "source_path": "uploads/images/1773499915525-6f4d293f-43be-4a20-8c32-3be31cc71c3f.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.436Z"
+    },
+    {
+      "asset_id": "image-1773499919929-131e979d-b25d-4f39-a51f-b5e407240906.png",
+      "type": "image",
+      "checksum": "4f1e35ebd32b02d17889fb9f047e033818ed58218a504077021ce7c0c7718249",
+      "size_bytes": 14725,
+      "source_path": "uploads/images/1773499919929-131e979d-b25d-4f39-a51f-b5e407240906.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.437Z"
+    },
+    {
+      "asset_id": "image-1773499938340-c16f1b63-3988-4954-8383-0a664efc3fc8.jpg",
+      "type": "image",
+      "checksum": "d8ab475e19dccaa808137f71023d4ce608ed6b0c1af24ab87c62a66a7284ff9d",
+      "size_bytes": 1865906,
+      "source_path": "uploads/images/1773499938340-c16f1b63-3988-4954-8383-0a664efc3fc8.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.441Z"
+    },
+    {
+      "asset_id": "image-1773500250838-8f18a6ea-e93e-458e-bed0-bae793df8b02.jpg",
+      "type": "image",
+      "checksum": "5b26c9e5b829b45f2dcb5f1d58bbd21a0042a803ec6248fa93e19ac200ddd7f6",
+      "size_bytes": 423006,
+      "source_path": "uploads/images/1773500250838-8f18a6ea-e93e-458e-bed0-bae793df8b02.jpg",
+      "mime": "image/jpeg",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.443Z"
+    },
+    {
+      "asset_id": "image-1773510107930-1e6a8ede-0bfb-42a3-8a38-9e1ca4574b83.png",
+      "type": "image",
+      "checksum": "3b5a0ffcd17ff736a733071604e17ee40615f530dd45d4247a8f221ef5305880",
+      "size_bytes": 1163793,
+      "source_path": "uploads/images/1773510107930-1e6a8ede-0bfb-42a3-8a38-9e1ca4574b83.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.447Z"
+    },
+    {
+      "asset_id": "image-1773510115021-03782d70-9969-4041-bef7-78e20b3b5c0a.png",
+      "type": "image",
+      "checksum": "3b5a0ffcd17ff736a733071604e17ee40615f530dd45d4247a8f221ef5305880",
+      "size_bytes": 1163793,
+      "source_path": "uploads/images/1773510115021-03782d70-9969-4041-bef7-78e20b3b5c0a.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.452Z"
+    },
+    {
+      "asset_id": "image-1773511057825-d7b896fb-cae1-4ba5-975e-3fa70fddd5d6.png",
+      "type": "image",
+      "checksum": "210d9886e7eba6f43401747697bf9be548465c8fc57b3f609c3609e304731bf9",
+      "size_bytes": 794728,
+      "source_path": "uploads/images/1773511057825-d7b896fb-cae1-4ba5-975e-3fa70fddd5d6.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.454Z"
+    },
+    {
+      "asset_id": "image-1773511083660-481ddb41-d66f-4df1-8c3b-d6d5be5806a5.png",
+      "type": "image",
+      "checksum": "210d9886e7eba6f43401747697bf9be548465c8fc57b3f609c3609e304731bf9",
+      "size_bytes": 794728,
+      "source_path": "uploads/images/1773511083660-481ddb41-d66f-4df1-8c3b-d6d5be5806a5.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.457Z"
+    },
+    {
+      "asset_id": "image-1773511834847-dd2d0196-883d-4341-bc4f-2eeeea3a0076.png",
+      "type": "image",
+      "checksum": "a3ad57531d7b39dc9ea352e57319bbe351d8ec41f38a454ad1311ace89add4c1",
+      "size_bytes": 1152670,
+      "source_path": "uploads/images/1773511834847-dd2d0196-883d-4341-bc4f-2eeeea3a0076.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.460Z"
+    },
+    {
+      "asset_id": "image-1773512062233-c4ae62c5-d315-4dd6-9e76-afd02b89b274.png",
+      "type": "image",
+      "checksum": "a3ad57531d7b39dc9ea352e57319bbe351d8ec41f38a454ad1311ace89add4c1",
+      "size_bytes": 1152670,
+      "source_path": "uploads/images/1773512062233-c4ae62c5-d315-4dd6-9e76-afd02b89b274.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.463Z"
+    },
+    {
+      "asset_id": "image-1773512965384-1d45f18d-f0d0-485d-9c6a-6e42c14b6dc4.png",
+      "type": "image",
+      "checksum": "6f8ebbb629da2fa1825af5a9f44817582411d614a1028d5362460b4e16f35e85",
+      "size_bytes": 948881,
+      "source_path": "uploads/images/1773512965384-1d45f18d-f0d0-485d-9c6a-6e42c14b6dc4.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.466Z"
+    },
+    {
+      "asset_id": "image-1773632548278-96930484-e4e6-4154-8d06-d03bec867b57.png",
+      "type": "image",
+      "checksum": "27d055092ab67731f9481730b60a4df6a33e22b6db57a2ded201bef87773d3b9",
+      "size_bytes": 5198108,
+      "source_path": "uploads/images/1773632548278-96930484-e4e6-4154-8d06-d03bec867b57.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.478Z"
+    },
+    {
+      "asset_id": "image-1773632589109-66ff5fd9-6d29-4b72-ae98-116dca82c76a.png",
+      "type": "image",
+      "checksum": "27d055092ab67731f9481730b60a4df6a33e22b6db57a2ded201bef87773d3b9",
+      "size_bytes": 5198108,
+      "source_path": "uploads/images/1773632589109-66ff5fd9-6d29-4b72-ae98-116dca82c76a.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.488Z"
+    },
+    {
+      "asset_id": "image-1773632612206-325d2051-1bda-4327-ac84-0b9f5e3ed9e6.png",
+      "type": "image",
+      "checksum": "297392094fe2600480dd379a83042882ce67eccfda3a37e837871edd130e983b",
+      "size_bytes": 4045639,
+      "source_path": "uploads/images/1773632612206-325d2051-1bda-4327-ac84-0b9f5e3ed9e6.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.498Z"
+    },
+    {
+      "asset_id": "image-1773633012021-519315f1-f2a5-4e7c-a526-cddca4fc4be2.png",
+      "type": "image",
+      "checksum": "c05276f62a2cad556f196d0353eef731bb87df416482507b3d0d7543fdc2b50a",
+      "size_bytes": 7393638,
+      "source_path": "uploads/images/1773633012021-519315f1-f2a5-4e7c-a526-cddca4fc4be2.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.515Z"
+    },
+    {
+      "asset_id": "image-1773633378827-1ef576e3-6e3c-469d-b0f6-bb61aca468c5.png",
+      "type": "image",
+      "checksum": "ac710fa71e8eca2222b5d4f8b5cbbb99c2b41500d7a67eae64da2385bec3bc3d",
+      "size_bytes": 1535579,
+      "source_path": "uploads/images/1773633378827-1ef576e3-6e3c-469d-b0f6-bb61aca468c5.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.519Z"
+    },
+    {
+      "asset_id": "image-1773902855145-7b9e5c58-774d-41fa-898b-293611804d31.png",
+      "type": "image",
+      "checksum": "9b0656050a1136b988f8484adf3bc8e50dd7cd4894232e1b433a8e870741c2fc",
+      "size_bytes": 741177,
+      "source_path": "uploads/images/1773902855145-7b9e5c58-774d-41fa-898b-293611804d31.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.523Z"
+    },
+    {
+      "asset_id": "image-1773902886553-176e6473-d260-4a0c-89c4-961c4bd7ac39.png",
+      "type": "image",
+      "checksum": "9b0656050a1136b988f8484adf3bc8e50dd7cd4894232e1b433a8e870741c2fc",
+      "size_bytes": 741177,
+      "source_path": "uploads/images/1773902886553-176e6473-d260-4a0c-89c4-961c4bd7ac39.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.526Z"
+    },
+    {
+      "asset_id": "image-1773905335506-e5126646-d297-4371-8474-711d06a23d18.png",
+      "type": "image",
+      "checksum": "775e0ea6d49c49fe989477d966abc37cb3cb1103da9c38c7b7ade678f9ca8ac0",
+      "size_bytes": 767672,
+      "source_path": "uploads/images/1773905335506-e5126646-d297-4371-8474-711d06a23d18.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.528Z"
+    },
+    {
+      "asset_id": "image-1773905363314-5feefc31-df6b-41e5-b64d-26f6dd08ec66.png",
+      "type": "image",
+      "checksum": "775e0ea6d49c49fe989477d966abc37cb3cb1103da9c38c7b7ade678f9ca8ac0",
+      "size_bytes": 767672,
+      "source_path": "uploads/images/1773905363314-5feefc31-df6b-41e5-b64d-26f6dd08ec66.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.531Z"
+    },
+    {
+      "asset_id": "image-1774065300765-fbef6032-0b14-4614-9d85-235d0b419778.png",
+      "type": "image",
+      "checksum": "725b3d8de67bd54057c28346db08a414c45553f2718d92e9ed295953c71e8ccd",
+      "size_bytes": 1961357,
+      "source_path": "uploads/images/1774065300765-fbef6032-0b14-4614-9d85-235d0b419778.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.534Z"
+    },
+    {
+      "asset_id": "image-1774360830285-e521fda6-10cd-4990-ac66-1116b859f56e.png",
+      "type": "image",
+      "checksum": "d8140a257a43d671c2be3111db1a2540aaea425a2004a76c1a6907ecb948113e",
+      "size_bytes": 161558,
+      "source_path": "uploads/images/1774360830285-e521fda6-10cd-4990-ac66-1116b859f56e.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.536Z"
+    },
+    {
+      "asset_id": "image-1774500566457-aca3c60f-443d-422d-b1a5-8d90a7cabb1f.png",
+      "type": "image",
+      "checksum": "a3c48856ff2a2ae509ecb654dcf5681eac0051a8f92c91bd539b450b15d1e044",
+      "size_bytes": 2075612,
+      "source_path": "uploads/images/1774500566457-aca3c60f-443d-422d-b1a5-8d90a7cabb1f.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.540Z"
+    },
+    {
+      "asset_id": "image-1774624171623-5813cdbc-7059-442f-b1c1-350848e65a95.png",
+      "type": "image",
+      "checksum": "4b969e8b429e0d06d70e188cc1e07ab54bf05879f34d037219ab2d73cda51296",
+      "size_bytes": 563452,
+      "source_path": "uploads/images/1774624171623-5813cdbc-7059-442f-b1c1-350848e65a95.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.542Z"
+    },
+    {
+      "asset_id": "image-1774630800497-2b6ffd31-dfe7-48dd-9a83-8cf630b8971f.png",
+      "type": "image",
+      "checksum": "c2cab9d67a5efe3a529505f48b287a01877bdf5c1fa189f81f6a09e1ddd20061",
+      "size_bytes": 985580,
+      "source_path": "uploads/images/1774630800497-2b6ffd31-dfe7-48dd-9a83-8cf630b8971f.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.544Z"
+    },
+    {
+      "asset_id": "image-1774632786768-84d8fcc4-4a56-4624-b781-d2e2973fe29f.png",
+      "type": "image",
+      "checksum": "4b969e8b429e0d06d70e188cc1e07ab54bf05879f34d037219ab2d73cda51296",
+      "size_bytes": 563452,
+      "source_path": "uploads/images/1774632786768-84d8fcc4-4a56-4624-b781-d2e2973fe29f.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.546Z"
+    },
+    {
+      "asset_id": "image-1774634131221-d3d273d6-95d2-421f-b74e-7c0e7156bbda.png",
+      "type": "image",
+      "checksum": "4b969e8b429e0d06d70e188cc1e07ab54bf05879f34d037219ab2d73cda51296",
+      "size_bytes": 563452,
+      "source_path": "uploads/images/1774634131221-d3d273d6-95d2-421f-b74e-7c0e7156bbda.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.548Z"
+    },
+    {
+      "asset_id": "image-1774634135405-85a2aa90-ee7c-4783-b413-01bc6c10efbc.png",
+      "type": "image",
+      "checksum": "4b969e8b429e0d06d70e188cc1e07ab54bf05879f34d037219ab2d73cda51296",
+      "size_bytes": 563452,
+      "source_path": "uploads/images/1774634135405-85a2aa90-ee7c-4783-b413-01bc6c10efbc.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.550Z"
+    },
+    {
+      "asset_id": "image-1774634143222-22d2356d-228a-432b-8b9a-c9d8d8125966.png",
+      "type": "image",
+      "checksum": "4b969e8b429e0d06d70e188cc1e07ab54bf05879f34d037219ab2d73cda51296",
+      "size_bytes": 563452,
+      "source_path": "uploads/images/1774634143222-22d2356d-228a-432b-8b9a-c9d8d8125966.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.552Z"
+    },
+    {
+      "asset_id": "image-1775233059675-1d2ebe3a-23c9-4cbb-8b6a-585ab919bcdb.png",
+      "type": "image",
+      "checksum": "2db4812b2d7f09b1eda652f7f9f1e3ab3e24a9c2d37ab122898b7f5ffa8762bd",
+      "size_bytes": 12295,
+      "source_path": "uploads/images/1775233059675-1d2ebe3a-23c9-4cbb-8b6a-585ab919bcdb.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.553Z"
+    },
+    {
+      "asset_id": "image-1775233493642-caeda286-feed-40ca-9598-3f2af609cf4a.png",
+      "type": "image",
+      "checksum": "2db4812b2d7f09b1eda652f7f9f1e3ab3e24a9c2d37ab122898b7f5ffa8762bd",
+      "size_bytes": 12295,
+      "source_path": "uploads/images/1775233493642-caeda286-feed-40ca-9598-3f2af609cf4a.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.554Z"
+    },
+    {
+      "asset_id": "image-1775358302050-8410a1c0-79d6-4833-bac9-216c49464f30.png",
+      "type": "image",
+      "checksum": "a9ee48237abb61487678d40d94205552e522ff551c8db089de396ba9751cbafa",
+      "size_bytes": 1749889,
+      "source_path": "uploads/images/1775358302050-8410a1c0-79d6-4833-bac9-216c49464f30.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.558Z"
+    },
+    {
+      "asset_id": "image-1776931516416-1e710024-b758-411f-9dd2-c9a22cd72fa9.png",
+      "type": "image",
+      "checksum": "1da74b4af070589462c256b240cadb88ee9b6cfda2adc2a8a708e71c965308ec",
+      "size_bytes": 656381,
+      "source_path": "uploads/images/1776931516416-1e710024-b758-411f-9dd2-c9a22cd72fa9.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.560Z"
+    },
+    {
+      "asset_id": "image-1776931889225-9548ce55-8407-406f-afd6-d728ef812aa9.png",
+      "type": "image",
+      "checksum": "d6d769bbd5626f4ddef7b1eb06d79f43f4d3fd7919cd217f8467a5e5e1257214",
+      "size_bytes": 759264,
+      "source_path": "uploads/images/1776931889225-9548ce55-8407-406f-afd6-d728ef812aa9.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.562Z"
+    },
+    {
+      "asset_id": "image-1783918847275-ec59a09c-0788-4df4-abb2-b08309669c25.png",
+      "type": "image",
+      "checksum": "74470d9fca137494562b9ef7ad3379c7b3198fbe64dd9b8d42ba1420376571aa",
+      "size_bytes": 914250,
+      "source_path": "uploads/images/1783918847275-ec59a09c-0788-4df4-abb2-b08309669c25.png",
+      "mime": "image/png",
+      "status": "VERIFIED",
+      "last_verified": "2026-08-06T18:56:10.565Z"
+    }
+  ],
+  "courses": []
+}
