@@ -27,46 +27,34 @@ const WorkspaceInner: React.FC = () => {
       {/* 0-Click Quick Actions Bar */}
       <QuickActions />
 
-      {/* Main 6 View Tabs */}
+      {/* Main 4 Core View Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6 bg-muted/50 p-1 rounded-xl">
+        <TabsList className="grid w-full grid-cols-4 bg-muted/50 p-1 rounded-xl">
           <TabsTrigger value="overview" className="text-xs font-semibold py-2">
             📊 Tổng quan
+          </TabsTrigger>
+          <TabsTrigger value="homework" className="text-xs font-semibold py-2">
+            📚 Nội dung học
           </TabsTrigger>
           <TabsTrigger value="students" className="text-xs font-semibold py-2">
             👥 Học viên
           </TabsTrigger>
-          <TabsTrigger value="sessions" className="text-xs font-semibold py-2">
-            📅 Lịch học
-          </TabsTrigger>
           <TabsTrigger value="grading" className="text-xs font-semibold py-2">
             ✍️ Chấm bài
-          </TabsTrigger>
-          <TabsTrigger value="homework" className="text-xs font-semibold py-2">
-            📚 Homework
-          </TabsTrigger>
-          <TabsTrigger value="attendance" className="text-xs font-semibold py-2">
-            📅 Điểm danh
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
           <OverviewTab />
         </TabsContent>
-        <TabsContent value="students">
-          <StudentsTab />
-        </TabsContent>
-        <TabsContent value="sessions">
-          <SessionsTab />
-        </TabsContent>
-        <TabsContent value="grading">
-          <GradingTab />
-        </TabsContent>
         <TabsContent value="homework">
           <HomeworkTab />
         </TabsContent>
-        <TabsContent value="attendance">
-          <AttendanceTab />
+        <TabsContent value="students">
+          <StudentsTab />
+        </TabsContent>
+        <TabsContent value="grading">
+          <GradingTab />
         </TabsContent>
       </Tabs>
     </div>

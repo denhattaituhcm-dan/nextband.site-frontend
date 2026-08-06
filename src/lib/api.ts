@@ -1297,16 +1297,39 @@ export const classesApi = {
       new Set((data || []).map((c: any) => c.teacher_id).filter(Boolean))
     );
 
-    let teacherMap: Record<string, string> = {};
+    let teacherMap: Record<string, { fullName: string; avatarUrl?: string }> = {};
     if (teacherIds.length > 0) {
       const { data: profs } = await supabase
         .from("profiles")
-        .select("user_id, full_name")
+        .select("user_id, full_name, avatar_url")
         .in("user_id", teacherIds);
 
       (profs || []).forEach((p: any) => {
-        if (p.user_id) teacherMap[p.user_id] = p.full_name;
+        if (p.user_id) {
+          teacherMap[p.user_id] = {
+            fullName: p.full_name,
+            avatarUrl: p.avatar_url,
+          };
+        }
       });
+    }
+
+    // Fetch student counts for each class
+    const classIds = (data || []).map((c: any) => c.id);
+    let studentCountsMap: Record<string, number> = {};
+    if (classIds.length > 0) {
+      const { data: studentCounts } = await supabase
+        .from("class_students")
+        .select("class_id")
+        .in("class_id", classIds);
+
+      if (studentCounts) {
+        studentCounts.forEach((cs: any) => {
+          if (cs.class_id) {
+            studentCountsMap[cs.class_id] = (studentCountsMap[cs.class_id] || 0) + 1;
+          }
+        });
+      }
     }
 
     const formatted = (data || []).map((c: any) => ({
@@ -1317,12 +1340,17 @@ export const classesApi = {
       teacherId: c.teacher_id,
       teacher: {
         id: c.teacher_id,
-        fullName: teacherMap[c.teacher_id] || null,
+        fullName: teacherMap[c.teacher_id]?.fullName || null,
+        avatarUrl: teacherMap[c.teacher_id]?.avatarUrl || null,
       },
       startDate: c.start_date,
       endDate: c.end_date,
       isActive: c.is_active ?? true,
       createdAt: c.created_at,
+      _count: {
+        students: studentCountsMap[c.id] || 0,
+      },
+      studentCount: studentCountsMap[c.id] || 0,
     }));
 
     const totalCount = count !== null && count !== undefined ? count : formatted.length;
@@ -1358,6 +1386,24 @@ export const classesApi = {
       students = profs || [];
     }
 
+    // Fetch teacher profile if teacher_id exists
+    let teacherProfile = null;
+    if (data.teacher_id) {
+      const { data: prof } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, avatar_url")
+        .eq("user_id", data.teacher_id)
+        .maybeSingle();
+
+      if (prof) {
+        teacherProfile = {
+          id: prof.user_id,
+          fullName: prof.full_name,
+          avatarUrl: prof.avatar_url,
+        };
+      }
+    }
+
     // Map profiles into class_students array items as cs.student for UI components
     const classStudentsWithProfiles = (data.class_students || []).map((cs: any) => {
       const matchedProfile = students.find((p: any) => (p.user_id || p.id) === cs.student_id);
@@ -1369,8 +1415,12 @@ export const classesApi = {
 
     return {
       ...data,
+      teacher: teacherProfile,
       class_students: classStudentsWithProfiles,
       students,
+      _count: {
+        students: classStudentsWithProfiles.length,
+      },
       courseId: data.course_id,
       teacherId: data.teacher_id,
       startDate: data.start_date,

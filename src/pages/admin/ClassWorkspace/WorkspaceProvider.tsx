@@ -41,15 +41,15 @@ export const WorkspaceProvider: React.FC<{
       const cls = await classesApi.getById(classId);
       const students = cls.students || [];
 
-      // Fetch course lessons (total homework count) if course_id exists
+      // Fetch course homeworks/exams if course_id exists
       let lessons: any[] = [];
       if (cls.course_id) {
-        const { data: lessonData } = await supabase
-          .from("course_lessons")
-          .select("id, title, order_index")
+        const { data: examData } = await supabase
+          .from("exams")
+          .select("id, title, week, exam_type, exam_sections(id, section_type, title, order_index)")
           .eq("course_id", cls.course_id)
-          .order("order_index", { ascending: true });
-        lessons = lessonData || [];
+          .order("week", { ascending: true });
+        lessons = examData || [];
       }
 
       // Fetch submissions for this class

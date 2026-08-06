@@ -1,10 +1,9 @@
 import React, { useState } from "react";
+import { useWorkspace } from "../WorkspaceProvider";
 import { SubmissionQueueItem, SubmissionItem } from "../features/grading/SubmissionQueueItem";
 import { HomeworkReviewForm } from "../features/grading/HomeworkReviewForm";
 import { Input } from "@/components/ui/input";
 import { Search, Edit3, CheckCircle2 } from "lucide-react";
-
-
 
 export const GradingTab: React.FC = () => {
   const { classData } = useWorkspace();
