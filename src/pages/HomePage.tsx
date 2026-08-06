@@ -2,7 +2,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { HomeworkEmptyState } from "@/components/homework/HomeworkEmptyState";
 import { useStudentLifecycle } from "@/hooks/useStudentLifecycle";
@@ -10,7 +9,6 @@ import {
   BookOpen,
   ArrowRight,
   Sparkles,
-  GraduationCap,
   CheckCircle2,
 } from "lucide-react";
 
@@ -47,7 +45,7 @@ export default function HomePage() {
                   Xin chào, {user?.fullName || "Học viên"}! Bạn đã được xếp vào lớp thành công 🎉
                 </h1>
                 <p className="text-xs md:text-sm text-blue-100 font-medium leading-relaxed">
-                  Bạn hiện là học viên chính thức của lớp <strong className="text-white font-bold">{activeClassName}</strong> ({courseTitle}). Click vào Lớp học bên dưới để bắt đầu làm bài tập ngay!
+                  Bạn hiện là học viên chính thức của lớp <strong className="text-white font-bold">{activeClassName}</strong> ({courseTitle}). Click vào nút bên dưới để bắt đầu làm bài tập ngay!
                 </p>
               </div>
 
@@ -64,54 +62,6 @@ export default function HomePage() {
                 </div>
               )}
             </Card>
-
-            {/* ENROLLED CLASS CARDS LIST */}
-            <div className="space-y-3">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                <GraduationCap className="w-4 h-4 text-blue-600" />
-                Lớp học của bạn ({enrollments.length} Lớp)
-              </h3>
-
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {enrollments.map((item: any, idx: number) => {
-                  const clsId = item.classId || item.class_id;
-                  const clsName = item.className || item.courses?.title || `Lớp ${idx + 1}`;
-                  const crsTitle = item.courseTitle || item.courses?.title || "MASTER";
-
-                  return (
-                    <Card
-                      key={clsId || idx}
-                      className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-blue-500 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
-                    >
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Badge variant="outline" className="text-xs font-extrabold text-blue-700 border-blue-200 bg-blue-50">
-                            {clsName}
-                          </Badge>
-                          <Badge className="bg-emerald-600 text-white text-[10px] font-bold">
-                            Đã kích hoạt
-                          </Badge>
-                        </div>
-                        <h4 className="text-base font-extrabold text-slate-900">
-                          Khóa học {crsTitle}
-                        </h4>
-                        <p className="text-xs text-slate-500 leading-relaxed">
-                          Toàn bộ bài tập luyện tập của khóa {crsTitle} đã mở hoàn toàn. Hãy vào lớp để chọn bài làm ngay.
-                        </p>
-                      </div>
-
-                      <Button
-                        onClick={() => navigate(`/class/${clsId}/lessons`)}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl gap-2 shadow-sm"
-                      >
-                        <BookOpen className="w-4 h-4" />
-                        Vào Lớp làm bài ngay ➔
-                      </Button>
-                    </Card>
-                  );
-                })}
-              </div>
-            </div>
 
             {/* 5-STEP WORKFLOW GUIDELINE */}
             <Card className="rounded-2xl border border-slate-100 bg-white p-6 md:p-8 space-y-5 shadow-sm">

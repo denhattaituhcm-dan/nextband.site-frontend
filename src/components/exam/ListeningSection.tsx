@@ -16,6 +16,7 @@ import {
 } from "./FillBlankHtmlRenderer";
 import { DropdownSelect } from "./DropdownSelect";
 import { MatchingRenderer } from "./MatchingRenderer";
+import { formatStorageUrl } from "@/lib/api";
 
 interface ListeningSectionProps {
   section: any;
@@ -82,12 +83,15 @@ export function ListeningSection({
   const currentGroupAudioUrl =
     currentGroup?.audioUrl || currentGroup?.audio_url || null;
 
+  const rawAudioUrl = section.audio_url || section.audioUrl || currentGroupAudioUrl;
+  const formattedAudioUrl = rawAudioUrl ? formatStorageUrl(rawAudioUrl) : "";
+
   return (
     <div className="h-full flex flex-col">
       {/* Sticky Audio Player */}
-      {(section.audio_url || section.audioUrl) && (
+      {formattedAudioUrl && (
         <StickyAudioPlayer
-          audioUrl={section.audio_url || section.audioUrl}
+          audioUrl={formattedAudioUrl}
           strictMode={strictMode}
         />
       )}

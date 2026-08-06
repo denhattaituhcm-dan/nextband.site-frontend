@@ -4,17 +4,18 @@ import { normalizeSiteSettings } from "./site-settings";
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1";
 
 // Helper to format URLs
-export const formatStorageUrl = (path: string | null) => {
+export const formatStorageUrl = (path: string | null | undefined) => {
   if (!path) return "";
-  if (path.startsWith("http://") || path.startsWith("https://")) return path;
-  const { data } = supabase.storage.from("exam-assets").getPublicUrl(path);
+  if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("blob:") || path.startsWith("data:")) return path;
+  const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+  const { data } = supabase.storage.from("exam-assets").getPublicUrl(cleanPath);
   return data.publicUrl;
 };
 
 // =============================================
-// DATA NORMALIZER: Supabase snake_case â†’ Frontend camelCase
-// Äáº£m báº£o ExamInterface, QuestionRenderers, v.v. hoáº¡t Ä‘á»™ng
-// dÃ¹ data Ä‘áº¿n tá»« Supabase (snake_case) hay fallback (camelCase)
+// DATA NORMALIZER: Supabase snake_case → Frontend camelCase
+// Đảm bảo ExamInterface, QuestionRenderers, v.v. hoạt động
+// dù data đến từ Supabase (snake_case) hay fallback (camelCase)
 // =============================================
 export function normalizeExamData(exam: any): any {
   if (!exam) return exam;
@@ -27,7 +28,8 @@ export function normalizeExamData(exam: any): any {
       section_type: s.section_type || s.sectionType,
       examId: s.examId || s.exam_id,
       orderIndex: s.orderIndex ?? s.order_index ?? 0,
-      audioUrl: s.audioUrl || s.audio_url || "",
+      audioUrl: formatStorageUrl(s.audioUrl || s.audio_url || ""),
+      audio_url: formatStorageUrl(s.audio_url || s.audioUrl || ""),
       audioScript: s.audioScript || s.audio_script || "",
       // Normalize nested question_groups / questionGroups
       questionGroups: normalizeGroups(s.questionGroups || s.question_groups || []),
@@ -39,7 +41,8 @@ export function normalizeExamData(exam: any): any {
       ...g,
       sectionId: g.sectionId || g.section_id,
       orderIndex: g.orderIndex ?? g.order_index ?? 0,
-      audioUrl: g.audioUrl || g.audio_url || "",
+      audioUrl: formatStorageUrl(g.audioUrl || g.audio_url || ""),
+      audio_url: formatStorageUrl(g.audio_url || g.audioUrl || ""),
       questions: normalizeQuestions(g.questions || []),
     }));
 
@@ -54,7 +57,8 @@ export function normalizeExamData(exam: any): any {
       correct_answer: q.correct_answer ?? q.correctAnswer ?? "",
       groupId: q.groupId || q.group_id,
       orderIndex: q.orderIndex ?? q.order_index ?? 0,
-      audioUrl: q.audioUrl || q.audio_url || "",
+      audioUrl: formatStorageUrl(q.audioUrl || q.audio_url || ""),
+      audio_url: formatStorageUrl(q.audio_url || q.audioUrl || ""),
       // Normalize options: ensure array format
       options: Array.isArray(q.options)
         ? q.options
