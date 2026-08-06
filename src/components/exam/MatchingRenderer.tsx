@@ -22,18 +22,35 @@ interface MatchingRendererProps {
     onAnswerChange: (questionId: string, answer: any) => void;
 }
 
-const parseMatchingData = (jsonStr: string | undefined): MatchingData => {
-    if (!jsonStr) return { items: [], options: [], pairs: {} };
-    try {
-        const parsed = JSON.parse(jsonStr);
-        return {
-            items: parsed.items || [],
-            options: parsed.options || [],
-            pairs: parsed.pairs || {},
-        };
-    } catch {
-        return { items: [], options: [], pairs: {} };
+const parseMatchingData = (question: any): MatchingData => {
+    let options: string[] = [];
+    let items: string[] = [];
+    let pairs: Record<string, string> = {};
+
+    // 1. Check question.options
+    if (Array.isArray(question.options) && question.options.length > 0) {
+        options = question.options;
+    } else if (typeof question.options === "string" && question.options.trim()) {
+        try {
+            const parsed = JSON.parse(question.options);
+            if (Array.isArray(parsed)) options = parsed;
+        } catch {}
     }
+
+    // 2. Check correctAnswer / correct_answer JSON
+    const jsonStr = question.correctAnswer || question.correct_answer;
+    if (jsonStr) {
+        try {
+            const parsed = typeof jsonStr === "object" ? jsonStr : JSON.parse(jsonStr);
+            if (parsed.items && Array.isArray(parsed.items)) items = parsed.items;
+            if (parsed.options && Array.isArray(parsed.options) && options.length === 0) {
+                options = parsed.options;
+            }
+            if (parsed.pairs) pairs = parsed.pairs;
+        } catch {}
+    }
+
+    return { items, options, pairs };
 };
 
 export const MatchingRenderer = ({
@@ -41,7 +58,7 @@ export const MatchingRenderer = ({
     answers,
     onAnswerChange,
 }: MatchingRendererProps) => {
-    const data = useMemo(() => parseMatchingData(question.correctAnswer), [question.correctAnswer]);
+    const data = useMemo(() => parseMatchingData(question), [question]);
 
     const [draggedOptionLetter, setDraggedOptionLetter] = useState<string | null>(null);
 

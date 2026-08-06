@@ -612,8 +612,9 @@ export default function ExamInterface() {
                     }`}
                   >
                     <Icon className="h-4 w-4" />
-                    {sectionLabels[section.sectionType as SectionType] ||
-                      section.title}
+                    {section.title && section.title.toLowerCase() !== "general"
+                      ? section.title
+                      : sectionLabels[section.sectionType as SectionType] || section.title || "Bài tập"}
                   </Button>
                 );
               })}

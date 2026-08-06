@@ -22,21 +22,31 @@ const HTML_TAG_RE = /<[a-z][\s\S]*>/i;
 export function RichContent({ html, className = "", variant = "default" }: RichContentProps) {
   if (!html) return null;
 
+  // Sanitize raw escaped quotes & broken trailing tags
+  let cleanHtml = html
+    .replace(/\\"/g, '"')
+    .replace(/\\'/g, "'")
+    .replace(/<\/$/g, "")
+    .replace(/<span[^>]*><\/$/g, "")
+    .trim();
+
+  if (!cleanHtml || cleanHtml.toUpperCase() === "NULL") return null;
+
   const variantClass = variant === "passage" ? "rich-content-passage" : "";
 
   // If the content contains HTML tags, render as HTML (dangerouslySetInnerHTML).
-  if (HTML_TAG_RE.test(html)) {
+  if (HTML_TAG_RE.test(cleanHtml)) {
     return (
       <div
         className={`rich-content ${variantClass} ${className}`.trim()}
-        dangerouslySetInnerHTML={{ __html: html }}
+        dangerouslySetInnerHTML={{ __html: cleanHtml }}
       />
     );
   }
 
   // Plain text: split by one or more blank lines to get paragraphs,
   // then render each as a <p> so spacing is consistent with HTML mode.
-  const paragraphs = html
+  const paragraphs = cleanHtml
     .split(/\n{2,}/)
     .map((block) => block.trim())
     .filter(Boolean);
