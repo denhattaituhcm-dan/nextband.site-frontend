@@ -133,31 +133,31 @@ export function ListeningSection({
         )}
 
         {/* Questions */}
-        <ScrollArea className="h-[calc(100vh-280px)]">
-          <div className="p-6">
+        <ScrollArea className="flex-1 h-full">
+          <div className="p-4 md:p-6">
             <div className="max-w-3xl mx-auto space-y-6">
-              <div className="flex items-center gap-2 text-[hsl(var(--listening))] mb-6">
+              <div className="flex items-center gap-2 text-primary mb-4">
                 <Headphones className="h-5 w-5" />
-                <h2 className="text-xl font-semibold">{section.title}</h2>
+                <h2 className="text-xl font-bold tracking-tight">{section.title}</h2>
               </div>
 
               {section.instructions && (
-                <Card className="bg-white border-orange-500 border shadow-sm">
-                  <CardContent className="p-4 text-sm text-black font-medium leading-relaxed">
+                <Card className="bg-amber-500/10 border-amber-500/30 border shadow-xs">
+                  <CardContent className="p-4 text-sm text-foreground font-medium leading-relaxed">
                     <RichContent html={section.instructions} />
                   </CardContent>
                 </Card>
               )}
 
               {currentGroupAudioUrl && (
-                <Card className="bg-primary/5 border-primary/20 shadow-sm">
+                <Card className="bg-primary/5 border-primary/20 shadow-xs">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-2 mb-2 text-xs font-semibold uppercase tracking-wide text-primary">
                       <Headphones className="h-3.5 w-3.5" />
                       Audio Part {currentPart + 1}
                     </div>
                     <audio
-                      src={currentGroupAudioUrl}
+                      src={formatStorageUrl(currentGroupAudioUrl)}
                       controls
                       className="h-10 w-full"
                     />
@@ -166,9 +166,9 @@ export function ListeningSection({
               )}
 
               {currentGroup && (
-                <div className="space-y-4">
+                <div className="space-y-5">
                   {currentGroup.instructions && (
-                    <div className="p-3 bg-white border-orange-500/50 border rounded-lg text-sm text-black font-semibold shadow-sm mb-4">
+                    <div className="p-3.5 bg-amber-500/10 border-amber-500/30 border rounded-lg text-sm text-foreground font-medium shadow-xs mb-4">
                       <RichContent html={currentGroup.instructions} />
                     </div>
                   )}
@@ -181,6 +181,7 @@ export function ListeningSection({
                       question.question_type === "fill_blank"
                         ? `${question.id}::blank:0`
                         : question.id;
+                    const displayNumber = question.order_index ?? qIndex + 1;
 
                     return (
                       <Card
@@ -191,17 +192,18 @@ export function ListeningSection({
                           }
                         }}
                         className={cn(
-                          "transition-all duration-300 border-l-4",
+                          "transition-all duration-180 border-l-4 bg-card shadow-xs",
                           isCurrent
-                            ? "ring-1 ring-primary shadow-md border-l-primary bg-primary/5"
+                            ? "ring-2 ring-primary/40 shadow-md border-l-primary bg-primary/5"
                             : "border-l-transparent hover:border-l-muted-foreground/30 hover:shadow-sm",
                         )}
                         onClick={() => onQuestionFocus?.(focusQuestionId)}
                       >
                         <CardContent className="p-5">
-                          <div className="flex items-start gap-4 mb-4">
-                            <span className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold shadow-sm">
-                              {question.order_index || qIndex + 1}
+                          {/* Question Card Header: Badge + Hero Question Text */}
+                          <div className="flex items-start gap-3 mb-4">
+                            <span className="shrink-0 inline-flex items-center justify-center px-2.5 py-1 rounded-md bg-primary/10 text-primary text-xs font-bold font-mono">
+                              #{displayNumber}
                             </span>
                             <div className="flex-1 space-y-3">
                               {!(
@@ -210,11 +212,9 @@ export function ListeningSection({
                               ) && (
                                 <RichContent
                                   html={question.question_text}
-                                  className="font-semibold text-base"
+                                  className="font-bold text-[15px] leading-relaxed text-foreground"
                                 />
                               )}
-
-
 
                               {question.question_audio_url && (
                                 <div className="bg-muted/50 p-3 rounded-xl border border-border/50 flex items-center gap-3">
@@ -222,7 +222,7 @@ export function ListeningSection({
                                     <Headphones className="h-4 w-4 text-primary" />
                                   </div>
                                   <audio
-                                    src={question.question_audio_url}
+                                    src={formatStorageUrl(question.question_audio_url)}
                                     controls
                                     className="h-8 w-full max-w-[300px]"
                                   />
@@ -234,7 +234,7 @@ export function ListeningSection({
                             </div>
                           </div>
 
-                          <div className="ml-12 space-y-4">
+                          <div className="pl-0 sm:pl-9 space-y-4">
                             {(question.question_type === "multiple_choice" ||
                               (question.question_type === "listening" &&
                                 question.options &&
@@ -262,7 +262,7 @@ export function ListeningSection({
                                   const expectedCount = currentAnswers.length;
                                   return (
                                     <div className="space-y-2">
-                                      <div className="flex items-center gap-2 text-xs font-semibold text-primary bg-primary/8 border border-primary/20 rounded-lg px-3 py-1.5">
+                                      <div className="flex items-center gap-2 text-xs font-semibold text-primary bg-primary/10 border border-primary/20 rounded-lg px-3 py-1.5">
                                         <CheckSquare className="h-3.5 w-3.5 flex-shrink-0" />
                                         <span>Chọn {expectedCount} đáp án phù hợp</span>
                                         <span className="ml-auto text-muted-foreground font-normal">

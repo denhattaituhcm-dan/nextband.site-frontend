@@ -300,6 +300,27 @@ export default function ExamInterface() {
     return list;
   }, [currentSectionQuestions]);
 
+  const answeredCount = useMemo(() => {
+    return paginationQuestions.filter((q: any) => {
+      const val = answers[q.id];
+      if (q.isSubQuestion && q.subIndex !== undefined) {
+        if (val && typeof val === "object") {
+          const subVal = val[q.subIndex];
+          return typeof subVal === "string" && subVal.trim().length > 0;
+        }
+        return false;
+      }
+      if (Array.isArray(val)) return val.length > 0;
+      if (typeof val === "string") return val.trim().length > 0;
+      if (val && typeof val === "object") {
+        return Object.values(val).some(
+          (item) => typeof item === "string" && item.trim().length > 0,
+        );
+      }
+      return false;
+    }).length;
+  }, [paginationQuestions, answers]);
+
   const currentQuestionIndex = useMemo(() => {
     if (!currentQuestionId || paginationQuestions.length === 0) return -1;
     return paginationQuestions.findIndex(
@@ -543,56 +564,81 @@ export default function ExamInterface() {
         description={`Luyện thi IELTS: ${exam?.title}. Nâng band điểm IELTS cùng NextBand.`}
       />
 
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-4">
+      {/* Exam Mode Header */}
+      <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur-md supports-[backdrop-filter]:bg-card/75 shadow-xs">
+        <div className="flex h-14 md:h-16 items-center justify-between px-3 md:px-6 gap-2">
+          {/* Left: Exit + Title */}
+          <div className="flex items-center gap-3 shrink-0">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowExitDialog(true)}
+              className="text-muted-foreground hover:text-foreground font-medium"
             >
-              <ArrowLeft className="mr-2 h-4 w-4" />
+              <ArrowLeft className="mr-1.5 h-4 w-4" />
               Thoát
             </Button>
-            <div className="hidden md:block">
-              <h1 className="font-semibold text-lg">{exam.title}</h1>
-            </div>
+            <div className="h-4 w-[1px] bg-border hidden sm:block" />
+            <h1 className="font-bold text-sm md:text-base tracking-tight truncate max-w-[180px] sm:max-w-[240px] md:max-w-none">
+              {exam.title}
+            </h1>
           </div>
 
-          {/* Large Timer */}
-          <div className="flex items-center gap-6">
+          {/* Center: Real-time Context State (Mental Model) */}
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-muted/60 border text-xs font-medium">
+            <span className="font-bold uppercase tracking-wider text-primary">
+              {activeSection || "EXAM"}
+            </span>
+            <span className="text-muted-foreground">•</span>
+            <span>
+              Câu {currentQuestionIndex >= 0 ? currentQuestionIndex + 1 : 1}/{paginationQuestions.length}
+            </span>
+            <span className="text-muted-foreground">•</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+              Đã làm {answeredCount}
+            </span>
+            <span className="text-muted-foreground">|</span>
+            <span className="text-muted-foreground">
+              Còn lại {paginationQuestions.length - answeredCount}
+            </span>
+          </div>
+
+          {/* Right: Timer & Action CTAs */}
+          <div className="flex items-center gap-3 shrink-0">
             <ExamTimer
               duration={exam.durationMinutes || 60}
               initialSeconds={
                 initialTimeLeft ?? (exam.durationMinutes || 60) * 60
               }
               onTimeUp={handleTimeUp}
-              size="large"
+              size="small"
             />
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => setShowReviewDialog(true)}
+                className="hidden sm:inline-flex"
               >
-                <Eye className="mr-2 h-4 w-4" />
+                <Eye className="mr-1.5 h-3.5 w-3.5" />
                 Xem lại
               </Button>
               <Button
+                size="sm"
                 onClick={() => setShowReviewDialog(true)}
-                className="bg-primary hover:bg-primary/90"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-xs"
               >
-                <Send className="mr-2 h-4 w-4" />
+                <Send className="mr-1.5 h-3.5 w-3.5" />
                 Nộp bài
               </Button>
             </div>
           </div>
         </div>
 
-        {/* Section Tabs (for IELTS exams) */}
+        {/* Section Tabs (for multi-section IELTS exams) */}
         {!isGrammarExam && availableSections.length > 1 && (
-          <div className="border-t">
-            <div className="flex items-center gap-1 p-2 overflow-x-auto">
+          <div className="border-t bg-muted/20 px-4 py-1.5">
+            <div className="flex items-center gap-1.5 overflow-x-auto">
               {availableSections.map((section: any) => {
                 const Icon =
                   sectionIcons[section.sectionType as SectionType] || FileText;
@@ -607,11 +653,11 @@ export default function ExamInterface() {
                       setActiveSection(section.sectionType as SectionType);
                       setCurrentQuestionId(undefined);
                     }}
-                    className={`flex items-center gap-2 ${
-                      isActive ? "" : "text-muted-foreground"
+                    className={`h-8 text-xs font-semibold flex items-center gap-1.5 rounded-md ${
+                      isActive ? "bg-primary text-primary-foreground shadow-2xs" : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-3.5 w-3.5" />
                     {section.title && section.title.toLowerCase() !== "general"
                       ? section.title
                       : sectionLabels[section.sectionType as SectionType] || section.title || "Bài tập"}

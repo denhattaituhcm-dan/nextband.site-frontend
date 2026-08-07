@@ -76,7 +76,7 @@ export function QuestionPagination({
         const { isAnswered, isFlagged, isCurrent } = getQuestionState(q);
         const displayNumber = formatQuestionLabel(q, index);
         const targetId = q.focusId || q.id;
-        const uniqueKey = q.isSubQuestion ? `${targetId}` : q.id;
+        const uniqueKey = targetId;
 
         return (
           <Tooltip key={uniqueKey}>
@@ -88,29 +88,29 @@ export function QuestionPagination({
                   onToggleFlag(targetId);
                 }}
                 className={cn(
-                  'relative w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium transition-all',
-                  'border-2 hover:scale-110',
-                  isCurrent && 'ring-2 ring-primary ring-offset-2',
-                  isAnswered && !isFlagged && 'bg-[hsl(var(--success))] border-[hsl(var(--success))] text-white',
-                  isFlagged && 'bg-destructive border-destructive text-white',
-                  !isAnswered && !isFlagged && 'bg-background border-muted-foreground/30 text-foreground'
+                  'relative w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold transition-all duration-100',
+                  'border-2 hover:scale-105 active:scale-95',
+                  isCurrent && 'ring-2 ring-primary ring-offset-2 ring-offset-background font-bold scale-105',
+                  isAnswered && !isFlagged && 'bg-emerald-600 border-emerald-600 text-white shadow-2xs',
+                  isFlagged && 'bg-amber-500 border-amber-500 text-white shadow-2xs',
+                  !isAnswered && !isFlagged && 'bg-card border-border text-foreground hover:border-primary/50'
                 )}
               >
                 {isFlagged ? (
-                  <Flag className="h-4 w-4" />
+                  <Flag className="h-3.5 w-3.5 fill-current" />
                 ) : isAnswered ? (
-                  <Check className="h-4 w-4" />
+                  <Check className="h-3.5 w-3.5 stroke-[2.5]" />
                 ) : (
                   displayNumber
                 )}
               </button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="text-xs">
-              <p>Câu {displayNumber}</p>
+            <TooltipContent side="top" className="text-xs font-medium">
+              <p className="font-bold">Câu {displayNumber}</p>
               <p className="text-muted-foreground">
                 {isFlagged ? 'Đã đánh dấu' : isAnswered ? 'Đã trả lời' : 'Chưa trả lời'}
               </p>
-              <p className="text-muted-foreground mt-1">Right-click để đánh dấu</p>
+              <p className="text-[10px] text-muted-foreground/80 mt-0.5">Click để di chuyển • Nhấp chuột phải để gắn cờ</p>
             </TooltipContent>
           </Tooltip>
         );

@@ -160,10 +160,9 @@
       "calt" 1;
   }
 
-  /* Smooth scrolling + increase base size 1.2x */
+  /* Smooth scrolling */
   html {
     scroll-behavior: smooth;
-    font-size: 1.2rem;
   }
 
   /* Custom scrollbar */

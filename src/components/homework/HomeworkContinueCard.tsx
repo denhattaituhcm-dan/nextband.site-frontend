@@ -10,10 +10,11 @@ interface HomeworkContinueCardProps {
 
 export function HomeworkContinueCard({ task }: HomeworkContinueCardProps) {
   const navigate = useNavigate();
+  const normalizedStatus = task.status?.toUpperCase() || "UNSUBMITTED";
 
   // Dynamic CTA label based on business status
   const getCtaLabel = (status: string) => {
-    switch (status?.toUpperCase()) {
+    switch (status) {
       case "SUBMITTED":
         return "Xem bài đã nộp";
       case "GRADED":
@@ -22,46 +23,64 @@ export function HomeworkContinueCard({ task }: HomeworkContinueCardProps) {
         return "Sửa và nộp lại";
       case "UNSUBMITTED":
       default:
-        return "Làm bài tập";
+        return "Bắt đầu làm bài ngay";
     }
   };
 
-  const ctaLabel = getCtaLabel(task.status);
+  const ctaLabel = getCtaLabel(normalizedStatus);
+  const sessionMatch = task.title?.match(/(?:Buổi|Day|Week)\s*\d+/i)?.[0];
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "GRADED":
+        return "Đã chấm điểm";
+      case "SUBMITTED":
+        return "Đang chờ chấm";
+      case "REVISION_REQUIRED":
+        return "Cần sửa lại";
+      default:
+        return "Chưa hoàn thành";
+    }
+  };
 
   return (
-    <Card className="border-blue-500 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white rounded-2xl shadow-lg shadow-blue-500/20 overflow-hidden relative border-0">
+    <Card className="bg-gradient-to-r from-primary via-primary/95 to-teal-700 text-primary-foreground rounded-2xl shadow-lg overflow-hidden relative border-0">
       <CardContent className="p-6 md:p-8 relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-3 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-md">
-              Buổi {task.title.match(/Buổi \d+/i)?.[0] || "12"}
-            </span>
-            <span className="text-xs font-semibold text-blue-100 uppercase tracking-wider">
-              {task.className || "STARTER01 • 04.2026"}
-            </span>
+          <div className="flex flex-wrap items-center gap-2">
+            {sessionMatch && (
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-md">
+                {sessionMatch}
+              </span>
+            )}
+            {task.className && (
+              <span className="text-xs font-semibold text-primary-foreground/90 uppercase tracking-wider">
+                {task.className}
+              </span>
+            )}
           </div>
 
           <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
             {task.title}
           </h2>
 
-          <div className="flex items-center gap-4 text-xs text-blue-100 font-medium">
+          <div className="flex items-center gap-4 text-xs text-primary-foreground/80 font-medium">
             <span className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" />
-              Hạn nộp: {task.deadline ? new Date(task.deadline).toLocaleDateString("vi-VN") : "Hôm nay"}
+              Hạn nộp: {task.deadline ? new Date(task.deadline).toLocaleDateString("vi-VN") : "Trong tuần này"}
             </span>
             <span>•</span>
-            <span>Trạng thái: <strong className="text-white font-bold">{task.status === "graded" ? "Đã chấm" : task.status === "submitted" ? "Đang chờ chấm" : "Chưa nộp bài"}</strong></span>
+            <span>Trạng thái: <strong className="text-white font-bold">{getStatusText(normalizedStatus)}</strong></span>
           </div>
         </div>
 
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-end shrink-0">
           <Button
             onClick={() => navigate(task.actionUrl)}
-            className="bg-white hover:bg-blue-50 text-blue-600 font-extrabold px-8 py-6 rounded-xl shadow-xl hover:shadow-2xl transition-all text-base flex items-center gap-2 border-0"
+            className="bg-white hover:bg-white/90 text-primary font-extrabold px-6 py-5 rounded-xl shadow-md hover:shadow-lg transition-all text-sm md:text-base flex items-center gap-2 border-0 active:scale-95"
           >
             {ctaLabel}
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
           </Button>
         </div>
       </CardContent>

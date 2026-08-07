@@ -654,11 +654,11 @@ export function ReadingSection({
       </ScrollArea>
 
       {/* Right - Questions */}
-      <ScrollArea className="h-[calc(100vh-200px)]">
-        <div className="p-6 space-y-6">
+      <ScrollArea className="flex-1 h-full">
+        <div className="p-4 md:p-6 space-y-6">
           {section.instructions && (
-            <Card className="bg-white border-orange-500 border shadow-sm">
-              <CardContent className="p-4 text-sm text-black font-medium">
+            <Card className="bg-amber-500/10 border-amber-500/30 border shadow-xs">
+              <CardContent className="p-4 text-sm text-foreground font-medium">
                 <RichContent html={section.instructions} />
               </CardContent>
             </Card>
@@ -667,12 +667,12 @@ export function ReadingSection({
           {questionGroups?.map((group: any, gIdx: number) => (
             <div key={group.id} className="space-y-4">
               {group.title && (
-                <h3 className="font-semibold text-lg text-foreground">
+                <h3 className="font-bold text-base md:text-lg text-foreground tracking-tight">
                   {group.title}
                 </h3>
               )}
               {group.instructions && (
-                <div className="p-3 bg-white border-orange-500/50 border rounded-lg text-sm text-black font-semibold shadow-sm mb-4">
+                <div className="p-3.5 bg-amber-500/10 border-amber-500/30 border rounded-lg text-sm text-foreground font-medium shadow-xs mb-4">
                   <RichContent html={group.instructions} />
                 </div>
               )}
@@ -680,7 +680,7 @@ export function ReadingSection({
               {(group.audioUrl || group.audio_url) && (
                 <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 mb-2 flex items-center gap-3">
                   <audio
-                    src={group.audioUrl || group.audio_url}
+                    src={formatStorageUrl(group.audioUrl || group.audio_url)}
                     controls
                     className="h-10 w-full"
                   />
