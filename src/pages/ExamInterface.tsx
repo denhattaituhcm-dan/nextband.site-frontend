@@ -28,6 +28,8 @@ import { GrammarSection } from "@/components/exam/GrammarSection";
 import { ExamTimer } from "@/components/exam/ExamTimer";
 import { QuestionPagination } from "@/components/exam/QuestionPagination";
 import { ExamReviewDialog } from "@/components/exam/ExamReviewDialog";
+import { ActorAwareUnavailableScreen } from "@/components/exam/ActorAwareUnavailableScreen";
+import { evaluateContentContract } from "@/lib/contentContract";
 import { SEO } from "@/components/common/SEO";
 import { getFillBlankBlankCount } from "@/lib/fillBlank";
 import {
@@ -535,6 +537,20 @@ export default function ExamInterface() {
           <Link to="/">Quay về trang chủ</Link>
         </Button>
       </div>
+    );
+  }
+
+  // Content Contract Guard (Publish-Time / Static Structure Check)
+  const contractEvaluation = evaluateContentContract(exam);
+  if (!contractEvaluation.isReady) {
+    return (
+      <ActorAwareUnavailableScreen
+        examTitle={exam.title}
+        courseId={exam.courseId || exam.course?.id}
+        userRole={user?.role || "student"}
+        status={contractEvaluation.status}
+        violations={contractEvaluation.violations}
+      />
     );
   }
 
