@@ -97,12 +97,4 @@ export default function HomePage() {
       </div>
     </div>
   );
-}         </div>
-              </div>
-            </Card>
-          </div>
-        )}
-      </div>
-    </div>
-  );
 }
