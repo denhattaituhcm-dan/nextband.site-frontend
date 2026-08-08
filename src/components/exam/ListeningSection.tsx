@@ -105,17 +105,19 @@ export function ListeningSection({
   const currentGroupAudioUrl =
     currentGroup?.audioUrl || currentGroup?.audio_url || null;
 
-  const rawAudioUrl = section.audio_url || section.audioUrl || currentGroupAudioUrl;
-  const formattedAudioUrl = rawAudioUrl ? formatStorageUrl(rawAudioUrl) : "";
+  // Determine if section has global audio separate from group-level audio
+  const sectionAudioUrl = section.audio_url || section.audioUrl || null;
+  const showStickyTopPlayer = sectionAudioUrl && !currentGroupAudioUrl;
+  const formattedStickyAudioUrl = sectionAudioUrl ? formatStorageUrl(sectionAudioUrl) : "";
 
   const cleanSectionInstructions = cleanHtmlText(section.instructions);
 
   return (
     <div className="h-full flex flex-col bg-slate-50/50 dark:bg-neutral-950/50">
-      {/* Sticky Audio Player */}
-      {formattedAudioUrl && (
+      {/* Sticky Audio Player (ONLY shown if section has global audio and group has no audio) */}
+      {showStickyTopPlayer && formattedStickyAudioUrl && (
         <StickyAudioPlayer
-          audioUrl={formattedAudioUrl}
+          audioUrl={formattedStickyAudioUrl}
           strictMode={strictMode}
         />
       )}
