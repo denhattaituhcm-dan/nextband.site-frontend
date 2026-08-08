@@ -152,15 +152,13 @@ export default function StudentLessonViewerPage() {
               <ArrowLeft className="w-5 h-5 text-slate-600" />
             </Button>
             <div>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs font-bold text-blue-700 bg-blue-50 border-blue-200">
-                  {classData.className}
-                </Badge>
-                <span className="text-xs text-slate-400">•</span>
-                <span className="text-xs text-slate-500 font-medium">{classData.courseTitle}</span>
-              </div>
-              <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight mt-0.5">
-                Bàn làm việc Bài tập Lớp {classData.className}
+              <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight flex flex-wrap items-center gap-2">
+                <span>Bàn làm việc Bài tập Lớp {classData.className}</span>
+                {classData.courseTitle && (
+                  <Badge variant="outline" className="text-xs font-bold text-blue-700 bg-blue-50 border-blue-200 ml-1">
+                    Khóa học {classData.courseTitle}
+                  </Badge>
+                )}
               </h1>
             </div>
           </div>
@@ -174,15 +172,6 @@ export default function StudentLessonViewerPage() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           <div className="md:col-span-8 bg-gradient-to-r from-emerald-700 via-teal-700 to-emerald-800 text-white p-6 md:p-8 rounded-2xl shadow-md flex flex-col justify-between space-y-4">
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-white/20 text-white border border-white/25 backdrop-blur-md">
-                  {classData.className}
-                </span>
-                <span className="text-xs text-emerald-200">•</span>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-500 text-white">
-                  KHÓA HỌC {classData.courseTitle?.toUpperCase()}
-                </span>
-              </div>
               <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">
                 Sẵn sàng làm bài hôm nay ✍️
               </h2>
