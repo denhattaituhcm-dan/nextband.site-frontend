@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { coursesApi, examsApi, submissionsApi } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
@@ -179,7 +179,17 @@ export default function CourseDetail() {
                   <div className="text-xs text-slate-400">
                     Nhiệm vụ: Hoàn thành bài tập để duy trì tiến độ lớp học
                   </div>
-                  <Link to={`/exam/${currentExam.id}`}>
+                  <Link
+                    to={`/exam/${currentExam.id}?returnUrl=${encodeURIComponent(location.pathname)}`}
+                    state={{
+                      exitContext: {
+                        destination: location.pathname,
+                        source: "course_detail",
+                        courseId: id,
+                      },
+                      returnUrl: location.pathname,
+                    }}
+                  >
                     <Button className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-6 py-5 rounded-xl shadow-lg shadow-emerald-500/20 flex items-center gap-2">
                       <Play className="w-4 h-4 fill-slate-950" />
                       {currentExam.submission?.status === "in_progress"

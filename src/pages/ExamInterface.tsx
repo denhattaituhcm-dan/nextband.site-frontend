@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, useSearchParams, useLocation } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { examsApi, submissionsApi } from "@/lib/api";
+import { resolveExitDestination } from "@/lib/exitContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -73,6 +74,8 @@ const sectionLabels = {
 export default function ExamInterface() {
   const { examId } = useParams<{ examId: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -456,7 +459,22 @@ export default function ExamInterface() {
         description: `bài tập của bạn đã được ghi nhận${resultText}`,
       });
 
-      navigate(`/submissions/${submission.id}`);
+      const exitDestination = resolveExitDestination(
+        exam,
+        searchParams,
+        location.state,
+      );
+      navigate(
+        `/submissions/${submission.id}?returnUrl=${encodeURIComponent(
+          exitDestination,
+        )}`,
+        {
+          state: {
+            exitContext: { destination: exitDestination },
+            returnUrl: exitDestination,
+          },
+        },
+      );
     } catch (error: any) {
       toast({
         title: "Lỗi",
@@ -469,9 +487,12 @@ export default function ExamInterface() {
     }
   }, [
     answers,
+    exam,
     examId,
+    location.state,
     navigate,
     queryClient,
+    searchParams,
     sections,
     submission,
     toast,
@@ -795,23 +816,25 @@ export default function ExamInterface() {
       <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Thoát bài thi?</AlertDialogTitle>
+            <AlertDialogTitle>Thoát bài làm?</AlertDialogTitle>
             <AlertDialogDescription>
-              Nếu bạn thoát bây giờ, tiến độ làm bài có thể bị mất. Bạn có chắc
-              chắn muốn thoát?
+              Tiến độ câu trả lời của bạn đã được hệ thống tự động ghi nhận (Autosave). Bạn có thể quay lại tiếp tục làm bài bất cứ lúc nào.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Tiếp tục làm bài</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() =>
-                navigate(
-                  exam?.courseId ? `/course/${exam.courseId}` : "/my-courses",
-                )
-              }
+              onClick={() => {
+                const destination = resolveExitDestination(
+                  exam,
+                  searchParams,
+                  location.state,
+                );
+                navigate(destination);
+              }}
               className="bg-destructive hover:bg-destructive/90"
             >
-              Thoát
+              Thoát bài
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

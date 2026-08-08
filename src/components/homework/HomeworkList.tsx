@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, Clock } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -15,7 +15,28 @@ interface HomeworkListProps {
 
 export function HomeworkList({ title, tasks, variant = "default" }: HomeworkListProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   if (!tasks || tasks.length === 0) return null;
+
+  const handleTaskClick = (task: StudentWorkspaceTask) => {
+    const currentPath = location.pathname;
+    const url = task.actionUrl || "";
+    const separator = url.includes("?") ? "&" : "?";
+    const targetUrl = url.startsWith("/exam")
+      ? `${url}${separator}returnUrl=${encodeURIComponent(currentPath)}`
+      : url;
+
+    navigate(targetUrl, {
+      state: {
+        exitContext: {
+          destination: currentPath,
+          source: "homework_list",
+          classId: task.classId,
+        },
+        returnUrl: currentPath,
+      },
+    });
+  };
 
   return (
     <div className="space-y-3">
@@ -53,7 +74,7 @@ export function HomeworkList({ title, tasks, variant = "default" }: HomeworkList
                 <Button
                   size="sm"
                   variant={variant === "completed" ? "outline" : "default"}
-                  onClick={() => navigate(task.actionUrl)}
+                  onClick={() => handleTaskClick(task)}
                 >
                   {variant === "completed" ? "Xem lại bài" : "Làm bài"}
                   <ArrowRight className="w-3.5 h-3.5 ml-1" />

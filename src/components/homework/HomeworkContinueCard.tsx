@@ -2,7 +2,7 @@ import { StudentWorkspaceTask } from "@/lib/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Clock, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface HomeworkContinueCardProps {
   task: StudentWorkspaceTask;
@@ -10,6 +10,7 @@ interface HomeworkContinueCardProps {
 
 export function HomeworkContinueCard({ task }: HomeworkContinueCardProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const normalizedStatus = task.status?.toUpperCase() || "UNSUBMITTED";
 
   // Dynamic CTA label based on business status
@@ -76,7 +77,24 @@ export function HomeworkContinueCard({ task }: HomeworkContinueCardProps) {
 
         <div className="flex items-center justify-end shrink-0">
           <Button
-            onClick={() => navigate(task.actionUrl)}
+            onClick={() => {
+              const currentPath = location.pathname;
+              const url = task.actionUrl || "";
+              const separator = url.includes("?") ? "&" : "?";
+              const targetUrl = url.startsWith("/exam")
+                ? `${url}${separator}returnUrl=${encodeURIComponent(currentPath)}`
+                : url;
+              navigate(targetUrl, {
+                state: {
+                  exitContext: {
+                    destination: currentPath,
+                    source: "homework_continue_card",
+                    classId: task.classId,
+                  },
+                  returnUrl: currentPath,
+                },
+              });
+            }}
             className="bg-white hover:bg-white/90 text-primary font-extrabold px-6 py-5 rounded-xl shadow-md hover:shadow-lg transition-all text-sm md:text-base flex items-center gap-2 border-0 active:scale-95"
           >
             {ctaLabel}

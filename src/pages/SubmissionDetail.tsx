@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { submissionsApi } from "@/lib/api";
+import { resolveExitDestination } from "@/lib/exitContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -278,6 +279,15 @@ export default function SubmissionDetail() {
   const displayCorrectAnswers = submission?.correctAnswers ?? frontendComputedResults?.correctAnswers ?? null;
   const displayTotalQuestions = submission?.totalQuestions ?? frontendComputedResults?.totalQuestions ?? null;
   const hasCorrectResults = displayCorrectAnswers != null && displayTotalQuestions != null;
+  const location = useLocation();
+  const handleBack = () => {
+    const destination = resolveExitDestination(
+      submission?.exam,
+      searchParams,
+      location.state,
+    );
+    navigate(destination);
+  };
 
   if (isLoading) {
     return (
@@ -294,7 +304,7 @@ export default function SubmissionDetail() {
         <Button
           variant="outline"
           className="mt-4"
-          onClick={() => navigate("/my-submissions")}
+          onClick={handleBack}
         >
           <ArrowLeft className="h-4 w-4 mr-2" /> Quay lại
         </Button>
@@ -314,9 +324,9 @@ export default function SubmissionDetail() {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => navigate("/my-submissions")}
+        onClick={handleBack}
       >
-        <ArrowLeft className="h-4 w-4 mr-1" /> Bài đã làm
+        <ArrowLeft className="h-4 w-4 mr-1" /> Quay lại
       </Button>
 
       {/* Header card */}

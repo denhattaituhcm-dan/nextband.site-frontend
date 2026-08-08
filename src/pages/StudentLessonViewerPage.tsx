@@ -1,5 +1,5 @@
 // Student Class Practice Workspace - Course-Driven Action Hub
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { lessonsApi, submissionsApi } from "@/lib/api";
 import { Card } from "@/components/ui/card";
@@ -22,7 +22,22 @@ import {
 export default function StudentLessonViewerPage() {
   const { classId } = useParams<{ classId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
+
+  const handleOpenExam = (hwId: string) => {
+    const returnUrl = location.pathname;
+    navigate(`/exam/${hwId}?returnUrl=${encodeURIComponent(returnUrl)}`, {
+      state: {
+        exitContext: {
+          destination: returnUrl,
+          source: "class_homework",
+          classId,
+        },
+        returnUrl,
+      },
+    });
+  };
 
   const { data: classLessonData, isLoading, error } = useQuery({
     queryKey: ["class-lessons", classId],
@@ -189,7 +204,7 @@ export default function StudentLessonViewerPage() {
                 </div>
 
                 <Button
-                  onClick={() => navigate(`/exam/${nextHomework.id}`)}
+                  onClick={() => handleOpenExam(nextHomework.id)}
                   className="bg-white text-emerald-800 hover:bg-emerald-50 font-extrabold px-6 py-2.5 rounded-xl text-xs shadow-md shrink-0"
                 >
                   ✍️ Làm bài ngay
@@ -283,7 +298,7 @@ export default function StudentLessonViewerPage() {
                         ? "bg-amber-600 hover:bg-amber-700 text-white"
                         : "bg-emerald-600 hover:bg-emerald-700 text-white"
                     }`}
-                    onClick={() => navigate(`/exam/${hw.id}`)}
+                    onClick={() => handleOpenExam(hw.id)}
                   >
                     {hw.status === "REVIEWED"
                       ? "🔍 Xem phản hồi"
