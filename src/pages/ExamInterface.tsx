@@ -6,6 +6,7 @@ import { resolveExitDestination } from "@/lib/exitContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
   Clock,
