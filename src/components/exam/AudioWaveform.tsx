@@ -8,6 +8,7 @@ interface AudioWaveformProps {
 
 export function AudioWaveform({ data, isRecording, className = '' }: AudioWaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -16,46 +17,95 @@ export function AudioWaveform({ data, isRecording, className = '' }: AudioWavefo
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const width = canvas.width;
-    const height = canvas.height;
+    let step = 0;
 
-    // Clear canvas
-    ctx.fillStyle = 'hsl(var(--muted))';
-    ctx.fillRect(0, 0, width, height);
-
-    if (!data || !isRecording) {
-      // Draw idle state
+    const render = () => {
+      const width = canvas.width;
+      const height = canvas.height;
       const centerY = height / 2;
-      ctx.strokeStyle = 'hsl(var(--muted-foreground))';
-      ctx.lineWidth = 2;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Background rounded container fill
+      const bgGradient = ctx.createLinearGradient(0, 0, width, height);
+      bgGradient.addColorStop(0, 'rgba(255, 247, 237, 0.9)'); // orange-50
+      bgGradient.addColorStop(1, 'rgba(254, 243, 199, 0.6)'); // amber-100
+      ctx.fillStyle = bgGradient;
+      ctx.fillRect(0, 0, width, height);
+
+      // Subtle center baseline
+      ctx.strokeStyle = 'rgba(249, 115, 22, 0.2)'; // orange-500/20
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.moveTo(0, centerY);
       ctx.lineTo(width, centerY);
       ctx.stroke();
-      return;
-    }
 
-    // Draw waveform
-    const barWidth = width / data.length;
-    const centerY = height / 2;
+      if (!isRecording) {
+        return;
+      }
 
-    ctx.fillStyle = 'hsl(var(--speaking))';
+      // Render vertical audio visualizer bars
+      const numBars = 36;
+      const barGap = 4;
+      const totalBarWidth = width - (numBars + 1) * barGap;
+      const barWidth = Math.max(3, totalBarWidth / numBars);
 
-    for (let i = 0; i < data.length; i++) {
-      const barHeight = (data[i] / 255) * height * 0.8;
-      const x = i * barWidth;
-      const y = centerY - barHeight / 2;
-      
-      ctx.fillRect(x, y, barWidth - 1, barHeight);
-    }
+      const gradient = ctx.createLinearGradient(0, 0, 0, height);
+      gradient.addColorStop(0, '#f97316'); // orange-500
+      gradient.addColorStop(1, '#f59e0b'); // amber-500
+      ctx.fillStyle = gradient;
+
+      step += 0.15;
+
+      for (let i = 0; i < numBars; i++) {
+        let barHeight = 4;
+
+        if (data && data.length > 0) {
+          const dataIndex = Math.floor((i / numBars) * data.length);
+          const rawVal = data[dataIndex] || 0;
+          barHeight = (rawVal / 255) * (height * 0.75);
+        }
+
+        // Ambient idle animation fallback if volume is low so it never looks frozen
+        if (barHeight < 6) {
+          barHeight = Math.sin(step + i * 0.4) * 5 + 6;
+        }
+
+        barHeight = Math.min(height - 8, Math.max(4, barHeight));
+
+        const x = barGap + i * (barWidth + barGap);
+        const y = centerY - barHeight / 2;
+        const borderRadius = Math.min(barWidth / 2, 3);
+
+        // Draw rounded rectangle bar
+        ctx.beginPath();
+        ctx.roundRect(x, y, barWidth, barHeight, borderRadius);
+        ctx.fill();
+      }
+
+      if (isRecording) {
+        animFrameRef.current = requestAnimationFrame(render);
+      }
+    };
+
+    render();
+
+    return () => {
+      if (animFrameRef.current) {
+        cancelAnimationFrame(animFrameRef.current);
+      }
+    };
   }, [data, isRecording]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={300}
-      height={60}
-      className={`rounded-lg ${className}`}
-    />
+    <div className={`relative overflow-hidden rounded-2xl border border-orange-200/80 shadow-inner ${className}`}>
+      <canvas
+        ref={canvasRef}
+        width={500}
+        height={64}
+        className="w-full h-full block"
+      />
+    </div>
   );
 }

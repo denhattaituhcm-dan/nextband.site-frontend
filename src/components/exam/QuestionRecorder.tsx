@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Mic, Square, CheckCircle2, Play, Pause, RotateCcw } from "lucide-react";
+import { Mic, Square, CheckCircle2, Play, Pause, RotateCcw, Loader2 } from "lucide-react";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { AudioWaveform } from "./AudioWaveform";
@@ -11,6 +11,7 @@ interface QuestionRecorderProps {
   questionId: string;
   answer: string;
   onAnswerChange: (questionId: string, answer: string) => void;
+  onRecordingStateChange?: (isRecording: boolean) => void;
   className?: string;
 }
 
@@ -102,9 +103,10 @@ export function QuestionRecorder({
   questionId,
   answer,
   onAnswerChange,
+  onRecordingStateChange,
   className,
 }: QuestionRecorderProps) {
-  const [phase, setPhase] = useState<"idle" | "recording" | "review">(
+  const [phase, setPhase] = useState<"idle" | "recording" | "processing" | "review">(
     answer ? "review" : "idle",
   );
   const [recordTime, setRecordTime] = useState(0);
@@ -126,6 +128,11 @@ export function QuestionRecorder({
 
   const [isUploading, setIsUploading] = useState(false);
 
+  // Notify parent of recording state
+  useEffect(() => {
+    onRecordingStateChange?.(isRecording || phase === "recording");
+  }, [isRecording, phase, onRecordingStateChange]);
+
   // Synchronize phase when answer changes externally
   useEffect(() => {
     if (answer && phase === "idle") {
@@ -143,10 +150,10 @@ export function QuestionRecorder({
     }
   }, [isRecording]);
 
-  // Handle recorded audio
+  // Handle recorded audio upload
   useEffect(() => {
     const uploadAudio = async () => {
-      if (audioBlob && phase === "recording") {
+      if (audioBlob && phase === "processing") {
         setIsUploading(true);
         try {
           await new Promise((resolve) => setTimeout(resolve, 300));
@@ -170,7 +177,7 @@ export function QuestionRecorder({
       }
     };
 
-    if (audioBlob && phase === "recording") {
+    if (audioBlob && phase === "processing") {
       uploadAudio();
     }
   }, [audioBlob, phase, questionId, onAnswerChange, audioUrl]);
@@ -191,6 +198,7 @@ export function QuestionRecorder({
   };
 
   const handleStopRecording = () => {
+    setPhase("processing");
     stopRecording();
     stopListening();
   };
@@ -211,13 +219,12 @@ export function QuestionRecorder({
 
   return (
     <div className={cn("space-y-3 pt-1", className)}>
-      {/* State 1: Idle (No recording yet) */}
-      {!answer && phase !== "recording" && (
+      {/* State 1: Idle (Not recording) */}
+      {!answer && phase === "idle" && (
         <div className="flex items-center gap-3">
           <Button
             size="default"
             onClick={handleStartRecording}
-            disabled={isUploading}
             className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-full px-6 shadow-md shadow-orange-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
           >
             <Mic className="mr-2 h-4 w-4 animate-pulse" />
@@ -232,11 +239,12 @@ export function QuestionRecorder({
       {/* State 2: Active Recording */}
       {phase === "recording" && (
         <div className="bg-gradient-to-b from-white to-orange-50/50 dark:from-neutral-900 dark:to-neutral-800/80 rounded-2xl p-4 border-2 border-orange-400/60 dark:border-orange-600/60 shadow-lg space-y-4 animate-in zoom-in-95 fill-mode-both">
+          {/* Status Header */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-destructive animate-pulse">
+            <div className="flex items-center gap-2 text-destructive font-extrabold animate-pulse">
               <div className="w-3 h-3 rounded-full bg-destructive shadow-sm shadow-destructive/50" />
-              <span className="text-xs font-extrabold uppercase tracking-wider">
-                Đang ghi âm...
+              <span className="text-xs uppercase tracking-wider">
+                ĐANG GHI ÂM...
               </span>
             </div>
             <span className="font-mono font-extrabold text-2xl text-orange-600 dark:text-orange-400">
@@ -244,55 +252,62 @@ export function QuestionRecorder({
             </span>
           </div>
 
+          {/* Dynamic Audio Visualizer Waveform */}
           <AudioWaveform
             data={analyserData}
             isRecording={true}
-            className="h-12 w-full rounded-xl overflow-hidden"
+            className="h-14 w-full"
           />
 
-          <div className="bg-white/80 dark:bg-black/30 p-3 rounded-xl text-sm min-h-[50px] max-h-[90px] overflow-auto border border-orange-200/50 dark:border-neutral-700 italic text-muted-foreground text-left shadow-xs">
-            {transcript || "Đang chuyển giọng nói thành văn bản..."}
+          <div className="text-xs text-muted-foreground italic text-center font-medium">
+            Hệ thống đang lắng nghe giọng nói của bạn... Hãy trả lời tự nhiên nhé!
           </div>
 
+          {/* Primary Action Button - Stop & Complete */}
           <Button
             onClick={handleStopRecording}
-            variant="destructive"
-            className="w-full rounded-xl font-bold py-5 shadow-md shadow-destructive/20"
+            className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold py-3.5 rounded-2xl shadow-md shadow-orange-500/20 text-sm transition-all"
           >
-            <Square className="mr-2 h-4 w-4" /> Dừng ghi và hoàn tất
+            <Square className="h-4 w-4 fill-current mr-2" />
+            Dừng ghi & hoàn tất
           </Button>
         </div>
       )}
 
-      {/* State 3: Completed / Recorded Review */}
-      {answer && phase !== "recording" && (
+      {/* State 3: Processing / Uploading */}
+      {(phase === "processing" || isUploading) && (
+        <div className="bg-orange-50/80 dark:bg-neutral-900 rounded-2xl p-5 border border-orange-200/80 dark:border-neutral-800 shadow-sm flex flex-col items-center justify-center space-y-3 animate-in fade-in">
+          <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400 font-extrabold text-sm">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span>ĐANG XỬ LÝ & LƯU BÀI NÓI...</span>
+          </div>
+          <p className="text-xs text-muted-foreground font-medium text-center">
+            Đang chuyển giọng nói thành văn bản và lưu file ghi âm lên máy chủ...
+          </p>
+        </div>
+      )}
+
+      {/* State 4: Completed / Review */}
+      {answer && phase === "review" && !isUploading && (
         <div className="flex flex-wrap items-center gap-3 pt-1">
           <CustomAudioPlayer src={answer} />
 
           <div className="flex items-center gap-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 font-extrabold text-xs border border-emerald-200/60 dark:border-emerald-900/40 shadow-xs">
               <CheckCircle2 className="h-4 w-4" />
-              <span>Đã trả lời</span>
+              <span>Đã hoàn thành</span>
             </div>
 
             <Button
               size="sm"
               variant="outline"
               onClick={handleStartRecording}
-              disabled={isUploading}
               className="rounded-full border-orange-200 hover:bg-orange-50 text-orange-600 dark:text-orange-400 dark:border-orange-900/40 dark:hover:bg-orange-950/40 font-bold px-4 text-xs shadow-xs"
             >
               <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
               Ghi âm lại
             </Button>
           </div>
-
-          {isUploading && (
-            <div className="flex items-center gap-2 text-xs text-orange-600 font-semibold animate-pulse">
-              <div className="h-3.5 w-3.5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
-              Đang tải bài nói lên máy chủ...
-            </div>
-          )}
         </div>
       )}
     </div>

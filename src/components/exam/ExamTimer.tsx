@@ -6,7 +6,7 @@ interface ExamTimerProps {
   duration: number; // in minutes
   initialSeconds?: number;
   onTimeUp?: () => void;
-  size?: 'default' | 'large';
+  size?: 'default' | 'large' | 'small';
 }
 
 export function ExamTimer({
@@ -64,30 +64,42 @@ export function ExamTimer({
   if (size === 'large') {
     return (
       <div
+        title="Thời gian còn lại của bài thi"
         className={cn(
-          'flex items-center gap-3 px-4 py-2 rounded-xl font-mono transition-colors',
+          'flex items-center gap-3 px-4 py-2 rounded-2xl font-mono transition-colors shadow-xs',
           isCritical
             ? 'bg-destructive text-destructive-foreground animate-pulse'
             : isLow
-            ? 'bg-destructive/10 text-destructive'
-            : 'bg-muted'
+            ? 'bg-destructive/10 text-destructive border border-destructive/20'
+            : 'bg-muted/80 text-foreground border border-border/60'
         )}
       >
-        <Clock className="h-5 w-5" />
-        <span className="text-2xl font-bold tracking-wider">
-          {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-        </span>
+        <Clock className="h-5 w-5 text-orange-500" />
+        <div className="flex flex-col">
+          <span className="text-[10px] font-sans font-bold text-muted-foreground uppercase tracking-wider">Thời gian còn lại</span>
+          <span className="text-2xl font-extrabold tracking-wider">
+            {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+          </span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className={cn(
-      'flex items-center gap-2 px-3 py-1.5 rounded-lg',
-      isLow ? 'bg-destructive/10 text-destructive' : 'bg-muted'
-    )}>
-      <Clock className="h-4 w-4" />
-      <span className="font-mono font-medium">
+    <div
+      title="Thời gian còn lại của bài thi"
+      className={cn(
+        'flex items-center gap-2 px-3 py-1.5 rounded-2xl transition-colors shadow-2xs',
+        isCritical
+          ? 'bg-destructive text-destructive-foreground animate-pulse'
+          : isLow
+          ? 'bg-destructive/10 text-destructive border border-destructive/20'
+          : 'bg-muted/70 text-foreground border border-border/50'
+      )}
+    >
+      <Clock className="h-4 w-4 text-orange-500 shrink-0" />
+      <span className="hidden sm:inline text-xs text-muted-foreground font-sans font-semibold mr-0.5">Thời gian bài thi:</span>
+      <span className="font-mono font-extrabold text-sm tracking-tight">
         {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
       </span>
     </div>

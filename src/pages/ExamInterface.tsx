@@ -92,6 +92,7 @@ export default function ExamInterface() {
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [showExitDialog, setShowExitDialog] = useState(false);
   const [initialTimeLeft, setInitialTimeLeft] = useState<number | null>(null);
+  const [isRecordingActive, setIsRecordingActive] = useState(false);
   const autoSubmitTriggeredRef = useRef(false);
 
   const questionRefs = useRef<Map<string, HTMLElement>>(new Map());
@@ -631,12 +632,25 @@ export default function ExamInterface() {
               Câu {currentQuestionIndex >= 0 ? currentQuestionIndex + 1 : 1}/{paginationQuestions.length}
             </span>
             <span className="text-muted-foreground">•</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-              Đã làm {answeredCount}
+            <span
+              className={cn(
+                "font-semibold px-2 py-0.5 rounded-full text-[11px]",
+                isRecordingActive
+                  ? "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 animate-pulse font-bold"
+                  : currentQuestionId && answers[currentQuestionId]
+                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold"
+                  : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+              )}
+            >
+              {isRecordingActive
+                ? "Đang làm"
+                : currentQuestionId && answers[currentQuestionId]
+                ? "Đã hoàn thành"
+                : "Chưa làm"}
             </span>
             <span className="text-muted-foreground">|</span>
             <span className="text-muted-foreground">
-              Còn lại {paginationQuestions.length - answeredCount}
+              Đã xong {answeredCount}/{paginationQuestions.length}
             </span>
           </div>
 
@@ -740,6 +754,7 @@ export default function ExamInterface() {
             section={currentSection}
             answers={answers}
             onAnswerChange={handleAnswerChange}
+            onRecordingStateChange={setIsRecordingActive}
             questionRefs={questionRefs}
             currentQuestionId={currentQuestionId}
             onQuestionFocus={setCurrentQuestionId}

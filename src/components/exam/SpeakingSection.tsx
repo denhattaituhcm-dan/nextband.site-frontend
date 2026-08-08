@@ -2,7 +2,7 @@ import { useMemo, MutableRefObject } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Mic, BookOpen, Sparkles } from "lucide-react";
+import { Mic, BookOpen } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { QuestionRecorder } from "./QuestionRecorder";
@@ -17,6 +17,7 @@ interface SpeakingSectionProps {
   section: any;
   answers: Record<string, any>;
   onAnswerChange: (questionId: string, answer: any) => void;
+  onRecordingStateChange?: (isRecording: boolean) => void;
   questionRefs?: MutableRefObject<Map<string, HTMLElement>>;
   currentQuestionId?: string;
   onQuestionFocus?: (questionId: string) => void;
@@ -32,6 +33,7 @@ export function SpeakingSection({
   section,
   answers,
   onAnswerChange,
+  onRecordingStateChange,
   questionRefs,
   currentQuestionId,
   onQuestionFocus,
@@ -257,6 +259,7 @@ export function SpeakingSection({
                                     questionId={question.id}
                                     answer={answers[question.id]}
                                     onAnswerChange={onAnswerChange}
+                                    onRecordingStateChange={onRecordingStateChange}
                                   />
                                 )}
 
