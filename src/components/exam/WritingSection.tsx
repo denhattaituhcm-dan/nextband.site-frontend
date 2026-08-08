@@ -1,27 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  PenTool,
-  ZoomIn,
-  ZoomOut,
-  RotateCcw,
-  Save,
-} from "lucide-react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { PenTool, BookOpen, CheckCircle2, FileText } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { DropdownSelect } from "./DropdownSelect";
 import {
   FillBlankHtmlRenderer,
@@ -38,11 +24,17 @@ interface WritingSectionProps {
   timeRemaining?: number;
 }
 
+const cleanHtmlText = (html?: string) => {
+  if (!html) return "";
+  const text = html.replace(/<[^>]*>/g, "").trim();
+  return text ? html : "";
+};
+
 const countWords = (text: string) =>
   text.trim() ? text.trim().split(/\s+/).length : 0;
 
 const getMinWords = (title: string) => {
-  const lower = title.toLowerCase();
+  const lower = (title || "").toLowerCase();
   if (lower.includes("task 1") || lower.includes("part 1")) return 150;
   return 250;
 };
@@ -110,10 +102,9 @@ export function WritingSection({
   const firstQuestion = allQuestions[0];
   const primaryText = answers[primaryQuestionId] || "";
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [imageZoom, setImageZoom] = useState(1);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Auto-save indicator based on first question text
+  // Auto-save indicator
   useEffect(() => {
     if (primaryText) {
       if (saveTimeoutRef.current) {
@@ -121,7 +112,7 @@ export function WritingSection({
       }
       saveTimeoutRef.current = setTimeout(() => {
         setLastSaved(new Date());
-      }, 30000);
+      }, 3000);
     }
     return () => {
       if (saveTimeoutRef.current) {
@@ -130,13 +121,7 @@ export function WritingSection({
     };
   }, [primaryText]);
 
-  const promptText = section.prompt_text || section.title || "";
-  const imageUrl =
-    section.image_url ||
-    firstQuestion?.image_url ||
-    questionGroups[0]?.image_url ||
-    "";
-  const instructions = section.instructions || "";
+  const cleanSectionInstructions = cleanHtmlText(section.instructions);
 
   const renderAnswerField = (question: any) => {
     const value = answers[question.id] || "";
@@ -147,30 +132,47 @@ export function WritingSection({
     if (question.question_type === "essay") {
       const progress = Math.min((wordCount / minWords) * 100, 100);
       return (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <Textarea
-            placeholder="Nhập bài viết..."
+            placeholder="Viết bài luận của bạn tại đây..."
             value={value}
             onChange={(e) => onAnswerChange(question.id, e.target.value)}
-            rows={8}
-            className="resize-y shadow-sm"
+            rows={12}
+            className="resize-y rounded-2xl p-4 text-base border-gray-200/80 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 shadow-xs font-sans leading-relaxed"
           />
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 text-sm font-semibold">
-              <span>Số từ:</span>
-              <span
-                className={wordCount >= minWords ? "text-green-600" : "text-primary"}
-              >
-                {wordCount}
-              </span>
-              <span className="text-xs text-muted-foreground">/ {minWords}</span>
+
+          <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-50 dark:bg-slate-900/60 p-3 px-4 rounded-2xl border border-slate-200/60 dark:border-slate-800">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800 dark:text-gray-200">
+                <span>Số từ:</span>
+                <span
+                  className={cn(
+                    "text-sm font-extrabold",
+                    wordCount >= minWords ? "text-emerald-600 dark:text-emerald-400" : "text-teal-600 dark:text-teal-400"
+                  )}
+                >
+                  {wordCount}
+                </span>
+                <span className="text-xs text-muted-foreground font-normal">/ {minWords} từ tối thiểu</span>
+              </div>
+
+              <div className="w-28 sm:w-36 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div
+                  className={cn(
+                    "h-full transition-all duration-300 rounded-full",
+                    wordCount >= minWords ? "bg-emerald-500" : "bg-teal-500"
+                  )}
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
             </div>
-            <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden max-w-[220px]">
-              <div
-                className={`h-full transition-all ${wordCount >= minWords ? "bg-green-500" : "bg-primary"}`}
-                style={{ width: `${progress}%` }}
-              />
-            </div>
+
+            {lastSaved && (
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                <span>Đã tự động lưu ({lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})</span>
+              </div>
+            )}
           </div>
         </div>
       );
@@ -186,44 +188,6 @@ export function WritingSection({
         : value
           ? [value]
           : [];
-      const hasMultipleCorrect =
-        typeof question.correct_answer === "string" &&
-        question.correct_answer
-          .split("|")
-          .map((v: string) => v.trim())
-          .filter(Boolean).length > 1;
-
-      if (hasMultipleCorrect) {
-        return (
-          <div className="grid gap-2">
-            {question.options.map((opt: string, idx: number) => {
-              const checked = selectedValues.includes(opt);
-              return (
-                <label
-                  key={idx}
-                  className={cn(
-                    "flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer",
-                    checked
-                      ? "bg-primary/5 border-primary/30 ring-1 ring-primary/20"
-                      : "bg-background border-transparent hover:bg-muted/30",
-                  )}
-                >
-                  <Checkbox
-                    checked={checked}
-                    onCheckedChange={(next) => {
-                      const nextValues = new Set(selectedValues);
-                      if (next) nextValues.add(opt);
-                      else nextValues.delete(opt);
-                      onAnswerChange(question.id, Array.from(nextValues));
-                    }}
-                  />
-                  <span className="font-medium text-sm">{opt}</span>
-                </label>
-              );
-            })}
-          </div>
-        );
-      }
 
       return (
         <RadioGroup
@@ -235,17 +199,20 @@ export function WritingSection({
             <div
               key={idx}
               className={cn(
-                "flex items-center space-x-3 p-3 rounded-xl border transition-all cursor-pointer",
+                "flex items-center space-x-3 p-3.5 rounded-2xl border transition-all cursor-pointer",
                 value === opt
-                  ? "bg-primary/5 border-primary/30 ring-1 ring-primary/20"
-                  : "bg-background border-transparent hover:bg-muted/30",
+                  ? "bg-white border-teal-500 shadow-xs ring-1 ring-teal-500/20"
+                  : "bg-gray-50/50 border-gray-200/80 hover:bg-white",
               )}
             >
               <RadioGroupItem value={opt} id={`${question.id}-${idx}`} />
               <Label
                 htmlFor={`${question.id}-${idx}`}
-                className="flex-1 cursor-pointer font-medium text-sm"
+                className="flex-1 cursor-pointer font-semibold text-gray-800 dark:text-gray-200 text-sm"
               >
+                <span className="text-teal-600 dark:text-teal-400 mr-2 text-xs font-extrabold">
+                  {String.fromCharCode(65 + idx)}.
+                </span>
                 {opt}
               </Label>
             </div>
@@ -254,274 +221,136 @@ export function WritingSection({
       );
     }
 
-    if (
-      question.question_type === "fill_blank" &&
-      hasFillBlankPlaceholders(question.question_text)
-    ) {
-      return (
-        <FillBlankHtmlRenderer
-          html={question.question_text}
-          answers={value || {}}
-          questionId={question.id}
-          onAnswerChange={onAnswerChange}
-        />
-      );
-    }
-
-    if (question.question_type === "fill_blank") {
-      return (
-        <Textarea
-          placeholder="Nhập câu trả lời/điền chỗ trống..."
-          value={value}
-          onChange={(e) => onAnswerChange(question.id, e.target.value)}
-          rows={4}
-          className="shadow-sm"
-        />
-      );
-    }
-
-    if (question.question_type === "short_answer") {
-      return (
-        <Input
-          placeholder="Nhập câu trả lời ngắn..."
-          value={value}
-          onChange={(e) => onAnswerChange(question.id, e.target.value)}
-          className="max-w-xl h-11"
-        />
-      );
-    }
-
-    if (
-      question.question_type === "true_false_not_given" ||
-      question.question_type === "yes_no_not_given"
-    ) {
-      return (
-        <div className="max-w-[220px]">
-          <DropdownSelect
-            value={value || ""}
-            onChange={(v) => onAnswerChange(question.id, v)}
-            options={
-              question.question_type === "true_false_not_given"
-                ? ["TRUE", "FALSE", "NOT GIVEN"]
-                : ["YES", "NO", "NOT GIVEN"]
-            }
-            placeholder="Chọn đáp án"
-          />
-        </div>
-      );
-    }
-
-    if (question.question_type === "matching") {
-      return (
-        <MatchingRenderer
-          question={question}
-          answers={answers}
-          onAnswerChange={onAnswerChange}
-        />
-      );
-    }
-
-    // Fallback: textarea for any other structured response
     return (
-      <Textarea
-        placeholder="Nhập câu trả lời..."
-        value={value}
-        onChange={(e) => onAnswerChange(question.id, e.target.value)}
-        rows={6}
-        className="shadow-sm"
-      />
+      <div className="space-y-2">
+        <Textarea
+          placeholder="Viết câu trả lời của bạn..."
+          value={typeof value === "string" ? value : ""}
+          onChange={(e) => onAnswerChange(question.id, e.target.value)}
+          rows={6}
+          className="resize-y rounded-2xl p-4 text-base border-gray-200/80 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 shadow-xs font-sans leading-relaxed"
+        />
+        <div className="flex justify-end text-xs text-muted-foreground font-semibold">
+          <span className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full border border-slate-200/60 dark:border-slate-700">
+            📝 {wordCount} từ
+          </span>
+        </div>
+      </div>
     );
   };
 
   return (
-    <div className="h-full grid grid-cols-1 overflow-hidden">
-      {/* Left - Task Prompt */}
-      <div className="p-6 overflow-auto bg-muted/5">
-        <div className="max-w-2xl mx-auto space-y-6">
-          <div className="flex items-center gap-2 text-[hsl(var(--writing))] mb-4">
-            <PenTool className="h-5 w-5" />
-            <h2 className="text-xl font-bold">{section.title}</h2>
+    <div className="h-full overflow-hidden flex flex-col bg-slate-50/50 dark:bg-neutral-950/50">
+      <ScrollArea className="flex-1">
+        <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8 pb-32">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-teal-500/10 via-emerald-500/5 to-transparent p-6 rounded-3xl border border-teal-200/60 dark:border-teal-900/30 shadow-xs">
+            <div className="flex items-center gap-3 text-teal-700 dark:text-teal-400 mb-2">
+              <div className="p-3 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-md shadow-teal-500/20">
+                <PenTool className="h-6 w-6" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">
+                  {section.title || "IELTS Writing Test"}
+                </h2>
+                <p className="text-xs font-medium text-muted-foreground mt-0.5">
+                  Thực hiện bài viết và quản lý số từ trực tiếp
+                </p>
+              </div>
+            </div>
+
+            {cleanSectionInstructions && (
+              <div className="mt-4 p-4 bg-white/90 dark:bg-gray-900/90 border border-teal-200/80 dark:border-teal-900/40 rounded-2xl text-sm text-gray-800 dark:text-gray-200 font-medium shadow-xs">
+                <RichContent html={cleanSectionInstructions} />
+              </div>
+            )}
           </div>
 
-          {/* Prompt Card */}
-          <Card className="shadow-sm border-muted/50">
-            <CardHeader className="py-4 bg-muted/20 border-b">
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
-                ĐỀ BÀI (QUESTION PROMPT)
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="py-6 space-y-4">
-              {promptText &&
-                (
-                  <RichContent
-                    html={promptText}
-                    className="text-foreground leading-relaxed font-medium text-base"
-                  />
-                )}
-              {instructions && (
-                <div className="p-4 bg-white border-orange-500 border rounded-xl text-black font-medium shadow-sm leading-relaxed">
-                  <RichContent html={instructions} />
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {/* Question Groups */}
+          <div className="space-y-8">
+            {questionGroups.map((group: any, gIndex: number) => {
+              const rawTitle = group.title || "";
+              const hasPartInTitle = /part|phần|task/i.test(rawTitle);
+              const displayTitle = rawTitle || `Writing Task ${gIndex + 1}`;
+              const groupInst = cleanHtmlText(group.instructions);
 
-          {/* Image with zoom (for Task 1 charts/maps) */}
-          {imageUrl && (
-            <Card className="shadow-sm border-muted/50 overflow-hidden">
-              <CardHeader className="flex flex-row items-center justify-between py-3 px-4 bg-muted/20 border-b">
-                <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-                  HÌNH ẢNH MINH HỌA
-                </CardTitle>
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() =>
-                      setImageZoom((prev) => Math.max(prev - 0.25, 0.5))
-                    }
-                  >
-                    <ZoomOut className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => setImageZoom(1)}
-                  >
-                    <RotateCcw className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() =>
-                      setImageZoom((prev) => Math.min(prev + 0.25, 3))
-                    }
-                  >
-                    <ZoomIn className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="p-4">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <div className="overflow-auto cursor-zoom-in border rounded-lg bg-white p-4 shadow-inner min-h-[200px] flex items-center justify-center">
-                      <img
-                        src={imageUrl}
-                        alt="Task image"
-                        style={{
-                          transform: `scale(${imageZoom})`,
-                          transformOrigin: "center center",
-                        }}
-                        className="transition-transform max-w-full h-auto drop-shadow-md"
+              return (
+                <div key={group.id} className="space-y-6">
+                  {/* Group Header */}
+                  {(displayTitle || groupInst) && (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        {!hasPartInTitle && (
+                          <span className="px-3.5 py-1 rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-xs font-extrabold uppercase tracking-wider shadow-xs">
+                            Task {gIndex + 1}
+                          </span>
+                        )}
+                        <h3 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">
+                          {displayTitle}
+                        </h3>
+                      </div>
+
+                      {groupInst && (
+                        <div className="p-4 bg-gradient-to-r from-teal-50/80 to-emerald-50/50 dark:from-teal-950/20 dark:to-emerald-950/10 border border-teal-200/80 dark:border-teal-900/30 rounded-2xl text-sm text-gray-800 dark:text-gray-200 font-medium shadow-xs">
+                          <RichContent html={groupInst} />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Group Passage / Prompt Description */}
+                  {group.passage && (
+                    <div className="bg-gradient-to-br from-teal-50/90 via-emerald-50/50 to-teal-100/40 dark:from-teal-950/30 dark:via-emerald-950/20 dark:to-teal-900/20 border border-teal-300/70 dark:border-teal-700/40 rounded-3xl p-6 shadow-md shadow-teal-500/5 relative overflow-hidden">
+                      <div className="flex items-center gap-2.5 text-teal-800 dark:text-teal-300 font-bold mb-4 uppercase text-xs tracking-widest bg-teal-200/60 dark:bg-teal-900/50 px-3.5 py-1.5 rounded-full w-fit">
+                        <BookOpen className="h-4 w-4" />
+                        <span>Đề bài & Hướng dẫn</span>
+                      </div>
+                      <RichContent
+                        html={group.passage}
+                        variant="passage"
+                        className="text-gray-900 dark:text-gray-100 text-base leading-relaxed font-medium"
                       />
                     </div>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-5xl max-h-[90vh] overflow-auto">
-                    <img
-                      src={imageUrl}
-                      alt="Task image"
-                      className="w-full h-auto"
-                    />
-                  </DialogContent>
-                </Dialog>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      </div>
-
-      {/* Right - Questions */}
-      <div className="p-6 flex flex-col bg-background">
-        <div className="max-w-3xl mx-auto flex-1 flex flex-col w-full space-y-5">
-          {lastSaved && (
-            <div className="text-xs text-muted-foreground flex items-center gap-1.5 self-end">
-              <Save className="h-3 w-3 text-primary" />
-              Đã lưu {lastSaved.toLocaleTimeString("vi-VN")}
-            </div>
-          )}
-
-          {questionGroups.map((group: any, gIdx: number) => (
-            <div key={group.id || gIdx} className="space-y-4">
-              {(group.title || group.instructions) && (
-                <div className="space-y-1">
-                  {group.title && (
-                    <h3 className="font-semibold text-lg text-foreground">
-                      {group.title}
-                    </h3>
                   )}
-                  {group.instructions && (
-                    <div className="p-3 bg-white border-orange-500/50 border rounded-lg text-sm text-black font-semibold shadow-sm">
-                      <RichContent html={group.instructions} />
-                    </div>
-                  )}
-                </div>
-              )}
 
-              {group.passage && (
-                <Card className="bg-amber-50/50 border-amber-200 dark:bg-amber-900/10 dark:border-amber-900/30">
-                  <CardContent className="p-4">
-                    <RichContent html={group.passage} variant="passage" />
-                  </CardContent>
-                </Card>
-              )}
+                  {/* Questions */}
+                  <div className="space-y-4">
+                    {(group.questions || []).map(
+                      (question: any, qIndex: number) => {
+                        return (
+                          <Card
+                            key={question.id}
+                            className="rounded-3xl overflow-hidden border border-gray-200/80 dark:border-gray-800 shadow-xs hover:shadow-md transition-all bg-white dark:bg-gray-900"
+                          >
+                            <CardContent className="p-6">
+                              <div className="flex items-start gap-4">
+                                <span className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-2xl text-sm font-extrabold bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-teal-500/20 shadow-xs">
+                                  {question.order_index || qIndex + 1}
+                                </span>
 
-              {(group.questions || []).map((question: any, index: number) => {
-                const displayIndex =
-                  question.order_index || index + 1;
+                                <div className="flex-1 space-y-4 pt-0.5">
+                                  {cleanHtmlText(question.question_text) && (
+                                    <RichContent
+                                      html={question.question_text}
+                                      className="font-bold text-gray-900 dark:text-gray-100 text-lg leading-snug"
+                                    />
+                                  )}
 
-                return (
-                  <Card
-                    key={question.id || index}
-                    className="transition-all duration-300 border-l-4 border-l-transparent hover:border-l-muted-foreground/30 hover:shadow-sm"
-                  >
-                    <CardContent className="p-5">
-                      <div className="flex items-start gap-4 mb-4">
-                        <span className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold shadow-sm">
-                          {displayIndex}
-                        </span>
-                        <div className="flex-1 space-y-3">
-                          {!(
-                            question.question_type === "fill_blank" &&
-                            hasFillBlankPlaceholders(question.question_text)
-                          ) && (
-                            <RichContent
-                              html={question.question_text}
-                              className="font-semibold text-base leading-snug"
-                            />
-                          )}
-
-                          {question.question_audio_url && (
-                            <div className="bg-muted/50 p-3 rounded-xl border border-border/50 flex items-center gap-3">
-                              <div className="bg-primary/10 p-2 rounded-full">
-                                <PenTool className="h-4 w-4 text-primary" />
+                                  {renderAnswerField(question)}
+                                </div>
                               </div>
-                              <audio
-                                src={question.question_audio_url}
-                                controls
-                                className="h-8 w-full max-w-[300px]"
-                              />
-                              <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                                Audio
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="ml-12 space-y-4">
-                        {renderAnswerField(question)}
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          ))}
+                            </CardContent>
+                          </Card>
+                        );
+                      },
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </ScrollArea>
     </div>
   );
 }
