@@ -8,7 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -16,14 +15,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, User, Camera, Lock, Save } from "lucide-react";
+import { Loader2, User, Camera, Save } from "lucide-react";
 
 export default function Profile() {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
 
   const [isUpdatingInfo, setIsUpdatingInfo] = useState(false);
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   // Form states
@@ -32,12 +30,6 @@ export default function Profile() {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("");
-
-  const [passwords, setPasswords] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
 
   useEffect(() => {
     if (user) {
@@ -67,35 +59,6 @@ export default function Profile() {
       });
     } finally {
       setIsUpdatingInfo(false);
-    }
-  };
-
-  const handleChangePassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (passwords.newPassword !== passwords.confirmPassword) {
-      return toast({
-        title: "Lỗi",
-        description: "Mật khẩu xác nhận không khớp.",
-        variant: "destructive",
-      });
-    }
-
-    setIsChangingPassword(true);
-    try {
-      await authApi.changePassword(passwords.currentPassword, passwords.newPassword);
-      setPasswords({ currentPassword: "", newPassword: "", confirmPassword: "" });
-      toast({
-        title: "Đổi mật khẩu thành công",
-        description: "Mật khẩu của bạn đã được thay đổi.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Lỗi",
-        description: error.response?.data?.error || "Không thể đổi mật khẩu.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsChangingPassword(false);
     }
   };
 
@@ -246,66 +209,9 @@ export default function Profile() {
               </CardFooter>
             </form>
           </Card>
-
-          {/* Change Password */}
-          <Card>
-            <form onSubmit={handleChangePassword}>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Lock className="h-5 w-5" /> Đổi mật khẩu
-                </CardTitle>
-                <CardDescription>
-                  Đảm bảo tài khoản của bạn được bảo mật bằng mật khẩu mạnh.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="currentPassword">Mật khẩu hiện tại</Label>
-                  <Input
-                    id="currentPassword"
-                    type="password"
-                    value={passwords.currentPassword}
-                    onChange={(e) => setPasswords({ ...passwords, currentPassword: e.target.value })}
-                    required
-                  />
-                </div>
-                <Separator />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="newPassword">Mật khẩu mới</Label>
-                    <Input
-                      id="newPassword"
-                      type="password"
-                      value={passwords.newPassword}
-                      onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Xác nhận mật khẩu mới</Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      value={passwords.confirmPassword}
-                      onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="border-t pt-6">
-                <Button type="submit" variant="secondary" disabled={isChangingPassword}>
-                  {isChangingPassword ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    "Đổi mật khẩu"
-                  )}
-                </Button>
-              </CardFooter>
-            </form>
-          </Card>
         </div>
       </div>
     </div>
   );
 }
+

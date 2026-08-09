@@ -21,23 +21,30 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Primary brand - Vibrant teal/cyan for learning */
-    --primary: 173 80% 40%;
+    /* Primary brand - ARIS Academic Blue (#1E429F) */
+    --primary: 223 68% 37%;
     --primary-foreground: 0 0% 100%;
+    --primary-hover: 223 68% 28%;
+    --primary-soft: 223 68% 97%;
 
-    /* Secondary - Soft purple for accents */
-    --secondary: 250 50% 95%;
-    --secondary-foreground: 250 47% 38%;
+    /* Brand Accent - ARIS Crimson (#C00000) */
+    --brand-crimson: 354 85% 44%;
+    --brand-crimson-foreground: 0 0% 100%;
+    --brand-crimson-soft: 354 85% 96%;
+
+    /* Secondary */
+    --secondary: 220 20% 96%;
+    --secondary-foreground: 222 47% 20%;
 
     /* Muted backgrounds */
     --muted: 210 20% 96%;
     --muted-foreground: 215 16% 47%;
 
-    /* Accent - Orange for CTAs and highlights */
-    --accent: 25 95% 53%;
+    /* Accent - Brand Crimson for key highlights */
+    --accent: 354 85% 44%;
     --accent-foreground: 0 0% 100%;
 
-    /* Destructive/Error states */
+    /* Destructive/Error states (Semantic Error Red) */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
@@ -50,31 +57,31 @@
     --warning-foreground: 0 0% 0%;
 
     /* Info states */
-    --info: 199 89% 48%;
+    --info: 217 91% 48%;
     --info-foreground: 0 0% 100%;
 
     /* Form elements */
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 173 80% 40%;
+    --ring: 223 68% 37%;
 
     --radius: 0.75rem;
 
     /* Sidebar specific */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 173 80% 40%;
+    --sidebar-primary: 223 68% 37%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 173 80% 95%;
-    --sidebar-accent-foreground: 173 80% 30%;
+    --sidebar-accent: 223 68% 96%;
+    --sidebar-accent-foreground: 223 68% 28%;
     --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 173 80% 40%;
+    --sidebar-ring: 223 68% 37%;
 
-    /* Exam section colors */
-    --listening: 199 89% 48%;
-    --reading: 142 76% 36%;
-    --writing: 250 47% 58%;
-    --speaking: 25 95% 53%;
+    /* Exam section colors - General/Listening/Reading/Writing use Brand Blue; Speaking uses Crimson Accent */
+    --listening: 223 68% 37%;
+    --reading: 223 68% 37%;
+    --writing: 223 68% 37%;
+    --speaking: 354 85% 44%;
 
     /* Gradients */
     --gradient-primary: linear-gradient(

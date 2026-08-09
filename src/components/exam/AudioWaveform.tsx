@@ -28,13 +28,13 @@ export function AudioWaveform({ data, isRecording, className = '' }: AudioWavefo
 
       // Background rounded container fill
       const bgGradient = ctx.createLinearGradient(0, 0, width, height);
-      bgGradient.addColorStop(0, 'rgba(255, 247, 237, 0.9)'); // orange-50
-      bgGradient.addColorStop(1, 'rgba(254, 243, 199, 0.6)'); // amber-100
+      bgGradient.addColorStop(0, 'rgba(254, 242, 242, 0.9)'); // crimson-50 soft tint
+      bgGradient.addColorStop(1, 'rgba(254, 226, 226, 0.6)');
       ctx.fillStyle = bgGradient;
       ctx.fillRect(0, 0, width, height);
 
       // Subtle center baseline
-      ctx.strokeStyle = 'rgba(249, 115, 22, 0.2)'; // orange-500/20
+      ctx.strokeStyle = 'rgba(192, 0, 0, 0.2)'; // brand-crimson/20
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.moveTo(0, centerY);
@@ -52,8 +52,8 @@ export function AudioWaveform({ data, isRecording, className = '' }: AudioWavefo
       const barWidth = Math.max(3, totalBarWidth / numBars);
 
       const gradient = ctx.createLinearGradient(0, 0, 0, height);
-      gradient.addColorStop(0, '#f97316'); // orange-500
-      gradient.addColorStop(1, '#f59e0b'); // amber-500
+      gradient.addColorStop(0, '#C00000'); // Brand Crimson
+      gradient.addColorStop(1, '#990000');
       ctx.fillStyle = gradient;
 
       step += 0.15;

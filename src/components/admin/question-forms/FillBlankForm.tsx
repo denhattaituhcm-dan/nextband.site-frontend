@@ -33,9 +33,9 @@ export function FillBlankForm({ form, onChange }: QuestionFormProps) {
   }, [fillBlankTokenCount]);
 
   return (
-    <Card className="border-amber-500/30 bg-amber-500/5">
+    <Card className="border-primary/30 bg-primary/5">
       <CardContent className="p-4 space-y-5">
-        <div className="flex items-center gap-2 text-sm font-bold text-amber-600 pb-2 border-b border-amber-500/10">
+        <div className="flex items-center gap-2 text-sm font-bold text-primary pb-2 border-b border-primary/10">
           <Zap className="h-4 w-4" />
           CẤU HÌNH CÂU HỎI ĐIỀN VÀO CHỖ TRỐNG
         </div>

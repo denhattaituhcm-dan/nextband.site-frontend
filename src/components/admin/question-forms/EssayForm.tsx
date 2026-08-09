@@ -8,10 +8,10 @@ import type { QuestionFormProps } from "./QuestionFormTypes";
 
 export function EssayForm({ form, onChange }: QuestionFormProps) {
   return (
-    <Card className="border-emerald-500/30 bg-emerald-500/5">
+    <Card className="border-primary/30 bg-primary/5">
       <CardContent className="p-4 space-y-5">
-        <div className="flex items-center justify-between pb-2 border-b border-emerald-500/10">
-          <div className="flex items-center gap-2 text-sm font-bold text-emerald-600">
+        <div className="flex items-center justify-between pb-2 border-b border-primary/10">
+          <div className="flex items-center gap-2 text-sm font-bold text-primary">
             <PenTool className="h-4 w-4" />
             CÂU HỎI BÀI LUẬN / VIẾT DÀI
           </div>
