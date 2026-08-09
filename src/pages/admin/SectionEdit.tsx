@@ -105,6 +105,7 @@ const SECTION_QUESTION_TYPES: Record<string, string[]> = {
     "true_false_not_given",
     "yes_no_not_given",
     "matching",
+    "essay",
   ],
   writing: [
     "essay",

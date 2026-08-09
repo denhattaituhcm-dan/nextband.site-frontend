@@ -32,6 +32,7 @@ import {
   hasFillBlankPlaceholders,
 } from "./FillBlankHtmlRenderer";
 import { MatchingRenderer } from "./MatchingRenderer";
+import { QuestionControlRenderer } from "./QuestionControlRenderer";
 
 interface ReadingSectionProps {
   section: any;
@@ -764,214 +765,17 @@ export function ReadingSection({
                       </div>
 
                       <div className="ml-12 space-y-4">
-                        {question.question_type === "multiple_choice" &&
-                          question.options &&
-                          question.options.length > 0 &&
-                          (() => {
-                            const selectedRaw = answers[question.id];
-                            const selectedValues = Array.isArray(selectedRaw)
-                              ? selectedRaw
-                              : selectedRaw
-                                ? [selectedRaw]
-                                : [];
-                            const hasMultipleCorrect =
-                              typeof question.correct_answer === "string" &&
-                              question.correct_answer
-                                .split("|")
-                                .map((v: string) => v.trim())
-                                .filter(Boolean).length > 1;
-
-                            const currentAnswers = typeof question.correct_answer === "string"
-                              ? question.correct_answer.split("|").map((v: string) => v.trim()).filter(Boolean)
-                              : [];
-                            if (hasMultipleCorrect) {
-                              const expectedCount = currentAnswers.length;
-                              return (
-                                <div className="space-y-2">
-                                  <div className="flex items-center gap-2 text-xs font-semibold text-[hsl(var(--reading))] bg-[hsl(var(--reading))]/8 border border-[hsl(var(--reading))]/20 rounded-lg px-3 py-1.5">
-                                    <CheckSquare className="h-3.5 w-3.5 flex-shrink-0" />
-                                    <span>Chọn {expectedCount} đáp án phù hợp</span>
-                                    <span className="ml-auto text-muted-foreground font-normal">
-                                      Đã chọn: {selectedValues.length}/{expectedCount}
-                                    </span>
-                                  </div>
-                                  <div className="grid gap-2">
-                                    {question.options.map(
-                                      (option: string, i: number) => {
-                                        const checked =
-                                          selectedValues.includes(option);
-                                        return (
-                                          <label
-                                            key={i}
-                                            className={cn(
-                                              "flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer",
-                                              checked
-                                                ? "bg-[hsl(var(--reading))]/5 border-[hsl(var(--reading))]/30 ring-1 ring-[hsl(var(--reading))]/20"
-                                                : "bg-background border-transparent hover:bg-muted/30",
-                                            )}
-                                          >
-                                            <Checkbox
-                                              checked={checked}
-                                              onCheckedChange={(next) => {
-                                                const nextValues = new Set(
-                                                  selectedValues,
-                                                );
-                                                if (next) nextValues.add(option);
-                                                else nextValues.delete(option);
-                                                onAnswerChange(
-                                                  question.id,
-                                                  Array.from(nextValues),
-                                                );
-                                              }}
-                                            />
-                                            <span className="font-medium text-sm">
-                                              {option}
-                                            </span>
-                                          </label>
-                                        );
-                                      },
-                                    )}
-                                  </div>
-                                </div>
-                              );
-                            }
-
-                            return (
-                              <RadioGroup
-                                value={selectedValues[0] || ""}
-                                onValueChange={(value) =>
-                                  onAnswerChange(question.id, value)
-                                }
-                                className="grid gap-2"
-                              >
-                                {question.options.map(
-                                  (option: string, i: number) => (
-                                  <div
-                                    key={i}
-                                    className={cn(
-                                      "flex items-center space-x-3 p-3 rounded-xl border transition-all cursor-pointer",
-                                      answers[question.id] === option
-                                        ? "bg-[hsl(var(--reading))]/5 border-[hsl(var(--reading))]/30 ring-1 ring-[hsl(var(--reading))]/20"
-                                        : "bg-background border-transparent hover:bg-muted/30",
-                                    )}
-                                  >
-                                    <RadioGroupItem
-                                      value={option}
-                                      id={`${question.id}-${i}`}
-                                    />
-                                    <Label
-                                      htmlFor={`${question.id}-${i}`}
-                                      className="flex-1 cursor-pointer font-medium text-sm"
-                                    >
-                                      {option}
-                                    </Label>
-                                  </div>
-                                ),
-                              )}
-                              </RadioGroup>
-                            );
-                          })()}
-
-                        {(isFillBlankLike ||
-                          question.question_type === "short_answer") && (
-                            <div className="space-y-2">
-                              {isFillBlankLike ? (
-                                isDuplicatePassageQuestion ? (
-                                  <div className="space-y-3 rounded-lg border bg-muted/20 p-3">
-                                    <p className="text-xs text-muted-foreground font-medium">
-                                      Nội dung passage đã hiển thị bên trái.
-                                      Nhập đáp án theo thứ tự các ô trống:
-                                    </p>
-                                    <div className="grid gap-2 sm:grid-cols-2">
-                                      {compactBlankKeys.map((blankKey, idx) => (
-                                        <div
-                                          key={`${question.id}-${blankKey}`}
-                                          className="space-y-1"
-                                        >
-                                          <Label className="text-xs text-muted-foreground">
-                                            Blank {idx + 1}
-                                          </Label>
-                                          <Input
-                                            placeholder={`Đáp án #${idx + 1}`}
-                                            value={
-                                              (answers[question.id] || {})[
-                                                blankKey
-                                              ] || ""
-                                            }
-                                            onChange={(e) =>
-                                              onAnswerChange(question.id, {
-                                                ...(answers[question.id] || {}),
-                                                [blankKey]: e.target.value,
-                                              })
-                                            }
-                                            className="h-10"
-                                          />
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <FillBlankHtmlRenderer
-                                    html={questionText}
-                                    answers={answers[question.id] || {}}
-                                    questionId={question.id}
-                                    onAnswerChange={onAnswerChange as any}
-                                    questionRefs={questionRefs}
-                                    currentQuestionId={currentQuestionId}
-                                  />
-                                )
-                              ) : (
-                                /* Standard rendering for short_answer or fill_blank without placeholders */
-                                <div className="space-y-2">
-                                  <Input
-                                    placeholder="Nhập câu trả lời..."
-                                    value={answers[question.id] || ""}
-                                    onChange={(e) =>
-                                      onAnswerChange(question.id, e.target.value)
-                                    }
-                                    className="max-w-md h-11"
-                                  />
-                                  <p className="text-[11px] text-muted-foreground font-medium italic">
-                                    Gợi ý: ONE WORD ONLY
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                        {question.question_type === "true_false_not_given" && (
-                          <div className="max-w-[200px]">
-                            <DropdownSelect
-                              value={answers[question.id] || ""}
-                              onChange={(value) =>
-                                onAnswerChange(question.id, value)
-                              }
-                              options={["TRUE", "FALSE", "NOT GIVEN"]}
-                              placeholder="Chọn đáp án"
-                            />
-                          </div>
-                        )}
-
-                        {question.question_type === "yes_no_not_given" && (
-                          <div className="max-w-[200px]">
-                            <DropdownSelect
-                              value={answers[question.id] || ""}
-                              onChange={(value) =>
-                                onAnswerChange(question.id, value)
-                              }
-                              options={["YES", "NO", "NOT GIVEN"]}
-                              placeholder="Chọn đáp án"
-                            />
-                          </div>
-                        )}
-
-                        {question.question_type === "matching" && (
-                          <MatchingRenderer
-                            question={question}
-                            answers={answers}
-                            onAnswerChange={onAnswerChange}
-                          />
-                        )}
+                        <QuestionControlRenderer
+                          question={question}
+                          answer={answers[question.id]}
+                          onAnswerChange={onAnswerChange}
+                          allAnswers={answers}
+                          isDuplicatePassageQuestion={isDuplicatePassageQuestion}
+                          compactBlankKeys={compactBlankKeys}
+                          questionRefs={questionRefs}
+                          currentQuestionId={currentQuestionId}
+                          themeColorClass="reading"
+                        />
                       </div>
                     </CardContent>
                   </Card>
