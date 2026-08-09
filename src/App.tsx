@@ -1,3 +1,4 @@
+import React, { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,47 +12,58 @@ import ClientLayout from "@/layouts/ClientLayout";
 import AdminLayout from "@/layouts/AdminLayout";
 import MinimalLayout from "@/layouts/MinimalLayout";
 
-// Pages
+// Eagerly loaded core initial routes
 import Auth from "@/pages/Auth";
 import HomePage from "@/pages/HomePage";
-import StudentLessonViewerPage from "@/pages/StudentLessonViewerPage";
-import MyCourses from "@/pages/MyCourses";
-import MySubmissions from "@/pages/MySubmissions";
-import CourseDetail from "@/pages/CourseDetail";
-import SubmissionDetail from "@/pages/SubmissionDetail";
-import ExamInterface from "@/pages/ExamInterface";
-import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
 
-// Admin Pages
-import AdminDashboard from "@/pages/admin/Dashboard";
-import AdminCourses from "@/pages/admin/Courses";
-import AdminCourseCreate from "@/pages/admin/CourseCreate";
-import AdminCourseEdit from "@/pages/admin/CourseEdit";
-import AdminExams from "@/pages/admin/Exams";
-import AdminExamCreate from "@/pages/admin/ExamCreate";
-import AdminExamEdit from "@/pages/admin/ExamEdit";
-import AdminSectionEdit from "@/pages/admin/SectionEdit";
-import AdminUsers from "@/pages/admin/Users";
-import AdminTeachers from "@/pages/admin/Teachers";
-import AdminAdmins from "@/pages/admin/Admins";
-import AdminCheckAttempt from "@/pages/admin/CheckAttempt";
-import AdminSubmissionGrade from "@/pages/admin/SubmissionGrade";
-import AdminLogViewer from "@/pages/admin/LogViewer";
-import AdminClasses from "@/pages/admin/Classes";
-import AdminClassEdit from "@/pages/admin/ClassWorkspace";
-import AdminSettings from "@/pages/admin/Settings";
-import TeacherWorkspace from "@/pages/admin/TeacherWorkspace";
-import { AdminContentQADashboard } from "@/pages/admin/AdminContentQADashboard";
-import ClassAttendancePage from "@/pages/admin/ClassAttendancePage";
+// Lazy-loaded routes for code splitting
+const StudentLessonViewerPage = lazy(() => import("@/pages/StudentLessonViewerPage"));
+const MyCourses = lazy(() => import("@/pages/MyCourses"));
+const MySubmissions = lazy(() => import("@/pages/MySubmissions"));
+const CourseDetail = lazy(() => import("@/pages/CourseDetail"));
+const SubmissionDetail = lazy(() => import("@/pages/SubmissionDetail"));
+const ExamInterface = lazy(() => import("@/pages/ExamInterface"));
+const Profile = lazy(() => import("@/pages/Profile"));
+
+// Lazy-loaded Admin Pages
+const AdminDashboard = lazy(() => import("@/pages/admin/Dashboard"));
+const AdminCourses = lazy(() => import("@/pages/admin/Courses"));
+const AdminCourseCreate = lazy(() => import("@/pages/admin/CourseCreate"));
+const AdminCourseEdit = lazy(() => import("@/pages/admin/CourseEdit"));
+const AdminExams = lazy(() => import("@/pages/admin/Exams"));
+const AdminExamCreate = lazy(() => import("@/pages/admin/ExamCreate"));
+const AdminExamEdit = lazy(() => import("@/pages/admin/ExamEdit"));
+const AdminSectionEdit = lazy(() => import("@/pages/admin/SectionEdit"));
+const AdminUsers = lazy(() => import("@/pages/admin/Users"));
+const AdminTeachers = lazy(() => import("@/pages/admin/Teachers"));
+const AdminAdmins = lazy(() => import("@/pages/admin/Admins"));
+const AdminCheckAttempt = lazy(() => import("@/pages/admin/CheckAttempt"));
+const AdminSubmissionGrade = lazy(() => import("@/pages/admin/SubmissionGrade"));
+const AdminLogViewer = lazy(() => import("@/pages/admin/LogViewer"));
+const AdminClasses = lazy(() => import("@/pages/admin/Classes"));
+const AdminClassEdit = lazy(() => import("@/pages/admin/ClassWorkspace"));
+const AdminSettings = lazy(() => import("@/pages/admin/Settings"));
+const TeacherWorkspace = lazy(() => import("@/pages/admin/TeacherWorkspace"));
+const AdminContentQADashboard = lazy(() =>
+  import("@/pages/admin/AdminContentQADashboard").then((m) => ({ default: m.AdminContentQADashboard }))
+);
+const ClassAttendancePage = lazy(() => import("@/pages/admin/ClassAttendancePage"));
+
+const PageLoader = () => (
+  <div className="min-h-[400px] w-full flex flex-col items-center justify-center space-y-3 p-12">
+    <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin" />
+    <p className="text-xs font-medium text-slate-500 animate-pulse">Đang tải trang...</p>
+  </div>
+);
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 0,
-      gcTime: 0,
-      refetchOnMount: "always",
-      refetchOnWindowFocus: true,
+      staleTime: 1000 * 60 * 3, // 3 minutes staleTime for standard queries
+      gcTime: 1000 * 60 * 15, // 15 minutes garbage collection time
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       refetchOnReconnect: true,
       retry: 1,
     },
@@ -113,207 +125,209 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            {/* Auth Routes */}
-            <Route path="/auth" element={<Auth />} />
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              {/* Auth Routes */}
+              <Route path="/auth" element={<Auth />} />
 
-            {/* Client Routes */}
-            <Route
-              element={
-                <ProtectedRoute>
-                  <ClientLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="/" element={<HomePage />} />
-              <Route path="/my-courses" element={<MyCourses />} />
-              <Route path="/class/:classId/lessons" element={<StudentLessonViewerPage />} />
-              <Route path="/my-submissions" element={<MySubmissions />} />
-              <Route path="/course/:slug" element={<CourseDetail />} />
-              <Route path="/submissions/:id" element={<SubmissionDetail />} />
+              {/* Client Routes */}
               <Route
-                path="/exam/:examId/review"
-                element={<SubmissionDetail />}
-              />
-              <Route path="/profile" element={<Profile />} />
-            </Route>
+                element={
+                  <ProtectedRoute>
+                    <ClientLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route path="/" element={<HomePage />} />
+                <Route path="/my-courses" element={<MyCourses />} />
+                <Route path="/class/:classId/lessons" element={<StudentLessonViewerPage />} />
+                <Route path="/my-submissions" element={<MySubmissions />} />
+                <Route path="/course/:slug" element={<CourseDetail />} />
+                <Route path="/submissions/:id" element={<SubmissionDetail />} />
+                <Route
+                  path="/exam/:examId/review"
+                  element={<SubmissionDetail />}
+                />
+                <Route path="/profile" element={<Profile />} />
+              </Route>
 
-            {/* Exam Interface - Minimal Layout */}
-            <Route
-              element={
-                <ProtectedRoute>
-                  <MinimalLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="/exam/:examId" element={<ExamInterface />} />
-            </Route>
+              {/* Exam Interface - Minimal Layout */}
+              <Route
+                element={
+                  <ProtectedRoute>
+                    <MinimalLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route path="/exam/:examId" element={<ExamInterface />} />
+              </Route>
 
-            {/* Admin Routes */}
-            <Route
-              element={
-                <ProtectedRoute requiredRoles={["admin", "teacher"]}>
-                  <AdminLayout />
-                </ProtectedRoute>
-              }
-            >
+              {/* Admin Routes */}
               <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/content-qa"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminContentQADashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/courses"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminCourses />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/courses/create"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminCourseCreate />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/courses/:id"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminCourseEdit />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/exams"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminExams />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/exams/create"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminExamCreate />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/exams/:id"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminExamEdit />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/sections/:id"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminSectionEdit />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/users"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminUsers />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/teachers"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminTeachers />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/admins"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminAdmins />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/check-attempt"
-                element={<AdminCheckAttempt />}
-              />
-              <Route
-                path="/admin/submissions/:id"
-                element={<AdminSubmissionGrade />}
-              />
-              <Route
-                path="/admin/logs"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminLogViewer />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/classes"
                 element={
                   <ProtectedRoute requiredRoles={["admin", "teacher"]}>
-                    <AdminClasses />
+                    <AdminLayout />
                   </ProtectedRoute>
                 }
-              />
-              <Route
-                path="/admin/classes/:classId/sessions/:sessionId/attendance"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "teacher"]}>
-                    <ClassAttendancePage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/classes/:id"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminClassEdit />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/teacher-workspace"
-                element={
-                  <ProtectedRoute requiredRoles={["admin", "teacher"]}>
-                    <TeacherWorkspace />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/settings"
-                element={
-                  <ProtectedRoute requiredRoles={["admin"]}>
-                    <AdminSettings />
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
+              >
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/content-qa"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminContentQADashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/courses"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminCourses />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/courses/create"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminCourseCreate />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/courses/:id"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminCourseEdit />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/exams"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminExams />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/exams/create"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminExamCreate />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/exams/:id"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminExamEdit />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/sections/:id"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminSectionEdit />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/users"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminUsers />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/teachers"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminTeachers />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/admins"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminAdmins />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/check-attempt"
+                  element={<AdminCheckAttempt />}
+                />
+                <Route
+                  path="/admin/submissions/:id"
+                  element={<AdminSubmissionGrade />}
+                />
+                <Route
+                  path="/admin/logs"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminLogViewer />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/classes"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                      <AdminClasses />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/classes/:classId/sessions/:sessionId/attendance"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                      <ClassAttendancePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/classes/:id"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminClassEdit />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/teacher-workspace"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                      <TeacherWorkspace />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/settings"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminSettings />
+                    </ProtectedRoute>
+                  }
+                />
+              </Route>
 
-            {/* Catch-all */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              {/* Catch-all */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

@@ -10,6 +10,8 @@ export function useSiteSettings() {
   const query = useQuery({
     queryKey: ["site-settings"],
     queryFn: () => siteSettingsApi.get(),
+    staleTime: 1000 * 60 * 30, // 30 minutes static metadata cache
+    gcTime: 1000 * 60 * 120, // 2 hours gcTime
   });
 
   const settings = useMemo(
