@@ -75,6 +75,78 @@ export function normalizeExamData(exam: any): any {
   };
 }
 
+export function normalizeSectionData(section: any): any {
+  if (!section) return section;
+
+  const normalizeQuestions = (questions: any[]) =>
+    (questions || []).map((q: any) => ({
+      ...q,
+      id: q.id,
+      groupId: q.groupId || q.group_id,
+      questionType: q.questionType || q.question_type,
+      questionText: q.questionText || q.question_text || "",
+      options: Array.isArray(q.options)
+        ? q.options
+        : q.options
+        ? typeof q.options === "string"
+          ? JSON.parse(q.options)
+          : q.options
+        : [],
+      correctAnswer: q.correctAnswer ?? q.correct_answer ?? "",
+      audioUrl: q.audioUrl ?? (q.audio_url ? formatStorageUrl(q.audio_url) : null),
+      points: q.points ?? 1,
+      orderIndex: q.orderIndex ?? q.order_index ?? 0,
+    }));
+
+  const normalizeGroups = (groups: any[]) =>
+    (groups || []).map((g: any) => ({
+      ...g,
+      id: g.id,
+      sectionId: g.sectionId || g.section_id,
+      title: g.title ?? null,
+      passage: g.passage ?? null,
+      instructions: g.instructions ?? null,
+      audioUrl: g.audioUrl ?? (g.audio_url ? formatStorageUrl(g.audio_url) : null),
+      orderIndex: g.orderIndex ?? g.order_index ?? 0,
+      questions: normalizeQuestions(g.questions || []),
+    }));
+
+  return {
+    ...section,
+    id: section.id,
+    examId: section.examId || section.exam_id,
+    sectionType: section.sectionType || section.section_type,
+    title: section.title,
+    instructions: section.instructions ?? null,
+    content: section.content ?? [],
+    audioUrl: section.audioUrl ?? (section.audio_url ? formatStorageUrl(section.audio_url) : null),
+    audioScript: section.audioScript || section.audio_script || null,
+    durationMinutes: section.durationMinutes ?? section.duration_minutes ?? null,
+    orderIndex: section.orderIndex ?? section.order_index ?? 0,
+    questionGroups: normalizeGroups(section.questionGroups || section.question_groups || []),
+    question_groups: normalizeGroups(section.questionGroups || section.question_groups || []),
+  };
+}
+
+export function normalizeCourseData(course: any): any {
+  if (!course) return course;
+
+  return {
+    ...course,
+    id: course.id,
+    title: course.title,
+    description: course.description ?? null,
+    level: course.level || "beginner",
+    price: course.price ?? 0,
+    isPublished: course.isPublished ?? course.is_published ?? false,
+    isActive: course.isActive ?? course.is_active ?? true,
+    thumbnailUrl: course.thumbnailUrl ?? (course.thumbnail_url ? formatStorageUrl(course.thumbnail_url) : null),
+    createdAt: course.createdAt || course.created_at,
+    updatedAt: course.updatedAt || course.updated_at,
+    exams: Array.isArray(course.exams) ? course.exams.map(normalizeExamData) : [],
+  };
+}
+
 // =============================================
 // AUTH API
 // =============================================
@@ -282,7 +354,7 @@ export const coursesApi = {
       .single();
 
     if (error) throw error;
-    return data;
+    return normalizeCourseData(data);
   },
 
   getBySlug: async (slug: string) => {
@@ -293,7 +365,7 @@ export const coursesApi = {
       .single();
 
     if (error) throw error;
-    return data;
+    return normalizeCourseData(data);
   },
 
   create: async (course: {
@@ -521,7 +593,7 @@ export const sectionsApi = {
       .single();
 
     if (error) throw error;
-    return data;
+    return normalizeSectionData(data);
   },
 
   create: async (section: {
