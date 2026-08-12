@@ -545,10 +545,32 @@ export const sectionsApi = {
     return data;
   },
 
-  update: async (id: string, section: any) => {
+  update: async (
+    id: string,
+    section: Partial<{
+      title: string;
+      instructions: string;
+      content: any;
+      audioUrl: string;
+      audioScript: string;
+      durationMinutes: number;
+      orderIndex: number;
+      sectionType: string;
+    }>
+  ) => {
+    const updatePayload: Record<string, any> = {};
+    if (section.title !== undefined) updatePayload.title = section.title;
+    if (section.instructions !== undefined) updatePayload.instructions = section.instructions;
+    if (section.content !== undefined) updatePayload.content = section.content;
+    if (section.audioUrl !== undefined) updatePayload.audio_url = section.audioUrl;
+    if (section.audioScript !== undefined) updatePayload.audio_script = section.audioScript;
+    if (section.durationMinutes !== undefined) updatePayload.duration_minutes = section.durationMinutes;
+    if (section.orderIndex !== undefined) updatePayload.order_index = section.orderIndex;
+    if (section.sectionType !== undefined) updatePayload.section_type = section.sectionType;
+
     const { data, error } = await supabase
       .from("exam_sections")
-      .update(section)
+      .update(updatePayload)
       .eq("id", id)
       .select()
       .single();
@@ -566,6 +588,25 @@ export const sectionsApi = {
     return { success: true };
   },
 };
+
+// Types for Question Mutation Payloads
+export interface UpdateQuestionGroupPayload {
+  title?: string;
+  instructions?: string;
+  passage?: string;
+  audioUrl?: string;
+  orderIndex?: number;
+}
+
+export interface UpdateQuestionPayload {
+  questionType?: string;
+  questionText?: string;
+  options?: any;
+  correctAnswer?: string;
+  audioUrl?: string;
+  points?: number;
+  orderIndex?: number;
+}
 
 // =============================================
 // QUESTIONS API
@@ -596,10 +637,17 @@ export const questionsApi = {
     return data;
   },
 
-  updateGroup: async (id: string, group: any) => {
+  updateGroup: async (id: string, group: UpdateQuestionGroupPayload) => {
+    const updatePayload: Record<string, any> = {};
+    if (group.title !== undefined) updatePayload.title = group.title;
+    if (group.instructions !== undefined) updatePayload.instructions = group.instructions;
+    if (group.passage !== undefined) updatePayload.passage = group.passage;
+    if (group.audioUrl !== undefined) updatePayload.audio_url = group.audioUrl;
+    if (group.orderIndex !== undefined) updatePayload.order_index = group.orderIndex;
+
     const { data, error } = await supabase
       .from("question_groups")
-      .update(group)
+      .update(updatePayload)
       .eq("id", id)
       .select()
       .single();
@@ -646,10 +694,19 @@ export const questionsApi = {
     return data;
   },
 
-  update: async (id: string, question: any) => {
+  update: async (id: string, question: UpdateQuestionPayload) => {
+    const updatePayload: Record<string, any> = {};
+    if (question.questionType !== undefined) updatePayload.question_type = question.questionType;
+    if (question.questionText !== undefined) updatePayload.question_text = question.questionText;
+    if (question.options !== undefined) updatePayload.options = question.options;
+    if (question.correctAnswer !== undefined) updatePayload.correct_answer = question.correctAnswer;
+    if (question.audioUrl !== undefined) updatePayload.audio_url = question.audioUrl;
+    if (question.points !== undefined) updatePayload.points = question.points;
+    if (question.orderIndex !== undefined) updatePayload.order_index = question.orderIndex;
+
     const { data, error } = await supabase
       .from("questions")
-      .update(question)
+      .update(updatePayload)
       .eq("id", id)
       .select()
       .single();

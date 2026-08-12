@@ -710,7 +710,6 @@ function CreateEditClassDialog({
                 {courses.map((c: any) => (
                   <SelectItem key={c.id} value={c.id}>
                     <span className="font-semibold text-slate-800">{c.title}</span>
-                    {c.level && <span className="text-xs text-muted-foreground ml-2">({c.level})</span>}
                   </SelectItem>
                 ))}
               </SelectContent>

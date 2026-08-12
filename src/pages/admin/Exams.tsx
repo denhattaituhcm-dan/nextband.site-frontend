@@ -219,7 +219,7 @@ export default function AdminExams() {
               <SelectItem value="all">Tất cả khóa học</SelectItem>
               {courses.map((c: any) => (
                 <SelectItem key={c.id} value={c.id}>
-                  {c.title} {c.level ? `(${c.level})` : ""}
+                  {c.title}
                 </SelectItem>
               ))}
             </SelectContent>
