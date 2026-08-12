@@ -131,7 +131,7 @@ export default function Auth() {
       <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[600px] h-[600px] bg-sky-400/5 dark:bg-sky-500/5 rounded-full blur-3xl pointer-events-none z-0" />
 
       {/* Left side - Education & Academic Branding Panel (Visual 2-Zone Separation) */}
-      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-slate-50/90 text-slate-900 px-8 xl:px-12 py-8 xl:py-10 flex-col justify-between relative overflow-hidden border-r border-slate-200/80 animate-in fade-in duration-500 z-10">
+      <div className="hidden lg:flex lg:w-1/2 xl:w-[58%] bg-slate-50/90 text-slate-900 px-8 xl:px-14 py-8 xl:py-10 flex-col justify-between relative overflow-hidden border-r border-slate-200/80 animate-in fade-in duration-500 z-10">
         {/* Subtle Soft Blue Ambient Glow */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -139,49 +139,49 @@ export default function Auth() {
         {/* 4. Unified Brand Header (Logo A + ARIS IELTS + Cambridge Badge + Subtitle) */}
         <div className="relative z-10 space-y-3">
           <div className="flex items-center gap-3">
-            <SiteLogo alt="ARIS IELTS" className="max-h-11 w-auto object-contain" />
+            <SiteLogo alt="ARIS IELTS" className="max-h-12 w-auto object-contain" />
             <div className="border-l border-slate-200 pl-3">
-              <div className="font-bold text-slate-900 text-base leading-tight tracking-tight">ARIS IELTS</div>
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400 mt-0.5">
-                <Award className="h-3 w-3 text-amber-500" />
+              <div className="font-bold text-slate-900 text-lg leading-tight tracking-tight">ARIS IELTS</div>
+              <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-400 mt-0.5">
+                <Award className="h-3.5 w-3.5 text-amber-500" />
                 Cambridge Standard
               </span>
             </div>
           </div>
           <div className="space-y-1">
-            <p className="text-sm font-semibold tracking-tight text-slate-700">
+            <p className="text-base font-semibold tracking-tight text-slate-700">
               {settings.authTagline}
             </p>
           </div>
         </div>
 
         {/* Left side Primary Content (Whitespace as layout, no outer card frame) */}
-        <div className="relative z-10 w-full max-w-xl my-auto py-3 space-y-6">
+        <div className="relative z-10 w-full max-w-3xl my-auto py-4 space-y-6">
           {/* Feature Pillars - Lightweight with subtle shadow, ~10-15% opacity border */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/15 dark:border-slate-800/20 shadow-sm">
-              <div className="rounded-lg bg-sky-500/10 p-2 shrink-0">
-                <GraduationCap className="h-4.5 w-4.5 text-sky-600" />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/20 dark:border-slate-800/30 shadow-sm">
+              <div className="rounded-lg bg-sky-500/10 p-2.5 shrink-0">
+                <GraduationCap className="h-5 w-5 text-sky-600" />
               </div>
               <div className="min-w-0">
-                <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-sm tracking-tight truncate">
+                <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm sm:text-base tracking-tight truncate">
                   Learning Workspace
                 </h3>
-                <p className="text-[11px] text-slate-500 truncate">
+                <p className="text-xs text-slate-500 truncate">
                   Lộ trình IELTS chuẩn
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/15 dark:border-slate-800/20 shadow-sm">
-              <div className="rounded-lg bg-indigo-500/10 p-2 shrink-0">
-                <TrendingUp className="h-4.5 w-4.5 text-indigo-600" />
+            <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/20 dark:border-slate-800/30 shadow-sm">
+              <div className="rounded-lg bg-indigo-500/10 p-2.5 shrink-0">
+                <TrendingUp className="h-5 w-5 text-indigo-600" />
               </div>
               <div className="min-w-0">
-                <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-sm tracking-tight truncate">
+                <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm sm:text-base tracking-tight truncate">
                   Track Progress
                 </h3>
-                <p className="text-[11px] text-slate-500 truncate">
+                <p className="text-xs text-slate-500 truncate">
                   Theo dõi tiến độ
                 </p>
               </div>
@@ -189,11 +189,11 @@ export default function Auth() {
           </div>
 
           {/* Hero Illustration directly with rounded-3xl corners (no encapsulating card) */}
-          <div className="w-full rounded-[24px] overflow-hidden">
+          <div className="w-full rounded-[24px] overflow-hidden shadow-xs border border-slate-200/40">
             <img
               src="/your-journey.webp"
               alt="ARIS IELTS Learning Journey"
-              className="w-full h-auto object-contain rounded-[24px]"
+              className="w-full h-auto object-cover rounded-[24px] scale-100 hover:scale-[1.01] transition-transform duration-300"
               loading="eager"
               decoding="async"
             />
