@@ -17,6 +17,7 @@ import {
   getFillBlankBlankCount,
   parseFillBlankCorrectAnswers,
 } from "@/lib/fillBlank";
+import { convertOptionValToIndex } from "@/components/exam/MatchingRenderer";
 
 interface AnswerResultCardProps {
   questionIndex: number;
@@ -134,11 +135,13 @@ export function AnswerResultCard({
     // Handle matching with JSON answers
     if (questionType === "matching") {
       try {
-        const parsedStudent = JSON.parse(answerText);
+        const parsedStudent = answerText ? JSON.parse(answerText) : {};
         const parsedCorrect = JSON.parse(correctAnswer);
         if (
-          typeof parsedStudent === "object" && typeof parsedCorrect === "object" &&
-          parsedStudent !== null && parsedCorrect !== null && parsedCorrect.pairs
+          typeof parsedStudent === "object" &&
+          typeof parsedCorrect === "object" &&
+          parsedCorrect !== null &&
+          parsedCorrect.pairs
         ) {
           const keys = Object.keys(parsedCorrect.pairs);
           const pairsCount = keys.length;
@@ -146,9 +149,11 @@ export function AnswerResultCard({
 
           let correctPairs = 0;
           for (const key of keys) {
-            const correctVal = String(parsedCorrect.pairs[key] || "").trim();
-            const studentVal = String(parsedStudent[key] || "").trim();
-            if (correctVal === studentVal) correctPairs++;
+            const correctIdx = convertOptionValToIndex(parsedCorrect.pairs[key]);
+            const studentIdx = convertOptionValToIndex(parsedStudent[key]);
+            if (correctIdx !== null && studentIdx !== null && correctIdx === studentIdx) {
+              correctPairs++;
+            }
           }
           return (correctPairs / pairsCount) * points;
         }
@@ -517,9 +522,25 @@ export function AnswerResultCard({
           {questionType === "matching" && canShowResult && correctAnswer && (() => {
             try {
               const parsedCorrect = JSON.parse(correctAnswer);
-              const items = parsedCorrect.items || [];
-              const pairs = parsedCorrect.pairs || {};
-              const parsedStudent = answerText ? JSON.parse(answerText) : {};
+              const items: string[] = parsedCorrect.items || [];
+              const pairs: Record<string, any> = parsedCorrect.pairs || {};
+              const parsedStudent: Record<string, any> = answerText ? JSON.parse(answerText) : {};
+
+              // Get options list from question options or parsedCorrect options
+              let optionTexts: string[] = [];
+              if (Array.isArray(options) && options.some((o) => typeof o === "string" && o.trim().length > 0)) {
+                optionTexts = options;
+              } else if (Array.isArray(parsedCorrect.options)) {
+                optionTexts = parsedCorrect.options;
+              }
+
+              const getOptionDisplay = (optVal: any): string => {
+                const idx = convertOptionValToIndex(optVal);
+                if (idx === null) return "";
+                const label = String.fromCharCode(65 + idx);
+                const text = optionTexts[idx] || "";
+                return text ? `${label}. ${text}` : label;
+              };
               
               return (
                 <div className="space-y-3 mt-4">
@@ -528,33 +549,36 @@ export function AnswerResultCard({
                   </Label>
                   <div className="rounded-md border bg-card divide-y">
                     {items.map((item: string, idx: number) => {
-                      const correctOpt = pairs[String(idx)];
-                      const studentOpt = parsedStudent[String(idx)];
-                      const isCorrect = correctOpt === studentOpt;
+                      const correctIdx = convertOptionValToIndex(pairs[String(idx)]);
+                      const studentIdx = convertOptionValToIndex(parsedStudent[String(idx)]);
+                      const isCorrect = correctIdx !== null && studentIdx !== null && correctIdx === studentIdx;
                       
+                      const studentDisplay = getOptionDisplay(parsedStudent[String(idx)]);
+                      const correctDisplay = getOptionDisplay(pairs[String(idx)]);
+
                       return (
-                        <div key={idx} className="p-3 flex items-start gap-4">
+                        <div key={idx} className="p-3 flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                           <div className="flex-1 text-sm pt-0.5">
                             <span className="font-bold mr-2 text-primary">{idx + 1}.</span>
-                            {item}
+                            <span>{item}</span>
                           </div>
-                          <div className="flex flex-col gap-1 items-end min-w-[100px]">
-                            {studentOpt && !isCorrect && (
+                          <div className="flex flex-col gap-1 items-start sm:items-end flex-shrink-0">
+                            {studentDisplay && !isCorrect && (
                               <div className="flex items-center gap-1.5 text-xs text-destructive line-through opacity-80 decoration-destructive/50">
-                                <span>{studentOpt}</span>
-                                <XCircle className="w-3 h-3" />
+                                <span>Bạn chọn: {studentDisplay}</span>
+                                <XCircle className="w-3.5 h-3.5 flex-shrink-0" />
                               </div>
                             )}
                             {isCorrect ? (
                               <div className="flex items-center gap-1.5 text-sm font-medium text-green-600 dark:text-green-500">
-                                <span>{studentOpt || correctOpt || "—"}</span>
-                                <CheckCircle className="w-4 h-4" />
+                                <span>{studentDisplay || correctDisplay || "—"}</span>
+                                <CheckCircle className="w-4 h-4 flex-shrink-0" />
                               </div>
                             ) : shouldRevealCorrectAnswers ? (
-                              <div className="flex items-center gap-1.5 text-sm font-medium">
-                                <span>{correctOpt || "—"}</span>
+                              <div className="flex items-center gap-1.5 text-sm font-medium text-teal-700 dark:text-teal-400">
+                                <span>Đáp án đúng: {correctDisplay || "—"}</span>
                               </div>
-                            ) : !studentOpt ? (
+                            ) : !studentDisplay ? (
                               <div className="text-xs italic text-muted-foreground">
                                 Chưa chọn
                               </div>

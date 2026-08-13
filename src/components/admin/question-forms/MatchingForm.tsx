@@ -14,9 +14,27 @@ import { ArrowRightLeft, Plus, Trash2 } from "lucide-react";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import type { QuestionFormProps } from "./QuestionFormTypes";
 
-interface MatchingPair {
-  item: string;
-  match: string;
+function getOptionLabel(index: number): string {
+  return String.fromCharCode(65 + index);
+}
+
+// Convert Roman numeral or Letter or Number string to Letter label e.g. "I" -> "A", "0" -> "A"
+function normalizeToLabel(val: string): string {
+  if (!val) return "";
+  const str = val.trim().toUpperCase();
+  if (/^[A-Z]$/.test(str)) return str;
+
+  const romanMap: Record<string, string> = {
+    I: "A", II: "B", III: "C", IV: "D", V: "E",
+    VI: "F", VII: "G", VIII: "H", IX: "I", X: "J",
+  };
+  if (str in romanMap) return romanMap[str];
+
+  if (/^\d+$/.test(str)) {
+    const idx = parseInt(str, 10);
+    if (!isNaN(idx) && idx >= 0) return getOptionLabel(idx);
+  }
+  return str;
 }
 
 function parseMatching(correctAnswer: string): {
@@ -26,16 +44,17 @@ function parseMatching(correctAnswer: string): {
 } {
   try {
     const parsed = JSON.parse(correctAnswer);
-    if (
-      parsed &&
-      typeof parsed === "object" &&
-      parsed.items &&
-      parsed.options
-    ) {
+    if (parsed && typeof parsed === "object" && parsed.items && parsed.options) {
+      const normalizedPairs: Record<string, string> = {};
+      if (parsed.pairs && typeof parsed.pairs === "object") {
+        Object.entries(parsed.pairs).forEach(([k, v]) => {
+          normalizedPairs[k] = normalizeToLabel(String(v));
+        });
+      }
       return {
         items: parsed.items || [],
         options: parsed.options || [],
-        pairs: parsed.pairs || {},
+        pairs: normalizedPairs,
       };
     }
   } catch {}
@@ -50,36 +69,18 @@ function stringifyMatching(
   return JSON.stringify({ items, options, pairs });
 }
 
-// Helper to convert number to Roman numeral
-function toRoman(num: number): string {
-  if (num <= 0) return "";
-  const roman = {
-    M: 1000, CM: 900, D: 500, CD: 400,
-    C: 100, XC: 90, L: 50, XL: 40,
-    X: 10, IX: 9, V: 5, IV: 4, I: 1
-  };
-  let str = "";
-  for (const i of Object.keys(roman)) {
-    const q = Math.floor(num / roman[i as keyof typeof roman]);
-    num -= q * roman[i as keyof typeof roman];
-    str += i.repeat(q);
-  }
-  return str;
-}
-
 export function MatchingForm({ form, onChange }: QuestionFormProps) {
   const [items, setItems] = useState<string[]>(["", ""]);
   const [options, setOptions] = useState<string[]>(["", ""]);
   const [pairs, setPairs] = useState<Record<string, string>>({});
 
-  // Parse on mount or when correctAnswer changes externally
   useEffect(() => {
     const data = parseMatching(form.correctAnswer);
     if (data.items.length > 0) setItems(data.items);
     if (data.options.length > 0) {
-      const migratedOptions = data.options.map((opt, i) => {
+      const migratedOptions = data.options.map((opt) => {
         if (/^Option [A-Z]$/.test(opt) || /^Lựa chọn [A-Z]$/.test(opt)) {
-          return ""; // Let the placeholder text handle it dynamically
+          return "";
         }
         return opt;
       });
@@ -109,10 +110,9 @@ export function MatchingForm({ form, onChange }: QuestionFormProps) {
     const newItems = items.filter((_, i) => i !== idx);
     const newPairs = { ...pairs };
     delete newPairs[String(idx)];
-    // Re-index pairs
     const reindexed: Record<string, string> = {};
     Object.entries(newPairs).forEach(([k, v]) => {
-      const ki = parseInt(k);
+      const ki = parseInt(k, 10);
       if (ki > idx) reindexed[String(ki - 1)] = v;
       else reindexed[k] = v;
     });
@@ -121,26 +121,12 @@ export function MatchingForm({ form, onChange }: QuestionFormProps) {
 
   const removeOption = (idx: number) => {
     if (options.length <= 2) return;
-    const removedOpt = toRoman(idx + 1);
+    const removedLabel = getOptionLabel(idx);
     const newOptions = options.filter((_, i) => i !== idx);
-    // Clear pairs that used this option
     const newPairs: Record<string, string> = {};
     Object.entries(pairs).forEach(([k, v]) => {
-      if (v !== removedOpt) {
-        // Re-index option letters
-        // We need to convert from roman back to index to check if it needs shifting
-        const getIndex = (roman: string) => {
-          for (let i = 1; i <= 50; i++) {
-             if (toRoman(i) === roman) return i - 1;
-          }
-           return -1;
-        };
-        const oldIdx = getIndex(v);
-        if (oldIdx > idx) {
-          newPairs[k] = toRoman(oldIdx); // shift down (by passing oldIdx directly, since toRoman is 1-based, passing oldIdx is effectively oldIdx - 1 + 1)
-        } else {
-          newPairs[k] = v;
-        }
+      if (v !== removedLabel) {
+        newPairs[k] = v;
       }
     });
     syncToForm(items, newOptions, newPairs);
@@ -158,8 +144,8 @@ export function MatchingForm({ form, onChange }: QuestionFormProps) {
     syncToForm(items, newOptions, pairs);
   };
 
-  const setPair = (itemIdx: number, optionLetter: string) => {
-    const newPairs = { ...pairs, [String(itemIdx)]: optionLetter };
+  const setPair = (itemIdx: number, optionLabel: string) => {
+    const newPairs = { ...pairs, [String(itemIdx)]: optionLabel };
     syncToForm(items, options, newPairs);
   };
 
@@ -177,7 +163,7 @@ export function MatchingForm({ form, onChange }: QuestionFormProps) {
             Hướng dẫn / Câu hỏi *
           </Label>
           <RichTextEditor
-            placeholder="VD: Match the following headings with the correct paragraphs."
+            placeholder="VD: Match each area of the world with its correct feature."
             value={form.questionText}
             onChange={(html) => onChange({ questionText: html })}
             minHeight={100}
@@ -190,7 +176,7 @@ export function MatchingForm({ form, onChange }: QuestionFormProps) {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Danh sách items (trái)
+                Danh sách câu hỏi (trái)
               </Label>
               <Button
                 type="button"
@@ -200,7 +186,7 @@ export function MatchingForm({ form, onChange }: QuestionFormProps) {
                 className="h-6 text-[10px]"
               >
                 <Plus className="h-3 w-3 mr-1" />
-                Thêm
+                Thêm câu hỏi
               </Button>
             </div>
             <div className="grid gap-2">
@@ -210,7 +196,7 @@ export function MatchingForm({ form, onChange }: QuestionFormProps) {
                     {i + 1}.
                   </span>
                   <Input
-                    placeholder={`Item ${i + 1}`}
+                    placeholder={`Câu hỏi ${i + 1}`}
                     value={item}
                     onChange={(e) => updateItem(i, e.target.value)}
                     className="bg-background h-8 text-sm"
@@ -219,18 +205,18 @@ export function MatchingForm({ form, onChange }: QuestionFormProps) {
                     value={pairs[String(i)] || ""}
                     onValueChange={(v) => setPair(i, v)}
                   >
-                    <SelectTrigger className="w-14 h-8 text-xs bg-background px-2">
+                    <SelectTrigger className="w-16 h-8 text-xs bg-background px-2 font-bold text-teal-700">
                       <SelectValue placeholder="—" />
                     </SelectTrigger>
                     <SelectContent className="z-[70] max-h-44">
-                      {options.map((_, oi) => (
-                        <SelectItem
-                          key={oi}
-                          value={toRoman(oi + 1)}
-                        >
-                          {toRoman(oi + 1)}
-                        </SelectItem>
-                      ))}
+                      {options.map((_, oi) => {
+                        const label = getOptionLabel(oi);
+                        return (
+                          <SelectItem key={oi} value={label}>
+                            {label}
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                   {items.length > 2 && (
@@ -263,17 +249,17 @@ export function MatchingForm({ form, onChange }: QuestionFormProps) {
                 className="h-6 text-[10px]"
               >
                 <Plus className="h-3 w-3 mr-1" />
-                Thêm
+                Thêm lựa chọn
               </Button>
             </div>
             <div className="grid gap-2">
               {options.map((opt, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  <span className="text-xs font-bold w-8 text-teal-600 text-right pr-2">
-                    {toRoman(i + 1)}.
+                  <span className="text-xs font-bold w-6 text-teal-600 text-right pr-1">
+                    {getOptionLabel(i)}.
                   </span>
                   <Input
-                    placeholder={`Lựa chọn ${toRoman(i + 1)}`}
+                    placeholder={`Lựa chọn ${getOptionLabel(i)}`}
                     value={opt}
                     onChange={(e) => updateOption(i, e.target.value)}
                     className="bg-background h-8 text-sm"
@@ -303,13 +289,13 @@ export function MatchingForm({ form, onChange }: QuestionFormProps) {
             </Label>
             <div className="flex flex-wrap gap-2 text-xs">
               {Object.entries(pairs)
-                .sort(([a], [b]) => parseInt(a) - parseInt(b))
-                .map(([itemIdx, optLetter]) => (
+                .sort(([a], [b]) => parseInt(a, 10) - parseInt(b, 10))
+                .map(([itemIdx, optLabel]) => (
                   <span
                     key={itemIdx}
-                    className="px-2 py-1 rounded bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300"
+                    className="px-2 py-1 rounded bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300 font-semibold"
                   >
-                    {parseInt(itemIdx) + 1} → {optLetter}
+                    {parseInt(itemIdx, 10) + 1} → {optLabel}
                   </span>
                 ))}
             </div>
@@ -327,7 +313,7 @@ export function MatchingForm({ form, onChange }: QuestionFormProps) {
               min={1}
               value={form.points}
               onChange={(e) =>
-                onChange({ points: parseInt(e.target.value) || 1 })
+                onChange({ points: parseInt(e.target.value, 10) || 1 })
               }
               className="bg-background"
             />
