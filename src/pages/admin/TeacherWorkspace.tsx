@@ -61,16 +61,16 @@ export default function TeacherWorkspace() {
   const [reopenTargetId, setReopenTargetId] = useState<string | null>(null);
   const [reopenDate, setReopenDate] = useState<string>("");
 
-  // Form Chấm Điểm
-  const [taskResponse, setTaskResponse] = useState<string>("6.0");
-  const [coherence, setCoherence] = useState<string>("6.0");
-  const [lexical, setLexical] = useState<string>("6.0");
-  const [grammar, setGrammar] = useState<string>("6.0");
+  // Form Chấm Điểm (Khởi tạo rỗng, không mặc định Band 6.0)
+  const [taskResponse, setTaskResponse] = useState<string>("");
+  const [coherence, setCoherence] = useState<string>("");
+  const [lexical, setLexical] = useState<string>("");
+  const [grammar, setGrammar] = useState<string>("");
   const [feedback, setFeedback] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // 1. Fetch danh sách Lớp học
-  const { data: classesData } = useQuery({
+  // 1. Fetch danh sách Lớp học phụ trách
+  const { data: classesData, isLoading: isClassesLoading } = useQuery({
     queryKey: ["teacher-classes"],
     queryFn: async () => {
       const res = await classesApi.list();
@@ -90,47 +90,34 @@ export default function TeacherWorkspace() {
     return classes.find((c: any) => c.id === selectedClassId) || classes[0];
   }, [classes, selectedClassId]);
 
-  // 2. Fetch thông tin chi tiết Lớp & Danh sách Học viên
-  const { data: currentClassData } = useQuery({
-    queryKey: ["teacher-class-details", selectedClassId],
+  // 2. Fetch View Model dữ liệu thật từ Backend API (Real Data View Model)
+  const { data: workspaceData, isLoading: isWorkspaceLoading, refetch: refetchWorkspace } = useQuery({
+    queryKey: ["teacher-workspace-data", selectedClassId],
     queryFn: async () => {
       if (!selectedClassId) return null;
-      return await classesApi.getById(selectedClassId);
+      const res = await homeworksApi.getTeacherWorkspace(selectedClassId);
+      return res.data || null;
     },
     enabled: !!selectedClassId,
   });
 
-  const { refetch: refetchWorkspace } = useQuery({
-    queryKey: ["teacher-workspace-data"],
-    queryFn: () => homeworksApi.getTeacherWorkspace().catch(() => ({ success: false, data: null })),
-  });
-
-  const rawStudents = currentClassData?.class_students || [];
-
-  // Normalize Học viên + THÊM CON SỐ TIẾN ĐỘ (Ví dụ: 12 / 27)
+  // Normalize Danh sách Học viên thật từ CSDL
   const students = useMemo(() => {
-    if (rawStudents.length > 0) {
-      return rawStudents.map((item: any, idx: number) => {
-        const profile = item.profiles || item.profile || {};
-        const studentId = item.student_id || profile.id || `student-${idx}`;
-        const hasPending = idx % 2 === 0;
-        const completedCount = 8 + (idx % 10); // Giả lập số bài đã làm
-        return {
-          id: studentId,
-          fullName: profile.full_name || profile.email?.split("@")[0] || `Học viên ${idx + 1}`,
-          email: profile.email || "",
-          avatarUrl: profile.avatar_url || "",
-          hasPending,
-          pendingCount: hasPending ? 1 : 0,
-          completedCount,
-          totalCount: 27,
-        };
-      });
-    }
-
-    // Không dùng fallback demo - trả về mảng rỗng nếu không có dữ liệu thực từ DB
-    return [];
-  }, [rawStudents]);
+    if (!workspaceData?.students) return [];
+    return workspaceData.students.map((s: any) => ({
+      id: s.id,
+      fullName: s.fullName,
+      email: s.email,
+      avatarUrl: s.avatarUrl,
+      totalAssignedCount: s.totalAssignedCount || 0,
+      submittedCount: s.submittedCount || 0,
+      gradedCount: s.gradedCount || 0,
+      pendingCount: s.pendingCount || 0,
+      unsubmittedCount: s.unsubmittedCount || 0,
+      hasPending: (s.pendingCount || 0) > 0,
+      homeworks: s.homeworks || [],
+    }));
+  }, [workspaceData]);
 
   useEffect(() => {
     if (!selectedStudentId && students.length > 0) {
@@ -149,31 +136,29 @@ export default function TeacherWorkspace() {
     return students.find((s: any) => s.id === selectedStudentId) || null;
   }, [students, selectedStudentId]);
 
-  // 3. TẠO SỔ WORKBOOK CỐ ĐỊNH NHÓM THEO BUỔI HỌC (LESSON GROUPING)
+  // 3. SỔ WORKBOOK DỮ LIỆU THẬT NHÓM THEO BUỔI HỌC (REAL WORKBOOK ITEMS)
   const workbookItems: WorkbookItem[] = useMemo(() => {
-    if (!selectedStudentId) return [];
-    return Array.from({ length: 27 }, (_, i) => {
-      const index = i + 1;
-      const lessonNumber = Math.ceil(index / 2); // 2 bài / 1 buổi học
-      const isWriting = index % 2 !== 0;
-      const type = isWriting ? "writing" : "speaking";
-      const title = isWriting
-        ? `HW ${String(index).padStart(2, "0")}: Writing Task ${index % 4 === 1 ? 1 : 2} Essay`
-        : `HW ${String(index).padStart(2, "0")}: Speaking Part ${index % 3 === 0 ? 3 : 2} Practice`;
-
-      return {
-        id: `hw-${index}`,
-        lessonNumber,
-        lessonTitle: `Buổi ${lessonNumber}: ${isWriting ? "Kỹ năng Writing" : "Kỹ năng Speaking"}`,
-        orderIndex: index,
-        title,
-        type,
-        dueDate: "",
-        status: "unsubmitted",
-        isOverdue: false,
-      };
-    });
-  }, [selectedStudentId]);
+    if (!currentStudent || !currentStudent.homeworks) return [];
+    return currentStudent.homeworks.map((hw: any, idx: number) => ({
+      id: hw.id,
+      lessonNumber: hw.lessonNumber || Math.ceil((idx + 1) / 2),
+      lessonTitle: hw.lessonTitle || `Buổi ${Math.ceil((idx + 1) / 2)}`,
+      orderIndex: idx + 1,
+      title: hw.title,
+      type: (hw.type || "writing") as "writing" | "speaking" | "homework",
+      status: (hw.status || "unsubmitted") as any,
+      isOverdue: false,
+      submissionId: hw.submissionId,
+      submittedAt: hw.submittedAt,
+      answerText: hw.answerText,
+      audioUrl: hw.audioUrl,
+      objectiveScore: hw.objectiveScore,
+      bandScore: hw.bandScore,
+      criteriaScores: hw.criteriaScores,
+      feedback: hw.feedback,
+      score: hw.bandScore != null ? hw.bandScore : hw.objectiveScore,
+    }));
+  }, [currentStudent]);
 
   // Gom nhóm Workbook theo Buổi học (Lesson)
   const groupedWorkbook = useMemo(() => {
@@ -202,24 +187,55 @@ export default function TeacherWorkspace() {
     return workbookItems.find((h) => h.id === selectedHomeworkId) || workbookItems[0];
   }, [workbookItems, selectedHomeworkId]);
 
-  // Overall Band
+  // Population Form Chấm điểm từ CSDL Thật
+  useEffect(() => {
+    if (currentHomework) {
+      if (currentHomework.status === "graded" && currentHomework.criteriaScores) {
+        setTaskResponse(String(currentHomework.criteriaScores.taskResponse ?? ""));
+        setCoherence(String(currentHomework.criteriaScores.coherence ?? ""));
+        setLexical(String(currentHomework.criteriaScores.lexical ?? ""));
+        setGrammar(String(currentHomework.criteriaScores.grammar ?? ""));
+      } else {
+        setTaskResponse("");
+        setCoherence("");
+        setLexical("");
+        setGrammar("");
+      }
+      setFeedback(currentHomework.feedback || "");
+    } else {
+      setTaskResponse("");
+      setCoherence("");
+      setLexical("");
+      setGrammar("");
+      setFeedback("");
+    }
+  }, [currentHomework]);
+
+  // Overall Band Calculation (Trả về "—" nếu chưa nhập)
   const calculatedOverall = useMemo(() => {
-    const tr = parseFloat(taskResponse) || 0;
-    const cc = parseFloat(coherence) || 0;
-    const lr = parseFloat(lexical) || 0;
-    const gr = parseFloat(grammar) || 0;
-    const avg = (tr + cc + lr + gr) / 4;
+    const tr = parseFloat(taskResponse);
+    const cc = parseFloat(coherence);
+    const lr = parseFloat(lexical);
+    const gr = parseFloat(grammar);
+    const validScores = [tr, cc, lr, gr].filter((s) => !isNaN(s));
+
+    if (validScores.length === 0) return "—";
+
+    const sum = (isNaN(tr) ? 0 : tr) + (isNaN(cc) ? 0 : cc) + (isNaN(lr) ? 0 : lr) + (isNaN(gr) ? 0 : gr);
+    const avg = sum / (validScores.length || 1);
     return (Math.round(avg * 2) / 2).toFixed(1);
   }, [taskResponse, coherence, lexical, grammar]);
 
-  // Thống kê nhanh Sổ bài tập Cột 2
+  // Thống kê nhanh Sổ bài tập Cột 2 từ CSDL Thật
   const workbookSummary = useMemo(() => {
-    const graded = workbookItems.filter((i) => i.status === "graded").length;
-    const pending = workbookItems.filter((i) => i.status === "submitted").length;
-    const inProgress = workbookItems.filter((i) => i.status === "in_progress" || i.status === "unsubmitted").length;
-    const overdue = workbookItems.filter((i) => i.isOverdue).length;
-    return { graded, pending, inProgress, overdue };
-  }, [workbookItems]);
+    if (!currentStudent) return { graded: 0, pending: 0, inProgress: 0, overdue: 0 };
+    return {
+      graded: currentStudent.gradedCount || 0,
+      pending: currentStudent.pendingCount || 0,
+      inProgress: currentStudent.unsubmittedCount || 0,
+      overdue: 0,
+    };
+  }, [currentStudent]);
 
   // THAO TÁC TRẢ BÀI & TỰ ĐỘNG CHUYỂN BÀI THEO QUEUE CHỜ CHẤM
   const handleGradeSubmit = async () => {
@@ -368,7 +384,7 @@ export default function TeacherWorkspace() {
 
         <div className="flex items-center gap-3">
           <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs font-medium px-3 py-1">
-            📖 Workbook: {currentClass?.name || "Lớp IELTS"} (27 HW)
+            📖 Workbook: {currentClass?.name || "Lớp IELTS"}
           </Badge>
           <Button variant="ghost" size="sm" onClick={() => refetchWorkspace()} className="h-8 text-xs text-slate-500 hover:text-slate-900">
             <RefreshCw className="h-3.5 w-3.5 mr-1" />
@@ -445,10 +461,10 @@ export default function TeacherWorkspace() {
                         <div className="text-xs font-bold text-slate-800 truncate">{st.fullName}</div>
                         {/* 1. HIỂN THỊ CON SỐ TIẾN ĐỘ HỌC VIÊN (12 / 27) */}
                         <div className="text-[10px] font-mono text-slate-500 flex items-center gap-1.5 mt-0.5">
-                          <span>HW {st.completedCount} / {st.totalCount}</span>
+                          <span>HW {st.submittedCount} / {st.totalAssignedCount}</span>
                           {st.hasPending && (
                             <span className="text-[9px] font-bold text-blue-600 bg-blue-100 px-1.5 py-0.2 rounded">
-                              🔵 1 chờ
+                              🔵 {st.pendingCount} chờ
                             </span>
                           )}
                         </div>

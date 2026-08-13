@@ -2290,17 +2290,20 @@ export const homeworksApi = {
     };
   },
 
-  getTeacherWorkspace: async () => {
+  getTeacherWorkspace: async (classId?: string) => {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
-    const response = await fetch(`${API_BASE_URL}/homeworks/teacher-workspace`, {
+    const url = classId 
+      ? `${API_BASE_URL}/homeworks/teacher-workspace?classId=${encodeURIComponent(classId)}`
+      : `${API_BASE_URL}/homeworks/teacher-workspace`;
+    const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || "Failed to fetch teacher workspace");
-    return result as { success: boolean; data: TeacherWorkspaceContract };
+    return result as { success: boolean; data: any };
   },
 
   create: async (payload: { classId: string; title: string; description?: string; deadline?: string }) => {
