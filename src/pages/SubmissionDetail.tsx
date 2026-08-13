@@ -101,13 +101,25 @@ export default function SubmissionDetail() {
     enabled: !!submissionId && isAuthenticated,
   });
 
-  const sections = submission?.exam?.sections || [];
+  const exam = submission?.exam;
+  const sections = useMemo(() => {
+    if (!exam) return [];
+    const rawSections = exam.sections || exam.exam_sections || [];
+    return rawSections.map((sec: any) => ({
+      ...sec,
+      questionGroups: (sec.questionGroups || sec.question_groups || []).map((g: any) => ({
+        ...g,
+        questions: g.questions || [],
+      })),
+    }));
+  }, [exam]);
+
   const answers = submission?.answers || [];
 
   const answerMap = useMemo(() => {
     const map: Record<string, any> = {};
     answers?.forEach((a: any) => {
-      map[a.questionId] = a;
+      map[a.questionId || a.question_id] = a;
     });
     return map;
   }, [answers]);
@@ -312,7 +324,6 @@ export default function SubmissionDetail() {
     );
   }
 
-  const exam = submission.exam;
   const status = statusConfig[submission.status || "in_progress"];
   const StatusIcon = status.icon;
 
@@ -339,9 +350,9 @@ export default function SubmissionDetail() {
               </h1>
               <div className="flex items-center gap-2 flex-wrap text-sm text-muted-foreground">
                 <FileText className="h-4 w-4" />
-                <span>{exam?.course?.title || "Không rõ khóa học"}</span>
+                <span>{exam?.course?.title || exam?.course_title || "Không rõ khóa học"}</span>
                 <Badge variant="secondary">
-                  {exam?.examType?.toUpperCase()}
+                  {(exam?.examType || exam?.exam_type || "EXAM")?.toUpperCase()}
                 </Badge>
               </div>
             </div>
@@ -371,8 +382,8 @@ export default function SubmissionDetail() {
             <div className="text-center">
               <p className="text-xs text-muted-foreground">Ngày làm</p>
               <p className="text-sm font-medium">
-                {submission.startedAt
-                  ? format(new Date(submission.startedAt), "dd/MM/yyyy", {
+                {submission?.startedAt || submission?.started_at
+                  ? format(new Date(submission.startedAt || submission.started_at), "dd/MM/yyyy", {
                       locale: vi,
                     })
                   : "—"}
@@ -381,9 +392,9 @@ export default function SubmissionDetail() {
             <div className="text-center">
               <p className="text-xs text-muted-foreground">Ngày nộp</p>
               <p className="text-sm font-medium">
-                {submission.submittedAt
+                {submission?.submittedAt || submission?.submitted_at
                   ? format(
-                      new Date(submission.submittedAt),
+                      new Date(submission.submittedAt || submission.submitted_at),
                       "dd/MM/yyyy HH:mm",
                       { locale: vi },
                     )

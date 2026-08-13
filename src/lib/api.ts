@@ -862,16 +862,18 @@ export const submissionsApi = {
   },
 
   getById: async (id: string) => {
-    const { data, error } = await supabase
-      .from("exam_submissions")
-      .select(
-        "*, exams(*, exam_sections(*, question_groups(*, questions(*)))), answers(*)"
-      )
-      .eq("id", id)
-      .single();
-
-    if (error) throw error;
-    return data;
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    const response = await fetch(`${API_BASE_URL}/submissions/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Không thể lấy thông tin bài nộp");
+    return result;
   },
 
   getLatestByExam: async (examId: string) => {
@@ -958,37 +960,21 @@ export const submissionsApi = {
       audioUrl?: string;
     }>
   ) => {
-    // Gá»i RPC Stored Procedure Ä‘á»ƒ thá»±c hiá»‡n Atomic Transaction trÃªn Database:
-    // Upsert Answers + Auto Grade + Mark Submitted/Graded trong 1 giao dá»‹ch duy nháº¥t.
-    const formattedAnswers = (answers || []).map((a) => ({
-      question_id: a.questionId,
-      answer_text: a.answerText || "",
-      audio_url: a.audioUrl || "",
-    }));
-
-    const { data, error } = await supabase.rpc("submit_exam_transaction", {
-      p_submission_id: id,
-      p_answers: formattedAnswers,
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    const response = await fetch(`${API_BASE_URL}/submissions/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ answers, submit: true }),
     });
-
-    if (error) {
-      // Fallback Ä‘Æ¡n giáº£n náº¿u RPC chÆ°a Ä‘Æ°á»£c táº¡o trong Supabase SQL Editor
-      console.warn("RPC submit_exam_transaction fail, fallback to direct update:", error.message);
-      await submissionsApi.saveAnswers(id, answers);
-      const { data: fallbackData, error: fallbackErr } = await supabase
-        .from("exam_submissions")
-        .update({
-          status: "submitted",
-          submitted_at: new Date().toISOString(),
-        })
-        .eq("id", id)
-        .select()
-        .single();
-      if (fallbackErr) throw fallbackErr;
-      return fallbackData;
-    }
-
-    return data;
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Không thể nộp bài");
+    return result;
   },
 
   grade: async (
