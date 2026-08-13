@@ -2,15 +2,12 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { WorkspaceProvider, useWorkspace } from "./WorkspaceProvider";
 import { FixedHeader } from "./components/FixedHeader";
-import { QuickActions } from "./components/QuickActions";
 import { WorkspaceSkeleton } from "./components/WorkspaceSkeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { OverviewTab } from "./tabs/OverviewTab";
 import { StudentsTab } from "./tabs/StudentsTab";
-import { SessionsTab } from "./tabs/SessionsTab";
-import { GradingTab } from "./tabs/GradingTab";
 import { HomeworkTab } from "./tabs/HomeworkTab";
-import { AttendanceTab } from "./tabs/AttendanceTab";
+import { GradingTab } from "./tabs/GradingTab";
 
 const WorkspaceInner: React.FC = () => {
   const { activeTab, setActiveTab, isLoading } = useWorkspace();
@@ -21,26 +18,23 @@ const WorkspaceInner: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      {/* Sticky Fixed Header */}
+      {/* Clean Identity Header */}
       <FixedHeader />
-
-      {/* 0-Click Quick Actions Bar */}
-      <QuickActions />
 
       {/* Main 4 Core View Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4 bg-muted/50 p-1 rounded-xl">
           <TabsTrigger value="overview" className="text-xs font-semibold py-2">
-            📊 Tổng quan
+            Tổng quan
           </TabsTrigger>
           <TabsTrigger value="homework" className="text-xs font-semibold py-2">
-            📚 Nội dung học
+            Nội dung & Bài tập
           </TabsTrigger>
           <TabsTrigger value="students" className="text-xs font-semibold py-2">
-            👥 Học viên
+            Học viên & Điểm danh
           </TabsTrigger>
           <TabsTrigger value="grading" className="text-xs font-semibold py-2">
-            ✍️ Chấm bài
+            Chấm bài
           </TabsTrigger>
         </TabsList>
 

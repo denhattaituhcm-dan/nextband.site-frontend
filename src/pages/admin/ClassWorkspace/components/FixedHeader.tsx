@@ -1,27 +1,23 @@
 import React from "react";
 import { useWorkspace } from "../WorkspaceProvider";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Users, Clock, AlertCircle, BookOpen } from "lucide-react";
+import { ArrowLeft, UserPlus, GraduationCap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export const FixedHeader: React.FC = () => {
   const {
     classData,
-    currentHomework,
-    totalHomeworks,
-    progressPercent,
-    pendingReviewsCount,
-    overdueCount,
+    openAddStudentModal,
   } = useWorkspace();
   const navigate = useNavigate();
 
   const studentsCount = classData?.students?.length || classData?._count?.students || 0;
   const teacherName = classData?.teacher?.fullName || "Chưa phân công";
+  const courseTitle = classData?.course?.title || classData?.target_band ? `Target Band ${classData.target_band}` : null;
 
   return (
-    <div className="sticky top-0 z-20 bg-background/95 backdrop-blur border-b pb-4 pt-2 space-y-3">
+    <div className="bg-background border-b pb-3 pt-2 space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Button
@@ -37,48 +33,40 @@ export const FixedHeader: React.FC = () => {
               <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
                 {classData?.name || "Lớp học"}
               </h1>
-              <Badge variant="outline" className="text-xs font-normal">
-                GV: {teacherName}
-              </Badge>
+              {classData?.status && (
+                <Badge variant="outline" className="text-[10px] font-normal uppercase">
+                  {classData.status}
+                </Badge>
+              )}
             </div>
-            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
-              <span className="flex items-center gap-1">
-                <Users className="h-3.5 w-3.5" />
-                {studentsCount} học viên
-              </span>
-              <span>•</span>
-              <span className="flex items-center gap-1 text-emerald-600 font-medium">
-                <BookOpen className="h-3.5 w-3.5" />
-                {totalHomeworks > 0 ? `Homework ${currentHomework} / ${totalHomeworks}` : "Chưa có bài tập"}
-              </span>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5 font-medium">
+              <span>{teacherName}</span>
+              <span>·</span>
+              <span>{studentsCount} học viên</span>
+              {courseTitle && (
+                <>
+                  <span>·</span>
+                  <span className="flex items-center gap-1 text-slate-600">
+                    <GraduationCap className="h-3 w-3 text-primary" />
+                    {courseTitle}
+                  </span>
+                </>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Dynamic KPI Badges */}
+        {/* Top Right Action: Single Primary Action (+ Thêm học viên) */}
         <div className="flex items-center gap-2">
-          {pendingReviewsCount > 0 && (
-            <Badge className="bg-amber-500 hover:bg-amber-600 text-white gap-1 py-1 px-2.5">
-              <Clock className="h-3.5 w-3.5" />
-              🔴 {pendingReviewsCount} bài cần chấm
-            </Badge>
-          )}
-          {overdueCount > 0 && (
-            <Badge variant="destructive" className="gap-1 py-1 px-2.5">
-              <AlertCircle className="h-3.5 w-3.5" />
-              ⚠️ {overdueCount} quá hạn
-            </Badge>
-          )}
+          <Button
+            size="sm"
+            onClick={() => openAddStudentModal()}
+            className="h-8 text-xs gap-1.5 bg-primary font-semibold shadow-2xs"
+          >
+            <UserPlus className="h-3.5 w-3.5" />
+            + Thêm học viên
+          </Button>
         </div>
-      </div>
-
-      {/* Progress Bar Line */}
-      <div className="space-y-1">
-        <div className="flex justify-between text-xs font-medium text-muted-foreground">
-          <span>Tiến độ hoàn thành bài tập lớp</span>
-          <span>{progressPercent}%</span>
-        </div>
-        <Progress value={progressPercent} className="h-1.5" />
       </div>
     </div>
   );
