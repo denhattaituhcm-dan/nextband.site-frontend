@@ -55,11 +55,19 @@ export default function StudentLessonViewerPage() {
   const lessons = classData?.lessons || [];
   const userSubmissions = Array.isArray(submissionsData?.data) ? submissionsData.data : [];
 
-  // Map submissions to homeworks
+  // Sort submissions by createdAt DESC (latest attempt ordering)
+  const sortedSubmissions = [...userSubmissions].sort((a: any, b: any) => {
+    const timeA = new Date(a.createdAt || a.created_at || a.submittedAt || 0).getTime();
+    const timeB = new Date(b.createdAt || b.created_at || b.submittedAt || 0).getTime();
+    return timeB - timeA;
+  });
+
+  // Map latest submission per homework/exam
   const submissionsMap: Record<string, any> = {};
-  userSubmissions.forEach((s: any) => {
-    if (s.homework_id || s.exam_id) {
-      submissionsMap[s.homework_id || s.exam_id] = s;
+  sortedSubmissions.forEach((s: any) => {
+    const targetId = s.homework_id || s.homeworkId || s.exam_id || s.examId;
+    if (targetId && !submissionsMap[targetId]) {
+      submissionsMap[targetId] = s;
     }
   });
 
@@ -68,11 +76,12 @@ export default function StudentLessonViewerPage() {
     const sub = submissionsMap[item.id] || item.submission;
     let status: "NOT_STARTED" | "IN_PROGRESS" | "SUBMITTED" | "REVIEWED" = "NOT_STARTED";
 
-    if (sub?.grade_status === "graded" || sub?.status === "graded") {
+    // Sole Source of Truth: submission.status
+    if (sub?.status === "graded" || sub?.status === "GRADED" || sub?.grade_status === "graded") {
       status = "REVIEWED";
-    } else if (sub?.status === "submitted" || sub?.grade_status === "pending") {
+    } else if (sub?.status === "submitted" || sub?.status === "SUBMITTED") {
       status = "SUBMITTED";
-    } else if (sub?.status === "in_progress") {
+    } else if (sub?.status === "in_progress" || sub?.status === "IN_PROGRESS") {
       status = "IN_PROGRESS";
     }
 
