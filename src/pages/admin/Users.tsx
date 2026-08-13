@@ -131,20 +131,16 @@ export default function AdminUsers() {
 
   const { data, isLoading } = useQuery({
     queryKey: [
-      "admin-users",
+      "admin-students-management",
       debouncedSearch,
-      sortField,
-      sortOrder,
       page,
       pageSize,
-      roleFilter,
     ],
     queryFn: () =>
-      usersApi.list({
+      usersApi.getStudentManagement({
         page,
         limit: pageSize,
         search: debouncedSearch || undefined,
-        role: "student",
       }),
   });
 
@@ -282,10 +278,18 @@ export default function AdminUsers() {
   const total = data?.meta?.total ?? data?.total ?? usersList.length;
   const totalPages = data?.meta?.totalPages ?? data?.totalPages ?? 1;
 
-  // Render Operational Academic Health Badge
-  const renderAcademicHealth = (score: number = 82) => {
+  // Render Operational Academic Health Badge (Calculated 100% at Server)
+  const renderAcademicHealth = (score: number | null) => {
+    if (score === null || score === undefined) {
+      return (
+        <Badge variant="outline" className="bg-slate-50 text-slate-500 border-slate-200 font-normal text-[11px]">
+          ⚪ N/A (—)
+        </Badge>
+      );
+    }
+
     const isHealthy = score >= 80;
-    const isNeedsAttention = score >= 60 && score < 80;
+    const isNeedsAttention = score >= 50 && score < 80;
 
     return (
       <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
@@ -293,10 +297,10 @@ export default function AdminUsers() {
           variant="outline"
           className={
             isHealthy
-              ? "bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold"
+              ? "bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold text-[11px]"
               : isNeedsAttention
-              ? "bg-amber-50 text-amber-700 border-amber-200 font-semibold"
-              : "bg-red-50 text-red-700 border-red-200 font-semibold"
+              ? "bg-amber-50 text-amber-700 border-amber-200 font-semibold text-[11px]"
+              : "bg-red-50 text-red-700 border-red-200 font-semibold text-[11px]"
           }
         >
           {isHealthy ? `🟢 Healthy (${score})` : isNeedsAttention ? `🟡 Attention (${score})` : `🔴 Risk (${score})`}
@@ -307,9 +311,9 @@ export default function AdminUsers() {
               <Info className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-pointer" />
             </TooltipTrigger>
             <TooltipContent className="max-w-xs text-xs">
-              <p className="font-bold">Công thức Sức khỏe Học thuật:</p>
-              <p>• Chuyên cần (30%) • Làm bài tập (40%)</p>
-              <p>• Bài tập đúng hạn (20%) • Đánh giá GV (10%)</p>
+              <p className="font-bold">Công thức Sức khỏe Học thuật (Server Calculated):</p>
+              <p>• Chuyên cần (30%) • Tiến độ bài tập (40%)</p>
+              <p>• Tỷ lệ bài đã chấm (30%)</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -456,46 +460,83 @@ export default function AdminUsers() {
 
                     {/* CLASS & COURSE */}
                     <TableCell className="text-xs">
-                      <p className="font-medium text-foreground">Dreamer 03</p>
-                      <p className="text-muted-foreground flex items-center gap-1 mt-0.5">
-                        <GraduationCap className="h-3 w-3 text-primary" />
-                        IELTS Overall 6.5
-                      </p>
+                      {user.classes && user.classes.length > 0 ? (
+                        user.classes.map((c: any) => (
+                          <div key={c.id} className="space-y-0.5">
+                            <p className="font-medium text-foreground">{c.name}</p>
+                            {c.courseTitle && (
+                              <p className="text-muted-foreground flex items-center gap-1">
+                                <GraduationCap className="h-3 w-3 text-primary" />
+                                {c.courseTitle}
+                              </p>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <Badge variant="outline" className="bg-slate-50 text-slate-500 border-slate-200 text-[10px]">
+                          ⚪ Chưa xếp lớp
+                        </Badge>
+                      )}
                     </TableCell>
 
                     {/* HOMEWORK RATIO */}
                     <TableCell className="text-center text-xs">
-                      <span className="font-semibold text-foreground">12/27</span>
-                      <span className="text-muted-foreground text-[10px] block">(44%)</span>
+                      {user.homework && user.homework.totalAssignedCount > 0 ? (
+                        <>
+                          <span className="font-semibold text-foreground">
+                            {user.homework.submittedCount}/{user.homework.totalAssignedCount}
+                          </span>
+                          {user.homework.percentage != null && (
+                            <span className="text-muted-foreground text-[10px] block">
+                              ({user.homework.percentage}%)
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
                     </TableCell>
 
                     {/* ATTENDANCE */}
                     <TableCell className="text-center text-xs">
-                      <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
-                        95%
-                      </Badge>
+                      {user.attendance && user.attendance.percentage != null ? (
+                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                          {user.attendance.percentage}%
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
                     </TableCell>
 
-                    {/* LAST ACTIVITY (CLICKABLE POPOVER) */}
+                    {/* LAST ACTIVITY */}
                     <TableCell text-xs onClick={(e) => e.stopPropagation()}>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-auto p-1 px-2 text-xs font-normal text-muted-foreground hover:text-foreground hover:bg-muted gap-1">
-                            <Clock className="h-3.5 w-3.5 text-blue-500" />
-                            2 giờ trước
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-64 p-3 text-xs space-y-1">
-                          <p className="font-bold text-foreground">Hoạt động gần nhất:</p>
-                          <p className="text-muted-foreground">Đã nộp bài tập <strong>Writing Task 2 (Bài 12)</strong> đạt Band 6.5</p>
-                          <p className="text-[10px] text-muted-foreground pt-1 border-t mt-1">Lúc 09:15 AM - 02/08/2026</p>
-                        </PopoverContent>
-                      </Popover>
+                      {user.lastActivity && user.lastActivity.timestamp ? (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-auto p-1 px-2 text-xs font-normal text-muted-foreground hover:text-foreground hover:bg-muted gap-1">
+                              <Clock className="h-3.5 w-3.5 text-blue-500" />
+                              {new Date(user.lastActivity.timestamp).toLocaleDateString("vi-VN")}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-64 p-3 text-xs space-y-1">
+                            <p className="font-bold text-foreground">Hoạt động gần nhất:</p>
+                            <p className="text-muted-foreground">
+                              Đã nộp <strong>{user.lastActivity.title}</strong>
+                              {user.lastActivity.score != null ? ` (Điểm: ${user.lastActivity.score})` : ""}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground pt-1 border-t mt-1">
+                              Lúc {new Date(user.lastActivity.timestamp).toLocaleString("vi-VN")}
+                            </p>
+                          </PopoverContent>
+                        </Popover>
+                      ) : (
+                        <span className="text-muted-foreground text-xs font-normal">Chưa có hoạt động</span>
+                      )}
                     </TableCell>
 
                     {/* ACADEMIC HEALTH SCORE */}
                     <TableCell>
-                      {renderAcademicHealth(mockHealth)}
+                      {renderAcademicHealth(user.academicHealth ?? null)}
                     </TableCell>
 
                     {/* ENROLLMENT / ACCOUNT STATUS (2-TIER) */}

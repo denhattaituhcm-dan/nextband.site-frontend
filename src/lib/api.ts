@@ -1177,6 +1177,28 @@ export const usersApi = {
     return data;
   },
 
+  getStudentManagement: async (params?: { page?: number; limit?: number; search?: string }) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    const searchParams = new URLSearchParams();
+    if (params?.page) searchParams.set("page", String(params.page));
+    if (params?.limit) searchParams.set("limit", String(params.limit));
+    if (params?.search) searchParams.set("search", params.search);
+
+    const response = await fetch(`${API_BASE_URL}/users/students-management?${searchParams.toString()}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Failed to fetch student management data");
+    return result as {
+      success: boolean;
+      data: any[];
+      meta: { total: number; page: number; limit: number; totalPages: number };
+    };
+  },
+
   create: async (user: any) => {
     const targetRole = user.role || "student";
 
