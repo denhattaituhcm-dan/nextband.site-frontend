@@ -6,6 +6,8 @@
  * in both cases.
  */
 
+import { sanitizeHtml } from "../../lib/sanitize";
+
 interface RichContentProps {
   html: string;
   /** Extra Tailwind/CSS classes */
@@ -34,12 +36,13 @@ export function RichContent({ html, className = "", variant = "default" }: RichC
 
   const variantClass = variant === "passage" ? "rich-content-passage" : "";
 
-  // If the content contains HTML tags, render as HTML (dangerouslySetInnerHTML).
+  // If the content contains HTML tags, sanitize and render as HTML (dangerouslySetInnerHTML).
   if (HTML_TAG_RE.test(cleanHtml)) {
+    const sanitized = sanitizeHtml(cleanHtml);
     return (
       <div
         className={`rich-content ${variantClass} ${className}`.trim()}
-        dangerouslySetInnerHTML={{ __html: cleanHtml }}
+        dangerouslySetInnerHTML={{ __html: sanitized }}
       />
     );
   }

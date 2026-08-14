@@ -917,11 +917,7 @@ export default function AdminSectionEdit() {
                           <div className="text-[10px] uppercase text-orange-600 font-bold mb-1 opacity-70">
                             Hướng dẫn:
                           </div>
-                          <div
-                            dangerouslySetInnerHTML={{
-                              __html: group.instructions,
-                            }}
-                          />
+                          <RichContent html={group.instructions} />
                         </div>
                       )}
 
@@ -946,12 +942,9 @@ export default function AdminSectionEdit() {
                                 </span>
                               </div>
                               <div className="flex-1 min-w-0">
-                                <div
-                                  className="font-medium text-sm line-clamp-2 prose prose-sm max-w-none"
-                                  dangerouslySetInnerHTML={{
-                                    __html: q.question_text || q.questionText || "Nội dung câu hỏi",
-                                  }}
-                                />
+                                <div className="font-medium text-sm line-clamp-2 prose prose-sm max-w-none">
+                                  <RichContent html={q.question_text || q.questionText || "Nội dung câu hỏi"} />
+                                </div>
                                 {(q.options || q.options) && Array.isArray(q.options) && q.options.length > 0 && (
                                   <div className="mt-2 space-y-1 text-xs text-muted-foreground bg-muted/20 p-2 rounded border">
                                     {q.options.map((opt: string, optIdx: number) => (

@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { cn } from "@/lib/utils";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { FILL_BLANK_PLACEHOLDER_REGEX } from "./FillBlankHtmlRenderer";
 import { parseFillBlankAnswers } from "../admin/question-forms/QuestionFormTypes";
 
@@ -30,7 +31,7 @@ export function FillBlankResultRenderer({
 
   const processedHtml = useMemo(() => {
     let autoCursor = 0;
-    return html.replace(FILL_BLANK_PLACEHOLDER_REGEX, (match) => {
+    const rawResult = html.replace(FILL_BLANK_PLACEHOLDER_REGEX, (match) => {
       const indexMatch = match.match(/^\[BLANK_(\d+)\]$/);
       const explicitIndex = indexMatch ? Number(indexMatch[1]) - 1 : null;
       const blankIndex =
@@ -79,6 +80,7 @@ export function FillBlankResultRenderer({
           : autoCursor + 1;
       return `<span class="${statusClass}">${displayContent}</span>`;
     });
+    return sanitizeHtml(rawResult);
   }, [html, studentAnswers, correctAnswers, showCorrectAnswers]);
 
   return (

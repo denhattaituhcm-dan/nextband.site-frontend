@@ -5,6 +5,7 @@ import React, {
   useMemo,
   MutableRefObject,
 } from "react";
+import { sanitizeHtml } from "../../lib/sanitize";
 
 const FILL_BLANK_PLACEHOLDER_REGEX = /(\[BLANK(?:_\d+)?\])/g;
 
@@ -38,13 +39,14 @@ export function FillBlankHtmlRenderer({
     onAnswerChangeRef.current = onAnswerChange;
   }, [answers, questionId, onAnswerChange]);
 
-  // Memoize processed HTML to avoid unnecessary re-renders
+  // Memoize and sanitize processed HTML to avoid unnecessary re-renders
   const processedHtml = useMemo(() => {
-    return html.replace(FILL_BLANK_PLACEHOLDER_REGEX, (match) => {
+    const rawReplaced = html.replace(FILL_BLANK_PLACEHOLDER_REGEX, (match) => {
       const indexMatch = match.match(/^\[BLANK_(\d+)\]$/);
       const blankIndex = indexMatch ? Number(indexMatch[1]) - 1 : -1;
       return `<span data-fill-blank="${blankIndex}" class="fill-blank-slot"></span>`;
     });
+    return sanitizeHtml(rawReplaced);
   }, [html]);
 
   const assignIndices = useCallback(() => {
