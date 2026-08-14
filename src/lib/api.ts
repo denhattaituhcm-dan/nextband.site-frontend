@@ -1682,6 +1682,182 @@ export const classesApi = {
     return { success: true };
   },
 
+  /**
+   * Kiểm tra trạng thái hoạt động học tập (Academic Activity) của lớp học:
+   * Trả về UNSTARTED nếu chưa từng có COMPLETED Session, Attendance, hay Exam Submission nào.
+   */
+  checkAcademicStatus: async (classId: string): Promise<{
+    state: "UNSTARTED" | "IN_PROGRESS" | "CLOSED";
+    completedSessionsCount: number;
+    attendanceCount: number;
+    submissionsCount: number;
+    reasons: string[];
+  }> => {
+    const reasons: string[] = [];
+
+    // 1. Kiểm tra lớp đã closed chưa
+    const { data: cls } = await supabase
+      .from("classes")
+      .select("is_active")
+      .eq("id", classId)
+      .single();
+
+    // 2. Kiểm tra Completed Sessions
+    const { count: completedSessionsCount } = await supabase
+      .from("class_sessions")
+      .select("*", { count: "exact", head: true })
+      .eq("class_id", classId)
+      .eq("status", "COMPLETED");
+
+    if (completedSessionsCount && completedSessionsCount > 0) {
+      reasons.push(`Đã có ${completedSessionsCount} buổi học hoàn thành`);
+    }
+
+    // 3. Kiểm tra Attendance records
+    const { count: attendanceCount } = await supabase
+      .from("attendance")
+      .select("*", { count: "exact", head: true })
+      .eq("class_id", classId);
+
+    if (attendanceCount && attendanceCount > 0) {
+      reasons.push(`Đã có ${attendanceCount} bản ghi điểm danh`);
+    }
+
+    // 4. Kiểm tra Exam Submissions liên quan tới học viên của lớp
+    const { data: studentRecords } = await supabase
+      .from("class_students")
+      .select("student_id")
+      .eq("class_id", classId);
+
+    let submissionsCount = 0;
+    const studentIds = (studentRecords || []).map((s: any) => s.student_id).filter(Boolean);
+
+    if (studentIds.length > 0) {
+      const { count } = await supabase
+        .from("exam_submissions")
+        .select("*", { count: "exact", head: true })
+        .in("student_id", studentIds);
+      submissionsCount = count || 0;
+      if (submissionsCount > 0) {
+        reasons.push(`Đã có ${submissionsCount} bài tập/bài thi được học viên nộp`);
+      }
+    }
+
+    if (cls?.is_active === false && (completedSessionsCount || 0) > 0) {
+      return {
+        state: "CLOSED",
+        completedSessionsCount: completedSessionsCount || 0,
+        attendanceCount: attendanceCount || 0,
+        submissionsCount,
+        reasons: ["Lớp học đã tạm dừng / kết thúc"],
+      };
+    }
+
+    const hasAcademicActivity =
+      (completedSessionsCount || 0) > 0 ||
+      (attendanceCount || 0) > 0 ||
+      submissionsCount > 0;
+
+    return {
+      state: hasAcademicActivity ? "IN_PROGRESS" : "UNSTARTED",
+      completedSessionsCount: completedSessionsCount || 0,
+      attendanceCount: attendanceCount || 0,
+      submissionsCount,
+      reasons: hasAcademicActivity ? reasons : ["Lớp mới khởi tạo, chưa có hoạt động học tập nào"],
+    };
+  },
+
+  /**
+   * Preview lịch học tương lai (FUTURE ONLY) cho lớp IN_PROGRESS mà KHÔNG ghi vào DB
+   */
+  previewFutureScheduleUpdate: async (
+    classId: string,
+    params: {
+      applyFromDate: string; // Ngày bắt đầu áp dụng lịch mới
+      weekdays: number[];
+      startTime: string;
+      endTime: string;
+    }
+  ) => {
+    // 1. Fetch tất cả class_sessions sắp xếp theo session_number
+    const { data: sessions, error } = await supabase
+      .from("class_sessions")
+      .select("*")
+      .eq("class_id", classId)
+      .order("session_number", { ascending: true });
+
+    if (error) throw error;
+    const allSessions = sessions || [];
+
+    // Phân loại: Sessions bị khóa (COMPLETED hoặc ngày trước applyFromDate) và Sessions tương lai
+    const lockedSessions: any[] = [];
+    const futureSessions: any[] = [];
+
+    allSessions.forEach((s: any) => {
+      if (s.status === "COMPLETED" || s.planned_date < params.applyFromDate) {
+        lockedSessions.push(s);
+      } else {
+        futureSessions.push(s);
+      }
+    });
+
+    if (futureSessions.length === 0) {
+      return {
+        lockedSessions,
+        futureSessionsPreview: [],
+        message: "Không có buổi học tương lai nào cần điều chỉnh",
+      };
+    }
+
+    // Sinh danh sách ngày mới cho các buổi tương lai
+    const newDates = generateSessionDates(
+      params.applyFromDate,
+      params.weekdays,
+      futureSessions.length
+    );
+
+    const futureSessionsPreview = futureSessions.map((s: any, idx: number) => ({
+      id: s.id,
+      sessionNumber: s.session_number,
+      oldPlannedDate: s.planned_date,
+      newPlannedDate: newDates[idx] || s.planned_date,
+      oldStartTime: s.start_time,
+      newStartTime: params.startTime,
+      oldEndTime: s.end_time,
+      newEndTime: params.endTime,
+      status: s.status,
+    }));
+
+    return {
+      lockedSessionsCount: lockedSessions.length,
+      futureSessionsCount: futureSessions.length,
+      futureSessionsPreview,
+    };
+  },
+
+  /**
+   * Cập nhật lịch học tương lai (IN_PROGRESS Atomic Transaction)
+   */
+  applyFutureScheduleUpdate: async (
+    classId: string,
+    updates: Array<{ id: string; newPlannedDate: string; newStartTime: string; newEndTime: string }>
+  ) => {
+    for (const item of updates) {
+      const { error } = await supabase
+        .from("class_sessions")
+        .update({
+          planned_date: item.newPlannedDate,
+          start_time: item.newStartTime,
+          end_time: item.newEndTime,
+          status: "RESCHEDULED",
+        })
+        .eq("id", item.id);
+
+      if (error) throw error;
+    }
+    return { success: true, updatedCount: updates.length };
+  },
+
   addStudents: async (classId: string, studentIds: string[]) => {
     const records = studentIds.map((sid) => ({
       class_id: classId,

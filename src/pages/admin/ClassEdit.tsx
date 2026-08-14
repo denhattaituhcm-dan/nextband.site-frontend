@@ -122,6 +122,15 @@ export default function AdminClassEdit() {
     queryFn: () => usersApi.list({ role: "teacher", limit: 100 }),
   });
 
+  // Fetch Academic Status (UNSTARTED / IN_PROGRESS / CLOSED)
+  const { data: academicStatusData } = useQuery({
+    queryKey: ["academic-status", id],
+    queryFn: () => classesApi.checkAcademicStatus(id!),
+    enabled: !!id,
+  });
+
+  const academicState = academicStatusData?.state || "UNSTARTED";
+
   const teachers = teachersData?.data || [];
 
   // Initialize form when data loads
@@ -385,13 +394,49 @@ export default function AdminClassEdit() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">{classData.name}</h1>
-          <p className="text-sm text-muted-foreground">
-            Giáo viên: {classData.teacher?.fullName || "Chưa có"} •{" "}
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold">{classData.name}</h1>
+            {academicState === "UNSTARTED" ? (
+              <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">
+                🟢 CHƯA BẮT ĐẦU (Full Edit)
+              </Badge>
+            ) : academicState === "IN_PROGRESS" ? (
+              <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-semibold">
+                🟡 ĐANG HỌC (Bảo vệ Lịch sử)
+              </Badge>
+            ) : (
+              <Badge variant="secondary" className="bg-slate-200 text-slate-700 font-semibold">
+                🔴 ĐÃ ĐÓNG (Read-only)
+              </Badge>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground mt-1">
+            Giáo viên phụ trách hiện tại: {classData.teacher?.fullName || "Chưa có"} •{" "}
             {classData.students?.length || 0} học viên
           </p>
         </div>
       </div>
+
+      {/* Contract Banner Notice */}
+      {academicState === "IN_PROGRESS" && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 text-amber-900 flex items-start gap-3">
+          <Clock3 className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+          <div className="text-xs space-y-1">
+            <p className="font-bold text-sm text-amber-800">
+              ⚠️ Lớp học đã diễn ra hoạt động học tập ({academicStatusData?.reasons?.join(" • ")})
+            </p>
+            <p>
+              • <strong>Bảo vệ lịch sử:</strong> Khóa thay đổi Khóa học (Course) và danh sách bài học đã tạo.
+            </p>
+            <p>
+              • <strong>Đổi Giáo viên hiện tại:</strong> Giữ nguyên người điểm danh/chấm bài thực tế trong quá khứ.
+            </p>
+            <p>
+              • <strong>Cập nhật lịch học:</strong> Các buổi đã học (COMPLETED) được giữ nguyên. Chỉ điều chỉnh các buổi tương lai qua bước Preview & Xác nhận.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* General Settings */}
       <Card>

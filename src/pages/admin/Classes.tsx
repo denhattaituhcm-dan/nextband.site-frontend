@@ -698,7 +698,16 @@ function CreateEditClassDialog({
             </Label>
             <Select
               value={form.courseId}
-              onValueChange={(v) => setForm({ ...form, courseId: v === "__none__" ? "" : v })}
+              onValueChange={(v) => {
+                const selectedCourseId = v === "__none__" ? "" : v;
+                const matchedCourse = courses.find((c: any) => c.id === selectedCourseId);
+                const inferredSessions = matchedCourse?.totalLessons || matchedCourse?.lessons?.length || 27;
+                setForm({
+                  ...form,
+                  courseId: selectedCourseId,
+                  totalSessions: inferredSessions,
+                });
+              }}
             >
               <SelectTrigger className="bg-slate-50 border-slate-200 font-medium">
                 <SelectValue placeholder="Chọn khóa học..." />
@@ -709,7 +718,9 @@ function CreateEditClassDialog({
                 </SelectItem>
                 {courses.map((c: any) => (
                   <SelectItem key={c.id} value={c.id}>
-                    <span className="font-semibold text-slate-800">{c.title}</span>
+                    <span className="font-semibold text-slate-800">
+                      {c.title} {c.totalLessons ? `(${c.totalLessons} buổi)` : ""}
+                    </span>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -821,16 +832,16 @@ function CreateEditClassDialog({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs text-slate-600">Tổng số buổi</Label>
+                <Label className="text-xs text-slate-600 flex items-center justify-between">
+                  <span>Tổng số buổi</span>
+                  <span className="text-[10px] text-muted-foreground font-normal">(Theo giáo trình)</span>
+                </Label>
                 <Input
                   type="number"
-                  min={1}
-                  max={100}
+                  readOnly
+                  disabled
                   value={form.totalSessions}
-                  onChange={(e) =>
-                    setForm({ ...form, totalSessions: Math.max(1, parseInt(e.target.value) || 1) })
-                  }
-                  className="text-sm"
+                  className="text-sm bg-slate-100 dark:bg-slate-800 font-semibold cursor-not-allowed"
                 />
               </div>
             </div>
