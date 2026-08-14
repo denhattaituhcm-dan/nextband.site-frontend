@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Loader2, CheckCircle2, AlertCircle, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { attendanceApi } from "@/lib/api";
 
 interface MatrixSessionInfo {
   id: string;
@@ -30,6 +30,8 @@ interface StudentMatrixRow {
     sessionDate: string;
     status: "SCHEDULED" | "COMPLETED" | "CANCELLED";
     attendanceStatus: "UNMARKED" | "PRESENT" | "ABSENT" | "LATE" | "EXCUSED";
+    isFuture?: boolean;
+    isOverdueUnmarked?: boolean;
     note?: string | null;
   }>;
 }
@@ -39,6 +41,8 @@ interface MatrixData {
   className: string;
   totalSessions: number;
   completedSessions: number;
+  sessionCoverage: number;
+  recordCoverage: number;
   attendanceCoverage: number;
   sessions: MatrixSessionInfo[];
   students: StudentMatrixRow[];
@@ -61,26 +65,24 @@ export const AttendanceMatrix: React.FC<AttendanceMatrixProps> = ({ classId, ref
   const fetchMatrix = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/v1/classes/${classId}/attendance-matrix`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      const json = await res.json();
-      if (res.ok && json.data) {
-        setData(json.data);
+      const res = await attendanceApi.getAttendanceMatrix(classId);
+      if (res.success && res.data) {
+        setData(res.data);
       } else {
-        toast({ title: "Lỗi", description: json.error || "Không thể tải ma trận chuyên cần", variant: "destructive" });
+        toast({ title: "Lỗi", description: res.error || "Không thể tải ma trận chuyên cần", variant: "destructive" });
       }
     } catch (err: any) {
-      toast({ title: "Lỗi kết nối", description: err.message, variant: "destructive" });
+      toast({ title: "Lỗi kết nối", description: err.message || "Không thể tải dữ liệu", variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
 
-  const getStatusBadge = (status: "UNMARKED" | "PRESENT" | "ABSENT" | "LATE" | "EXCUSED", isCompleted: boolean) => {
-    if (!isCompleted && status === "UNMARKED") {
-      return <span className="text-muted-foreground text-xs font-mono">-</span>;
-    }
+  const getStatusBadge = (
+    status: "UNMARKED" | "PRESENT" | "ABSENT" | "LATE" | "EXCUSED",
+    isCompleted: boolean,
+    isOverdueUnmarked?: boolean
+  ) => {
     switch (status) {
       case "PRESENT":
         return <span className="inline-flex items-center justify-center h-5 w-5 rounded bg-emerald-100 text-emerald-800 font-bold text-xs">P</span>;
@@ -90,8 +92,19 @@ export const AttendanceMatrix: React.FC<AttendanceMatrixProps> = ({ classId, ref
         return <span className="inline-flex items-center justify-center h-5 w-5 rounded bg-rose-100 text-rose-800 font-bold text-xs">A</span>;
       case "EXCUSED":
         return <span className="inline-flex items-center justify-center h-5 w-5 rounded bg-purple-100 text-purple-800 font-bold text-xs">E</span>;
+      case "UNMARKED":
       default:
-        return <span className="text-muted-foreground text-xs font-mono">-</span>;
+        if (isOverdueUnmarked) {
+          return (
+            <span
+              title="Buổi học đã qua nhưng chưa chốt điểm danh"
+              className="inline-flex items-center justify-center gap-0.5 px-1 py-0.5 rounded bg-amber-50 text-amber-700 font-bold text-[11px] border border-amber-200 cursor-help"
+            >
+              <AlertTriangle className="h-3 w-3 text-amber-500" />-
+            </span>
+          );
+        }
+        return <span title="Buổi học chưa diễn ra" className="text-muted-foreground/50 text-xs font-mono">-</span>;
     }
   };
 
@@ -122,14 +135,14 @@ export const AttendanceMatrix: React.FC<AttendanceMatrixProps> = ({ classId, ref
             Hiển thị tổng quan điểm danh tất cả các buổi học và tỷ lệ % chuyên cần do Backend tính toán.
           </p>
         </div>
-        <div className="flex items-center gap-4 text-xs">
+        <div className="flex items-center gap-3 text-xs">
           <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-800 px-3 py-1.5 rounded-lg border border-emerald-200 font-semibold">
             <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-            Đã hoàn thành: {data.completedSessions} / {data.totalSessions} buổi
+            Buổi đã chốt: {data.completedSessions} / {data.totalSessions} buổi ({data.sessionCoverage ?? data.attendanceCoverage}%)
           </div>
           <div className="flex items-center gap-1.5 bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg border font-semibold">
             <AlertCircle className="h-4 w-4 text-slate-500" />
-            Độ phủ dữ liệu (Coverage): {data.attendanceCoverage}%
+            Độ phủ điểm danh (Record Coverage): {data.recordCoverage ?? 100}%
           </div>
         </div>
       </div>
@@ -171,7 +184,7 @@ export const AttendanceMatrix: React.FC<AttendanceMatrixProps> = ({ classId, ref
 
                 {student.sessions.map((s) => (
                   <TableCell key={s.sessionId} className="text-center px-1 py-2">
-                    {getStatusBadge(s.attendanceStatus, s.status === "COMPLETED")}
+                    {getStatusBadge(s.attendanceStatus, s.status === "COMPLETED", s.isOverdueUnmarked)}
                   </TableCell>
                 ))}
               </TableRow>
@@ -181,13 +194,14 @@ export const AttendanceMatrix: React.FC<AttendanceMatrixProps> = ({ classId, ref
       </div>
 
       {/* Legend Note */}
-      <div className="flex items-center gap-4 text-xs text-muted-foreground px-2">
+      <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground px-2">
         <span className="font-semibold text-slate-700">Chú thích:</span>
         <span className="flex items-center gap-1"><span className="inline-block h-4 w-4 bg-emerald-100 text-emerald-800 font-bold text-[10px] text-center rounded">P</span> Có mặt</span>
         <span className="flex items-center gap-1"><span className="inline-block h-4 w-4 bg-amber-100 text-amber-800 font-bold text-[10px] text-center rounded">L</span> Đi muộn</span>
         <span className="flex items-center gap-1"><span className="inline-block h-4 w-4 bg-rose-100 text-rose-800 font-bold text-[10px] text-center rounded">A</span> Vắng mặt</span>
         <span className="flex items-center gap-1"><span className="inline-block h-4 w-4 bg-purple-100 text-purple-800 font-bold text-[10px] text-center rounded">E</span> Có phép</span>
-        <span className="flex items-center gap-1"><span className="font-mono font-bold text-slate-500">-</span> Chưa chốt</span>
+        <span className="flex items-center gap-1"><span className="font-mono font-bold text-slate-400">-</span> Chưa diễn ra</span>
+        <span className="flex items-center gap-1 text-amber-700 font-medium"><AlertTriangle className="h-3 w-3 text-amber-500" /> Quá hạn chưa chốt</span>
       </div>
     </div>
   );

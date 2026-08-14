@@ -38,8 +38,16 @@ export const WorkspaceProvider: React.FC<{
   } = useQuery({
     queryKey: ["admin-class-workspace", classId],
     queryFn: async () => {
-      const cls = await classesApi.getById(classId);
-      const students = cls.students || [];
+      const [cls, sessions] = await Promise.all([
+        classesApi.getById(classId),
+        sessionsApi.list(classId).catch(() => []),
+      ]);
+
+      const rawStudents = cls.students || [];
+      // Filter canonical active students (status != suspended/inactive)
+      const activeStudents = rawStudents.filter(
+        (s: any) => s.is_active !== false && s.status !== "suspended" && s.status !== "inactive"
+      );
 
       // Fetch course homeworks/exams if course_id exists
       let lessons: any[] = [];
@@ -62,7 +70,9 @@ export const WorkspaceProvider: React.FC<{
 
       return {
         ...cls,
-        students,
+        students: rawStudents,
+        activeStudents,
+        sessions,
         lessons,
         submissions,
       };

@@ -2750,6 +2750,19 @@ export const attendanceApi = {
     if (!response.ok) throw new Error(result.error || "Failed to save attendance");
     return result;
   },
+
+  getAttendanceMatrix: async (classId: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token || localStorage.getItem("token");
+    const response = await fetch(`${API_BASE_URL}/classes/${classId}/attendance-matrix`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Failed to fetch attendance matrix");
+    return result;
+  },
 };
 
 // =============================================
