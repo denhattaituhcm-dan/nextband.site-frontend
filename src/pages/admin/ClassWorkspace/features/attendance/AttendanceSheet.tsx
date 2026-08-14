@@ -7,6 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CheckCircle2, Clock, XCircle, AlertCircle, Lock, Save, CheckCheck, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
 
 interface StudentAttendanceItem {
   studentId: string;
@@ -39,9 +41,10 @@ interface AttendanceSheetProps {
   sessions: Array<{
     id: string;
     sessionNumber: number;
-    sessionDate: string;
+    plannedDate?: string;
+    sessionDate?: string;
     lessonTitle?: string;
-    status: "SCHEDULED" | "COMPLETED" | "CANCELLED";
+    status: "PLANNED" | "SCHEDULED" | "COMPLETED" | "CANCELLED";
   }>;
   onRefreshMatrix?: () => void;
 }
@@ -69,8 +72,10 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessi
   const fetchSessionAttendance = async (sessionId: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/v1/classes/${classId}/sessions/${sessionId}/attendance`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token || localStorage.getItem("token") || "";
+      const res = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/attendance`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       if (res.ok && data.data) {
@@ -110,11 +115,14 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessi
         })),
       };
 
-      const res = await fetch(`/api/v1/classes/${classId}/sessions/${selectedSessionId}/attendance`, {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token || localStorage.getItem("token") || "";
+
+      const res = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${selectedSessionId}/attendance`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
@@ -152,9 +160,12 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessi
       // Save items first to be safe
       await handleSaveAttendance();
 
-      const res = await fetch(`/api/v1/classes/${classId}/sessions/${selectedSessionId}/complete`, {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token || localStorage.getItem("token") || "";
+
+      const res = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${selectedSessionId}/complete`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       if (res.ok) {
@@ -180,15 +191,27 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessi
         <div className="flex items-center gap-3">
           <label className="text-xs font-semibold text-muted-foreground whitespace-nowrap">Chọn Buổi học:</label>
           <Select value={selectedSessionId} onValueChange={setSelectedSessionId}>
-            <SelectTrigger className="w-[260px] h-9 text-xs font-medium">
+            <SelectTrigger className="w-[380px] h-9 text-xs font-medium">
               <SelectValue placeholder="Chọn buổi học" />
             </SelectTrigger>
             <SelectContent>
-              {sessions.map((s) => (
-                <SelectItem key={s.id} value={s.id} className="text-xs">
-                  Buổi {s.sessionNumber} ({s.sessionDate?.slice(0, 10)}) - {s.status === "COMPLETED" ? "✅ Đã chốt" : "⏳ Chưa chốt"}
-                </SelectItem>
-              ))}
+              {sessions.map((s) => {
+                const dateStr = s.plannedDate || s.sessionDate || "";
+                const formattedDate = dateStr ? dateStr.slice(0, 10).split("-").reverse().join("/") : "—";
+                const lessonLabel = s.lessonTitle || `Lesson ${s.sessionNumber}`;
+                const statusTag =
+                  s.status === "COMPLETED"
+                    ? "✓ Đã chốt"
+                    : s.status === "CANCELLED"
+                    ? "🚫 Đã hủy"
+                    : "⏳ Chưa chốt";
+
+                return (
+                  <SelectItem key={s.id} value={s.id} className="text-xs font-medium">
+                    Buổi {s.sessionNumber} • {formattedDate} • {lessonLabel} • {statusTag}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
 
