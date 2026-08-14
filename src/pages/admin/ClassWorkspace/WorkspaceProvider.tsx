@@ -38,16 +38,25 @@ export const WorkspaceProvider: React.FC<{
   } = useQuery({
     queryKey: ["admin-class-workspace", classId],
     queryFn: async () => {
-      const [cls, sessions] = await Promise.all([
+      const [cls, rawSessions] = await Promise.all([
         classesApi.getById(classId),
         sessionsApi.list(classId).catch(() => []),
       ]);
 
+      // Normalize sessions array with canonical field scheduledDate
+      const canonicalSessions = (rawSessions || []).map((s: any) => ({
+        id: s.id,
+        sessionNumber: s.sessionNumber || s.session_number,
+        scheduledDate: s.plannedDate || s.sessionDate || s.session_date || s.planned_date || "",
+        plannedDate: s.plannedDate || s.sessionDate || s.session_date || s.planned_date || "",
+        startTime: s.startTime || s.start_time || "00:00",
+        endTime: s.endTime || s.end_time || "00:00",
+        status: s.status === "PLANNED" ? "SCHEDULED" : (s.status || "SCHEDULED"),
+        lessonTitle: s.lessonTitle || s.lesson_title || `Lesson ${s.sessionNumber || s.session_number}`,
+      }));
+
       const rawStudents = cls.students || [];
-      // Filter canonical active students (status != suspended/inactive)
-      const activeStudents = rawStudents.filter(
-        (s: any) => s.is_active !== false && s.status !== "suspended" && s.status !== "inactive"
-      );
+      const activeStudents = cls.activeStudents || rawStudents.filter((s: any) => s.status === "active" || s.is_active !== false);
 
       // Fetch course homeworks/exams if course_id exists
       let lessons: any[] = [];
@@ -70,9 +79,9 @@ export const WorkspaceProvider: React.FC<{
 
       return {
         ...cls,
-        students: rawStudents,
+        students: canonicalStudents,
         activeStudents,
-        sessions,
+        sessions: canonicalSessions,
         lessons,
         submissions,
       };

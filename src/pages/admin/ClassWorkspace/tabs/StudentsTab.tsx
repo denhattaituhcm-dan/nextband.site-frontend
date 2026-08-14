@@ -18,7 +18,7 @@ export const StudentsTab: React.FC = () => {
   const [subTab, setSubTab] = useState<string>("list");
   const [refreshMatrixTrigger, setRefreshMatrixTrigger] = useState<number>(0);
 
-  const students = classData?.students || [];
+  const students = classData?.activeStudents || classData?.students || [];
   const lessons = classData?.lessons || [];
   const sessions = classData?.sessions || [];
   const totalHomeworks = lessons.length;

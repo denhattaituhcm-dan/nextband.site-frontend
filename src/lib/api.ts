@@ -1595,28 +1595,61 @@ export const classesApi = {
       }
     }
 
-    // Map profiles into class_students array items as cs.student for UI components
-    const classStudentsWithProfiles = (data.class_students || []).map((cs: any) => {
+    // Map canonical students array with strict type structure
+    const canonicalStudents = (data.class_students || []).map((cs: any) => {
       const matchedProfile = students.find((p: any) => (p.user_id || p.id) === cs.student_id);
       return {
-        ...cs,
-        student: matchedProfile || null,
+        id: cs.id,
+        studentId: cs.student_id,
+        fullName: matchedProfile?.full_name || matchedProfile?.fullName || matchedProfile?.email || "Học viên",
+        email: matchedProfile?.email || "",
+        avatarUrl: matchedProfile?.avatar_url || matchedProfile?.avatarUrl || undefined,
+        joinedAt: cs.created_at || data.created_at,
+        status: matchedProfile?.is_active === false || matchedProfile?.status === "suspended" ? "suspended" : "active",
+        is_active: matchedProfile?.is_active !== false,
       };
     });
 
+    const activeStudents = canonicalStudents.filter((s: any) => s.status === "active");
+
+    // Fetch course information if course_id exists
+    let courseProfile = null;
+    if (data.course_id) {
+      const { data: courseRow } = await supabase
+        .from("courses")
+        .select("id, title, description")
+        .eq("id", data.course_id)
+        .maybeSingle();
+
+      if (courseRow) {
+        courseProfile = {
+          id: courseRow.id,
+          title: courseRow.title,
+          description: courseRow.description || "",
+        };
+      }
+    }
+
     return {
       ...data,
-      teacher: teacherProfile,
-      class_students: classStudentsWithProfiles,
-      students,
-      _count: {
-        students: classStudentsWithProfiles.length,
-      },
-      courseId: data.course_id,
-      teacherId: data.teacher_id,
+      id: data.id,
+      name: data.name,
+      description: data.description || "",
+      status: data.status || (data.is_active === false ? "CLOSED" : "IN_PROGRESS"),
+      isActive: data.is_active ?? true,
       startDate: data.start_date,
       endDate: data.end_date,
-      isActive: data.is_active,
+      teacherId: data.teacher_id,
+      courseId: data.course_id,
+      teacher: teacherProfile,
+      course: courseProfile,
+      class_students: classStudentsWithProfiles,
+      students: canonicalStudents,
+      activeStudents,
+      studentCount: activeStudents.length,
+      _count: {
+        students: activeStudents.length,
+      },
     };
   },
 

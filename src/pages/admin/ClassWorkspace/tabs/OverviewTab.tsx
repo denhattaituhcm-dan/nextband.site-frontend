@@ -15,7 +15,8 @@ export const OverviewTab: React.FC = () => {
     setActiveTab,
   } = useWorkspace();
 
-  const studentsCount = classData?.students?.length || classData?._count?.students || 0;
+  const activeStudents = classData?.activeStudents || [];
+  const studentsCount = activeStudents.length || classData?.studentCount || 0;
   const submissions = classData?.submissions || [];
   
   const submittedCount = submissions.filter((s: any) => s.status === "submitted" || s.status === "SUBMITTED" || s.status === "graded" || s.status === "GRADED").length;

@@ -12,9 +12,10 @@ export const FixedHeader: React.FC = () => {
   } = useWorkspace();
   const navigate = useNavigate();
 
-  const studentsCount = classData?.students?.length || classData?._count?.students || 0;
+  const activeStudents = classData?.activeStudents || [];
+  const studentsCount = activeStudents.length || classData?.studentCount || 0;
   const teacherName = classData?.teacher?.fullName || "Chưa phân công";
-  const courseTitle = classData?.course?.title || classData?.target_band ? `Target Band ${classData.target_band}` : null;
+  const courseTitle = classData?.course?.title || (classData?.target_band ? `Target Band ${classData.target_band}` : null);
 
   return (
     <div className="bg-background border-b pb-3 pt-2 space-y-2">
