@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { classesApi } from "@/lib/api";
+import { classesApi, sessionsApi, normalizeSession } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
 
 interface WorkspaceContextType {
@@ -8,6 +8,7 @@ interface WorkspaceContextType {
   classData: any;
   isLoading: boolean;
   isError: boolean;
+  error: Error | null;
   activeTab: string;
   setActiveTab: (tab: string) => void;
   refetchClass: () => void;
@@ -34,39 +35,37 @@ export const WorkspaceProvider: React.FC<{
     data: classData,
     isLoading,
     isError,
+    error,
     refetch: refetchClass,
   } = useQuery({
     queryKey: ["admin-class-workspace", classId],
     queryFn: async () => {
       const [cls, rawSessions] = await Promise.all([
         classesApi.getById(classId),
-        sessionsApi.list(classId).catch(() => []),
+        sessionsApi.list(classId),
       ]);
 
-      // Normalize sessions array with canonical field scheduledDate
-      const canonicalSessions = (rawSessions || []).map((s: any) => ({
-        id: s.id,
-        sessionNumber: s.sessionNumber || s.session_number,
-        scheduledDate: s.plannedDate || s.sessionDate || s.session_date || s.planned_date || "",
-        plannedDate: s.plannedDate || s.sessionDate || s.session_date || s.planned_date || "",
-        startTime: s.startTime || s.start_time || "00:00",
-        endTime: s.endTime || s.end_time || "00:00",
-        status: s.status === "PLANNED" ? "SCHEDULED" : (s.status || "SCHEDULED"),
-        lessonTitle: s.lessonTitle || s.lesson_title || `Lesson ${s.sessionNumber || s.session_number}`,
-      }));
+      // Single-point normalization of sessions
+      const canonicalSessions = (rawSessions || []).map(normalizeSession);
 
-      const rawStudents = cls.students || [];
-      const activeStudents = cls.activeStudents || rawStudents.filter((s: any) => s.status === "active" || s.is_active !== false);
+      // Single canonical mapping for students from class_students / profiles
+      const canonicalStudents = cls.students || cls.class_students || [];
+      const activeStudents = canonicalStudents.filter(
+        (s: any) => s.isActive !== false && s.status !== "suspended" && s.status !== "inactive"
+      );
 
       // Fetch course homeworks/exams if course_id exists
       let lessons: any[] = [];
-      if (cls.course_id) {
-        const { data: examData } = await supabase
+      if (cls.courseId || cls.course_id) {
+        const targetCourseId = cls.courseId || cls.course_id;
+        const { data: examData, error: examErr } = await supabase
           .from("exams")
           .select("id, title, week, exam_type, exam_sections(id, section_type, title, order_index)")
-          .eq("course_id", cls.course_id)
+          .eq("course_id", targetCourseId)
           .order("week", { ascending: true });
-        lessons = examData || [];
+        if (!examErr && examData) {
+          lessons = examData;
+        }
       }
 
       // Fetch submissions for this class
@@ -81,6 +80,7 @@ export const WorkspaceProvider: React.FC<{
         ...cls,
         students: canonicalStudents,
         activeStudents,
+        studentCount: activeStudents.length,
         sessions: canonicalSessions,
         lessons,
         submissions,
@@ -92,22 +92,26 @@ export const WorkspaceProvider: React.FC<{
   const openAddStudentModal = () => setIsAddStudentModalOpen(true);
 
   const totalHomeworks = classData?.lessons?.length || 0;
+  const activeStudentsList = classData?.activeStudents || [];
   const submissions = classData?.submissions || [];
   
   const pendingReviewsCount = submissions.filter(
-    (s: any) => s.grade_status === "pending" || s.status === "submitted"
+    (s: any) => s.grade_status === "pending" || s.status === "submitted" || s.status === "SUBMITTED"
   ).length;
 
   const overdueCount = submissions.filter(
-    (s: any) => s.status === "overdue"
+    (s: any) => s.status === "overdue" || s.status === "OVERDUE"
   ).length;
 
   const gradedSubmissionsCount = submissions.filter(
-    (s: any) => s.grade_status === "graded" || s.status === "graded"
+    (s: any) => s.grade_status === "graded" || s.status === "graded" || s.status === "GRADED"
   ).length;
 
   const currentHomework = totalHomeworks > 0 ? Math.min(gradedSubmissionsCount + 1, totalHomeworks) : 0;
-  const progressPercent = totalHomeworks > 0 ? Math.round((gradedSubmissionsCount / (totalHomeworks * Math.max(1, classData?.students?.length || 1))) * 100) : 0;
+  const totalAssigned = totalHomeworks * Math.max(1, activeStudentsList.length);
+  const progressPercent = totalHomeworks > 0 && activeStudentsList.length > 0
+    ? Math.round((gradedSubmissionsCount / totalAssigned) * 100)
+    : 0;
 
   return (
     <WorkspaceContext.Provider
@@ -116,6 +120,7 @@ export const WorkspaceProvider: React.FC<{
         classData,
         isLoading,
         isError,
+        error: error as Error | null,
         activeTab,
         setActiveTab,
         refetchClass,

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useWorkspace } from "../WorkspaceProvider";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { sessionsApi, ClassSession, SessionStatus } from "@/lib/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { sessionsApi, CanonicalSessionDTO, SessionStatus, invalidateClassWorkspace } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -59,6 +59,7 @@ const RESCHEDULE_REASONS = [
 
 function SessionStatusBadge({ status }: { status: SessionStatus }) {
   switch (status) {
+    case "SCHEDULED":
     case "PLANNED":
       return (
         <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50 gap-1.5">
@@ -105,26 +106,28 @@ function getDayName(iso: string) {
 }
 
 interface RescheduleDialogProps {
-  session: ClassSession | null;
+  session: CanonicalSessionDTO | null;
   onClose: () => void;
   onConfirm: (newDate: string, reason: string, note: string) => void;
   isSaving: boolean;
 }
 
 function RescheduleDialog({ session, onClose, onConfirm, isSaving }: RescheduleDialogProps) {
-  const [newDate, setNewDate] = useState(session?.plannedDate || "");
+  const [newDate, setNewDate] = useState(session?.scheduledDate || "");
   const [reason, setReason] = useState("HOLIDAY");
   const [note, setNote] = useState("");
 
   React.useEffect(() => {
     if (session) {
-      setNewDate(session.plannedDate);
+      setNewDate(session.scheduledDate || "");
       setReason("HOLIDAY");
       setNote("");
     }
-  }, [session?.id]);
+  }, [session?.id, session?.scheduledDate]);
 
   if (!session) return null;
+
+  const currentScheduledDate = session.scheduledDate || "";
 
   return (
     <Dialog open={!!session} onOpenChange={onClose}>
@@ -139,7 +142,7 @@ function RescheduleDialog({ session, onClose, onConfirm, isSaving }: RescheduleD
           <div className="rounded-lg bg-muted/50 p-3 text-sm space-y-1">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Ngày hiện tại:</span>
-              <span className="font-semibold">{getDayName(session.plannedDate)}, {fmtDate(session.plannedDate)}</span>
+              <span className="font-semibold">{getDayName(currentScheduledDate)}, {fmtDate(currentScheduledDate)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Giờ học:</span>
@@ -148,15 +151,22 @@ function RescheduleDialog({ session, onClose, onConfirm, isSaving }: RescheduleD
           </div>
           <div className="space-y-1.5">
             <Label className="flex items-center gap-1.5">
-              <Calendar className="h-3.5 w-3.5" />
-              Ngày học mới *
+              <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+              Ngày học mới <span className="text-red-500">*</span>
             </Label>
-            <Input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} />
+            <Input
+              type="date"
+              value={newDate}
+              onChange={(e) => setNewDate(e.target.value)}
+              className="font-mono text-sm"
+            />
           </div>
           <div className="space-y-1.5">
-            <Label>Lý do dời lịch *</Label>
+            <Label>Lý do dời lịch</Label>
             <Select value={reason} onValueChange={setReason}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn lý do" />
+              </SelectTrigger>
               <SelectContent>
                 {RESCHEDULE_REASONS.map((r) => (
                   <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
@@ -165,24 +175,24 @@ function RescheduleDialog({ session, onClose, onConfirm, isSaving }: RescheduleD
             </Select>
           </div>
           <div className="space-y-1.5">
-            <Label className="text-muted-foreground text-xs">Ghi chú thêm (tùy chọn)</Label>
+            <Label>Ghi chú (tuỳ chọn)</Label>
             <Textarea
-              placeholder="VD: Trường nghỉ lễ 30/4, dời sang thứ 7..."
+              placeholder="VD: Giáo viên đi công tác, học bù vào tuần sau..."
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={2}
-              className="text-sm"
+              className="resize-none text-sm"
             />
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Hủy</Button>
+        <DialogFooter className="gap-2">
+          <Button variant="ghost" onClick={onClose} disabled={isSaving}>Huỷ</Button>
           <Button
             onClick={() => onConfirm(newDate, reason, note)}
-            disabled={!newDate || !reason || isSaving}
-            className="bg-amber-500 hover:bg-amber-600 text-white"
+            disabled={!newDate || newDate === currentScheduledDate || isSaving}
+            className="gap-1.5 bg-amber-500 hover:bg-amber-600 text-white"
           >
-            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isSaving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
             Xác nhận dời lịch
           </Button>
         </DialogFooter>
@@ -192,26 +202,17 @@ function RescheduleDialog({ session, onClose, onConfirm, isSaving }: RescheduleD
 }
 
 export const SessionsTab: React.FC = () => {
-  const { classId } = useWorkspace();
+  const { classId, classData, isLoading, isError, refetchClass } = useWorkspace();
   const queryClient = useQueryClient();
-  const [reschedulingSession, setReschedulingSession] = useState<ClassSession | null>(null);
+  const [reschedulingSession, setReschedulingSession] = useState<CanonicalSessionDTO | null>(null);
 
-  const {
-    data: sessions = [],
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery({
-    queryKey: ["class-sessions", classId],
-    queryFn: () => sessionsApi.list(classId),
-    enabled: !!classId,
-  });
+  const sessions: CanonicalSessionDTO[] = classData?.sessions || [];
 
   const rescheduleMutation = useMutation({
     mutationFn: ({ sessionId, newDate, reason }: { sessionId: string; newDate: string; reason: string }) =>
       sessionsApi.reschedule(sessionId, newDate, reason),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["class-sessions", classId] });
+      invalidateClassWorkspace(queryClient, classId);
       toast.success("Đã dời lịch buổi học thành công");
       setReschedulingSession(null);
     },
@@ -222,7 +223,7 @@ export const SessionsTab: React.FC = () => {
     mutationFn: ({ sessionId, status }: { sessionId: string; status: SessionStatus }) =>
       sessionsApi.updateStatus(sessionId, status),
     onSuccess: (_, { status }) => {
-      queryClient.invalidateQueries({ queryKey: ["class-sessions", classId] });
+      invalidateClassWorkspace(queryClient, classId);
       const msg = status === "COMPLETED" ? "Đánh dấu đã học" : status === "CANCELLED" ? "Đã hủy buổi" : "Đã cập nhật";
       toast.success(msg);
     },
@@ -230,8 +231,8 @@ export const SessionsTab: React.FC = () => {
   });
 
   const completedCount = sessions.filter((s) => s.status === "COMPLETED").length;
-  const rescheduledCount = sessions.filter((s) => s.status === "RESCHEDULED").length;
-  const upcomingCount = sessions.filter((s) => s.status === "PLANNED").length;
+  const rescheduledCount = sessions.filter((s) => s.rescheduleReason || s.status === "RESCHEDULED").length;
+  const upcomingCount = sessions.filter((s) => s.status === "SCHEDULED" || s.status === "PLANNED").length;
   const cancelledCount = sessions.filter((s) => s.status === "CANCELLED").length;
 
   const stats = [
@@ -254,7 +255,7 @@ export const SessionsTab: React.FC = () => {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-3 text-muted-foreground">
         <p>Không thể tải lịch học.</p>
-        <Button variant="outline" size="sm" onClick={() => refetch()}>Thử lại</Button>
+        <Button variant="outline" size="sm" onClick={() => refetchClass()}>Thử lại</Button>
       </div>
     );
   }
@@ -296,7 +297,8 @@ export const SessionsTab: React.FC = () => {
           </TableHeader>
           <TableBody>
             {sessions.map((session) => {
-              const isToday = session.plannedDate === new Date().toISOString().split("T")[0];
+              const currentDate = session.scheduledDate || "";
+              const isToday = currentDate === new Date().toISOString().split("T")[0];
               return (
                 <TableRow key={session.id} className={`transition-colors ${isToday ? "bg-emerald-50/60" : ""}`}>
                   <TableCell className="text-center">
@@ -311,7 +313,7 @@ export const SessionsTab: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     <div className="font-semibold text-slate-800">
-                      {getDayName(session.plannedDate)}, {fmtDate(session.plannedDate)}
+                      {getDayName(currentDate)}, {fmtDate(currentDate)}
                     </div>
                     {isToday && (
                       <span className="inline-flex items-center gap-0.5 text-xs text-emerald-600 font-medium">
@@ -351,8 +353,8 @@ export const SessionsTab: React.FC = () => {
                             Dời lịch buổi này
                           </DropdownMenuItem>
                         )}
-                        {session.status !== "PLANNED" && session.status !== "COMPLETED" && (
-                          <DropdownMenuItem onClick={() => updateStatusMutation.mutate({ sessionId: session.id, status: "PLANNED" })}>
+                        {session.status !== "SCHEDULED" && session.status !== "COMPLETED" && (
+                          <DropdownMenuItem onClick={() => updateStatusMutation.mutate({ sessionId: session.id, status: "SCHEDULED" })}>
                             <Clock className="mr-2 h-4 w-4 text-blue-500" />
                             Khôi phục Sắp tới
                           </DropdownMenuItem>

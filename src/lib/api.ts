@@ -1,7 +1,10 @@
 import { supabase } from "./supabase";
 import { normalizeSiteSettings } from "./site-settings";
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1";
+export const API_BASE_URL =
+  (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) ||
+  process.env.VITE_API_URL ||
+  "http://localhost:3000/api/v1";
 
 // Helper to format URLs
 export const formatStorageUrl = (path: string | null | undefined) => {
@@ -1643,7 +1646,7 @@ export const classesApi = {
       courseId: data.course_id,
       teacher: teacherProfile,
       course: courseProfile,
-      class_students: classStudentsWithProfiles,
+      class_students: canonicalStudents,
       students: canonicalStudents,
       activeStudents,
       studentCount: activeStudents.length,
@@ -2110,32 +2113,90 @@ export const classesApi = {
 };
 
 /**
- * Standardized Cache Invalidation Helper for Class Module
+ * Standardized Universal Cache Invalidation Helper for Class Workspace
  */
-export const invalidateClassQueries = (queryClient: any, classId: string) => {
+export const invalidateClassWorkspace = (queryClient: any, classId: string) => {
   if (!queryClient || !classId) return;
   queryClient.invalidateQueries({ queryKey: ["admin-class", classId] });
   queryClient.invalidateQueries({ queryKey: ["admin-class-workspace", classId] });
   queryClient.invalidateQueries({ queryKey: ["admin-classes"] });
+  queryClient.invalidateQueries({ queryKey: ["class-sessions", classId] });
+  queryClient.invalidateQueries({ queryKey: ["class-attendance-matrix", classId] });
   queryClient.invalidateQueries({ queryKey: ["class-attendance", classId] });
 };
+
+// Backward compatibility alias
+export const invalidateClassQueries = invalidateClassWorkspace;
 
 // =============================================
 // SESSIONS API - Quản lý Buổi học (Semi-Auto Scheduling)
 // =============================================
-export type SessionStatus = "PLANNED" | "RESCHEDULED" | "COMPLETED" | "CANCELLED";
+export type CanonicalSessionStatus = "SCHEDULED" | "COMPLETED" | "CANCELLED";
+export type SessionStatus = "SCHEDULED" | "COMPLETED" | "CANCELLED" | "PLANNED" | "RESCHEDULED";
 
-export interface ClassSession {
+export interface CanonicalSessionDTO {
   id: string;
   classId: string;
   sessionNumber: number;
-  plannedDate: string; // YYYY-MM-DD
-  startTime: string;   // HH:MM
-  endTime: string;     // HH:MM
-  status: SessionStatus;
+  scheduledDate: string; // YYYY-MM-DD
+  startTime: string;     // HH:MM
+  endTime: string;       // HH:MM
+  status: CanonicalSessionStatus;
   rescheduleReason?: string;
   note?: string;
-  createdAt: string;
+  lessonId?: string;
+  lessonTitle: string;
+  createdAt?: string;
+}
+
+// Backward compatibility interface
+export interface ClassSession extends CanonicalSessionDTO {
+  plannedDate?: string;
+}
+
+/**
+ * SINGLE-POINT NORMALIZATION: Chuyển đổi raw session từ DB/API sang CanonicalSessionDTO
+ */
+export function normalizeSession(s: any): CanonicalSessionDTO {
+  if (!s) return s;
+  const rawStatus = s.status || "SCHEDULED";
+  let status: CanonicalSessionStatus = "SCHEDULED";
+  if (rawStatus === "COMPLETED") {
+    status = "COMPLETED";
+  } else if (rawStatus === "CANCELLED") {
+    status = "CANCELLED";
+  } else {
+    // "PLANNED", "RESCHEDULED", "SCHEDULED", or undefined -> "SCHEDULED"
+    status = "SCHEDULED";
+  }
+
+  const rawDate =
+    s.scheduledDate ||
+    s.plannedDate ||
+    s.sessionDate ||
+    s.session_date ||
+    s.planned_date ||
+    "";
+  const scheduledDate = typeof rawDate === "string" ? rawDate.slice(0, 10) : "";
+  const sessionNumber = s.sessionNumber ?? s.session_number ?? 1;
+
+  return {
+    id: s.id,
+    classId: s.classId || s.class_id || "",
+    sessionNumber,
+    scheduledDate,
+    startTime: s.startTime || s.start_time || "00:00",
+    endTime: s.endTime || s.end_time || "00:00",
+    status,
+    rescheduleReason: s.rescheduleReason || s.reschedule_reason,
+    note: s.note,
+    lessonId: s.lessonId || s.lesson_id,
+    lessonTitle:
+      s.lessonTitle ||
+      s.lesson_title ||
+      (s.lessons?.title || `Lesson ${sessionNumber}`),
+    createdAt: s.createdAt || s.created_at,
+  };
 }
 
 /**
@@ -2169,7 +2230,7 @@ export function generateSessionDates(
 }
 
 export const sessionsApi = {
-  list: async (classId: string): Promise<ClassSession[]> => {
+  list: async (classId: string): Promise<CanonicalSessionDTO[]> => {
     const { data, error } = await supabase
       .from("class_sessions")
       .select("*")
@@ -2177,18 +2238,7 @@ export const sessionsApi = {
       .order("session_number", { ascending: true });
 
     if (error) throw error;
-    return (data || []).map((s: any) => ({
-      id: s.id,
-      classId: s.class_id,
-      sessionNumber: s.session_number,
-      plannedDate: s.planned_date,
-      startTime: s.start_time,
-      endTime: s.end_time,
-      status: s.status as SessionStatus,
-      rescheduleReason: s.reschedule_reason,
-      note: s.note,
-      createdAt: s.created_at,
-    }));
+    return (data || []).map(normalizeSession);
   },
 
   /** Sinh hàng loạt sessions từ lịch hàng tuần, xóa sessions cũ trước */

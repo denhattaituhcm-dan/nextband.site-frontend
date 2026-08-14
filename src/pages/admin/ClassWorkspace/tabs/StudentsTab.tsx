@@ -16,9 +16,8 @@ export const StudentsTab: React.FC = () => {
   const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [subTab, setSubTab] = useState<string>("list");
-  const [refreshMatrixTrigger, setRefreshMatrixTrigger] = useState<number>(0);
 
-  const students = classData?.activeStudents || classData?.students || [];
+  const students = classData?.activeStudents || [];
   const lessons = classData?.lessons || [];
   const sessions = classData?.sessions || [];
   const totalHomeworks = lessons.length;
@@ -27,10 +26,6 @@ export const StudentsTab: React.FC = () => {
   const handleOpenProfile = (student: any) => {
     setSelectedStudent(student);
     setDrawerOpen(true);
-  };
-
-  const handleRefreshMatrix = () => {
-    setRefreshMatrixTrigger((prev) => prev + 1);
   };
 
   return (
@@ -73,7 +68,7 @@ export const StudentsTab: React.FC = () => {
             <Users className="h-10 w-10 text-muted-foreground mx-auto" />
             <h4 className="text-base font-bold">Chưa có học viên nào</h4>
             <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-              Lớp học này hiện tại chưa có học viên. Nhấn nút "Thêm học viên vào lớp" bên trên để bắt đầu thêm học viên.
+              Lớp học này hiện tại chưa có học viên đang theo học. Nhấn nút "Thêm học viên vào lớp" để thêm học viên.
             </p>
             <Button
               size="sm"
@@ -91,7 +86,7 @@ export const StudentsTab: React.FC = () => {
                 <TableRow>
                   <TableHead>Học viên</TableHead>
                   <TableHead>Homework hiện tại</TableHead>
-                  <TableHead>Chuyên cần (%)</TableHead>
+                  <TableHead>Chuyên cần</TableHead>
                   <TableHead>Trạng thái</TableHead>
                   <TableHead className="text-right">Profile</TableHead>
                 </TableRow>
@@ -99,24 +94,24 @@ export const StudentsTab: React.FC = () => {
               <TableBody>
                 {students.map((student: any) => {
                   const completedHw = student.completedHw || 0;
-                  const attendanceRate = student.attendanceRate !== undefined ? student.attendanceRate : 100;
+                  const attendanceRateDisplay = student.attendanceRate !== undefined ? `${student.attendanceRate}%` : "—";
 
                   return (
                     <TableRow
-                      key={student.id}
+                      key={student.id || student.studentId}
                       className="cursor-pointer hover:bg-muted/50 transition-colors"
                       onClick={() => handleOpenProfile(student)}
                     >
                       <TableCell>
                         <div className="flex items-center gap-2.5">
                           <Avatar className="h-7 w-7">
-                            <AvatarImage src={student.avatar_url || student.avatarUrl} />
+                            <AvatarImage src={student.avatarUrl || student.avatar_url} />
                             <AvatarFallback className="text-xs bg-emerald-100 text-emerald-800">
-                              {(student.full_name || student.fullName || student.email || "HV")?.slice(0, 2).toUpperCase()}
+                              {(student.fullName || student.full_name || student.email || "HV")?.slice(0, 2).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <div className="font-medium text-sm">{student.full_name || student.fullName || student.email}</div>
+                            <div className="font-medium text-sm">{student.fullName || student.full_name || student.email}</div>
                             <div className="text-xs text-muted-foreground">{student.email}</div>
                           </div>
                         </div>
@@ -128,7 +123,7 @@ export const StudentsTab: React.FC = () => {
                       </TableCell>
                       <TableCell>
                         <span className="text-xs font-semibold text-emerald-600">
-                          {attendanceRate}%
+                          {attendanceRateDisplay}
                         </span>
                       </TableCell>
                       <TableCell>
@@ -167,7 +162,6 @@ export const StudentsTab: React.FC = () => {
         <AttendanceSheet
           classId={classId}
           sessions={sessions}
-          onRefreshMatrix={handleRefreshMatrix}
         />
       )}
 
@@ -175,7 +169,6 @@ export const StudentsTab: React.FC = () => {
       {subTab === "matrix" && (
         <AttendanceMatrix
           classId={classId}
-          refreshTrigger={refreshMatrixTrigger}
         />
       )}
 

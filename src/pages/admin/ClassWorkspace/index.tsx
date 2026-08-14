@@ -8,12 +8,30 @@ import { OverviewTab } from "./tabs/OverviewTab";
 import { StudentsTab } from "./tabs/StudentsTab";
 import { HomeworkTab } from "./tabs/HomeworkTab";
 import { GradingTab } from "./tabs/GradingTab";
+import { Button } from "@/components/ui/button";
+import { AlertCircle, RotateCcw } from "lucide-react";
 
 const WorkspaceInner: React.FC = () => {
-  const { activeTab, setActiveTab, isLoading } = useWorkspace();
+  const { activeTab, setActiveTab, isLoading, isError, error, refetchClass } = useWorkspace();
 
   if (isLoading) {
     return <WorkspaceSkeleton type="overview" />;
+  }
+
+  if (isError) {
+    return (
+      <div className="p-8 border rounded-xl bg-card text-center space-y-3 max-w-md mx-auto my-12 shadow-xs">
+        <AlertCircle className="h-10 w-10 text-rose-500 mx-auto" />
+        <h4 className="text-base font-bold text-foreground">Không thể tải dữ liệu lớp học</h4>
+        <p className="text-xs text-muted-foreground">
+          {error?.message || "Đã xảy ra lỗi khi tải thông tin lớp học. Vui lòng kiểm tra lại kết nối."}
+        </p>
+        <Button size="sm" variant="outline" onClick={() => refetchClass()} className="gap-1.5">
+          <RotateCcw className="h-3.5 w-3.5" />
+          Thử lại
+        </Button>
+      </div>
+    );
   }
 
   return (

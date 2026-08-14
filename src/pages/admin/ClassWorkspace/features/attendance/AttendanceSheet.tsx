@@ -7,7 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CheckCircle2, Clock, XCircle, AlertCircle, Lock, Save, CheckCheck, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { API_BASE_URL } from "@/lib/api";
+import { useQueryClient } from "@tanstack/react-query";
+import { API_BASE_URL, CanonicalSessionDTO, invalidateClassWorkspace } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
 
 interface StudentAttendanceItem {
@@ -38,19 +39,13 @@ interface SessionData {
 
 interface AttendanceSheetProps {
   classId: string;
-  sessions: Array<{
-    id: string;
-    sessionNumber: number;
-    plannedDate?: string;
-    sessionDate?: string;
-    lessonTitle?: string;
-    status: "PLANNED" | "SCHEDULED" | "COMPLETED" | "CANCELLED";
-  }>;
+  sessions: CanonicalSessionDTO[];
   onRefreshMatrix?: () => void;
 }
 
 export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessions, onRefreshMatrix }) => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [selectedSessionId, setSelectedSessionId] = useState<string>(sessions[0]?.id || "");
   const [loading, setLoading] = useState<boolean>(false);
   const [saving, setSaving] = useState<boolean>(false);
@@ -130,6 +125,7 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessi
       if (res.ok) {
         toast({ title: "Thành công", description: "Đã lưu bảng điểm danh" });
         fetchSessionAttendance(selectedSessionId);
+        invalidateClassWorkspace(queryClient, classId);
         if (onRefreshMatrix) onRefreshMatrix();
       } else {
         toast({ title: "Lỗi", description: data.error || "Không thể lưu điểm danh", variant: "destructive" });
@@ -171,6 +167,7 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessi
       if (res.ok) {
         toast({ title: "Thành công", description: "Buổi học đã được chốt hoàn tất (COMPLETED)" });
         fetchSessionAttendance(selectedSessionId);
+        invalidateClassWorkspace(queryClient, classId);
         if (onRefreshMatrix) onRefreshMatrix();
       } else {
         toast({ title: "Không thể chốt buổi", description: data.error || "Lỗi khi chốt buổi học", variant: "destructive" });
@@ -196,7 +193,7 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessi
             </SelectTrigger>
             <SelectContent>
               {sessions.map((s) => {
-                const dateStr = s.plannedDate || s.sessionDate || "";
+                const dateStr = s.scheduledDate || "";
                 const formattedDate = dateStr ? dateStr.slice(0, 10).split("-").reverse().join("/") : "—";
                 const lessonLabel = s.lessonTitle || `Lesson ${s.sessionNumber}`;
                 const statusTag =

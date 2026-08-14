@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, CheckCircle2, AlertCircle, AlertTriangle } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Loader2, CheckCircle2, AlertCircle, AlertTriangle, RotateCcw } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { attendanceApi } from "@/lib/api";
 
 interface MatrixSessionInfo {
@@ -53,30 +54,20 @@ interface AttendanceMatrixProps {
   refreshTrigger?: number;
 }
 
-export const AttendanceMatrix: React.FC<AttendanceMatrixProps> = ({ classId, refreshTrigger }) => {
-  const { toast } = useToast();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [data, setData] = useState<MatrixData | null>(null);
+export const AttendanceMatrix: React.FC<AttendanceMatrixProps> = ({ classId }) => {
+  const {
+    data: matrixRes,
+    isLoading: loading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["class-attendance-matrix", classId],
+    queryFn: () => attendanceApi.getAttendanceMatrix(classId),
+    enabled: !!classId,
+  });
 
-  useEffect(() => {
-    fetchMatrix();
-  }, [classId, refreshTrigger]);
-
-  const fetchMatrix = async () => {
-    setLoading(true);
-    try {
-      const res = await attendanceApi.getAttendanceMatrix(classId);
-      if (res.success && res.data) {
-        setData(res.data);
-      } else {
-        toast({ title: "Lỗi", description: res.error || "Không thể tải ma trận chuyên cần", variant: "destructive" });
-      }
-    } catch (err: any) {
-      toast({ title: "Lỗi kết nối", description: err.message || "Không thể tải dữ liệu", variant: "destructive" });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const data: MatrixData | null = matrixRes?.success && matrixRes?.data ? matrixRes.data : null;
 
   const getStatusBadge = (
     status: "UNMARKED" | "PRESENT" | "ABSENT" | "LATE" | "EXCUSED",
@@ -113,6 +104,20 @@ export const AttendanceMatrix: React.FC<AttendanceMatrixProps> = ({ classId, ref
       <div className="p-12 text-center text-xs text-muted-foreground flex items-center justify-center gap-2">
         <Loader2 className="h-4 w-4 animate-spin text-emerald-600" />
         Đang tải ma trận chuyên cần...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-8 border rounded-xl bg-card text-center space-y-3">
+        <AlertCircle className="h-8 w-8 text-rose-500 mx-auto" />
+        <p className="text-sm font-semibold text-foreground">Không thể tải ma trận chuyên cần</p>
+        <p className="text-xs text-muted-foreground">{(error as any)?.message || "Vui lòng kiểm tra lại kết nối mạng."}</p>
+        <Button size="sm" variant="outline" onClick={() => refetch()} className="gap-1.5 text-xs">
+          <RotateCcw className="h-3.5 w-3.5" />
+          Thử lại
+        </Button>
       </div>
     );
   }
