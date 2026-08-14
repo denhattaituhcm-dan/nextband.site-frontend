@@ -131,6 +131,7 @@ export function GrammarSection({
                 const groupInst = cleanHtmlText(group.instructions);
 
                 return (
+                  <div key={group.id} className="space-y-6">
                     {/* Sticky Group Header */}
                     <QuestionGroupHeader
                       partNumber={gIndex + 1}

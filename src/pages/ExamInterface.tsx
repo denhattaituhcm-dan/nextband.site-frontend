@@ -343,6 +343,8 @@ export default function ExamInterface() {
     ) {
       setCurrentQuestionId(paginationQuestions[0].focusId || paginationQuestions[0].id);
     }
+  }, [currentSection, paginationQuestions, currentQuestionId]);
+
   const isProgrammaticScrollRef = useRef(false);
 
   useEffect(() => {
