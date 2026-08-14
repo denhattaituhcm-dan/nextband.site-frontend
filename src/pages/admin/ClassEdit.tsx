@@ -579,7 +579,7 @@ export default function AdminClassEdit() {
 
           {schedulesLoading ? (
             <div className="text-sm text-muted-foreground">Đang tải lịch học...</div>
-          ) : (schedulesData?.data || []).length === 0 ? (
+          ) : (Array.isArray(schedulesData) ? schedulesData : (schedulesData?.data || [])).length === 0 ? (
             <div className="text-sm text-muted-foreground">
               Chưa có lịch học nào.
             </div>
@@ -595,7 +595,7 @@ export default function AdminClassEdit() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {(schedulesData?.data || []).map((schedule: any) => {
+                {(Array.isArray(schedulesData) ? schedulesData : (schedulesData?.data || [])).map((schedule: any) => {
                   const day = DAY_OPTIONS.find((d) => d.value === schedule.dayOfWeek);
                   return (
                     <TableRow key={schedule.id}>
