@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { PenTool, BookOpen, CheckCircle2, FileText } from "lucide-react";
+import { PenTool, BookOpen, CheckCircle2, FileText, AlertCircle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DropdownSelect } from "./DropdownSelect";
 import {
@@ -16,6 +15,7 @@ import {
 import { MatchingRenderer } from "./MatchingRenderer";
 import { cn } from "@/lib/utils";
 import { RichContent } from "./RichContent";
+import { isValidMCQOptions } from "@/lib/questionNormalizer";
 
 interface WritingSectionProps {
   section: any;
@@ -178,11 +178,16 @@ export function WritingSection({
       );
     }
 
-    if (
-      question.question_type === "multiple_choice" &&
-      question.options &&
-      question.options.length > 0
-    ) {
+    if (question.question_type === "multiple_choice") {
+      if (!isValidMCQOptions(question.options)) {
+        return (
+          <div className="p-4 rounded-2xl border border-destructive/30 bg-destructive/5 text-destructive text-sm flex items-center gap-2.5">
+            <AlertCircle className="h-5 w-5 shrink-0" />
+            <span>Nội dung câu hỏi trắc nghiệm chưa được cấu hình đầy đủ phương án lựa chọn. Vui lòng liên hệ giáo viên hoặc quản trị viên.</span>
+          </div>
+        );
+      }
+
       const selectedValues = Array.isArray(value)
         ? value
         : value

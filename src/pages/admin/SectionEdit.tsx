@@ -54,6 +54,7 @@ import {
   stringifyFillBlankAnswers,
   parseFillBlankAnswers,
 } from "@/components/admin/question-forms";
+import { sanitizeQuestionPayload } from "@/lib/questionNormalizer";
 import {
   Accordion,
   AccordionContent,
@@ -504,6 +505,51 @@ export default function AdminSectionEdit() {
     setGroupDialogOpen(true);
   };
 
+  const handleQuestionTypeChange = (newType: string) => {
+    setQuestionForm((f) => {
+      let nextOptions: any = null;
+      let nextCorrectAnswer = "";
+      let nextFillBlankAnswers = [""];
+
+      if (newType === "multiple_choice") {
+        nextOptions =
+          Array.isArray(f.options) && f.options.length >= 2
+            ? f.options
+            : ["", "", "", ""];
+        nextCorrectAnswer = "";
+      } else if (newType === "fill_blank") {
+        nextOptions = null;
+        nextFillBlankAnswers = [""];
+        nextCorrectAnswer = "";
+      } else if (newType === "matching") {
+        nextOptions = null;
+        nextCorrectAnswer = JSON.stringify({
+          items: ["", ""],
+          options: ["", ""],
+          pairs: {},
+        });
+      } else if (
+        newType === "true_false_not_given" ||
+        newType === "yes_no_not_given"
+      ) {
+        nextOptions = null;
+        nextCorrectAnswer = "";
+      } else {
+        // short_answer, essay, speaking
+        nextOptions = null;
+        nextCorrectAnswer = "";
+      }
+
+      return {
+        ...f,
+        questionType: newType,
+        options: nextOptions,
+        correctAnswer: nextCorrectAnswer,
+        fillBlankAnswers: nextFillBlankAnswers,
+      };
+    });
+  };
+
   const handleOpenQuestionDialog = (groupId: string, question?: Question) => {
     pendingImagesRef.current = [];
     setSelectedGroupId(groupId);
@@ -514,9 +560,11 @@ export default function AdminSectionEdit() {
       setQuestionForm({
         questionText: question.questionText || "",
         questionType: question.questionType,
-        options: Array.isArray(question.options)
+        options: question.questionType === "multiple_choice" && Array.isArray(question.options)
           ? (question.options as string[])
-          : ["", "", "", ""],
+          : question.questionType === "multiple_choice"
+            ? ["", "", "", ""]
+            : null as any,
         correctAnswer: question.correctAnswer || "",
         fillBlankAnswers:
           question.questionType === "fill_blank"
@@ -545,7 +593,7 @@ export default function AdminSectionEdit() {
       setQuestionForm({
         questionText: "",
         questionType: defaultType,
-        options: ["", "", "", ""],
+        options: defaultType === "multiple_choice" ? ["", "", "", ""] : (null as any),
         correctAnswer: "",
         fillBlankAnswers: [""],
         points: 1,
@@ -565,10 +613,31 @@ export default function AdminSectionEdit() {
   };
 
   const handleSaveQuestion = () => {
+    const sanitized = sanitizeQuestionPayload(questionForm);
+    if (sanitized.questionType === "fill_blank") {
+      sanitized.correctAnswer = stringifyFillBlankAnswers(
+        questionForm.fillBlankAnswers,
+      );
+    }
+
+    if (sanitized.questionType === "multiple_choice") {
+      const validOpts = (sanitized.options || []).filter(
+        (o) => typeof o === "string" && o.trim().length > 0,
+      );
+      if (validOpts.length < 2) {
+        toast({
+          title: "Lỗi dữ liệu",
+          description: "Câu hỏi trắc nghiệm phải có ít nhất 2 lựa chọn có nội dung.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     if (editingQuestion) {
       const originalOrder =
         editingQuestion.orderIndex ?? (editingQuestion as any).order_index ?? 0;
-      const { orderIndex, ...rest } = questionForm;
+      const { orderIndex, ...rest } = sanitized;
       const updatePayload =
         orderIndex === originalOrder ? rest : { ...rest, orderIndex };
 
@@ -579,7 +648,7 @@ export default function AdminSectionEdit() {
     } else if (selectedGroupId) {
       const nextOrderIndex = getNextOrderIndexForGroup(selectedGroupId);
       const { orderIndex: _ignoredOrderIndex, ...questionWithoutOrder } =
-        questionForm;
+        sanitized;
       createQuestionMutation.mutate({
         ...questionWithoutOrder,
         groupId: selectedGroupId,
@@ -1164,9 +1233,7 @@ export default function AdminSectionEdit() {
                 <Label>Dạng câu hỏi</Label>
                 <Select
                   value={questionForm.questionType}
-                  onValueChange={(v) =>
-                    setQuestionForm((f) => ({ ...f, questionType: v }))
-                  }
+                  onValueChange={handleQuestionTypeChange}
                 >
                   <SelectTrigger>
                     <SelectValue />

@@ -7,8 +7,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckSquare } from "lucide-react";
+import { CheckSquare, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { isValidMCQOptions } from "@/lib/questionNormalizer";
 
 export interface QuestionControlRendererProps {
   question: any;
@@ -45,7 +46,15 @@ export function QuestionControlRenderer({
   const isFillBlankLike = questionType === "fill_blank" || hasPlaceholders;
 
   // 1. Multiple Choice
-  if (questionType === "multiple_choice" && question.options && question.options.length > 0) {
+  if (questionType === "multiple_choice") {
+    if (!isValidMCQOptions(question.options)) {
+      return (
+        <div className="p-3.5 rounded-xl border border-destructive/30 bg-destructive/5 text-destructive text-sm flex items-center gap-2.5">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          <span>Nội dung câu hỏi trắc nghiệm chưa được cấu hình đầy đủ phương án lựa chọn.</span>
+        </div>
+      );
+    }
     const selectedRaw = answer;
     const selectedValues = Array.isArray(selectedRaw)
       ? selectedRaw

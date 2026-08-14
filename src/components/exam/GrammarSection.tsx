@@ -5,9 +5,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FileText, BookOpen, CheckSquare, PenTool } from "lucide-react";
+import { FileText, BookOpen, CheckSquare, PenTool, AlertCircle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { isValidMCQOptions } from "@/lib/questionNormalizer";
 import { QuestionRecorder } from "./QuestionRecorder";
 import {
   FillBlankHtmlRenderer,
@@ -242,14 +243,19 @@ export function GrammarSection({
                                     {/* Interaction types */}
                                     <div className="pt-1">
                                       {/* Multiple Choice */}
+                                      {question.question_type === "multiple_choice" && !isValidMCQOptions(question.options) && (
+                                         <div className="p-4 rounded-2xl border border-destructive/30 bg-destructive/5 text-destructive text-sm flex items-center gap-2.5">
+                                           <AlertCircle className="h-5 w-5 shrink-0" />
+                                           <span>Nội dung câu hỏi trắc nghiệm chưa được cấu hình đầy đủ phương án lựa chọn. Vui lòng liên hệ giáo viên hoặc quản trị viên.</span>
+                                         </div>
+                                       )}
+
                                       {(question.question_type ===
                                         "multiple_choice" ||
                                         (question.question_type ===
                                           "listening" &&
-                                          question.options &&
-                                          question.options.length > 0)) &&
-                                        question.options &&
-                                        question.options.length > 0 &&
+                                          isValidMCQOptions(question.options))) &&
+                                        isValidMCQOptions(question.options) &&
                                         (() => {
                                           const selectedRaw =
                                             answers[question.id];
