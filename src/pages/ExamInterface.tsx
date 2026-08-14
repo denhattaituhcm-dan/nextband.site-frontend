@@ -343,7 +343,40 @@ export default function ExamInterface() {
     ) {
       setCurrentQuestionId(paginationQuestions[0].focusId || paginationQuestions[0].id);
     }
-  }, [currentSection, paginationQuestions, currentQuestionId]);
+  const isProgrammaticScrollRef = useRef(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isProgrammaticScrollRef.current) return;
+      if (questionRefs.current.size === 0) return;
+
+      const viewportCenter = window.innerHeight / 2;
+      let closestId: string | null = null;
+      let minDistance = Infinity;
+
+      questionRefs.current.forEach((el, qId) => {
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.bottom >= 80 && rect.top <= window.innerHeight - 80) {
+          const elCenter = (rect.top + rect.bottom) / 2;
+          const distance = Math.abs(elCenter - viewportCenter);
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestId = qId;
+          }
+        }
+      });
+
+      if (closestId && closestId !== currentQuestionId) {
+        setCurrentQuestionId(closestId);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [currentQuestionId, activeSection]);
 
   const handlePrevQuestion = () => {
     if (currentQuestionIndex > 0) {
@@ -365,7 +398,7 @@ export default function ExamInterface() {
 
   const handleQuestionClick = useCallback((questionId: string) => {
     setCurrentQuestionId(questionId);
-    // Scroll to question
+    isProgrammaticScrollRef.current = true;
     const element =
       questionRefs.current.get(questionId) ||
       (questionId.includes("::blank:")
@@ -374,6 +407,9 @@ export default function ExamInterface() {
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "center" });
     }
+    setTimeout(() => {
+      isProgrammaticScrollRef.current = false;
+    }, 600);
   }, []);
 
   const handleToggleFlag = useCallback((questionId: string) => {
@@ -612,10 +648,10 @@ export default function ExamInterface() {
               variant="ghost"
               size="sm"
               onClick={() => setShowExitDialog(true)}
-              className="text-muted-foreground hover:text-foreground font-medium"
+              className="text-muted-foreground hover:text-foreground font-semibold text-xs"
             >
               <ArrowLeft className="mr-1.5 h-4 w-4" />
-              Thoát
+              Rời bài
             </Button>
             <div className="h-4 w-[1px] bg-border hidden sm:block" />
             <h1 className="font-bold text-sm md:text-base tracking-tight truncate max-w-[180px] sm:max-w-[240px] md:max-w-none">
@@ -623,35 +659,24 @@ export default function ExamInterface() {
             </h1>
           </div>
 
-          {/* Center: Real-time Context State (Mental Model) */}
-          <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-muted/60 border text-xs font-medium">
+          {/* Center: Real-time Context State */}
+          <div className="hidden lg:flex items-center gap-2.5 px-3.5 py-1 rounded-full bg-muted/50 border border-border/80 text-xs font-medium">
             <span className="font-bold uppercase tracking-wider text-primary">
-              {activeSection || "EXAM"}
+              {currentSection?.title && currentSection.title.toLowerCase() !== "general"
+                ? currentSection.title
+                : sectionLabels[activeSection as SectionType] || activeSection || "EXAM"}
             </span>
-            <span className="text-muted-foreground">•</span>
-            <span>
+            <span className="text-muted-foreground/60">•</span>
+            <span className="font-semibold text-foreground/90">
               Câu {currentQuestionIndex >= 0 ? currentQuestionIndex + 1 : 1}/{paginationQuestions.length}
             </span>
-            <span className="text-muted-foreground">•</span>
-            <span
-              className={cn(
-                "font-semibold px-2 py-0.5 rounded-full text-[11px]",
-                isRecordingActive
-                  ? "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 animate-pulse font-bold"
-                  : currentQuestionId && answers[currentQuestionId]
-                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold"
-                  : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-              )}
-            >
-              {isRecordingActive
-                ? "Đang làm"
-                : currentQuestionId && answers[currentQuestionId]
-                ? "Đã hoàn thành"
-                : "Chưa làm"}
+            <span className="text-muted-foreground/60">•</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+              ✓ Đã lưu tự động
             </span>
-            <span className="text-muted-foreground">|</span>
-            <span className="text-muted-foreground">
-              Đã xong {answeredCount}/{paginationQuestions.length}
+            <span className="text-muted-foreground/40">|</span>
+            <span className="text-muted-foreground font-medium">
+              Đã làm {answeredCount}/{paginationQuestions.length}
             </span>
           </div>
 
@@ -828,17 +853,17 @@ export default function ExamInterface() {
         isSubmitting={isSubmitting}
       />
 
-      {/* Exit Confirmation Dialog */}
+      {/* Safe Exit Confirmation Dialog */}
       <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-md rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Thoát bài làm?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tiến độ câu trả lời của bạn đã được hệ thống tự động ghi nhận (Autosave). Bạn có thể quay lại tiếp tục làm bài bất cứ lúc nào.
+            <AlertDialogTitle className="text-lg font-bold">Rời khỏi bài thi?</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-muted-foreground leading-relaxed">
+              Bài làm của bạn đã được hệ thống lưu tự động. Bạn có thể quay lại tiếp tục làm bài bất cứ lúc nào trước khi hết thời gian.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Tiếp tục làm bài</AlertDialogCancel>
+          <AlertDialogFooter className="mt-4 gap-2">
+            <AlertDialogCancel className="rounded-xl font-semibold">Tiếp tục làm bài</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 const destination = resolveExitDestination(
@@ -848,9 +873,9 @@ export default function ExamInterface() {
                 );
                 navigate(destination);
               }}
-              className="bg-destructive hover:bg-destructive/90"
+              className="rounded-xl bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold"
             >
-              Thoát bài
+              Rời bài thi
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

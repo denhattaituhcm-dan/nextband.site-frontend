@@ -16,6 +16,8 @@ import { MatchingRenderer } from "./MatchingRenderer";
 import { cn } from "@/lib/utils";
 import { RichContent } from "./RichContent";
 import { isValidMCQOptions } from "@/lib/questionNormalizer";
+import { QuestionGroupHeader } from "./QuestionGroupHeader";
+import { WritingAnswerBox } from "./controls/WritingAnswerBox";
 
 interface WritingSectionProps {
   section: any;
@@ -227,20 +229,12 @@ export function WritingSection({
     }
 
     return (
-      <div className="space-y-2">
-        <Textarea
-          placeholder="Viết câu trả lời của bạn..."
-          value={typeof value === "string" ? value : ""}
-          onChange={(e) => onAnswerChange(question.id, e.target.value)}
-          rows={6}
-          className="resize-y rounded-2xl p-4 text-base border-gray-200/80 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 shadow-xs font-sans leading-relaxed"
-        />
-        <div className="flex justify-end text-xs text-muted-foreground font-semibold">
-          <span className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full border border-slate-200/60 dark:border-slate-700">
-            📝 {wordCount} từ
-          </span>
-        </div>
-      </div>
+      <WritingAnswerBox
+        questionId={question.id}
+        value={typeof value === "string" ? value : ""}
+        onChange={onAnswerChange}
+        placeholder="Nhập câu trả lời của bạn..."
+      />
     );
   };
 

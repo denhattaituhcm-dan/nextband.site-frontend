@@ -9,6 +9,8 @@ import { FileText, BookOpen, CheckSquare, PenTool, AlertCircle } from "lucide-re
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { isValidMCQOptions } from "@/lib/questionNormalizer";
+import { QuestionGroupHeader } from "./QuestionGroupHeader";
+import { WritingAnswerBox } from "./controls/WritingAnswerBox";
 import { QuestionRecorder } from "./QuestionRecorder";
 import {
   FillBlankHtmlRenderer,
@@ -129,28 +131,13 @@ export function GrammarSection({
                 const groupInst = cleanHtmlText(group.instructions);
 
                 return (
-                  <div key={group.id} className="space-y-6">
-                    {/* Group Header */}
-                    {(displayTitle || groupInst) && (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          {!hasPartInTitle && (
-                            <span className="px-3.5 py-1 rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-xs font-extrabold uppercase tracking-wider shadow-xs">
-                              Phần {gIndex + 1}
-                            </span>
-                          )}
-                          <h3 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">
-                            {displayTitle}
-                          </h3>
-                        </div>
-
-                        {groupInst && (
-                          <div className="p-4 bg-gradient-to-r from-teal-50/80 to-emerald-50/50 dark:from-teal-950/20 dark:to-emerald-950/10 border border-teal-200/80 dark:border-teal-900/30 rounded-2xl text-sm text-gray-800 dark:text-gray-200 font-medium shadow-xs">
-                            <RichContent html={groupInst} />
-                          </div>
-                        )}
-                      </div>
-                    )}
+                    {/* Sticky Group Header */}
+                    <QuestionGroupHeader
+                      partNumber={gIndex + 1}
+                      title={group.title}
+                      instructions={groupInst}
+                      audioUrl={group.audioUrl || group.audio_url}
+                    />
 
                     {/* Group Passage */}
                     {group.passage && (
@@ -163,17 +150,6 @@ export function GrammarSection({
                           html={group.passage}
                           variant="passage"
                           className="text-gray-900 dark:text-gray-100 text-base leading-relaxed font-medium"
-                        />
-                      </div>
-                    )}
-
-                    {/* Group Audio */}
-                    {(group.audioUrl || group.audio_url) && (
-                      <div className="bg-teal-50/80 dark:bg-gray-800/80 p-3.5 rounded-2xl border border-teal-200/60 dark:border-gray-700 flex items-center gap-3 max-w-md">
-                        <audio
-                          src={group.audioUrl || group.audio_url}
-                          controls
-                          className="h-8 w-full"
                         />
                       </div>
                     )}
@@ -447,26 +423,15 @@ export function GrammarSection({
                                         </div>
                                       )}
 
-                                      {/* Short Answer */}
-                                      {question.question_type ===
-                                        "short_answer" && (
-                                        <div className="space-y-2">
-                                          <Textarea
-                                            placeholder="Viết câu trả lời của bạn..."
-                                            value={answers[question.id] || ""}
-                                            onChange={(e) =>
-                                              onAnswerChange(
-                                                question.id,
-                                                e.target.value,
-                                              )
-                                            }
-                                            rows={5}
-                                            className="resize-y rounded-2xl p-4 text-base border-gray-200/80 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 shadow-xs font-medium leading-relaxed"
-                                          />
-                                          <WordCount
-                                            text={answers[question.id] || ""}
-                                          />
-                                        </div>
+                                      {/* Short Answer & Essay (Unified Writing Answer Box) */}
+                                      {(question.question_type === "short_answer" ||
+                                        question.question_type === "essay") && (
+                                        <WritingAnswerBox
+                                          questionId={question.id}
+                                          value={answers[question.id] || ""}
+                                          onChange={onAnswerChange}
+                                          placeholder="Nhập câu trả lời của bạn..."
+                                        />
                                       )}
 
                                       {/* Speaking / Audio Answer */}
@@ -477,27 +442,6 @@ export function GrammarSection({
                                           answer={answers[question.id]}
                                           onAnswerChange={onAnswerChange}
                                         />
-                                      )}
-
-                                      {/* Essay */}
-                                      {question.question_type === "essay" && (
-                                        <div className="space-y-2">
-                                          <Textarea
-                                            placeholder="Viết bài luận của bạn..."
-                                            value={answers[question.id] || ""}
-                                            onChange={(e) =>
-                                              onAnswerChange(
-                                                question.id,
-                                                e.target.value,
-                                              )
-                                            }
-                                            rows={9}
-                                            className="resize-y rounded-2xl p-4 text-base border-gray-200/80 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 shadow-xs font-medium leading-relaxed"
-                                          />
-                                          <WordCount
-                                            text={answers[question.id] || ""}
-                                          />
-                                        </div>
                                       )}
 
                                       {/* TRUE/FALSE/NOT GIVEN */}
