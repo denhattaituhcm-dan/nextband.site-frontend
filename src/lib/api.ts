@@ -1,7 +1,7 @@
 import { supabase } from "./supabase";
 import { normalizeSiteSettings } from "./site-settings";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1";
+export const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1";
 
 // Helper to format URLs
 export const formatStorageUrl = (path: string | null | undefined) => {
