@@ -40,13 +40,13 @@ const statusConfig: Record<
   string,
   {
     label: string;
-    variant: "default" | "secondary" | "destructive" | "outline";
+    variant: "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "info" | "muted";
     icon: React.ElementType;
   }
 > = {
-  in_progress: { label: "Đang làm", variant: "secondary", icon: Clock },
-  submitted: { label: "Chờ chấm", variant: "outline", icon: AlertCircle },
-  graded: { label: "Đã chấm", variant: "default", icon: CheckCircle2 },
+  in_progress: { label: "Đang làm", variant: "info", icon: Clock },
+  submitted: { label: "Chờ chấm", variant: "warning", icon: AlertCircle },
+  graded: { label: "Đã chấm", variant: "success", icon: CheckCircle2 },
 };
 
 const STATUS_OPTIONS = [

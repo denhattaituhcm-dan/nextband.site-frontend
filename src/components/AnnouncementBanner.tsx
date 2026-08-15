@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { announcementsApi, AnnouncementItem } from "@/lib/api";
-import { Megaphone, AlertTriangle, ArrowRight } from "lucide-react";
+import { announcementsApi } from "@/lib/api";
+import { Megaphone, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface AnnouncementBannerProps {
@@ -32,15 +32,15 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
             key={ann.id}
             className={`p-3 rounded-xl border flex items-center justify-between text-xs transition-all ${
               isUrgent
-                ? "bg-rose-50 border-rose-200 text-rose-900"
-                : "bg-blue-50/60 border-blue-200 text-blue-900"
+                ? "bg-destructive/10 border-destructive/20 text-foreground"
+                : "bg-primary-soft border-primary/20 text-foreground"
             }`}
           >
             <div className="flex items-center gap-2 max-w-[85%]">
               {isUrgent ? (
-                <AlertTriangle className="h-4 w-4 text-rose-600 shrink-0" />
+                <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
               ) : (
-                <Megaphone className="h-4 w-4 text-blue-600 shrink-0" />
+                <Megaphone className="h-4 w-4 text-primary shrink-0" />
               )}
               <div className="truncate">
                 <span className="font-bold mr-2">{ann.title}</span>
@@ -50,11 +50,11 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
 
             <div className="flex items-center gap-2 shrink-0">
               {ann.has_newer_version && (
-                <Badge variant="outline" className="text-[10px] bg-amber-100 text-amber-800 border-amber-300">
+                <Badge variant="warning" className="text-[10px]">
                   Bản cập nhật mới
                 </Badge>
               )}
-              <span className="text-[10px] opacity-60">
+              <span className="text-[10px] text-muted-foreground">
                 {new Date(ann.published_at).toLocaleDateString("vi-VN")}
               </span>
             </div>
@@ -64,3 +64,4 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
     </div>
   );
 };
+

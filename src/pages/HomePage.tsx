@@ -54,10 +54,10 @@ export default function HomePage() {
           <HomeworkEmptyState state="NO_ENROLLMENT" />
         ) : (
           <div className="space-y-6">
-            {/* HERO WELCOME BANNER */}
-            <Card className="border-0 text-primary-foreground rounded-2xl shadow-lg p-6 md:p-8 bg-primary space-y-5">
+            {/* HERO WELCOME BANNER (L1 Prominent Hero Layer) */}
+            <Card className="border-0 text-primary-foreground rounded-2xl shadow-md p-6 md:p-8 bg-primary space-y-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 text-white border border-white/20 text-xs font-bold backdrop-blur-md">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 text-white border border-white/20 text-xs font-semibold backdrop-blur-md">
                   <Sparkles className="w-4 h-4 text-white/70" />
                   <span>Đang chọn: {activeClassName}</span>
                 </div>
@@ -79,7 +79,7 @@ export default function HomePage() {
                           onClick={() => setSelectedClassIndex(idx)}
                           className={`h-7 text-xs rounded-full px-3 transition-all ${
                             isSelected
-                              ? "bg-white text-primary font-bold shadow-2xs"
+                              ? "bg-white text-primary font-bold shadow-xs"
                               : "bg-white/20 text-white hover:bg-white/30"
                           }`}
                         >
@@ -92,19 +92,19 @@ export default function HomePage() {
               </div>
               
               <div className="space-y-2 max-w-3xl">
-                <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight">
                   Xin chào, {user?.fullName || "Học viên"}!
                 </h1>
-                <p className="text-xs md:text-sm text-primary-foreground/90 font-medium leading-relaxed">
-                  Bạn đang truy cập lớp <strong className="text-white font-bold">{activeClassName}</strong> ({courseTitle}). Chọn bài tập để làm và nhận nhận xét từ giáo viên!
+                <p className="text-sm md:text-base text-primary-foreground/90 font-normal leading-relaxed">
+                  Bạn đang truy cập lớp <strong className="text-white font-semibold">{activeClassName}</strong> ({courseTitle}). Chọn bài tập để làm và nhận nhận xét từ giáo viên!
                 </p>
               </div>
 
               {enrolledClassId && (
-                <div className="pt-2">
+                <div className="pt-1">
                   <Button
                     onClick={() => navigate(`/class/${enrolledClassId}/lessons`)}
-                    className="rounded-xl bg-white text-primary hover:bg-white/90 font-extrabold px-6 py-5 shadow-md active:scale-95 text-sm transition-all gap-2 border-0"
+                    className="rounded-xl bg-white text-primary hover:bg-white/95 font-bold px-6 py-5 shadow-sm active:scale-95 text-sm transition-all gap-2 border-0"
                   >
                     <BookOpen className="h-4 w-4 text-primary" />
                     <span>Vào Lớp {activeClassName} để Làm Bài</span>
@@ -114,80 +114,80 @@ export default function HomePage() {
               )}
             </Card>
 
-            {/* 3 STUDENT KPI CARDS (Real CSDL Semantics) */}
-            <div className="grid gap-4 sm:grid-cols-3">
-              <Card className="p-4 space-y-1 bg-card border-border shadow-sm">
+            {/* 3 STUDENT KPI CARDS (L3 Metric Supporting Layer) */}
+            <div className="grid gap-3.5 sm:grid-cols-3">
+              <Card className="p-3.5 md:p-4 space-y-1.5 bg-card border border-border/70 rounded-xl shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                  <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
                     <CheckCircle2 className="h-4 w-4 text-success" />
                     Tổng bài đã nộp
                   </span>
-                  <Badge variant="muted" className="text-[10px] font-mono">
+                  <Badge variant="muted" className="text-[10px] font-mono font-normal">
                     submitted + graded
                   </Badge>
                 </div>
-                <h3 className="text-2xl font-bold text-foreground">{submittedCount} bài</h3>
+                <h3 className="text-2xl font-bold text-foreground tracking-tight">{submittedCount} bài</h3>
                 <p className="text-[11px] text-muted-foreground">Đã gửi cho giáo viên</p>
               </Card>
 
-              <Card className="p-4 space-y-1 bg-card border-border shadow-sm">
+              <Card className="p-3.5 md:p-4 space-y-1.5 bg-card border border-border/70 rounded-xl shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                  <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
                     <Award className="h-4 w-4 text-info" />
                     Bài đã nhận xét
                   </span>
-                  <Badge variant="info" className="text-[10px] font-mono">
+                  <Badge variant="info" className="text-[10px] font-mono font-normal">
                     graded
                   </Badge>
                 </div>
-                <h3 className="text-2xl font-bold text-info">{gradedCount} bài</h3>
-                <p className="text-[11px] text-muted-foreground">Đã có điểm & feedback</p>
+                <h3 className="text-2xl font-bold text-info tracking-tight">{gradedCount} bài</h3>
+                <p className="text-[11px] text-muted-foreground">Đã có điểm &amp; feedback</p>
               </Card>
 
-              <Card className="p-4 space-y-1 bg-card border-border shadow-sm">
+              <Card className="p-3.5 md:p-4 space-y-1.5 bg-card border border-border/70 rounded-xl shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                  <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
                     <Clock className="h-4 w-4 text-warning" />
                     Bài chờ giáo viên chấm
                   </span>
-                  <Badge variant="warning" className="text-[10px] font-mono">
+                  <Badge variant="warning" className="text-[10px] font-mono font-normal">
                     pending
                   </Badge>
                 </div>
-                <h3 className="text-2xl font-bold text-warning">{pendingCount} bài</h3>
+                <h3 className="text-2xl font-bold text-warning tracking-tight">{pendingCount} bài</h3>
                 <p className="text-[11px] text-muted-foreground">Đang trong hàng đợi chấm</p>
               </Card>
             </div>
 
-            {/* 5-STEP WORKFLOW GUIDELINE */}
-            <Card className="rounded-2xl border border-border bg-card p-6 md:p-8 space-y-5 shadow-xs">
-              <h3 className="text-xs font-extrabold text-muted-foreground uppercase tracking-wider text-center">
+            {/* 5-STEP WORKFLOW GUIDELINE (L2 Section / Step Guidance) */}
+            <Card className="rounded-2xl border border-border/70 bg-card p-5 md:p-7 space-y-4 shadow-xs">
+              <h2 className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-wider text-center">
                 Lộ Trình Học 5 Bước Chuẩn IELTS
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-2">
-                <div className="p-4 rounded-xl bg-muted/40 border border-border/60 text-center space-y-2 flex flex-col items-center justify-center">
-                  <span className="w-7 h-7 rounded-full bg-emerald-500/15 text-emerald-600 font-extrabold text-xs inline-flex items-center justify-center">
-                    <CheckCircle2 className="w-4 h-4" />
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-5 gap-2.5 pt-1">
+                <div className="p-3.5 rounded-xl bg-success/10 border border-success/20 text-center space-y-1.5 flex flex-col items-center justify-center">
+                  <span className="w-6 h-6 rounded-full bg-success/20 text-success font-bold text-xs inline-flex items-center justify-center">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
                   </span>
-                  <div className="font-bold text-xs text-foreground">1. Đăng nhập</div>
+                  <div className="font-semibold text-xs text-foreground">1. Đăng nhập</div>
                 </div>
-                <div className="p-4 rounded-xl bg-muted/40 border border-border/60 text-center space-y-2 flex flex-col items-center justify-center">
-                  <span className="w-7 h-7 rounded-full bg-emerald-500/15 text-emerald-600 font-extrabold text-xs inline-flex items-center justify-center">
-                    <CheckCircle2 className="w-4 h-4" />
+                <div className="p-3.5 rounded-xl bg-success/10 border border-success/20 text-center space-y-1.5 flex flex-col items-center justify-center">
+                  <span className="w-6 h-6 rounded-full bg-success/20 text-success font-bold text-xs inline-flex items-center justify-center">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
                   </span>
-                  <div className="font-bold text-xs text-foreground">2. Giáo viên xếp lớp</div>
+                  <div className="font-semibold text-xs text-foreground">2. Xếp lớp</div>
                 </div>
-                <div className="p-4 rounded-xl bg-primary text-primary-foreground shadow-sm text-center space-y-2 flex flex-col items-center justify-center">
-                  <span className="w-7 h-7 rounded-full bg-white text-primary font-extrabold text-xs inline-flex items-center justify-center">3</span>
+                <div className="p-3.5 rounded-xl bg-primary text-primary-foreground shadow-xs text-center space-y-1.5 flex flex-col items-center justify-center">
+                  <span className="w-6 h-6 rounded-full bg-white text-primary font-bold text-xs inline-flex items-center justify-center">3</span>
                   <div className="font-bold text-xs">3. Vào Lớp làm bài</div>
                 </div>
-                <div className="p-4 rounded-xl bg-muted/40 border border-border/60 text-center space-y-2 flex flex-col items-center justify-center">
-                  <span className="w-7 h-7 rounded-full bg-muted text-muted-foreground font-extrabold text-xs inline-flex items-center justify-center">4</span>
-                  <div className="font-bold text-xs text-foreground">4. Làm & Nộp bài</div>
+                <div className="p-3.5 rounded-xl bg-muted/40 border border-border/40 text-center space-y-1.5 flex flex-col items-center justify-center">
+                  <span className="w-6 h-6 rounded-full bg-muted text-muted-foreground font-semibold text-xs inline-flex items-center justify-center">4</span>
+                  <div className="font-medium text-xs text-muted-foreground">4. Làm &amp; Nộp bài</div>
                 </div>
-                <div className="p-4 rounded-xl bg-muted/40 border border-border/60 text-center space-y-2 flex flex-col items-center justify-center">
-                  <span className="w-7 h-7 rounded-full bg-muted text-muted-foreground font-extrabold text-xs inline-flex items-center justify-center">5</span>
-                  <div className="font-bold text-xs text-foreground">5. Giáo viên nhận xét</div>
+                <div className="p-3.5 rounded-xl bg-muted/40 border border-border/40 text-center space-y-1.5 flex flex-col items-center justify-center">
+                  <span className="w-6 h-6 rounded-full bg-muted text-muted-foreground font-semibold text-xs inline-flex items-center justify-center">5</span>
+                  <div className="font-medium text-xs text-muted-foreground">5. GV nhận xét</div>
                 </div>
               </div>
             </Card>
@@ -197,3 +197,4 @@ export default function HomePage() {
     </div>
   );
 }
+

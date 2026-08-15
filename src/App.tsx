@@ -90,8 +90,8 @@ const ClassAttendancePage = lazyWithRetry(() => import("@/pages/admin/ClassAtten
 
 const PageLoader = () => (
   <div className="min-h-[400px] w-full flex flex-col items-center justify-center space-y-3 p-12">
-    <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin" />
-    <p className="text-xs font-medium text-slate-500 animate-pulse">Đang tải trang...</p>
+    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    <p className="text-xs font-medium text-muted-foreground animate-pulse">Đang tải trang...</p>
   </div>
 );
 
@@ -135,14 +135,14 @@ class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, { 
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6 text-center font-sans">
-          <div className="max-w-md w-full bg-white p-8 rounded-2xl border border-slate-200 shadow-xl space-y-4">
-            <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto text-xl font-bold">
+        <div className="min-h-screen flex items-center justify-center bg-background p-6 text-center font-sans">
+          <div className="max-w-md w-full bg-card p-8 rounded-2xl border border-border shadow-xl space-y-4">
+            <div className="w-12 h-12 rounded-full bg-primary-soft text-primary flex items-center justify-center mx-auto text-xl font-bold">
               ⚡
             </div>
-            <h2 className="text-xl font-extrabold text-slate-900">NextBand LMS System</h2>
-            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-left">
-              <p className="text-[11px] font-mono font-bold text-red-700 break-words">
+            <h2 className="text-xl font-extrabold text-foreground">NextBand LMS System</h2>
+            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-xl text-left">
+              <p className="text-[11px] font-mono font-bold text-destructive break-words">
                 {String(this.state.error?.message || this.state.error || "Unknown Error")}
               </p>
             </div>
@@ -151,7 +151,7 @@ class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, { 
                 this.setState({ hasError: false, error: null });
                 window.location.href = window.location.origin + window.location.pathname + "?t=" + Date.now();
               }}
-              className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer"
+              className="w-full py-2.5 px-4 bg-primary hover:bg-primary-hover text-primary-foreground font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer"
             >
               Làm mới trang
             </button>

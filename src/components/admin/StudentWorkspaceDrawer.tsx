@@ -161,31 +161,31 @@ export function StudentWorkspaceDrawer({
             {/* 2. QUICK ACTIONS */}
             <div className="grid grid-cols-4 gap-2">
               <Button variant="outline" size="sm" className="flex flex-col h-14 items-center justify-center gap-1 text-[11px] font-normal" onClick={() => toast({ title: "Mở ô nhắn tin với học viên" })}>
-                <MessageSquare className="h-4 w-4 text-blue-500" />
+                <MessageSquare className="h-4 w-4 text-primary" />
                 Nhắn tin
               </Button>
               <Button variant="outline" size="sm" className="flex flex-col h-14 items-center justify-center gap-1 text-[11px] font-normal" onClick={() => toast({ title: "Mở Modal đổi lớp" })}>
-                <RefreshCw className="h-4 w-4 text-emerald-500" />
+                <RefreshCw className="h-4 w-4 text-primary" />
                 Đổi lớp
               </Button>
               <Button variant="outline" size="sm" className="flex flex-col h-14 items-center justify-center gap-1 text-[11px] font-normal" onClick={() => toast({ title: "Đã chọn đặt bảo lưu" })}>
-                <PauseCircle className="h-4 w-4 text-amber-500" />
+                <PauseCircle className="h-4 w-4 text-warning" />
                 Bảo lưu
               </Button>
               <Button variant="outline" size="sm" className="flex flex-col h-14 items-center justify-center gap-1 text-[11px] font-normal" onClick={() => toast({ title: "Mã reset mật khẩu đã tạo" })}>
-                <Key className="h-4 w-4 text-purple-500" />
+                <Key className="h-4 w-4 text-muted-foreground" />
                 Reset Pass
               </Button>
             </div>
 
             {/* 3. MINI NOTIFICATIONS (Cảnh báo nhanh) */}
             <div className="flex flex-wrap gap-2">
-              <Badge variant="outline" className="bg-amber-50 text-amber-800 border-amber-200 text-xs py-1 px-2.5 flex items-center gap-1.5">
-                <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
+              <Badge variant="warning" className="text-xs py-1 px-2.5 flex items-center gap-1.5">
+                <AlertTriangle className="h-3.5 w-3.5" />
                 2 Bài tập trễ hạn
               </Badge>
-              <Badge variant="outline" className="bg-blue-50 text-blue-800 border-blue-200 text-xs py-1 px-2.5 flex items-center gap-1.5">
-                <MessageSquare className="h-3.5 w-3.5 text-blue-600" />
+              <Badge variant="info" className="text-xs py-1 px-2.5 flex items-center gap-1.5">
+                <MessageSquare className="h-3.5 w-3.5" />
                 3 Phản hồi chưa đọc
               </Badge>
             </div>
@@ -200,7 +200,7 @@ export function StudentWorkspaceDrawer({
                 <Badge variant="outline" className="bg-background text-[10px]">Hạn: Ngày mai</Badge>
               </div>
               <p className="font-medium text-sm">Homework 12: IELTS Writing Task 2 - Essay Structure</p>
-              <p className="text-xs text-muted-foreground">Trạng thái: <span className="text-amber-600 font-medium">Chưa nộp bài</span> • Cần nhắc nhở học viên trước 23:59</p>
+              <p className="text-xs text-muted-foreground">Trạng thái: <span className="text-warning font-medium">Chưa nộp bài</span> • Cần nhắc nhở học viên trước 23:59</p>
             </div>
 
             {/* 5. ACADEMIC HEALTH & OVERVIEW */}
@@ -224,11 +224,23 @@ export function StudentWorkspaceDrawer({
                   </TooltipProvider>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`text-lg font-bold ${isHealthy ? "text-emerald-600" : isNeedsAttention ? "text-amber-600" : "text-red-600"}`}>
+                  <span className={`text-lg font-bold ${isHealthy ? "text-success" : isNeedsAttention ? "text-warning" : "text-destructive"}`}>
                     {healthScore}/100
                   </span>
-                  <Badge variant="outline" className={isHealthy ? "bg-emerald-50 text-emerald-700 border-emerald-200" : isNeedsAttention ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-red-50 text-red-700 border-red-200"}>
-                    {isHealthy ? "🟢 Tốt" : isNeedsAttention ? "🟡 Cần chú ý" : "🔴 Rủi ro cao"}
+                  <Badge variant={isHealthy ? "success" : isNeedsAttention ? "warning" : "destructive"}>
+                    {isHealthy ? (
+                      <>
+                        <CheckCircle2 className="h-3 w-3" /> Tốt
+                      </>
+                    ) : isNeedsAttention ? (
+                      <>
+                        <AlertTriangle className="h-3 w-3" /> Cần chú ý
+                      </>
+                    ) : (
+                      <>
+                        <AlertTriangle className="h-3 w-3" /> Rủi ro cao
+                      </>
+                    )}
                   </Badge>
                 </div>
               </div>
@@ -291,7 +303,7 @@ export function StudentWorkspaceDrawer({
               <div className="relative pl-4 space-y-4 border-l-2 border-muted ml-2 text-xs">
                 {/* Event 1 */}
                 <div className="relative">
-                  <div className="absolute -left-[21px] top-0.5 bg-emerald-500 text-white rounded-full p-0.5">
+                  <div className="absolute -left-[21px] top-0.5 bg-success text-success-foreground rounded-full p-0.5">
                     <CheckCircle2 className="h-3 w-3" />
                   </div>
                   <div>
@@ -305,7 +317,7 @@ export function StudentWorkspaceDrawer({
 
                 {/* Event 2 */}
                 <div className="relative">
-                  <div className="absolute -left-[21px] top-0.5 bg-blue-500 text-white rounded-full p-0.5">
+                  <div className="absolute -left-[21px] top-0.5 bg-primary text-primary-foreground rounded-full p-0.5">
                     <Calendar className="h-3 w-3" />
                   </div>
                   <div>
@@ -319,7 +331,7 @@ export function StudentWorkspaceDrawer({
 
                 {/* Event 3 */}
                 <div className="relative">
-                  <div className="absolute -left-[21px] top-0.5 bg-purple-500 text-white rounded-full p-0.5">
+                  <div className="absolute -left-[21px] top-0.5 bg-info text-info-foreground rounded-full p-0.5">
                     <MessageSquare className="h-3 w-3" />
                   </div>
                   <div>
@@ -336,9 +348,9 @@ export function StudentWorkspaceDrawer({
             <Separator />
 
             {/* 8. LIFECYCLE MANAGEMENT (Quản lý vòng đời nhạy cảm) */}
-            <div className="bg-red-50/40 border border-red-200/60 rounded-xl p-4 space-y-3">
-              <div className="flex items-center gap-1.5 text-red-800 font-semibold text-xs uppercase tracking-wider">
-                <ShieldAlert className="h-4 w-4 text-red-600" />
+            <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-4 space-y-3">
+              <div className="flex items-center gap-1.5 text-destructive font-semibold text-xs uppercase tracking-wider">
+                <ShieldAlert className="h-4 w-4 text-destructive" />
                 Quản lý vòng đời tài khoản
               </div>
               <p className="text-xs text-muted-foreground">
@@ -349,20 +361,20 @@ export function StudentWorkspaceDrawer({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full border-amber-300 text-amber-900 bg-amber-50/50 hover:bg-amber-100 gap-1.5 text-xs"
+                  className="w-full border-warning/40 text-foreground hover:bg-warning/10 gap-1.5 text-xs"
                   onClick={() => setArchiveDialogOpen(true)}
                 >
-                  <Archive className="h-3.5 w-3.5 text-amber-700" />
+                  <Archive className="h-3.5 w-3.5 text-warning" />
                   Lưu trữ học viên...
                 </Button>
 
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full border-red-300 text-red-900 bg-red-50/50 hover:bg-red-100 gap-1.5 text-xs"
+                  className="w-full border-destructive/40 text-destructive hover:bg-destructive/10 gap-1.5 text-xs"
                   onClick={() => setDeleteDialogOpen(true)}
                 >
-                  <Trash2 className="h-3.5 w-3.5 text-red-600" />
+                  <Trash2 className="h-3.5 w-3.5 text-destructive" />
                   Xóa vĩnh viễn...
                 </Button>
               </div>
@@ -430,7 +442,7 @@ export function StudentWorkspaceDrawer({
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setArchiveDialogOpen(false)}>Hủy</Button>
-            <Button className="bg-amber-600 hover:bg-amber-700 text-white" onClick={handleConfirmArchive}>
+            <Button className="bg-warning hover:bg-warning/90 text-warning-foreground" onClick={handleConfirmArchive}>
               Xác nhận Lưu trữ
             </Button>
           </DialogFooter>
@@ -441,11 +453,11 @@ export function StudentWorkspaceDrawer({
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-600">
+            <DialogTitle className="flex items-center gap-2 text-destructive">
               <AlertTriangle className="h-5 w-5" />
               Cảnh báo: Xóa vĩnh viễn dữ liệu
             </DialogTitle>
-            <DialogDescription className="text-red-900/80">
+            <DialogDescription className="text-destructive/80">
               Hành động này sẽ <strong>xóa vĩnh viễn</strong> tài khoản học viên <strong>{student.fullName}</strong> cùng toàn bộ bài nộp, điểm số và nhận xét. Hành động này không thể hoàn tác!
             </DialogDescription>
           </DialogHeader>
@@ -456,7 +468,7 @@ export function StudentWorkspaceDrawer({
               placeholder="Nhập DELETE"
               value={deleteConfirmText}
               onChange={(e) => setDeleteConfirmText(e.target.value)}
-              className="border-red-300 focus-visible:ring-red-500 font-mono"
+              className="border-destructive/40 focus-visible:ring-destructive font-mono"
             />
           </div>
 

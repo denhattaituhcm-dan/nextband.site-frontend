@@ -126,70 +126,70 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex bg-slate-50/50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 selection:bg-primary/10 selection:text-primary relative overflow-hidden">
-      {/* 9. Background: Subtle radial glow behind login card */}
-      <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[600px] h-[600px] bg-sky-400/5 dark:bg-sky-500/5 rounded-full blur-3xl pointer-events-none z-0" />
+    <div className="min-h-screen flex bg-background font-sans text-foreground selection:bg-primary/10 selection:text-primary relative overflow-hidden">
+      {/* Background: Subtle soft ambient surface */}
+      <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[600px] h-[600px] bg-primary-soft/40 rounded-full blur-3xl pointer-events-none z-0" />
 
       {/* Left side - Education & Academic Branding Panel (Visual 2-Zone Separation) */}
-      <div className="hidden lg:flex lg:w-1/2 xl:w-[58%] bg-slate-50/90 text-slate-900 px-8 xl:px-14 py-8 xl:py-10 flex-col justify-between relative overflow-hidden border-r border-slate-200/80 animate-in fade-in duration-500 z-10">
-        {/* Subtle Soft Blue Ambient Glow */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="hidden lg:flex lg:w-1/2 xl:w-[58%] bg-muted/20 text-foreground px-8 xl:px-14 py-8 xl:py-10 flex-col justify-between relative overflow-hidden border-r border-border animate-in fade-in duration-500 z-10">
+        {/* Subtle Soft Ambient Glow */}
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-info/5 rounded-full blur-3xl pointer-events-none" />
 
-        {/* 4. Unified Brand Header (Logo A + ARIS IELTS + Cambridge Badge + Subtitle) */}
+        {/* Unified Brand Header (Logo + ARIS IELTS + Cambridge Badge + Subtitle) */}
         <div className="relative z-10 space-y-3">
           <div className="flex items-center gap-3">
             <SiteLogo alt="ARIS IELTS" className="max-h-12 w-auto object-contain" />
-            <div className="border-l border-slate-200 pl-3">
-              <div className="font-bold text-slate-900 text-lg leading-tight tracking-tight">ARIS IELTS</div>
-              <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-400 mt-0.5">
-                <Award className="h-3.5 w-3.5 text-amber-500" />
+            <div className="border-l border-border pl-3">
+              <div className="font-bold text-foreground text-lg leading-tight tracking-tight">ARIS IELTS</div>
+              <span className="inline-flex items-center gap-1 text-xs font-semibold text-warning mt-0.5">
+                <Award className="h-3.5 w-3.5" />
                 Cambridge Standard
               </span>
             </div>
           </div>
           <div className="space-y-1">
-            <p className="text-base font-semibold tracking-tight text-slate-700">
+            <p className="text-base font-semibold tracking-tight text-muted-foreground">
               {settings.authTagline}
             </p>
           </div>
         </div>
 
-        {/* Left side Primary Content (Whitespace as layout, no outer card frame) */}
+        {/* Left side Primary Content */}
         <div className="relative z-10 w-full max-w-3xl my-auto py-4 space-y-6">
-          {/* Feature Pillars - Lightweight with subtle shadow, ~10-15% opacity border */}
+          {/* Feature Pillars */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/20 dark:border-slate-800/30 shadow-sm">
-              <div className="rounded-lg bg-sky-500/10 p-2.5 shrink-0">
-                <GraduationCap className="h-5 w-5 text-sky-600" />
+            <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-card border border-border/60 shadow-xs">
+              <div className="rounded-lg bg-primary-soft p-2.5 shrink-0">
+                <GraduationCap className="h-5 w-5 text-primary" />
               </div>
               <div className="min-w-0">
-                <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm sm:text-base tracking-tight truncate">
+                <h3 className="font-semibold text-foreground text-sm sm:text-base tracking-tight truncate">
                   Learning Workspace
                 </h3>
-                <p className="text-xs text-slate-500 truncate">
+                <p className="text-xs text-muted-foreground truncate">
                   Lộ trình IELTS chuẩn
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/20 dark:border-slate-800/30 shadow-sm">
-              <div className="rounded-lg bg-indigo-500/10 p-2.5 shrink-0">
-                <TrendingUp className="h-5 w-5 text-indigo-600" />
+            <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-card border border-border/60 shadow-xs">
+              <div className="rounded-lg bg-info/10 p-2.5 shrink-0">
+                <TrendingUp className="h-5 w-5 text-info" />
               </div>
               <div className="min-w-0">
-                <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm sm:text-base tracking-tight truncate">
+                <h3 className="font-semibold text-foreground text-sm sm:text-base tracking-tight truncate">
                   Track Progress
                 </h3>
-                <p className="text-xs text-slate-500 truncate">
+                <p className="text-xs text-muted-foreground truncate">
                   Theo dõi tiến độ
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Hero Illustration directly with rounded-3xl corners (no encapsulating card) */}
-          <div className="w-full rounded-[24px] overflow-hidden shadow-xs border border-slate-200/40">
+          {/* Hero Illustration */}
+          <div className="w-full rounded-[24px] overflow-hidden shadow-xs border border-border/40">
             <img
               src="/your-journey.webp"
               alt="ARIS IELTS Learning Journey"
@@ -200,11 +200,11 @@ export default function Auth() {
           </div>
         </div>
 
-        {/* 5. Subtler Footer - Smaller font size, softer muted colors */}
-        <div className="relative z-10 flex items-center justify-between gap-3 pt-3 border-t border-slate-200/40 text-[11px]">
+        {/* Subtler Footer */}
+        <div className="relative z-10 flex items-center justify-between gap-3 pt-3 border-t border-border/60 text-[11px]">
           <div className="space-y-0.5">
-            <div className="font-medium text-slate-700 tracking-tight">ARIS IELTS</div>
-            <div className="text-slate-400 font-normal text-[10px]">
+            <div className="font-medium text-foreground tracking-tight">ARIS IELTS</div>
+            <div className="text-muted-foreground font-normal text-[10px]">
               © 2026 <span className="mx-1">•</span> Dĩ An, TP.HCM
             </div>
           </div>
@@ -214,37 +214,36 @@ export default function Auth() {
               href={settings.zaloLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-white hover:bg-slate-100 text-sky-600 border border-slate-200/80 text-[11px] font-medium transition-colors shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-card hover:bg-muted text-primary border border-border text-[11px] font-medium transition-colors shadow-2xs"
             >
-              <MessageCircle className="h-3 w-3 text-sky-500" />
+              <MessageCircle className="h-3 w-3 text-primary" />
               <span>Support</span>
             </a>
           )}
         </div>
       </div>
 
-      {/* Right side - Focal Point Student Login Workspace Form */}
+      {/* Right side - Student Login Workspace Form */}
       <div className="flex-1 flex items-center justify-center px-6 lg:px-12 py-6 lg:py-8 z-10">
-        {/* 1. Login Card (Kept as focal point) */}
-        <Card className="w-full max-w-[520px] border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] rounded-2xl bg-white dark:bg-slate-900 p-7 sm:p-8">
+        <Card className="w-full max-w-[520px] border border-border shadow-lg rounded-2xl bg-card p-7 sm:p-8">
           <CardHeader className="space-y-1.5 text-center p-0 pb-5">
             <div className="lg:hidden flex items-center justify-center gap-2 mb-3">
               <SiteLogo alt="ARIS IELTS Logo" className="max-h-9 w-auto object-contain" />
             </div>
-            <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
               Đăng nhập
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6 p-0">
-            {/* 2. DÀNH CHO HỌC VIÊN + Google Button (No background container box, clean whitespace) */}
+            {/* DÀNH CHO HỌC VIÊN + Google Button */}
             <div className="space-y-3">
-              <div className="text-xs font-bold tracking-wider text-sky-800 dark:text-sky-300 uppercase text-center">
+              <div className="text-xs font-bold tracking-wider text-primary uppercase text-center">
                 🎓 DÀNH CHO HỌC VIÊN
               </div>
               <Button
                 type="button"
                 variant="outline"
-                className="w-full flex items-center justify-center gap-3 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 h-11 rounded-xl px-4 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-800 dark:text-slate-200 shadow-xs transition-all duration-150 active:scale-[0.99]"
+                className="w-full flex items-center justify-center gap-3 border-border bg-card h-11 rounded-xl px-4 text-sm font-semibold hover:bg-muted text-foreground shadow-xs transition-all duration-150 active:scale-[0.99]"
                 onClick={async () => {
                   try {
                     setIsLoading(true);
@@ -280,7 +279,7 @@ export default function Auth() {
                 </svg>
                 <span className="tracking-tight">Đăng nhập bằng Google</span>
               </Button>
-              <p className="text-xs text-center text-slate-500 dark:text-slate-400 font-normal">
+              <p className="text-xs text-center text-muted-foreground font-normal">
                 Cách đăng nhập nhanh chóng nhất
               </p>
             </div>
@@ -288,20 +287,20 @@ export default function Auth() {
             {/* Divider */}
             <div className="relative my-2">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-slate-200 dark:border-slate-800" />
+                <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase tracking-wider">
-                <span className="bg-white dark:bg-slate-900 px-3 text-slate-400 font-semibold">
-                  Giáo viên & Quản trị
+                <span className="bg-card px-3 text-muted-foreground font-semibold">
+                  Giáo viên &amp; Quản trị
                 </span>
               </div>
             </div>
 
-            {/* 3. Teacher & Admin Form (Removed background container box) */}
+            {/* Teacher & Admin Form */}
             <form onSubmit={handleSignIn} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="login-email" className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                  <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <Label htmlFor="login-email" className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <Mail className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                   <span>Email</span>
                 </Label>
                 <Input
@@ -311,15 +310,15 @@ export default function Auth() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
-                  className="h-10 text-sm border-slate-200 dark:border-slate-800 focus-visible:ring-1 focus-visible:ring-primary/40"
+                  className="h-10 text-sm border-border focus-visible:ring-1 focus-visible:ring-primary/40"
                 />
                 {errors.email && (
                   <p className="text-xs text-destructive mt-1">{errors.email}</p>
                 )}
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="login-password" className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                  <Lock className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <Label htmlFor="login-password" className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <Lock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                   <span>Mật khẩu</span>
                 </Label>
                 <div className="relative">
@@ -330,13 +329,13 @@ export default function Auth() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={isLoading}
-                    className="h-10 text-sm pr-9 border-slate-200 dark:border-slate-800 focus-visible:ring-1 focus-visible:ring-primary/40"
+                    className="h-10 text-sm pr-9 border-border focus-visible:ring-1 focus-visible:ring-primary/40"
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-2.5 py-2 hover:bg-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                    className="absolute right-0 top-0 h-full px-2.5 py-2 hover:bg-transparent text-muted-foreground hover:text-foreground"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={isLoading}
                   >
@@ -351,8 +350,12 @@ export default function Auth() {
                   <p className="text-xs text-destructive mt-1">{errors.password}</p>
                 )}
               </div>
-              {/* 8. Subtle Navy Gradient Login Button */}
-              <Button type="submit" className="w-full h-10 text-sm font-semibold tracking-tight mt-1.5 bg-gradient-to-b from-[#1E293B] to-[#0F172A] hover:from-[#0F172A] hover:to-[#020617] text-white shadow-xs transition-all duration-150" disabled={isLoading}>
+
+              <Button
+                type="submit"
+                className="w-full h-10 text-sm font-semibold tracking-tight mt-1.5 bg-primary hover:bg-primary-hover text-primary-foreground shadow-xs transition-all duration-150"
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
