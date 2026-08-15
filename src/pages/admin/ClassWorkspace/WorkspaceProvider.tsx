@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { classesApi, sessionsApi, normalizeSession } from "@/lib/api";
-import { supabase } from "@/lib/supabase";
+import { classesApi, sessionsApi, examsApi, submissionsApi, normalizeSession } from "@/lib/api";
 
 interface WorkspaceContextType {
   classId: string;
@@ -56,25 +55,24 @@ export const WorkspaceProvider: React.FC<{
 
       // Fetch course homeworks/exams if course_id exists
       let lessons: any[] = [];
-      if (cls.courseId || cls.course_id) {
-        const targetCourseId = cls.courseId || cls.course_id;
-        const { data: examData, error: examErr } = await supabase
-          .from("exams")
-          .select("id, title, week, exam_type, exam_sections(id, section_type, title, order_index)")
-          .eq("course_id", targetCourseId)
-          .order("week", { ascending: true });
-        if (!examErr && examData) {
-          lessons = examData;
+      const targetCourseId = cls.courseId || cls.course_id;
+      if (targetCourseId) {
+        try {
+          const examRes = await examsApi.list({ courseId: targetCourseId, limit: 100 });
+          lessons = examRes.data || [];
+        } catch (examErr) {
+          console.warn("[WorkspaceProvider] Could not fetch exams:", examErr);
         }
       }
 
       // Fetch submissions for this class
-      const { data: subs } = await supabase
-        .from("submissions")
-        .select("id, status, grade_status, created_at, student_id, homework_id")
-        .eq("class_id", classId);
-
-      const submissions = subs || [];
+      let submissions: any[] = [];
+      try {
+        const subRes = await submissionsApi.list({ classId, limit: 200 });
+        submissions = subRes.data || [];
+      } catch (subErr) {
+        console.warn("[WorkspaceProvider] Could not fetch submissions:", subErr);
+      }
 
       return {
         ...cls,

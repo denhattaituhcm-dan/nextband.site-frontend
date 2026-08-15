@@ -8,8 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CheckCircle2, Clock, XCircle, AlertCircle, Lock, Save, CheckCheck, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { API_BASE_URL, CanonicalSessionDTO, invalidateClassWorkspace } from "@/lib/api";
-import { supabase } from "@/lib/supabase";
+import { API_BASE_URL, CanonicalSessionDTO, invalidateClassWorkspace, getAuthToken } from "@/lib/api";
 
 interface StudentAttendanceItem {
   studentId: string;
@@ -110,8 +109,7 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessi
         })),
       };
 
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token || localStorage.getItem("token") || "";
+      const token = (await getAuthToken()) || localStorage.getItem("token") || "";
 
       const res = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${selectedSessionId}/attendance`, {
         method: "POST",
@@ -156,8 +154,7 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessi
       // Save items first to be safe
       await handleSaveAttendance();
 
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token || localStorage.getItem("token") || "";
+      const token = (await getAuthToken()) || localStorage.getItem("token") || "";
 
       const res = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${selectedSessionId}/complete`, {
         method: "POST",

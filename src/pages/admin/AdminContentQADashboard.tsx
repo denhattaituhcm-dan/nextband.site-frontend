@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { supabase } from "@/lib/supabase";
+import { coursesApi, examsApi } from "@/lib/api";
 
 interface ActionableRemedy {
   type: string;
@@ -46,7 +46,7 @@ interface CourseHealthSummary {
   healthBadge: "GREEN" | "YELLOW" | "RED";
 }
 
-export function AdminContentQADashboard() {
+export default function AdminContentQADashboard() {
   const [loading, setLoading] = useState(true);
   const [auditing, setAuditing] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<string>("ALL");
@@ -57,16 +57,15 @@ export function AdminContentQADashboard() {
   const fetchAuditData = async () => {
     setLoading(true);
     try {
-      const { data: courses } = await supabase.from("courses").select("id, title").order("title");
-      const { data: exams } = await supabase.from("exams").select("id, title, week, course_id, courses(title)").order("week");
+      const [{ data: courses }, { data: exams }] = await Promise.all([
+        coursesApi.list({ limit: 100 }),
+        examsApi.list({ limit: 500 }),
+      ]);
 
       const items: ExamAuditItem[] = [];
 
       for (const e of (exams || [])) {
-        const { data: sections } = await supabase
-          .from("exam_sections")
-          .select("id, title, section_type, audio_url")
-          .eq("exam_id", e.id);
+        const sections = e.sections || e.exam_sections || [];
 
         let criticalErrors: string[] = [];
         let warnings: string[] = [];
@@ -80,15 +79,12 @@ export function AdminContentQADashboard() {
           score = 0;
         } else {
           for (const s of sections) {
-            const { data: groups } = await supabase
-              .from("question_groups")
-              .select("id, title, audio_url, passage")
-              .eq("section_id", s.id);
-
+            const groups = s.questionGroups || s.question_groups || [];
             const groupList = groups || [];
 
             // Critical Invariant: Mismapped Section
-            if (s.section_type === "general" && groupList.some(g => Boolean(g.audio_url || g.passage))) {
+            const sectionType = s.sectionType || s.section_type;
+            if (sectionType === "general" && groupList.some((g: any) => Boolean(g.audioUrl || g.audio_url || g.passage))) {
               criticalErrors.push(`Section '${s.title}' is mis-mapped (Content stuffed in Grammar)`);
               remedies.push({
                 type: "REASSIGN_SECTION",
@@ -98,7 +94,7 @@ export function AdminContentQADashboard() {
             }
 
             // Critical Invariant: Listening Missing Audio
-            if (s.section_type === "listening" && groupList.length > 0 && !groupList.some(g => Boolean(g.audio_url || s.audio_url))) {
+            if (sectionType === "listening" && groupList.length > 0 && !groupList.some((g: any) => Boolean(g.audioUrl || g.audio_url || s.audioUrl || s.audio_url))) {
               criticalErrors.push(`Listening Section '${s.title}' missing Audio file`);
               score -= 35;
               remedies.push({
@@ -109,7 +105,7 @@ export function AdminContentQADashboard() {
             }
 
             // Critical Invariant: Reading Missing Passage
-            if (s.section_type === "reading" && groupList.length > 0 && !groupList.some(g => Boolean(g.passage))) {
+            if (sectionType === "reading" && groupList.length > 0 && !groupList.some((g: any) => Boolean(g.passage))) {
               criticalErrors.push(`Reading Section '${s.title}' missing Passage text`);
               score -= 30;
               remedies.push({
