@@ -3059,35 +3059,7 @@ export interface AlertItem {
 
 export const announcementsApi = {
   list: async (_scopeRole: "admin" | "teacher" | "student" = "student", _classId?: string): Promise<AnnouncementItem[]> => {
-    return [
-      {
-        id: "ann-1",
-        title: "📢 Trung tâm nghỉ lễ Quốc Khánh 2/9",
-        content: "Toàn bộ học viên và giáo viên nghỉ học từ ngày 01/09 đến hết ngày 03/09.",
-        scope_type: "GLOBAL",
-        scope_value: null,
-        priority: "urgent",
-        is_pinned: true,
-        version: 1,
-        published_at: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-        is_read: false,
-      },
-      {
-        id: "ann-2",
-        title: "📢 Cập nhật chính sách học bù mới",
-        content: "Học viên xin nghỉ có phép trước 4 tiếng sẽ được sắp xếp học bù ở lớp tương đương.",
-        scope_type: "ROLE",
-        scope_value: "student",
-        priority: "important",
-        is_pinned: false,
-        version: 2,
-        published_at: new Date(Date.now() - 86400000).toISOString(),
-        created_at: new Date(Date.now() - 86400000).toISOString(),
-        has_newer_version: true,
-        is_read: false,
-      },
-    ];
+    return [];
   },
 
   markAsRead: async (_announcementId: string, _version: number = 1) => {
@@ -3097,54 +3069,13 @@ export const announcementsApi = {
 
 export const activityFeedApi = {
   list: async (_scopeRole: "admin" | "teacher" | "student" = "student"): Promise<ActivityItem[]> => {
-    return [
-      {
-        id: "act-1",
-        actor_name: "Nguyễn Văn An",
-        action: "submitted_hw",
-        target_type: "homework",
-        target_name: "HW 12: IELTS Writing Task 2",
-        scope_type: "ROLE",
-        scope_value: "teacher",
-        created_at: new Date().toISOString(),
-      },
-      {
-        id: "act-2",
-        actor_name: "Giáo viên Hoàng Anh",
-        action: "graded_hw",
-        target_type: "homework",
-        target_name: "HW 11: Listening Section 4",
-        scope_type: "USER",
-        created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
-      },
-      {
-        id: "act-3",
-        actor_name: "Hệ thống",
-        action: "opened_hw",
-        target_type: "homework",
-        target_name: "HW 13: Speaking Part 2",
-        scope_type: "GLOBAL",
-        created_at: new Date(Date.now() - 3600000 * 5).toISOString(),
-      },
-    ];
+    return [];
   },
 };
 
 export const alertsApi = {
   list: async (_role: "admin" | "teacher" | "student" = "teacher"): Promise<AlertItem[]> => {
-    return [
-      {
-        id: "alt-1",
-        type: "ungraded_hw",
-        owner_type: "teacher",
-        priority: "urgent",
-        context: { count: 15, title: "15 bài tập chưa chấm" },
-        status: "open",
-        created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-        last_detected: new Date().toISOString(),
-        age_days: 2,
-      },
-    ];
+    return [];
   },
 
   resolve: async (_id: string): Promise<void> => {
