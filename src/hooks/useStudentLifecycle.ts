@@ -90,9 +90,12 @@ export function useStudentLifecycle() {
   const { data: workspace, isLoading: isLoadingWorkspace } = useQuery({
     queryKey: ["student-workspace-summary", user?.id],
     queryFn: async () => {
-      const result = await workspaceApi.getWorkspace();
-      if (!result) return null;
-      return result;
+      try {
+        const result = await workspaceApi.getStudentWorkspace();
+        return result?.data ?? null;
+      } catch {
+        return null;
+      }
     },
     enabled: !!isAuthenticated && !!user?.id && state === "ENROLLED",
     staleTime: 1000 * 60 * 2,

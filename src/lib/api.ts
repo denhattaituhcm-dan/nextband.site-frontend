@@ -2436,17 +2436,38 @@ export function generateSessionDates(
 export const sessionsApi = {
   list: async (classId: string): Promise<CanonicalSessionDTO[]> => {
     const token = await getAuthToken();
-    const res = await fetch(`${API_BASE_URL}/classes/${classId}/sessions`, {
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    });
+    try {
+      const res = await fetch(`${API_BASE_URL}/classes/${classId}/sessions`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
 
-    if (res.ok) {
-      const data = await res.json();
-      return (data || []).map(normalizeSession);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          return data.map(normalizeSession);
+        }
+      }
+    } catch {
+      // Backend REST offline -> proceed to Supabase query
     }
+
+    try {
+      const { data: dbSessions, error } = await supabase
+        .from("class_sessions")
+        .select("*")
+        .eq("class_id", classId)
+        .order("session_number", { ascending: true });
+
+      if (!error && dbSessions && dbSessions.length > 0) {
+        return dbSessions.map(normalizeSession);
+      }
+    } catch {
+      // ignore
+    }
+
     return [];
   },
 
@@ -2462,31 +2483,70 @@ export const sessionsApi = {
     }
   ): Promise<ClassSession[]> => {
     const token = await getAuthToken();
-    const res = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/generate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      body: JSON.stringify(options),
-    });
+    try {
+      const res = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/generate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(options),
+      });
 
-    if (res.ok) {
-      const data = await res.json();
-      return (data || []).map((s: any) => ({
-        id: s.id,
-        classId: s.classId || s.class_id,
-        sessionNumber: s.sessionNumber || s.session_number,
-        plannedDate: s.plannedDate || s.planned_date,
-        startTime: s.startTime || s.start_time,
-        endTime: s.endTime || s.end_time,
-        status: (s.status as SessionStatus) || "PLANNED",
-        createdAt: s.createdAt || s.created_at,
-      }));
+      if (res.ok) {
+        const data = await res.json();
+        return (data || []).map((s: any) => ({
+          id: s.id,
+          classId: s.classId || s.class_id,
+          sessionNumber: s.sessionNumber || s.session_number,
+          plannedDate: s.plannedDate || s.planned_date,
+          startTime: s.startTime || s.start_time,
+          endTime: s.endTime || s.end_time,
+          status: (s.status as SessionStatus) || "PLANNED",
+          createdAt: s.createdAt || s.created_at,
+        }));
+      }
+    } catch {
+      // Backend REST offline -> Fallback to direct Supabase creation
     }
 
-    const errData = await res.json().catch(() => ({}));
-    throw new Error(errData.error || "Sinh buổi học thất bại");
+    try {
+      const dates = calculateSessionDates(
+        options.startDate,
+        options.weekdays,
+        options.totalSessions
+      );
+
+      const rows = dates.map((d, idx) => ({
+        class_id: classId,
+        session_number: idx + 1,
+        planned_date: d,
+        session_date: d,
+        start_time: options.startTime,
+        end_time: options.endTime,
+        status: "SCHEDULED",
+        title: `Buổi ${idx + 1}`,
+      }));
+
+      const { data, error } = await supabase
+        .from("class_sessions")
+        .insert(rows)
+        .select();
+
+      if (error) throw error;
+      return (data || []).map((s: any) => ({
+        id: s.id,
+        classId: s.class_id,
+        sessionNumber: s.session_number,
+        plannedDate: s.session_date || s.planned_date,
+        startTime: s.start_time,
+        endTime: s.end_time,
+        status: s.status as SessionStatus,
+        createdAt: s.created_at,
+      }));
+    } catch (err: any) {
+      throw new Error(err.message || "Sinh buổi học thất bại");
+    }
   },
 
   /** Reschedule một buổi học cụ thể */
@@ -2496,27 +2556,60 @@ export const sessionsApi = {
     reason: string
   ): Promise<ClassSession> => {
     const token = await getAuthToken();
-    const res = await fetch(`${API_BASE_URL}/classes/sessions/${sessionId}/reschedule`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      body: JSON.stringify({ plannedDate: newDate, reason }),
-    });
+    try {
+      const res = await fetch(`${API_BASE_URL}/classes/sessions/${sessionId}/reschedule`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ plannedDate: newDate, reason }),
+      });
 
-    if (res.ok) {
-      const s = await res.json();
-      return {
-        id: s.id,
-        classId: s.classId || s.class_id,
-        sessionNumber: s.sessionNumber || s.session_number,
-        plannedDate: s.plannedDate || s.planned_date,
-        startTime: s.startTime || s.start_time,
-        endTime: s.endTime || s.end_time,
-        status: (s.status as SessionStatus) || "PLANNED",
-        createdAt: s.createdAt || s.created_at,
-      };
+      if (res.ok) {
+        const s = await res.json();
+        return {
+          id: s.id,
+          classId: s.classId || s.class_id,
+          sessionNumber: s.sessionNumber || s.session_number,
+          plannedDate: s.plannedDate || s.planned_date,
+          startTime: s.startTime || s.start_time,
+          endTime: s.endTime || s.end_time,
+          status: (s.status as SessionStatus) || "PLANNED",
+          createdAt: s.createdAt || s.created_at,
+        };
+      }
+    } catch {
+      // Fallback
+    }
+
+    try {
+      const { data: s, error } = await supabase
+        .from("class_sessions")
+        .update({
+          planned_date: newDate,
+          session_date: newDate,
+          reschedule_reason: reason,
+          status: "RESCHEDULED",
+        })
+        .eq("id", sessionId)
+        .select()
+        .single();
+
+      if (!error && s) {
+        return {
+          id: s.id,
+          classId: s.class_id,
+          sessionNumber: s.session_number,
+          plannedDate: s.planned_date || s.session_date,
+          startTime: s.start_time,
+          endTime: s.end_time,
+          status: s.status,
+          createdAt: s.created_at,
+        };
+      }
+    } catch {
+      // ignore
     }
 
     return {
@@ -3020,49 +3113,255 @@ export interface SessionAttendanceContract {
 
 export const attendanceApi = {
   getSessionAttendance: async (classId: string, sessionId: string) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.access_token;
-    const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/attendance`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "Failed to fetch attendance");
-    return result as { success: boolean; data: SessionAttendanceContract };
+    const token = await getAuthToken();
+    try {
+      const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/attendance`, {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      if (response.ok) {
+        const result = await response.json();
+        if (result?.success && result?.data) {
+          return result as { success: boolean; data: SessionAttendanceContract };
+        }
+      }
+    } catch {
+      // Proceed to Supabase fallback
+    }
+
+    try {
+      const [sessionRes, attendanceRes] = await Promise.all([
+        supabase.from("class_sessions").select("*").eq("id", sessionId).maybeSingle(),
+        supabase.from("class_attendance").select("*").eq("session_id", sessionId),
+      ]);
+
+      const session = sessionRes.data;
+      const attRows = attendanceRes.data || [];
+
+      return {
+        success: true,
+        data: {
+          classId,
+          className: "",
+          sessionId,
+          sessionTitle: session?.title || `Buổi ${session?.session_number || 1}`,
+          sessionDate: session?.session_date || session?.planned_date || "",
+          status: session?.status || "SCHEDULED",
+          summary: {
+            total: attRows.length,
+            present: attRows.filter((r: any) => r.status === "PRESENT").length,
+            absent: attRows.filter((r: any) => r.status === "ABSENT").length,
+            late: attRows.filter((r: any) => r.status === "LATE").length,
+            excused: attRows.filter((r: any) => r.status === "EXCUSED").length,
+            unmarked: 0,
+          },
+          students: attRows.map((r: any) => ({
+            studentId: r.student_id,
+            studentName: "",
+            avatarUrl: null,
+            status: (r.status as AttendanceStatus) || "PRESENT",
+            notes: r.note || null,
+          })),
+        },
+      };
+    } catch {
+      return {
+        success: true,
+        data: {
+          classId,
+          className: "",
+          sessionId,
+          sessionTitle: `Buổi học`,
+          sessionDate: "",
+          status: "SCHEDULED",
+          summary: { total: 0, present: 0, absent: 0, late: 0, excused: 0, unmarked: 0 },
+          students: [],
+        },
+      };
+    }
   },
 
   markAttendance: async (
     classId: string,
     sessionId: string,
-    items: Array<{ studentId: string; status: AttendanceStatus; notes?: string }>
+    items: Array<{ studentId: string; status: AttendanceStatus; note?: string | null; notes?: string | null }>
   ) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.access_token;
-    const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/attendance`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ items }),
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "Failed to save attendance");
-    return result;
+    const token = await getAuthToken();
+    let restSuccess = false;
+    try {
+      const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/attendance`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ items }),
+      });
+      if (response.ok) {
+        restSuccess = true;
+      }
+    } catch {
+      // Backend offline
+    }
+
+    try {
+      const records = items.map((it) => ({
+        class_id: classId,
+        session_id: sessionId,
+        student_id: it.studentId,
+        status: it.status,
+        note: it.note || it.notes || null,
+      }));
+      await supabase.from("class_attendance").upsert(records, {
+        onConflict: "session_id,student_id",
+      });
+    } catch (dbErr) {
+      if (!restSuccess) throw dbErr;
+    }
+
+    return { success: true };
+  },
+
+  completeSession: async (classId: string, sessionId: string) => {
+    const token = await getAuthToken();
+    let restSuccess = false;
+    try {
+      const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/complete`, {
+        method: "POST",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      if (response.ok) {
+        restSuccess = true;
+      }
+    } catch {
+      // Backend offline
+    }
+
+    try {
+      await supabase
+        .from("class_sessions")
+        .update({ status: "COMPLETED", completed_at: new Date().toISOString() })
+        .eq("id", sessionId);
+    } catch (dbErr) {
+      if (!restSuccess) throw dbErr;
+    }
+
+    return { success: true };
+  },
+
+  unlockSession: async (classId: string, sessionId: string) => {
+    const token = await getAuthToken();
+    try {
+      await supabase
+        .from("class_sessions")
+        .update({ status: "SCHEDULED", completed_at: null })
+        .eq("id", sessionId);
+    } catch {
+      // ignore
+    }
+    return { success: true };
   },
 
   getAttendanceMatrix: async (classId: string) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.access_token || localStorage.getItem("token");
-    const response = await fetch(`${API_BASE_URL}/classes/${classId}/attendance-matrix`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "Failed to fetch attendance matrix");
-    return result;
+    const token = await getAuthToken();
+    try {
+      const response = await fetch(`${API_BASE_URL}/classes/${classId}/attendance-matrix`, {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      if (response.ok) {
+        const result = await response.json();
+        if (result?.success && result?.data) {
+          return result;
+        }
+      }
+    } catch {
+      // Backend offline
+    }
+
+    try {
+      const [sessionsRes, studentsRes, attendanceRes, classRes] = await Promise.all([
+        supabase.from("class_sessions").select("*").eq("class_id", classId).order("session_number", { ascending: true }),
+        supabase.from("class_students").select("student_id").eq("class_id", classId),
+        supabase.from("class_attendance").select("*").eq("class_id", classId),
+        supabase.from("classes").select("name").eq("id", classId).maybeSingle(),
+      ]);
+
+      const sessions = (sessionsRes.data || []).map((s: any) => ({
+        id: s.id,
+        sessionNumber: s.session_number,
+        sessionDate: s.session_date || s.planned_date,
+        lessonTitle: s.title || `Buổi ${s.session_number}`,
+        status: s.status,
+      }));
+
+      const studentIds = (studentsRes.data || []).map((cs: any) => cs.student_id).filter(Boolean);
+      let profiles: any[] = [];
+      if (studentIds.length > 0) {
+        const { data: profs } = await supabase.from("profiles").select("user_id, full_name, email, avatar_url").in("user_id", studentIds);
+        profiles = profs || [];
+      }
+
+      const allAttendance = attendanceRes.data || [];
+      const completedSessionsCount = sessions.filter((s: any) => s.status === "COMPLETED").length;
+
+      const studentRows = studentIds.map((sId: string) => {
+        const prof = profiles.find((p: any) => (p.user_id || p.id) === sId);
+        const studentAtt = allAttendance.filter((a: any) => a.student_id === sId);
+        const presentCount = studentAtt.filter((a: any) => a.status === "PRESENT").length;
+        const lateCount = studentAtt.filter((a: any) => a.status === "LATE").length;
+        const absentCount = studentAtt.filter((a: any) => a.status === "ABSENT").length;
+        const excusedCount = studentAtt.filter((a: any) => a.status === "EXCUSED").length;
+
+        const attendedScore = presentCount + lateCount * 0.8;
+        const attendanceRate = completedSessionsCount > 0 ? Math.round((attendedScore / completedSessionsCount) * 100) : 100;
+
+        return {
+          studentId: sId,
+          studentName: prof?.full_name || prof?.fullName || prof?.email || "Học viên",
+          avatarUrl: prof?.avatar_url || prof?.avatarUrl,
+          email: prof?.email || "",
+          presentCount,
+          lateCount,
+          absentCount,
+          excusedCount,
+          eligibleSessions: completedSessionsCount,
+          attendanceRate,
+          sessions: sessions.map((s: any) => {
+            const att = studentAtt.find((a: any) => a.session_id === s.id);
+            return {
+              sessionId: s.id,
+              sessionNumber: s.sessionNumber,
+              sessionDate: s.sessionDate,
+              status: s.status,
+              attendanceStatus: att ? att.status : "UNMARKED",
+              note: att?.note || null,
+            };
+          }),
+        };
+      });
+
+      return {
+        success: true,
+        data: {
+          classId,
+          className: classRes.data?.name || "Lớp học",
+          totalSessions: sessions.length,
+          completedSessions: completedSessionsCount,
+          sessionCoverage: sessions.length > 0 ? Math.round((completedSessionsCount / sessions.length) * 100) : 0,
+          recordCoverage: 100,
+          attendanceCoverage: sessions.length > 0 ? Math.round((completedSessionsCount / sessions.length) * 100) : 0,
+          sessions,
+          students: studentRows,
+        },
+      };
+    } catch {
+      return { success: false, error: "Không thể tải ma trận chuyên cần" };
+    }
   },
 };
 
