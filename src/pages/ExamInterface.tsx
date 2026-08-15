@@ -529,13 +529,14 @@ export default function ExamInterface() {
 
       const answerEntries = Object.entries(answers)
         .filter(([questionId]) => validQuestionIds.has(questionId))
-        .map(([questionId, answerText]) => ({
-          questionId,
-          answerText:
-            typeof answerText === "string"
-              ? answerText
-              : JSON.stringify(answerText),
-        }));
+        .map(([questionId, answerVal]) => {
+          const isAudio = typeof answerVal === "string" && (answerVal.startsWith("http://") || answerVal.startsWith("https://") || answerVal.startsWith("/uploads/"));
+          return {
+            questionId,
+            answerText: typeof answerVal === "string" ? answerVal : JSON.stringify(answerVal),
+            audioUrl: isAudio ? answerVal : undefined,
+          };
+        });
 
       // 3. Submit atomically to canonical API
       const result = await submissionsApi.submit(submission.id, answerEntries);

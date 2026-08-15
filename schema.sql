@@ -165,14 +165,30 @@ ALTER TABLE public.highlights ADD CONSTRAINT highlights_student_id_fkey FOREIGN 
 -- profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow authenticated full access to profiles" ON public.profiles;
-CREATE POLICY "Allow authenticated full access to profiles" ON public.profiles FOR ALL TO authenticated USING (true) WITH CHECK (true);
-DROP POLICY IF EXISTS "Allow anon select profiles" ON public.profiles;
-CREATE POLICY "Allow anon select profiles" ON public.profiles FOR SELECT TO anon USING (true);
+DROP POLICY IF EXISTS "Users can view profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update own profile or admins manage all" ON public.profiles;
 
--- user_roles
+CREATE POLICY "Users can view profiles" ON public.profiles FOR SELECT USING (true);
+CREATE POLICY "Users can update own profile or admins manage all" ON public.profiles FOR UPDATE USING (
+  (auth.uid() = user_id) OR has_role(auth.uid(), 'admin'::app_role)
+) WITH CHECK (
+  (auth.uid() = user_id) OR has_role(auth.uid(), 'admin'::app_role)
+);
+
+-- user_roles (P0.1: Locked down - Student read-only for own role, admin/service write only)
 ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow authenticated full access to user_roles" ON public.user_roles;
-CREATE POLICY "Allow authenticated full access to user_roles" ON public.user_roles FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Users can view own roles or admins/teachers view all" ON public.user_roles;
+DROP POLICY IF EXISTS "Admins only can manage user_roles" ON public.user_roles;
+
+CREATE POLICY "Users can view own roles or admins/teachers view all" ON public.user_roles FOR SELECT USING (
+  (auth.uid() = user_id) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'teacher'::app_role)
+);
+CREATE POLICY "Admins only can manage user_roles" ON public.user_roles FOR ALL USING (
+  has_role(auth.uid(), 'admin'::app_role)
+) WITH CHECK (
+  has_role(auth.uid(), 'admin'::app_role)
+);
 
 -- courses
 ALTER TABLE public.courses ENABLE ROW LEVEL SECURITY;
@@ -216,34 +232,105 @@ CREATE POLICY "Sections viewable by authorized users only" ON public.exam_sectio
   )
 );
 
--- exam_submissions
+-- exam_submissions (P0.3: Locked - Students cannot fabricate scores/status)
 ALTER TABLE public.exam_submissions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Admins and teachers can manage submissions" ON public.exam_submissions;
+DROP POLICY IF EXISTS "Students can create own submissions" ON public.exam_submissions;
+DROP POLICY IF EXISTS "Students can update own in-progress submissions" ON public.exam_submissions;
+DROP POLICY IF EXISTS "Students can view own submissions" ON public.exam_submissions;
+
 CREATE POLICY "Admins and teachers can manage submissions" ON public.exam_submissions FOR ALL USING (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'teacher'::app_role));
-CREATE POLICY "Students can create own submissions" ON public.exam_submissions FOR INSERT WITH CHECK (student_id = auth.uid());
-CREATE POLICY "Students can update own in-progress submissions" ON public.exam_submissions FOR UPDATE USING ((student_id = auth.uid()) AND (status = 'in_progress'::submission_status));
-CREATE POLICY "Students can view own submissions" ON public.exam_submissions FOR SELECT USING ((student_id = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'teacher'::app_role));
+CREATE POLICY "Students can create own in-progress submissions" ON public.exam_submissions FOR INSERT WITH CHECK (
+  student_id = auth.uid() AND (status = 'in_progress'::submission_status) AND (total_score IS NULL) AND (correct_answers IS NULL)
+);
+CREATE POLICY "Students can view own submissions" ON public.exam_submissions FOR SELECT USING (
+  (student_id = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'teacher'::app_role)
+);
 
 -- question_groups
 ALTER TABLE public.question_groups ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins and teachers can manage groups" ON public.question_groups FOR ALL USING (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'teacher'::app_role));
-CREATE POLICY "Groups viewable with section access" ON public.question_groups FOR SELECT USING (true);
+CREATE POLICY "Groups viewable with section access" ON public.question_groups FOR SELECT USING (
+  has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'teacher'::app_role) OR (
+    EXISTS (
+      SELECT 1 FROM exam_sections es
+      JOIN exams e ON es.exam_id = e.id
+      WHERE es.id = question_groups.section_id
+      AND e.is_published = true
+      AND (
+        e.is_open = true
+        OR EXISTS (
+          SELECT 1 FROM enrollments en
+          WHERE en.course_id = e.course_id AND en.student_id = auth.uid()
+        )
+      )
+    )
+  )
+);
 
--- questions
+-- questions (P0.2: Private table - Admin & Teacher only directly)
 ALTER TABLE public.questions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Admins and teachers can manage questions" ON public.questions FOR ALL USING (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'teacher'::app_role));
-CREATE POLICY "Questions viewable by all" ON public.questions FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Admins and teachers can manage questions" ON public.questions;
+DROP POLICY IF EXISTS "Questions viewable by all" ON public.questions;
 
--- answers
+CREATE POLICY "Admins and teachers can manage questions" ON public.questions FOR ALL USING (
+  has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'teacher'::app_role)
+);
+
+-- Safe View for Students: filtered by enrollment / assignment / published exam
+CREATE OR REPLACE VIEW public.student_exam_questions_view AS
+SELECT
+  q.id,
+  q.group_id,
+  q.question_type,
+  q.question_text,
+  q.options,
+  q.points,
+  q.order_index,
+  q.audio_url,
+  q.created_at,
+  q.updated_at
+FROM public.questions q
+JOIN public.question_groups qg ON q.group_id = qg.id
+JOIN public.exam_sections es ON qg.section_id = es.id
+JOIN public.exams e ON es.exam_id = e.id
+WHERE e.is_published = true
+  AND (
+    e.is_open = true
+    OR has_role(auth.uid(), 'admin'::app_role)
+    OR has_role(auth.uid(), 'teacher'::app_role)
+    OR EXISTS (
+      SELECT 1 FROM public.enrollments en
+      WHERE en.course_id = e.course_id AND en.student_id = auth.uid()
+    )
+  );
+
+GRANT SELECT ON public.student_exam_questions_view TO authenticated;
+
+-- answers (P0.3: Students can only save answer_text / audio_url)
 ALTER TABLE public.answers ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Admins and teachers can manage answers" ON public.answers;
+DROP POLICY IF EXISTS "Students can manage own answers" ON public.answers;
+DROP POLICY IF EXISTS "Students can view own answers" ON public.answers;
+
 CREATE POLICY "Admins and teachers can manage answers" ON public.answers FOR ALL USING (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'teacher'::app_role));
-CREATE POLICY "Students can manage own answers" ON public.answers FOR ALL USING (
+CREATE POLICY "Students can upsert own answers in progress" ON public.answers FOR ALL USING (
   EXISTS (
     SELECT 1 FROM exam_submissions
     WHERE exam_submissions.id = answers.submission_id
     AND exam_submissions.student_id = auth.uid()
     AND exam_submissions.status = 'in_progress'::submission_status
   )
+) WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM exam_submissions
+    WHERE exam_submissions.id = answers.submission_id
+    AND exam_submissions.student_id = auth.uid()
+    AND exam_submissions.status = 'in_progress'::submission_status
+  )
+  AND (score IS NULL)
 );
+
 CREATE POLICY "Students can view own answers" ON public.answers FOR SELECT USING (
   (EXISTS (
     SELECT 1 FROM exam_submissions

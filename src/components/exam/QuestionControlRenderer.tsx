@@ -61,19 +61,16 @@ export function QuestionControlRenderer({
       : selectedRaw
         ? [selectedRaw]
         : [];
-    const hasMultipleCorrect =
-      typeof question.correct_answer === "string" &&
-      question.correct_answer
-        .split("|")
-        .map((v: string) => v.trim())
-        .filter(Boolean).length > 1;
+    const isMultiMode = Boolean(
+      question.selectionMode === "multiple" ||
+      question.question_type === "multiple_choice_multi" ||
+      question.questionType === "multiple_choice_multi" ||
+      question.isMultiChoice ||
+      (typeof question.maxSelections === "number" && question.maxSelections > 1)
+    );
+    const expectedCount = typeof question.maxSelections === "number" && question.maxSelections > 1 ? question.maxSelections : 2;
 
-    const currentAnswers = typeof question.correct_answer === "string"
-      ? question.correct_answer.split("|").map((v: string) => v.trim()).filter(Boolean)
-      : [];
-
-    if (hasMultipleCorrect) {
-      const expectedCount = currentAnswers.length;
+    if (isMultiMode) {
       return (
         <div className="space-y-2">
           <div className={`flex items-center gap-2 text-xs font-semibold text-[hsl(var(--${themeColorClass}))] bg-[hsl(var(--${themeColorClass}))]/8 border border-[hsl(var(--${themeColorClass}))]/20 rounded-lg px-3 py-1.5`}>

@@ -243,26 +243,17 @@ export function GrammarSection({
                                             : selectedRaw
                                             ? [selectedRaw]
                                             : [];
-                                          const hasMultipleCorrect =
-                                            typeof question.correct_answer ===
-                                              "string" &&
-                                            question.correct_answer
-                                              .split("|")
-                                              .map((v: string) => v.trim())
-                                              .filter(Boolean).length > 1;
+                                          const isMultiMode = Boolean(
+                                             question.selectionMode === "multiple" ||
+                                             question.question_type === "multiple_choice_multi" ||
+                                             question.questionType === "multiple_choice_multi" ||
+                                             question.isMultiChoice ||
+                                             (typeof question.maxSelections === "number" && question.maxSelections > 1)
+                                           );
 
-                                          const currentAnswers =
-                                            typeof question.correct_answer ===
-                                            "string"
-                                              ? question.correct_answer
-                                                  .split("|")
-                                                  .map((v: string) => v.trim())
-                                                  .filter(Boolean)
-                                              : [];
+                                           const expectedCount = typeof question.maxSelections === "number" && question.maxSelections > 1 ? question.maxSelections : 2;
 
-                                          if (hasMultipleCorrect) {
-                                            const expectedCount =
-                                              currentAnswers.length;
+                                          if (isMultiMode) {
                                             return (
                                               <div className="space-y-3">
                                                 <div className="flex items-center gap-2 text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded-xl px-3.5 py-2">

@@ -1,11 +1,38 @@
 import { supabase } from "./supabase";
 import { normalizeSiteSettings } from "./site-settings";
-import { gradeAllExamQuestions, QuestionForGrading } from "./gradingEngine";
 
-export const API_BASE_URL =
-  (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) ||
-  process.env.VITE_API_URL ||
-  "http://localhost:3000/api/v1";
+export const resolveApiBaseUrl = (): string => {
+  const envUrl =
+    (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) ||
+    (typeof process !== "undefined" && process.env?.VITE_API_URL);
+
+  if (envUrl && !envUrl.includes("localhost")) {
+    return envUrl;
+  }
+
+  // If in browser and on production domain (e.g. nextband.site), always use production API gateway
+  if (typeof window !== "undefined" && window.location.hostname.includes("nextband.site")) {
+    return "https://api.nextband.site/api/v1";
+  }
+
+  // If explicit localhost env was provided during local dev
+  if (envUrl) {
+    return envUrl;
+  }
+
+  return "http://localhost:3000/api/v1";
+};
+
+export const API_BASE_URL = resolveApiBaseUrl();
+
+export const getAuthToken = async (): Promise<string | null> => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.access_token || null;
+  } catch {
+    return null;
+  }
+};
 
 // Helper to format URLs
 export const formatStorageUrl = (path: string | null | undefined) => {
@@ -51,23 +78,32 @@ export function normalizeExamData(exam: any): any {
     }));
 
   const normalizeQuestions = (questions: any[]) =>
-    (questions || []).map((q: any) => ({
-      ...q,
-      questionType: q.questionType || q.question_type,
-      question_type: q.question_type || q.questionType,
-      questionText: q.questionText || q.question_text || "",
-      question_text: q.question_text || q.questionText || "",
-      correctAnswer: q.correctAnswer ?? q.correct_answer ?? "",
-      correct_answer: q.correct_answer ?? q.correctAnswer ?? "",
-      groupId: q.groupId || q.group_id,
-      orderIndex: q.orderIndex ?? q.order_index ?? 0,
-      audioUrl: formatStorageUrl(q.audioUrl || q.audio_url || ""),
-      audio_url: formatStorageUrl(q.audio_url || q.audioUrl || ""),
-      // Normalize options: ensure array format
-      options: Array.isArray(q.options)
-        ? q.options
-        : (q.options ? (typeof q.options === "string" ? JSON.parse(q.options) : q.options) : []),
-    }));
+    (questions || []).map((q: any) => {
+      const selectionMode = q.selectionMode || (q.isMultiChoice ? "multiple" : "single");
+      const maxSelections = typeof q.maxSelections === "number" ? q.maxSelections : (selectionMode === "multiple" ? 2 : 1);
+      const isMultiChoice = selectionMode === "multiple" || Boolean(q.isMultiChoice);
+
+      return {
+        ...q,
+        questionType: q.questionType || q.question_type,
+        question_type: q.question_type || q.questionType,
+        questionText: q.questionText || q.question_text || "",
+        question_text: q.question_text || q.questionText || "",
+        selectionMode,
+        maxSelections,
+        isMultiChoice,
+        correctAnswer: q.correctAnswer ?? q.correct_answer ?? null,
+        correct_answer: q.correct_answer ?? q.correctAnswer ?? null,
+        groupId: q.groupId || q.group_id,
+        orderIndex: q.orderIndex ?? q.order_index ?? 0,
+        audioUrl: formatStorageUrl(q.audioUrl || q.audio_url || ""),
+        audio_url: formatStorageUrl(q.audio_url || q.audioUrl || ""),
+        // Normalize options: ensure array format
+        options: Array.isArray(q.options)
+          ? q.options
+          : (q.options ? (typeof q.options === "string" ? JSON.parse(q.options) : q.options) : []),
+      };
+    });
 
   return {
     ...exam,
@@ -83,24 +119,33 @@ export function normalizeSectionData(section: any): any {
   if (!section) return section;
 
   const normalizeQuestions = (questions: any[]) =>
-    (questions || []).map((q: any) => ({
-      ...q,
-      id: q.id,
-      groupId: q.groupId || q.group_id,
-      questionType: q.questionType || q.question_type,
-      questionText: q.questionText || q.question_text || "",
-      options: Array.isArray(q.options)
-        ? q.options
-        : q.options
-        ? typeof q.options === "string"
-          ? JSON.parse(q.options)
+    (questions || []).map((q: any) => {
+      const selectionMode = q.selectionMode || (q.isMultiChoice ? "multiple" : "single");
+      const maxSelections = typeof q.maxSelections === "number" ? q.maxSelections : (selectionMode === "multiple" ? 2 : 1);
+      const isMultiChoice = selectionMode === "multiple" || Boolean(q.isMultiChoice);
+
+      return {
+        ...q,
+        id: q.id,
+        groupId: q.groupId || q.group_id,
+        questionType: q.questionType || q.question_type,
+        questionText: q.questionText || q.question_text || "",
+        selectionMode,
+        maxSelections,
+        isMultiChoice,
+        options: Array.isArray(q.options)
+          ? q.options
           : q.options
-        : [],
-      correctAnswer: q.correctAnswer ?? q.correct_answer ?? "",
-      audioUrl: q.audioUrl ?? (q.audio_url ? formatStorageUrl(q.audio_url) : null),
-      points: q.points ?? 1,
-      orderIndex: q.orderIndex ?? q.order_index ?? 0,
-    }));
+          ? typeof q.options === "string"
+            ? JSON.parse(q.options)
+            : q.options
+          : [],
+        correctAnswer: q.correctAnswer ?? q.correct_answer ?? null,
+        audioUrl: q.audioUrl ?? (q.audio_url ? formatStorageUrl(q.audio_url) : null),
+        points: q.points ?? 1,
+        orderIndex: q.orderIndex ?? q.order_index ?? 0,
+      };
+    });
 
   const normalizeGroups = (groups: any[]) =>
     (groups || []).map((g: any) => ({
@@ -984,255 +1029,131 @@ export const submissionsApi = {
   },
 
   start: async (examId: string) => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) throw new Error("Unauthenticated");
-
-    // Idempotent start: Check if existing in_progress submission exists
-    const { data: existingList, error: findError } = await supabase
-      .from("exam_submissions")
-      .select("*")
-      .eq("exam_id", examId)
-      .eq("student_id", user.id)
-      .eq("status", "in_progress")
-      .order("created_at", { ascending: false })
-      .limit(1);
-
-    if (findError) throw findError;
-    if (existingList && existingList.length > 0) {
-      return normalizeSubmissionData(existingList[0]);
+    const token = await getAuthToken();
+    if (!token) {
+      throw new Error("Vui lòng đăng nhập để bắt đầu làm bài.");
     }
 
-    // Create new attempt (or fallback if race condition)
-    try {
-      const { data, error } = await supabase
-        .from("exam_submissions")
-        .insert({
-          exam_id: examId,
-          student_id: user.id,
-          status: "in_progress",
-          started_at: new Date().toISOString(),
-        })
-        .select()
-        .single();
+    const response = await fetch(`${API_BASE_URL}/submissions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ examId }),
+    });
 
-      if (error) throw error;
+    if (response.ok) {
+      const data = await response.json();
       return normalizeSubmissionData(data);
-    } catch (insertError: any) {
-      // Fallback: If concurrent request inserted, return the active attempt
-      const { data: fallbackExisting } = await supabase
-        .from("exam_submissions")
-        .select("*")
-        .eq("exam_id", examId)
-        .eq("student_id", user.id)
-        .eq("status", "in_progress")
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (fallbackExisting) return normalizeSubmissionData(fallbackExisting);
-      throw insertError;
     }
+
+    const errData = await response.json().catch(() => ({}));
+    const errMsg = errData.error || errData.message || "Không thể bắt đầu bài làm";
+    throw new Error(errMsg);
   },
 
   saveAnswers: async (
     id: string,
     answers: Array<{
       questionId: string;
-      answerText?: string;
+      answerText?: any;
       audioUrl?: string;
       revision?: number;
-    }>
+    }>,
+    version?: number,
   ) => {
     if (!answers || answers.length === 0) return [];
 
-    const records = answers.map((a) => ({
-      submission_id: id,
-      question_id: a.questionId,
-      answer_text:
-        typeof a.answerText === "string"
-          ? a.answerText
-          : a.answerText != null
-          ? JSON.stringify(a.answerText)
-          : null,
-      audio_url: a.audioUrl || null,
-      updated_at: new Date().toISOString(),
-    }));
+    const token = await getAuthToken();
+    if (!token) {
+      throw new Error("Vui lòng đăng nhập để lưu bài làm.");
+    }
 
-    const { data, error } = await supabase
-      .from("answers")
-      .upsert(records, { onConflict: "submission_id,question_id" })
-      .select();
+    const res = await fetch(`${API_BASE_URL}/submissions/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ answers, version }),
+    });
 
-    if (error) throw error;
-    return data;
+    if (res.ok) {
+      const data = await res.json();
+      return data;
+    }
+
+    const errData = await res.json().catch(() => ({}));
+    const errMsg = errData.error || errData.message || "Lưu bài làm thất bại";
+    throw new Error(errMsg);
   },
 
   submit: async (
     id: string,
     answers: Array<{
       questionId: string;
-      answerText?: string;
+      answerText?: any;
       audioUrl?: string;
-    }>
+    }>,
+    options: { idempotencyKey?: string; version?: number } = {},
   ) => {
-    // 1. Try authoritative PostgreSQL RPC (if migration executed on Supabase)
-    try {
-      const { data: rpcResult, error: rpcError } = await supabase.rpc(
-        "submit_exam_attempt",
-        {
-          p_submission_id: id,
-          p_answers: answers || [],
-        }
-      );
-
-      if (!rpcError && rpcResult) {
-        return normalizeSubmissionData(rpcResult);
-      }
-    } catch (rpcErr) {
-      console.warn(
-        "[submit] submit_exam_attempt RPC not available, using client normalization adapter fallback:",
-        rpcErr
-      );
+    const token = await getAuthToken();
+    if (!token) {
+      throw new Error("Vui lòng đăng nhập để nộp bài.");
     }
 
-    // 2. Client-adapter fallback execution
-    const { data: currentSub, error: fetchErr } = await supabase
-      .from("exam_submissions")
-      .select("*")
-      .eq("id", id)
-      .maybeSingle();
+    const response = await fetch(`${API_BASE_URL}/submissions/${id}/submit`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+        ...(options.idempotencyKey ? { "X-Idempotency-Key": options.idempotencyKey } : {}),
+      },
+      body: JSON.stringify({
+        answers,
+        idempotencyKey: options.idempotencyKey,
+        version: options.version,
+      }),
+    });
 
-    if (fetchErr) throw fetchErr;
-    if (!currentSub) throw new Error("Không tìm thấy bài nộp");
-
-    // Idempotent submit recovery (LOCK E)
-    if (currentSub.status === "submitted" || currentSub.status === "graded") {
-      return normalizeSubmissionData(currentSub);
+    if (response.ok) {
+      const result = await response.json();
+      return normalizeSubmissionData(result.data || result);
     }
 
-    // Persist all latest answers
-    if (answers && answers.length > 0) {
-      await submissionsApi.saveAnswers(id, answers);
-    }
-
-    // Load exam structure to evaluate objective grading
-    let hasManualQuestions = false;
-    let correctAnswersCount = 0;
-    let totalQuestionsCount = 0;
-    let totalScore = 0;
-
-    try {
-      const examData = await examsApi.getById(currentSub.exam_id);
-      if (examData) {
-        const sections = examData.sections || [];
-        const allQuestions: QuestionForGrading[] = sections.flatMap((sec: any) =>
-          (sec.questionGroups || []).flatMap((g: any) =>
-            (g.questions || []).map((q: any) => ({
-              id: q.id,
-              questionType: q.questionType || q.question_type,
-              correctAnswer: q.correctAnswer || q.correct_answer,
-              points: q.points,
-            }))
-          )
-        );
-
-        const studentAnswerItems = (answers || []).map((a) => ({
-          questionId: a.questionId,
-          answerText:
-            typeof a.answerText === "string"
-              ? a.answerText
-              : a.answerText != null
-              ? JSON.stringify(a.answerText)
-              : null,
-          audioUrl: a.audioUrl,
-        }));
-
-        const gradingSummary = gradeAllExamQuestions(
-          allQuestions,
-          studentAnswerItems
-        );
-
-        correctAnswersCount = gradingSummary.correctAnswers;
-        totalQuestionsCount = gradingSummary.totalQuestions;
-        totalScore = gradingSummary.totalScore;
-        hasManualQuestions = gradingSummary.hasManualQuestions;
-
-        // Persist individual objective scores to answers table
-        for (const res of gradingSummary.gradedAnswers) {
-          if (!res.isManual && res.score != null) {
-            await supabase
-              .from("answers")
-              .update({ score: res.score })
-              .eq("submission_id", id)
-              .eq("question_id", res.questionId);
-          }
-        }
-      }
-    } catch (gradingErr) {
-      console.warn(
-        "[submit] Objective grading encountered an error, falling back to manual grading required:",
-        gradingErr
-      );
-      hasManualQuestions = true;
-    }
-
-    const finalStatus = hasManualQuestions ? "submitted" : "graded";
-
-    // Update submission status, score and submission timestamp
-    const { data: updatedSub, error: updateErr } = await supabase
-      .from("exam_submissions")
-      .update({
-        status: finalStatus,
-        submitted_at: new Date().toISOString(),
-        correct_answers: correctAnswersCount,
-        total_questions: totalQuestionsCount,
-        total_score: totalScore,
-      })
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (updateErr) throw updateErr;
-    return normalizeSubmissionData(updatedSub);
+    const errData = await response.json().catch(() => ({}));
+    const errMsg = errData.error || errData.message || "Nộp bài thất bại";
+    throw new Error(errMsg);
   },
 
   grade: async (
     id: string,
     grades: Array<{ answerId: string; score: number; feedback?: string }>,
-    totalScore: number
+    totalScore?: number,
   ) => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    // 1. Update individual answer scores & feedbacks
-    for (const g of grades) {
-      await supabase
-        .from("answers")
-        .update({
-          score: g.score,
-          feedback: g.feedback,
-        })
-        .eq("id", g.answerId);
+    const token = await getAuthToken();
+    if (!token) {
+      throw new Error("Vui lòng đăng nhập để chấm bài.");
     }
 
-    // 2. Update submission total score and status to graded
-    const { data, error } = await supabase
-      .from("exam_submissions")
-      .update({
-        total_score: totalScore,
-        status: "graded",
-        graded_by: user?.id,
-        graded_at: new Date().toISOString(),
-      })
-      .eq("id", id)
-      .select()
-      .single();
+    const response = await fetch(`${API_BASE_URL}/submissions/${id}/grade`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ grades, totalScore }),
+    });
 
-    if (error) throw error;
-    return normalizeSubmissionData(data);
+    if (response.ok) {
+      const result = await response.json();
+      return normalizeSubmissionData(result);
+    }
+
+    const errData = await response.json().catch(() => ({}));
+    const errMsg = errData.error || errData.message || "Chấm điểm thất bại";
+    throw new Error(errMsg);
   },
 };
 
@@ -1575,18 +1496,6 @@ export const enrollmentsApi = {
         course_id: courseId,
         student_id: studentId,
       })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  },
-
-  updateProgress: async (id: string, progressPercent: number) => {
-    const { data, error } = await supabase
-      .from("enrollments")
-      .update({ progress_percent: progressPercent })
-      .eq("id", id)
       .select()
       .single();
 
