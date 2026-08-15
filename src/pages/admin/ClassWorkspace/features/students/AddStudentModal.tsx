@@ -40,9 +40,9 @@ export const AddStudentModal: React.FC<AddStudentModalProps> = ({
   // Email batch text area state
   const [emailsText, setEmailsText] = useState("");
 
-  // Existing student IDs already in this class
+  // Existing student IDs already in this class (Canonical Student ID = Auth UID)
   const existingStudentIds = new Set(
-    (classData?.students || []).map((s: any) => s.user_id || s.id)
+    (classData?.students || []).map((s: any) => s.studentId).filter(Boolean)
   );
 
   // Query center students list

@@ -17,10 +17,11 @@ export const GradingTab: React.FC = () => {
   const queue = submissions
     .filter((s: any) => s.grade_status === "pending" || s.status === "submitted" || s.status === "SUBMITTED" || s.status === "overdue")
     .map((s: any) => {
-      const student = students.find((st: any) => st.id === s.student_id || st.id === s.studentId);
+      const targetStudentId = s.studentId || s.student_id;
+      const student = students.find((st: any) => st.studentId === targetStudentId);
       return {
         id: s.id,
-        studentName: student?.full_name || student?.fullName || student?.email || "Học viên",
+        studentName: student?.fullName || student?.full_name || student?.email || "Học viên",
         homeworkTitle: s.homework_title || s.title || s.homework?.title || "Homework",
         submittedAt: s.submittedAt || s.created_at
           ? new Date(s.submittedAt || s.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
