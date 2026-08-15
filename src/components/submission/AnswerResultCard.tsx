@@ -213,58 +213,72 @@ export function AnswerResultCard({
       "yes_no_not_given",
     ].includes(questionType);
 
+  const rawScore = score != null ? score : computedScore;
+  const isFullCredit = rawScore != null && Number(rawScore) >= Number(effectivePoints);
+  const isZeroCredit = rawScore != null && Number(rawScore) === 0;
+  const isPartialCredit = rawScore != null && Number(rawScore) > 0 && Number(rawScore) < Number(effectivePoints);
+  const isManualPending = isManualGradeOnly && (!isGraded || score == null);
+  const isUnanswered = !answerText && shouldShowAutoResult;
+
   const getStatusIcon = () => {
-    if (isManualGradeOnly && (!isGraded || score == null))
+    if (isManualPending)
       return <Clock className="h-4 w-4 text-amber-500" />;
     if (!canShowResult)
       return <Minus className="h-4 w-4 text-muted-foreground" />;
 
-    const rawScore = score != null ? score : computedScore;
-    
     if (rawScore != null) {
-      const effectiveScore = Number(rawScore);
-      const numPoints = Number(effectivePoints);
-      if (effectiveScore >= numPoints) return <CheckCircle className="h-4 w-4 text-green-600" />;
-      if (effectiveScore === 0) return <XCircle className="h-4 w-4 text-destructive" />;
-      return <Minus className="h-4 w-4 text-yellow-600" />;
+      if (isFullCredit) return <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />;
+      if (isZeroCredit) return <XCircle className="h-4 w-4 text-rose-600 dark:text-rose-400" />;
+      return <Minus className="h-4 w-4 text-amber-600 dark:text-amber-400" />;
     }
 
-    // No answer provided - show neutral
-    if (!answerText) return <XCircle className="h-4 w-4 text-destructive" />;
+    if (!answerText) return <XCircle className="h-4 w-4 text-rose-600 dark:text-rose-400" />;
     return <Minus className="h-4 w-4 text-muted-foreground" />;
   };
 
   const getScoreBadge = () => {
-    if (isManualGradeOnly && (!isGraded || score == null)) {
+    if (isManualPending) {
       return (
         <Badge
-          variant="secondary"
-          className="text-xs bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+          variant="outline"
+          className="text-xs font-bold bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300"
         >
-          Chờ giáo viên chấm
+          ⏳ Chờ giáo viên chấm
         </Badge>
       );
     }
     if (!canShowResult) return null;
     
-    const rawScore = score != null ? score : computedScore;
-
     if (rawScore != null) {
       const effectiveScore = Number(rawScore);
       const numPoints = Number(effectivePoints);
-      const ratio = numPoints > 0 ? effectiveScore / numPoints : 0;
-      const variant =
-        ratio >= 1 ? "default" : ratio > 0 ? "secondary" : "destructive";
+      if (isFullCredit) {
+        return (
+          <Badge className="text-xs font-bold bg-emerald-100 text-emerald-800 border-emerald-300 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800">
+            ✓ Đúng ({Number(effectiveScore.toFixed(2))}/{numPoints})
+          </Badge>
+        );
+      }
+      if (isZeroCredit) {
+        return (
+          <Badge className="text-xs font-bold bg-rose-100 text-rose-800 border-rose-300 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800">
+            ✗ Sai (0/{numPoints})
+          </Badge>
+        );
+      }
       return (
-        <Badge variant={variant} className="text-xs">
-          {Number(effectiveScore.toFixed(2))}/{numPoints}
+        <Badge className="text-xs font-bold bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-100 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800">
+          Đúng 1 phần ({Number(effectiveScore.toFixed(2))}/{numPoints})
         </Badge>
       );
     }
 
-    // No answer
-    if (!answerText && shouldShowAutoResult) {
-      return <Badge variant="destructive" className="text-xs">Chưa trả lời</Badge>;
+    if (isUnanswered) {
+      return (
+        <Badge variant="outline" className="text-xs font-bold bg-slate-100 text-slate-700 border-slate-300">
+          Chưa làm (0/{effectivePoints})
+        </Badge>
+      );
     }
     return null;
   };
@@ -313,17 +327,32 @@ export function AnswerResultCard({
     correctSelections.map(normalizeOptionValue),
   );
 
+  const cardStyle = cn(
+    "transition-all border shadow-2xs rounded-xl overflow-hidden",
+    canShowResult
+      ? isFullCredit
+        ? "border-emerald-300/80 bg-emerald-50/15 border-l-4 border-l-emerald-500 dark:border-emerald-800 dark:bg-emerald-950/10"
+        : isZeroCredit || isUnanswered
+        ? "border-rose-200/80 bg-rose-50/15 border-l-4 border-l-rose-500 dark:border-rose-900/60 dark:bg-rose-950/10"
+        : isPartialCredit
+        ? "border-amber-200/80 bg-amber-50/15 border-l-4 border-l-amber-500 dark:border-amber-900/60 dark:bg-amber-950/10"
+        : isManualPending
+        ? "border-amber-200/80 bg-amber-50/15 border-l-4 border-l-amber-400 dark:border-amber-900/60 dark:bg-amber-950/10"
+        : "border-border/70"
+      : "border-border/70"
+  );
+
   return (
-    <Card>
-      <CardContent className="pt-4 space-y-3">
+    <Card className={cardStyle}>
+      <CardContent className="pt-4 pb-4 space-y-3">
         {/* Question header */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
               {getStatusIcon()}
-              <span className="font-semibold text-sm">Câu {questionIndex}</span>
-              <Badge variant="outline" className="text-xs">
-              {questionTypeLabels[questionType] || questionType}
+              <span className="font-bold text-sm text-foreground">Câu {questionIndex}</span>
+              <Badge variant="outline" className="text-xs text-muted-foreground">
+                {questionTypeLabels[questionType] || questionType}
               </Badge>
               {getScoreBadge()}
             </div>
@@ -476,10 +505,35 @@ export function AnswerResultCard({
 
           {/* Student answer (non-multi-select) */}
           {!isFillBlankWithPlaceholders && questionType !== "matching" && !isMultiSelectQuestion && !canRenderChoiceOptions && (
-            <div className="rounded-md border bg-muted/40 p-3">
-              <Label className="text-xs text-muted-foreground mb-1 block">
-                Câu trả lời của bạn
-              </Label>
+            <div
+              className={cn(
+                "rounded-lg border p-3.5 transition-all",
+                canShowResult
+                  ? isFullCredit
+                    ? "border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20 dark:border-emerald-800/80"
+                    : isZeroCredit
+                    ? "border-rose-200 bg-rose-50/50 dark:bg-rose-950/20 dark:border-rose-800/80"
+                    : isPartialCredit
+                    ? "border-amber-200 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/80"
+                    : "border-border/80 bg-muted/30"
+                  : "border-border/80 bg-muted/30"
+              )}
+            >
+              <div className="flex items-center justify-between mb-1.5">
+                <Label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                  <span>Câu trả lời của bạn</span>
+                  {canShowResult && isFullCredit && (
+                    <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                      (Chính xác ✓)
+                    </span>
+                  )}
+                  {canShowResult && isZeroCredit && (
+                    <span className="text-[11px] font-bold text-rose-600 dark:text-rose-400">
+                      (Chưa chính xác ✗)
+                    </span>
+                  )}
+                </Label>
+              </div>
               {(() => {
                 let trimmedAnswer = (answerText || "").trim();
                 if (trimmedAnswer.startsWith('"') && trimmedAnswer.endsWith('"')) {
@@ -490,7 +544,7 @@ export function AnswerResultCard({
                               trimmedAnswer.startsWith("/") ||
                               (trimmedAnswer.includes(".") && !trimmedAnswer.includes(" ") && !trimmedAnswer.includes("<"));
                 if (isUrl) return <ReviewAudioPlayer src={trimmedAnswer} />;
-                if (trimmedAnswer) return <p className="text-sm whitespace-pre-wrap">{trimmedAnswer}</p>;
+                if (trimmedAnswer) return <p className="text-sm font-medium whitespace-pre-wrap text-foreground">{trimmedAnswer}</p>;
                 if (audioUrl) return <ReviewAudioPlayer src={audioUrl} />;
                 return <p className="text-sm text-muted-foreground italic">Chưa trả lời</p>;
               })()}
@@ -602,11 +656,14 @@ export function AnswerResultCard({
             questionType !== "matching" &&
             !canRenderChoiceOptions &&
             !shouldHideCorrectAnswerForStudent && (
-            <div className="rounded-md border border-green-200 bg-green-50 dark:bg-green-950/20 dark:border-green-900 p-3">
-              <Label className="text-xs text-green-700 dark:text-green-400 mb-1 block">
-                Đáp án đúng
-              </Label>
-              <p className="text-sm whitespace-pre-wrap">
+            <div className="rounded-lg border border-emerald-300 bg-emerald-50/80 dark:bg-emerald-950/40 dark:border-emerald-800 p-3.5 mt-2">
+              <div className="flex items-center gap-1.5 mb-1">
+                <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <Label className="text-xs font-bold text-emerald-800 dark:text-emerald-300">
+                  Đáp án chính xác:
+                </Label>
+              </div>
+              <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200 whitespace-pre-wrap pl-5.5">
                 {isMultiSelectQuestion
                   ? correctAnswer
                       .split("|")

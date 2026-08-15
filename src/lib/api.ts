@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { normalizeSiteSettings } from "./site-settings";
+import { gradeAllExamQuestions, QuestionForGrading } from "./gradingEngine";
 
 export const API_BASE_URL =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) ||
@@ -820,6 +821,79 @@ export const questionsApi = {
 // =============================================
 // SUBMISSIONS API
 // =============================================
+// =============================================
+// SUBMISSION NORMALIZER
+// =============================================
+export function normalizeSubmissionData(data: any, examData?: any): any {
+  if (!data) return null;
+
+  const rawAnswers = data.answers || [];
+  const normalizedAnswers = rawAnswers.map((a: any) => ({
+    id: a.id,
+    submissionId: a.submission_id || a.submissionId,
+    questionId: a.question_id || a.questionId,
+    answerText: a.answer_text || a.answerText || "",
+    audioUrl: formatStorageUrl(a.audio_url || a.audioUrl),
+    score: a.score != null ? Number(a.score) : null,
+    feedback: a.feedback || "",
+    createdAt: a.created_at || a.createdAt,
+    updatedAt: a.updated_at || a.updatedAt,
+  }));
+
+  const rawStudent = data.profiles || data.student;
+  const normalizedStudent = rawStudent
+    ? {
+        id: rawStudent.user_id || rawStudent.id,
+        fullName:
+          rawStudent.full_name ||
+          rawStudent.fullName ||
+          rawStudent.email ||
+          "Học viên",
+        email: rawStudent.email || "",
+        avatarUrl: rawStudent.avatar_url || rawStudent.avatarUrl,
+      }
+    : null;
+
+  const rawExam = examData || data.exams || data.exam;
+  const normalizedExam = rawExam ? normalizeExamData(rawExam) : null;
+
+  return {
+    id: data.id,
+    examId: data.exam_id || data.examId,
+    studentId: data.student_id || data.studentId,
+    status: data.status || "in_progress",
+    startedAt: data.started_at || data.startedAt,
+    submittedAt: data.submitted_at || data.submittedAt,
+    totalScore:
+      data.total_score != null
+        ? Number(data.total_score)
+        : data.totalScore != null
+        ? Number(data.totalScore)
+        : null,
+    correctAnswers:
+      data.correct_answers != null
+        ? Number(data.correct_answers)
+        : data.correctAnswers != null
+        ? Number(data.correctAnswers)
+        : null,
+    totalQuestions:
+      data.total_questions != null
+        ? Number(data.total_questions)
+        : data.totalQuestions != null
+        ? Number(data.totalQuestions)
+        : null,
+    gradedBy: data.graded_by || data.gradedBy,
+    gradedAt: data.graded_at || data.gradedAt,
+    createdAt: data.created_at || data.createdAt,
+    student: normalizedStudent,
+    exam: normalizedExam,
+    answers: normalizedAnswers,
+  };
+}
+
+// =============================================
+// SUBMISSIONS API (CANONICAL SUPABASE ADAPTER)
+// =============================================
 export const submissionsApi = {
   list: async (params?: {
     page?: number;
@@ -853,8 +927,12 @@ export const submissionsApi = {
     const { data, count, error } = await query;
     if (error) throw error;
 
+    const normalizedData = (data || []).map((item) =>
+      normalizeSubmissionData(item)
+    );
+
     return {
-      data: data || [],
+      data: normalizedData,
       meta: {
         total: count || 0,
         page,
@@ -865,18 +943,25 @@ export const submissionsApi = {
   },
 
   getById: async (id: string) => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    const token = session?.access_token;
-    const response = await fetch(`${API_BASE_URL}/submissions/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "Không thể lấy thông tin bài nộp");
-    return result;
+    const { data: sub, error } = await supabase
+      .from("exam_submissions")
+      .select("*, profiles:student_id(*), answers(*)")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!sub) throw new Error("Không tìm thấy bài nộp");
+
+    let examData = null;
+    if (sub.exam_id) {
+      try {
+        examData = await examsApi.getById(sub.exam_id);
+      } catch (err) {
+        console.warn("[submissionsApi.getById] Could not fetch nested exam data:", err);
+      }
+    }
+
+    return normalizeSubmissionData(sub, examData);
   },
 
   getLatestByExam: async (examId: string) => {
@@ -895,7 +980,7 @@ export const submissionsApi = {
       .maybeSingle();
 
     if (error) return null;
-    return data;
+    return normalizeSubmissionData(data);
   },
 
   start: async (examId: string) => {
@@ -905,30 +990,50 @@ export const submissionsApi = {
     if (!user) throw new Error("Unauthenticated");
 
     // Idempotent start: Check if existing in_progress submission exists
-    const { data: existing } = await supabase
+    const { data: existingList, error: findError } = await supabase
       .from("exam_submissions")
       .select("*")
       .eq("exam_id", examId)
       .eq("student_id", user.id)
       .eq("status", "in_progress")
-      .maybeSingle();
+      .order("created_at", { ascending: false })
+      .limit(1);
 
-    if (existing) return existing;
+    if (findError) throw findError;
+    if (existingList && existingList.length > 0) {
+      return normalizeSubmissionData(existingList[0]);
+    }
 
-    // Create new submission
-    const { data, error } = await supabase
-      .from("exam_submissions")
-      .insert({
-        exam_id: examId,
-        student_id: user.id,
-        status: "in_progress",
-        started_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
+    // Create new attempt (or fallback if race condition)
+    try {
+      const { data, error } = await supabase
+        .from("exam_submissions")
+        .insert({
+          exam_id: examId,
+          student_id: user.id,
+          status: "in_progress",
+          started_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
 
-    if (error) throw error;
-    return data;
+      if (error) throw error;
+      return normalizeSubmissionData(data);
+    } catch (insertError: any) {
+      // Fallback: If concurrent request inserted, return the active attempt
+      const { data: fallbackExisting } = await supabase
+        .from("exam_submissions")
+        .select("*")
+        .eq("exam_id", examId)
+        .eq("student_id", user.id)
+        .eq("status", "in_progress")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (fallbackExisting) return normalizeSubmissionData(fallbackExisting);
+      throw insertError;
+    }
   },
 
   saveAnswers: async (
@@ -937,13 +1042,22 @@ export const submissionsApi = {
       questionId: string;
       answerText?: string;
       audioUrl?: string;
+      revision?: number;
     }>
   ) => {
+    if (!answers || answers.length === 0) return [];
+
     const records = answers.map((a) => ({
       submission_id: id,
       question_id: a.questionId,
-      answer_text: a.answerText,
-      audio_url: a.audioUrl,
+      answer_text:
+        typeof a.answerText === "string"
+          ? a.answerText
+          : a.answerText != null
+          ? JSON.stringify(a.answerText)
+          : null,
+      audio_url: a.audioUrl || null,
+      updated_at: new Date().toISOString(),
     }));
 
     const { data, error } = await supabase
@@ -963,21 +1077,125 @@ export const submissionsApi = {
       audioUrl?: string;
     }>
   ) => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    const token = session?.access_token;
-    const response = await fetch(`${API_BASE_URL}/submissions/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ answers, submit: true }),
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "Không thể nộp bài");
-    return result;
+    // 1. Try authoritative PostgreSQL RPC (if migration executed on Supabase)
+    try {
+      const { data: rpcResult, error: rpcError } = await supabase.rpc(
+        "submit_exam_attempt",
+        {
+          p_submission_id: id,
+          p_answers: answers || [],
+        }
+      );
+
+      if (!rpcError && rpcResult) {
+        return normalizeSubmissionData(rpcResult);
+      }
+    } catch (rpcErr) {
+      console.warn(
+        "[submit] submit_exam_attempt RPC not available, using client normalization adapter fallback:",
+        rpcErr
+      );
+    }
+
+    // 2. Client-adapter fallback execution
+    const { data: currentSub, error: fetchErr } = await supabase
+      .from("exam_submissions")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (fetchErr) throw fetchErr;
+    if (!currentSub) throw new Error("Không tìm thấy bài nộp");
+
+    // Idempotent submit recovery (LOCK E)
+    if (currentSub.status === "submitted" || currentSub.status === "graded") {
+      return normalizeSubmissionData(currentSub);
+    }
+
+    // Persist all latest answers
+    if (answers && answers.length > 0) {
+      await submissionsApi.saveAnswers(id, answers);
+    }
+
+    // Load exam structure to evaluate objective grading
+    let hasManualQuestions = false;
+    let correctAnswersCount = 0;
+    let totalQuestionsCount = 0;
+    let totalScore = 0;
+
+    try {
+      const examData = await examsApi.getById(currentSub.exam_id);
+      if (examData) {
+        const sections = examData.sections || [];
+        const allQuestions: QuestionForGrading[] = sections.flatMap((sec: any) =>
+          (sec.questionGroups || []).flatMap((g: any) =>
+            (g.questions || []).map((q: any) => ({
+              id: q.id,
+              questionType: q.questionType || q.question_type,
+              correctAnswer: q.correctAnswer || q.correct_answer,
+              points: q.points,
+            }))
+          )
+        );
+
+        const studentAnswerItems = (answers || []).map((a) => ({
+          questionId: a.questionId,
+          answerText:
+            typeof a.answerText === "string"
+              ? a.answerText
+              : a.answerText != null
+              ? JSON.stringify(a.answerText)
+              : null,
+          audioUrl: a.audioUrl,
+        }));
+
+        const gradingSummary = gradeAllExamQuestions(
+          allQuestions,
+          studentAnswerItems
+        );
+
+        correctAnswersCount = gradingSummary.correctAnswers;
+        totalQuestionsCount = gradingSummary.totalQuestions;
+        totalScore = gradingSummary.totalScore;
+        hasManualQuestions = gradingSummary.hasManualQuestions;
+
+        // Persist individual objective scores to answers table
+        for (const res of gradingSummary.gradedAnswers) {
+          if (!res.isManual && res.score != null) {
+            await supabase
+              .from("answers")
+              .update({ score: res.score })
+              .eq("submission_id", id)
+              .eq("question_id", res.questionId);
+          }
+        }
+      }
+    } catch (gradingErr) {
+      console.warn(
+        "[submit] Objective grading encountered an error, falling back to manual grading required:",
+        gradingErr
+      );
+      hasManualQuestions = true;
+    }
+
+    const finalStatus = hasManualQuestions ? "submitted" : "graded";
+
+    // Update submission status, score and submission timestamp
+    const { data: updatedSub, error: updateErr } = await supabase
+      .from("exam_submissions")
+      .update({
+        status: finalStatus,
+        submitted_at: new Date().toISOString(),
+        correct_answers: correctAnswersCount,
+        total_questions: totalQuestionsCount,
+        total_score: totalScore,
+      })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (updateErr) throw updateErr;
+    return normalizeSubmissionData(updatedSub);
   },
 
   grade: async (
@@ -1014,7 +1232,7 @@ export const submissionsApi = {
       .single();
 
     if (error) throw error;
-    return data;
+    return normalizeSubmissionData(data);
   },
 };
 

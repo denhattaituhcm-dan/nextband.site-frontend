@@ -152,28 +152,37 @@ export default function StudentLessonViewerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] pb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 space-y-6">
+    <div className="min-h-screen bg-[#F8FAFC] pb-16">
+      {/* Muted Spatial Anchor Strip - Classroom Realm */}
+      <div className="h-1 w-full bg-emerald-600/80" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-5 space-y-6">
         {/* HEADER & BACK TO WELCOME */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="rounded-full">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="rounded-full hover:bg-slate-200/60">
               <ArrowLeft className="w-5 h-5 text-slate-600" />
             </Button>
             <div>
-              <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight flex flex-wrap items-center gap-2">
-                <span>Bàn làm việc Bài tập Lớp {classData.className}</span>
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200/80 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block" />
+                  Không Gian Lớp Học
+                </span>
                 {classData.courseTitle && (
-                  <Badge variant="outline" className="text-xs font-bold text-blue-700 bg-blue-50 border-blue-200 ml-1">
-                    Khóa học {classData.courseTitle}
-                  </Badge>
+                  <span className="text-[11px] font-medium text-slate-500">
+                    Khóa {classData.courseTitle}
+                  </span>
                 )}
+              </div>
+              <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight flex flex-wrap items-center gap-2">
+                <span>Lớp {classData.className}</span>
               </h1>
             </div>
           </div>
 
-          <Button variant="outline" size="sm" onClick={() => navigate("/")} className="text-xs font-bold rounded-xl">
-            🏠 Trang Welcome
+          <Button variant="outline" size="sm" onClick={() => navigate("/")} className="text-xs font-bold rounded-xl hover:bg-slate-100">
+            🏠 Về Sảnh Chính
           </Button>
         </div>
 

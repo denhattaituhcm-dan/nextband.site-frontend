@@ -345,12 +345,20 @@ export default function SubmissionDetail() {
         <CardContent className="pt-6 space-y-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200/80 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 inline-block" />
+                  Kết Quả Bài Làm
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {exam?.course?.title || exam?.course_title || "Luyện thi IELTS"}
+                </span>
+              </div>
               <h1 className="text-xl font-bold text-foreground">
                 {exam?.title || "Bài thi"}
               </h1>
               <div className="flex items-center gap-2 flex-wrap text-sm text-muted-foreground">
                 <FileText className="h-4 w-4" />
-                <span>{exam?.course?.title || exam?.course_title || "Không rõ khóa học"}</span>
                 <Badge variant="secondary">
                   {(exam?.examType || exam?.exam_type || "EXAM")?.toUpperCase()}
                 </Badge>
@@ -367,106 +375,116 @@ export default function SubmissionDetail() {
 
           <Separator />
 
-          {/* Stats row */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground">Câu hỏi</p>
-              <p className="text-lg font-semibold">{totalQuestionsCount}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground">Đã trả lời</p>
-              <p className="text-lg font-semibold">
-                {answeredCount}/{totalQuestionsCount} ({completionRate}%)
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground">Ngày làm</p>
-              <p className="text-sm font-medium">
-                {submission?.startedAt || submission?.started_at
-                  ? format(new Date(submission.startedAt || submission.started_at), "dd/MM/yyyy", {
-                      locale: vi,
-                    })
-                  : "—"}
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground">Ngày nộp</p>
-              <p className="text-sm font-medium">
-                {submission?.submittedAt || submission?.submitted_at
-                  ? format(
-                      new Date(submission.submittedAt || submission.submitted_at),
-                      "dd/MM/yyyy HH:mm",
-                      { locale: vi },
-                    )
-                  : "—"}
-              </p>
-            </div>
-          </div>
-
-          {/* Auto-graded result - shown for submitted AND graded */}
-          {hasCorrectResults && (
-            <>
-              <Separator />
-              <div className="flex flex-col items-center gap-3 py-2">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-6 w-6 text-green-500" />
-                  <span className="text-3xl font-bold text-green-600 tabular-nums">
-                    {displayCorrectAnswers}/{displayTotalQuestions}
-                  </span>
+          {/* COLOR-CODED RESULT STAT CARDS */}
+          {hasCorrectResults ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-1">
+              {/* Correct Answers Card */}
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 dark:bg-emerald-950/20 dark:border-emerald-800/60 p-4 flex flex-col items-center justify-center text-center">
+                <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-bold text-xs uppercase tracking-wider mb-1">
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span>Câu Đúng</span>
                 </div>
-                <Progress
-                  value={
-                    displayTotalQuestions! > 0
-                      ? (displayCorrectAnswers! / displayTotalQuestions!) * 100
-                      : 0
-                  }
-                  className="w-full max-w-xs h-2"
-                />
-                <p className="text-sm text-muted-foreground">
-                  Đạt{" "}
-                  {displayTotalQuestions! > 0
-                    ? Math.round(
-                        (displayCorrectAnswers! / displayTotalQuestions!) *
-                          100,
-                      )
-                    : 0}
-                  % (tự chấm)
+                <p className="text-2xl sm:text-3xl font-extrabold text-emerald-700 dark:text-emerald-400 tabular-nums">
+                  {displayCorrectAnswers}
+                  <span className="text-xs font-medium text-emerald-600/70 ml-1">/ {displayTotalQuestions}</span>
                 </p>
               </div>
-            </>
+
+              {/* Wrong Answers Card */}
+              <div className="rounded-xl border border-rose-200 bg-rose-50/60 dark:bg-rose-950/20 dark:border-rose-800/60 p-4 flex flex-col items-center justify-center text-center">
+                <div className="flex items-center gap-1.5 text-rose-700 dark:text-rose-400 font-bold text-xs uppercase tracking-wider mb-1">
+                  <AlertCircle className="h-4 w-4" />
+                  <span>Câu Sai</span>
+                </div>
+                <p className="text-2xl sm:text-3xl font-extrabold text-rose-700 dark:text-rose-400 tabular-nums">
+                  {Math.max(0, (displayTotalQuestions || 0) - (displayCorrectAnswers || 0))}
+                  <span className="text-xs font-medium text-rose-600/70 ml-1">câu</span>
+                </p>
+              </div>
+
+              {/* Accuracy Percentage Card */}
+              <div className="rounded-xl border border-blue-200 bg-blue-50/60 dark:bg-blue-950/20 dark:border-blue-800/60 p-4 flex flex-col items-center justify-center text-center">
+                <div className="flex items-center gap-1.5 text-blue-700 dark:text-blue-400 font-bold text-xs uppercase tracking-wider mb-1">
+                  <Trophy className="h-4 w-4" />
+                  <span>Độ Chính Xác</span>
+                </div>
+                <p className="text-2xl sm:text-3xl font-extrabold text-blue-700 dark:text-blue-400 tabular-nums">
+                  {displayTotalQuestions! > 0
+                    ? Math.round(((displayCorrectAnswers || 0) / displayTotalQuestions!) * 100)
+                    : 0}%
+                </p>
+              </div>
+
+              {/* Total Score / Completion Card */}
+              <div className="rounded-xl border border-slate-200 bg-slate-50 dark:bg-slate-900/40 dark:border-slate-800 p-4 flex flex-col items-center justify-center text-center">
+                <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-bold text-xs uppercase tracking-wider mb-1">
+                  <Clock className="h-4 w-4" />
+                  <span>Thời Gian Nộp</span>
+                </div>
+                <p className="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-200">
+                  {submission?.submittedAt || submission?.submitted_at
+                    ? format(
+                        new Date(submission.submittedAt || submission.submitted_at),
+                        "HH:mm · dd/MM",
+                        { locale: vi }
+                      )
+                    : "—"}
+                </p>
+                <span className="text-[11px] text-muted-foreground mt-0.5">
+                  Đã làm: {answeredCount}/{totalQuestionsCount} câu
+                </span>
+              </div>
+            </div>
+          ) : (
+            /* Fallback stats row if not auto-gradable */
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="text-center p-3 rounded-lg bg-slate-50">
+                <p className="text-xs text-muted-foreground">Tổng số câu</p>
+                <p className="text-lg font-bold">{totalQuestionsCount}</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-slate-50">
+                <p className="text-xs text-muted-foreground">Đã trả lời</p>
+                <p className="text-lg font-bold">
+                  {answeredCount}/{totalQuestionsCount} ({completionRate}%)
+                </p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-slate-50">
+                <p className="text-xs text-muted-foreground">Ngày làm</p>
+                <p className="text-sm font-semibold">
+                  {submission?.startedAt || submission?.started_at
+                    ? format(new Date(submission.startedAt || submission.started_at), "dd/MM/yyyy", {
+                        locale: vi,
+                      })
+                    : "—"}
+                </p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-slate-50">
+                <p className="text-xs text-muted-foreground">Ngày nộp</p>
+                <p className="text-sm font-semibold">
+                  {submission?.submittedAt || submission?.submitted_at
+                    ? format(
+                        new Date(submission.submittedAt || submission.submitted_at),
+                        "dd/MM/yyyy HH:mm",
+                        { locale: vi }
+                      )
+                    : "—"}
+                </p>
+              </div>
+            </div>
           )}
 
-          {/* Score display - only for teacher-graded */}
+          {/* Teacher total score display (if teacher graded) */}
           {isGraded && submission.totalScore != null && (
-            <>
-              <Separator />
-              <div className="flex flex-col items-center gap-3 py-2">
-                <div className="flex items-center gap-2">
-                  <Trophy className="h-6 w-6 text-primary" />
-                  <span className="text-3xl font-bold text-primary">
-                    {submission.totalScore}
-                  </span>
-                  <span className="text-lg text-muted-foreground">
-                    / {totalPoints}
-                  </span>
-                </div>
-                <Progress
-                  value={
-                    totalPoints > 0
-                      ? (submission.totalScore / totalPoints) * 100
-                      : 0
-                  }
-                  className="w-full max-w-xs h-2"
-                />
-                <p className="text-sm text-muted-foreground">
-                  Đạt{" "}
-                  {totalPoints > 0
-                    ? Math.round((submission.totalScore / totalPoints) * 100)
-                    : 0}
-                  %
-                </p>
+            <div className="mt-3 p-4 rounded-xl border border-primary/20 bg-primary/5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Trophy className="h-5 w-5 text-primary" />
+                <span className="font-bold text-sm text-foreground">Điểm Tổng Kết Do Giáo Viên Chấm:</span>
               </div>
-            </>
+              <div className="text-right">
+                <span className="text-2xl font-extrabold text-primary">{submission.totalScore}</span>
+                <span className="text-sm text-muted-foreground font-semibold"> / {totalPoints}</span>
+              </div>
+            </div>
           )}
 
           <Separator />

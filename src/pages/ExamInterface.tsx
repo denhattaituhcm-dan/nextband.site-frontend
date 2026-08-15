@@ -94,7 +94,11 @@ export default function ExamInterface() {
   const [showExitDialog, setShowExitDialog] = useState(false);
   const [initialTimeLeft, setInitialTimeLeft] = useState<number | null>(null);
   const [isRecordingActive, setIsRecordingActive] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const autoSubmitTriggeredRef = useRef(false);
+  const autosaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const answersRef = useRef<Record<string, any>>({});
+  answersRef.current = answers;
 
   const questionRefs = useRef<Map<string, HTMLElement>>(new Map());
 
@@ -394,9 +398,56 @@ export default function ExamInterface() {
     }
   };
 
-  const handleAnswerChange = useCallback((questionId: string, answer: any) => {
-    setAnswers((prev) => ({ ...prev, [questionId]: answer }));
-  }, []);
+  const handleAnswerChange = useCallback(
+    (questionId: string, answer: any) => {
+      setAnswers((prev) => {
+        const next = { ...prev, [questionId]: answer };
+        answersRef.current = next;
+        return next;
+      });
+
+      if (submission?.id) {
+        setSaveStatus("saving");
+        if (autosaveTimerRef.current) {
+          clearTimeout(autosaveTimerRef.current);
+        }
+        autosaveTimerRef.current = setTimeout(async () => {
+          try {
+            const currentAnswers = answersRef.current;
+            const validQuestionIds = new Set(
+              sections?.flatMap(
+                (s: any) =>
+                  (s.questionGroups || s.question_groups)?.flatMap((g: any) =>
+                    (g.questions || []).map((q: any) => q.id),
+                  ) || [],
+              ) || [],
+            );
+
+            const answerEntries = Object.entries(currentAnswers)
+              .filter(([qId]) => validQuestionIds.has(qId))
+              .map(([qId, ansText]) => ({
+                questionId: qId,
+                answerText:
+                  typeof ansText === "string"
+                    ? ansText
+                    : ansText != null
+                    ? JSON.stringify(ansText)
+                    : "",
+              }));
+
+            if (answerEntries.length > 0) {
+              await submissionsApi.saveAnswers(submission.id, answerEntries);
+            }
+            setSaveStatus("saved");
+          } catch (err) {
+            console.error("[Autosave Error]", err);
+            setSaveStatus("error");
+          }
+        }, 1500);
+      }
+    },
+    [submission?.id, sections],
+  );
 
   const handleQuestionClick = useCallback((questionId: string) => {
     setCurrentQuestionId(questionId);
@@ -459,9 +510,14 @@ export default function ExamInterface() {
   const handleSubmit = useCallback(async () => {
     if (!user || !examId || !submission) return;
 
+    // 1. Cancel pending debounce timer
+    if (autosaveTimerRef.current) {
+      clearTimeout(autosaveTimerRef.current);
+    }
+
     setIsSubmitting(true);
     try {
-      // Collect all valid question IDs from loaded sections to filter out invalid keys
+      // 2. Collect all valid question answers
       const validQuestionIds = new Set(
         sections?.flatMap(
           (s: any) =>
@@ -471,7 +527,6 @@ export default function ExamInterface() {
         ) || [],
       );
 
-      // Only submit answers whose keys are valid question IDs
       const answerEntries = Object.entries(answers)
         .filter(([questionId]) => validQuestionIds.has(questionId))
         .map(([questionId, answerText]) => ({
@@ -482,6 +537,7 @@ export default function ExamInterface() {
               : JSON.stringify(answerText),
         }));
 
+      // 3. Submit atomically to canonical API
       const result = await submissionsApi.submit(submission.id, answerEntries);
 
       queryClient.invalidateQueries({ queryKey: ["my-submissions"] });
@@ -496,7 +552,7 @@ export default function ExamInterface() {
 
       toast({
         title: "Nộp bài thành công",
-        description: `bài tập của bạn đã được ghi nhận${resultText}`,
+        description: `Bài tập của bạn đã được ghi nhận${resultText}`,
       });
 
       const exitDestination = resolveExitDestination(
@@ -641,24 +697,33 @@ export default function ExamInterface() {
         description={`Luyện thi IELTS: ${exam?.title}. Nâng band điểm IELTS cùng NextBand.`}
       />
 
-      {/* Exam Mode Header */}
+      {/* Exam Focus Mode Header */}
       <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur-md supports-[backdrop-filter]:bg-card/75 shadow-xs">
+        {/* Muted Spatial Anchor Strip - Training/Exam Realm */}
+        <div className="h-1 w-full bg-indigo-600/80" />
+
         <div className="flex h-14 md:h-16 items-center justify-between px-3 md:px-6 gap-2">
-          {/* Left: Exit + Title */}
+          {/* Left: Exit + Space Tag + Title */}
           <div className="flex items-center gap-3 shrink-0">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowExitDialog(true)}
-              className="text-muted-foreground hover:text-foreground font-semibold text-xs"
+              className="text-muted-foreground hover:text-foreground font-medium text-xs hover:bg-slate-100 dark:hover:bg-slate-800"
             >
               <ArrowLeft className="mr-1.5 h-4 w-4" />
-              Rời bài
+              Rời bài tập
             </Button>
             <div className="h-4 w-[1px] bg-border hidden sm:block" />
-            <h1 className="font-bold text-sm md:text-base tracking-tight truncate max-w-[180px] sm:max-w-[240px] md:max-w-none">
-              {exam.title}
-            </h1>
+            <div className="flex items-center gap-2">
+              <span className="hidden sm:inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200/80 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800 items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 inline-block" />
+                Phòng Làm Bài
+              </span>
+              <h1 className="font-bold text-sm md:text-base tracking-tight truncate max-w-[160px] sm:max-w-[220px] md:max-w-none">
+                {exam.title}
+              </h1>
+            </div>
           </div>
 
           {/* Center: Real-time Context State */}
@@ -673,9 +738,21 @@ export default function ExamInterface() {
               Câu {currentQuestionIndex >= 0 ? currentQuestionIndex + 1 : 1}/{paginationQuestions.length}
             </span>
             <span className="text-muted-foreground/60">•</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-              ✓ Đã lưu tự động
-            </span>
+            {saveStatus === "saving" && (
+              <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1 animate-pulse">
+                Đang lưu...
+              </span>
+            )}
+            {(saveStatus === "saved" || saveStatus === "idle") && (
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                ✓ Đã lưu tự động
+              </span>
+            )}
+            {saveStatus === "error" && (
+              <span className="text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1">
+                ⚠ Lưu thất bại
+              </span>
+            )}
             <span className="text-muted-foreground/40">|</span>
             <span className="text-muted-foreground font-medium">
               Đã làm {answeredCount}/{paginationQuestions.length}
