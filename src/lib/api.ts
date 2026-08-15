@@ -1453,6 +1453,52 @@ export const classStudentsApi = {
       return { status: "unauthenticated" };
     }
 
+    // Helper: direct Supabase fallback
+    const querySupabaseDirectly = async (): Promise<MyClassesResult> => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return { status: "unauthenticated" };
+
+        const { data: csList, error: csError } = await supabase
+          .from("class_students")
+          .select("id, class_id, student_id, created_at, classes(id, name, course_id, teacher_id, is_active, courses(id, title))")
+          .eq("student_id", user.id);
+
+        if (csError) {
+          return { status: "api_error", httpStatus: 500, message: csError.message };
+        }
+
+        const list = Array.isArray(csList) ? csList : [];
+        const teacherIds = Array.from(new Set(list.map((cs: any) => cs.classes?.teacher_id).filter(Boolean)));
+        let teacherMap: Record<string, string> = {};
+        if (teacherIds.length > 0) {
+          const { data: teacherProfs } = await supabase
+            .from("profiles")
+            .select("user_id, full_name")
+            .in("user_id", teacherIds);
+          (teacherProfs || []).forEach((t: any) => {
+            if (t.user_id) teacherMap[t.user_id] = t.full_name;
+          });
+        }
+
+        const mappedData: MyClassEnrollment[] = list.map((cs: any) => ({
+          id: cs.id,
+          classId: cs.classes?.id || cs.class_id,
+          className: cs.classes?.name || "Lớp học",
+          courseId: cs.classes?.course_id || "",
+          courseTitle: cs.classes?.courses?.title || cs.classes?.name || "IELTS",
+          teacherName: teacherMap[cs.classes?.teacher_id] || null,
+          isActive: cs.classes?.is_active ?? true,
+          membershipStatus: "ACTIVE",
+          joinedAt: cs.created_at || new Date().toISOString(),
+        }));
+
+        return { status: "ok", data: mappedData };
+      } catch (err: any) {
+        return { status: "network_error", message: err?.message ?? "Fallback failed" };
+      }
+    };
+
     try {
       const res = await fetch(`${API_BASE_URL}/classes/my-classes`, {
         headers: {
@@ -1466,6 +1512,12 @@ export const classStudentsApi = {
       }
 
       if (!res.ok) {
+        // If the backend returned 404 (e.g. older server version routing /classes/my-classes to /classes/:id), fallback to Supabase
+        const fallback = await querySupabaseDirectly();
+        if (fallback.status === "ok") {
+          return fallback;
+        }
+
         const body = await res.json().catch(() => ({}));
         return {
           status: "api_error",
@@ -1478,6 +1530,11 @@ export const classStudentsApi = {
       const data: MyClassEnrollment[] = Array.isArray(body?.data) ? body.data : [];
       return { status: "ok", data };
     } catch (err: any) {
+      // If network/gateway failed, try Supabase directly before reporting network error
+      const fallback = await querySupabaseDirectly();
+      if (fallback.status === "ok") {
+        return fallback;
+      }
       return {
         status: "network_error",
         message: err?.message ?? "Network request failed",

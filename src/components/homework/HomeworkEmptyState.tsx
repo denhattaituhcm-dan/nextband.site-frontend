@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, KeyRound, Sparkles, MessageCircle } from "lucide-react";
+import { CheckCircle2, KeyRound, Sparkles, MessageCircle, ShieldCheck, Layers, GraduationCap } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import { JoinClassModal } from "@/components/auth/JoinClassModal";
 
 interface HomeworkEmptyStateProps {
@@ -13,6 +15,8 @@ interface HomeworkEmptyStateProps {
 
 export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkEmptyStateProps) {
   const { settings } = useSiteSettings();
+  const { isAdmin, isTeacher } = useAuth();
+  const navigate = useNavigate();
   const [joinModalOpen, setJoinModalOpen] = useState(false);
 
   const isSuspended = state === "SUSPENDED_STUDENT";
@@ -29,6 +33,31 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
   return (
     <div className="space-y-6">
       <JoinClassModal open={joinModalOpen} onOpenChange={setJoinModalOpen} />
+
+      {/* ADMIN / TEACHER QUICK SHORTCUT */}
+      {(isAdmin || isTeacher) && (
+        <Card className="rounded-2xl border border-primary/20 bg-primary/5 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">
+              <ShieldCheck className="h-5 w-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-foreground">Bạn đang đăng nhập với quyền {isAdmin ? "Quản trị viên (Admin)" : "Giáo viên"}</h4>
+              <p className="text-xs text-muted-foreground">Đây là trang làm bài tập của Học viên. Bấm bên dưới để truy cập khu vực quản lý lớp &amp; chấm bài:</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            {isAdmin && (
+              <Button size="sm" onClick={() => navigate("/admin/classes")} className="font-bold text-xs gap-1.5 shadow-sm">
+                <Layers className="h-3.5 w-3.5" /> Quản lý Lớp học
+              </Button>
+            )}
+            <Button size="sm" variant={isAdmin ? "outline" : "default"} onClick={() => navigate("/admin/teacher-workspace")} className="font-bold text-xs gap-1.5 shadow-sm">
+              <GraduationCap className="h-3.5 w-3.5" /> Bàn làm việc Giáo viên
+            </Button>
+          </div>
+        </Card>
+      )}
 
       {/* 1. HERO WELCOME BANNER FOR UNENROLLED OR PENDING/SUSPENDED STUDENTS */}
       <Card className={`border-0 text-white rounded-2xl shadow-lg p-6 md:p-8 text-center space-y-5 relative overflow-hidden ${
