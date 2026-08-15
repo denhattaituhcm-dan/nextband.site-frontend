@@ -1,6 +1,6 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Bell, LogOut, Settings } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
@@ -11,30 +11,29 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
-
-import { useQuery } from "@tanstack/react-query";
-import { classStudentsApi } from "@/lib/api";
-
+import { useStudentLifecycle } from "@/hooks/useStudentLifecycle";
 import { NotificationBell } from "./NotificationBell";
+import { useAuth as useAuthInner } from "@/hooks/useAuth";
 
 export function ClientHeader() {
   const { user, signOut, isAdmin, isAuthenticated, isTeacher } = useAuth();
   const navigate = useNavigate();
 
-  // Fetch student class memberships via unified classStudentsApi
-  const { data: enrollments = [] } = useQuery({
-    queryKey: ["my-class-memberships-header"],
-    queryFn: () => classStudentsApi.getMyClasses().catch(() => []),
-    enabled: isAuthenticated,
-    retry: false,
-  });
+  /**
+   * INVARIANT-05: Header reads lifecycle state exclusively from useStudentLifecycle.
+   * It does NOT independently call classStudentsApi or read from any enrollment API.
+   *
+   * Badge display rules:
+   *   ENROLLED       → show active class name
+   *   PRE_ENROLLMENT → show "Chưa có lớp học" (Backend confirmed empty)
+   *   LOADING        → show nothing (avoids flicker)
+   *   API_ERROR      → show nothing (do NOT say "Chưa có lớp học")
+   *   NETWORK_ERROR  → show nothing (do NOT say "Chưa có lớp học")
+   */
+  const { state, enrollments } = useStudentLifecycle();
 
-  const hasClasses = enrollments.length > 0;
-  const activeClassName = enrollments[0]?.className
-    ? enrollments[0].className
-    : enrollments[0]?.courses?.title
-    ? enrollments[0].courses.title
-    : null;
+  const activeClassName =
+    state === "ENROLLED" ? (enrollments[0]?.className ?? null) : null;
 
   const handleSignOut = async () => {
     await signOut();
@@ -47,15 +46,22 @@ export function ClientHeader() {
         <div className="flex items-center gap-4">
           <SidebarTrigger className="-ml-1" />
           <div className="flex items-center gap-3">
-            {hasClasses && activeClassName ? (
+            {/* ENROLLED → show active class name */}
+            {state === "ENROLLED" && activeClassName && (
               <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-soft text-primary border border-primary/20">
                 {activeClassName}
               </span>
-            ) : (
+            )}
+
+            {/* PRE_ENROLLMENT (Backend-confirmed) → show "Chưa có lớp học" */}
+            {state === "PRE_ENROLLMENT" && (
               <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-warning/10 text-warning-foreground border border-warning/20">
                 Chưa có lớp học
               </span>
             )}
+
+            {/* LOADING / API_ERROR / NETWORK_ERROR → render nothing
+                Do NOT show "Chưa có lớp học" — that is a false statement. */}
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { alertsApi } from "@/lib/api";
-import { AlertTriangle, CheckCircle2, Flame } from "lucide-react";
+import { notificationsApi, NotificationItem } from "@/lib/api";
+import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -9,16 +9,25 @@ interface AlertWidgetProps {
   role?: "admin" | "teacher" | "student";
 }
 
-export const AlertWidget: React.FC<AlertWidgetProps> = ({ role = "teacher" }) => {
+export const AlertWidget: React.FC<AlertWidgetProps> = () => {
   const queryClient = useQueryClient();
-  const { data: alerts = [] } = useQuery({
-    queryKey: ["alerts-widget", role],
-    queryFn: () => alertsApi.list(role),
+  const { data } = useQuery({
+    queryKey: ["alerts-widget"],
+    queryFn: () => notificationsApi.list({ limit: 10 }),
   });
 
+  const alerts = (data?.data || []).filter(
+    (n: NotificationItem) =>
+      !n.isRead && (n.type === "PENDING_GRADING" || n.type === "NEW_SUBMISSION")
+  );
+
   const resolveMutation = useMutation({
-    mutationFn: (id: string) => alertsApi.resolve(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alerts-widget", role] }),
+    mutationFn: (id: string) => notificationsApi.markAsRead(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["alerts-widget"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications-list"] });
+    },
   });
 
   if (!alerts || alerts.length === 0) return null;
@@ -29,7 +38,7 @@ export const AlertWidget: React.FC<AlertWidgetProps> = ({ role = "teacher" }) =>
         <CardTitle className="text-sm font-bold flex items-center justify-between text-foreground">
           <span className="flex items-center gap-1.5">
             <AlertTriangle className="h-4 w-4 text-warning" />
-            Việc cần xử lý hôm nay ({alerts.length})
+            Việc cần xử lý ({alerts.length})
           </span>
         </CardTitle>
       </CardHeader>
@@ -41,17 +50,12 @@ export const AlertWidget: React.FC<AlertWidgetProps> = ({ role = "teacher" }) =>
           >
             <div className="space-y-0.5">
               <div className="font-bold text-foreground flex items-center gap-1.5">
-                <span className={alt.priority === "urgent" ? "text-destructive" : "text-warning"}>
+                <span className="text-warning">
                   <AlertTriangle className="h-3.5 w-3.5" />
                 </span>
-                {alt.context?.title || "Cần xử lý"}
+                {alt.title}
               </div>
-              {alt.age_days !== undefined && alt.age_days > 0 && (
-                <div className="text-[10px] text-warning-foreground font-semibold flex items-center gap-1">
-                  <Flame className="h-3 w-3 text-warning" />
-                  Tồn tại {alt.age_days} ngày
-                </div>
-              )}
+              <p className="text-xs text-muted-foreground line-clamp-1">{alt.message}</p>
             </div>
 
             <Button
@@ -69,4 +73,3 @@ export const AlertWidget: React.FC<AlertWidgetProps> = ({ role = "teacher" }) =>
     </Card>
   );
 };
-

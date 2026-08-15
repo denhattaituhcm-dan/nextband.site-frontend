@@ -1406,25 +1406,83 @@ export const usersApi = {
 // =============================================
 // ENROLLMENTS API
 // =============================================
-// =============================================
 // CLASS MEMBERSHIP SERVICE (SINGLE SOURCE OF TRUTH)
 // =============================================
+
+/**
+ * Typed discriminated union for getMyClasses() responses.
+ *
+ * INVARIANT-01: API failure MUST NEVER be represented as an empty array.
+ * INVARIANT-02: PRE_ENROLLMENT MUST ONLY originate from { status:"ok", data:[] }.
+ */
+export interface MyClassEnrollment {
+  id: string;
+  classId: string;
+  className: string;
+  courseId: string;
+  courseTitle: string;
+  teacherName: string | null;
+  isActive: boolean;
+  membershipStatus: string;
+  joinedAt: string;
+}
+
+export type MyClassesResult =
+  | { status: "ok"; data: MyClassEnrollment[] }
+  | { status: "unauthenticated" }
+  | { status: "api_error"; httpStatus: number; message: string }
+  | { status: "network_error"; message: string };
+
 export const classStudentsApi = {
-  getMyClasses: async () => {
+  /**
+   * Fetch the authenticated student's class memberships from Backend.
+   *
+   * Returns a typed discriminated union — never silently returns [].
+   * Callers MUST handle all status variants.
+   *
+   * Status semantics:
+   *   "ok" + data:[]   → 200 confirmed no enrollment → PRE_ENROLLMENT
+   *   "ok" + data:[..] → 200 confirmed enrollment    → ENROLLED
+   *   "unauthenticated"→ 401 → auth redirect
+   *   "api_error"      → 4xx/5xx → API_ERROR state
+   *   "network_error"  → fetch exception → NETWORK_ERROR state
+   */
+  getMyClasses: async (): Promise<MyClassesResult> => {
     const token = await getAuthToken();
+    if (!token) {
+      return { status: "unauthenticated" };
+    }
+
     try {
       const res = await fetch(`${API_BASE_URL}/classes/my-classes`, {
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          Authorization: `Bearer ${token}`,
         },
       });
-      if (res.ok) {
-        const data = await res.json();
-        return data || [];
+
+      if (res.status === 401) {
+        return { status: "unauthenticated" };
       }
-    } catch {}
-    return [];
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        return {
+          status: "api_error",
+          httpStatus: res.status,
+          message: (body as any).message ?? (body as any).error ?? `HTTP ${res.status}`,
+        };
+      }
+
+      const body = await res.json();
+      const data: MyClassEnrollment[] = Array.isArray(body?.data) ? body.data : [];
+      return { status: "ok", data };
+    } catch (err: any) {
+      return {
+        status: "network_error",
+        message: err?.message ?? "Network request failed",
+      };
+    }
   },
 };
 
@@ -3009,112 +3067,77 @@ export const attendanceApi = {
 };
 
 // =============================================
-// NOTIFICATIONS 3-TIER ARCHITECTURE APIs
+// AUTHORITATIVE NOTIFICATION SUBSYSTEM APIs
 // =============================================
 
-export interface AnnouncementItem {
+export interface NotificationItem {
   id: string;
-  title: string;
-  content: string | null;
-  scope_type: "GLOBAL" | "ROLE" | "CLASS";
-  scope_value: string | null;
-  priority: "normal" | "important" | "urgent";
-  is_pinned: boolean;
-  version: number;
-  published_at: string;
-  expires_at?: string | null;
-  created_at: string;
-  has_newer_version?: boolean;
-  is_read?: boolean;
-}
-
-export interface ActivityItem {
-  id: string;
-  actor_id?: string;
-  actor_name?: string;
-  action: string;
-  target_type: string;
-  target_id?: string;
-  target_name?: string;
-  metadata?: Record<string, any>;
-  scope_type: "GLOBAL" | "ROLE" | "CLASS" | "USER";
-  scope_value?: string;
-  created_at: string;
-}
-
-export interface AlertItem {
-  id: string;
+  userId: string;
   type: string;
-  owner_type: "teacher" | "admin" | "student";
-  owner_id?: string;
-  class_id?: string;
-  priority: "warning" | "urgent";
-  context?: Record<string, any>;
-  status: "open" | "resolved";
-  created_at: string;
-  last_detected: string;
-  resolved_at?: string;
-  age_days?: number;
+  title: string;
+  message: string;
+  link?: string | null;
+  entityType?: string | null;
+  entityId?: string | null;
+  isRead: boolean;
+  createdAt: string;
+  readAt?: string | null;
 }
-
-export const announcementsApi = {
-  list: async (_scopeRole: "admin" | "teacher" | "student" = "student", _classId?: string): Promise<AnnouncementItem[]> => {
-    return [];
-  },
-
-  markAsRead: async (_announcementId: string, _version: number = 1) => {
-    return;
-  },
-};
-
-export const activityFeedApi = {
-  list: async (_scopeRole: "admin" | "teacher" | "student" = "student"): Promise<ActivityItem[]> => {
-    return [];
-  },
-};
-
-export const alertsApi = {
-  list: async (_role: "admin" | "teacher" | "student" = "teacher"): Promise<AlertItem[]> => {
-    return [];
-  },
-
-  resolve: async (_id: string): Promise<void> => {
-    return;
-  },
-};
 
 export const notificationsApi = {
-  list: async (scope: "admin" | "teacher" | "student") => {
-    const [announcements, activities, alerts] = await Promise.all([
-      announcementsApi.list(scope),
-      activityFeedApi.list(scope),
-      alertsApi.list(scope === "admin" ? "admin" : scope === "teacher" ? "teacher" : "student"),
-    ]);
+  list: async (params?: { page?: number; limit?: number }) => {
+    const token = await getAuthToken();
+    const query = new URLSearchParams();
+    if (params?.page) query.append("page", String(params.page));
+    if (params?.limit) query.append("limit", String(params.limit));
 
-    return {
-      announcements,
-      activities,
-      alerts,
-    };
+    const res = await fetch(`${API_BASE_URL}/notifications?${query.toString()}`, {
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    });
+    if (!res.ok) {
+      throw new Error(`Notification API error: ${res.status}`);
+    }
+    return res.json() as Promise<{
+      success: boolean;
+      data: NotificationItem[];
+      unreadCount: number;
+      pagination: { total: number; page: number; limit: number };
+    }>;
   },
 
-  markAsRead: async (id: string, type: "announcement" | "alert" = "announcement", version: number = 1) => {
-    if (type === "announcement") {
-      await announcementsApi.markAsRead(id, version);
-    } else if (type === "alert") {
-      await alertsApi.resolve(id);
+  getUnreadCount: async () => {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/notifications/unread-count`, {
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    });
+    if (!res.ok) {
+      throw new Error(`Notification unread-count API error: ${res.status}`);
     }
-    return { success: true };
+    return res.json() as Promise<{ success: boolean; count: number }>;
   },
 
-  markAllAsRead: async (scope: "admin" | "teacher" | "student") => {
-    const announcements = await announcementsApi.list(scope);
-    for (const ann of announcements) {
-      if (!ann.is_read || ann.has_newer_version) {
-        await announcementsApi.markAsRead(ann.id, ann.version);
-      }
+  markAsRead: async (id: string) => {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/notifications/${id}/read`, {
+      method: "PATCH",
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to mark notification as read: ${res.status}`);
     }
-    return { success: true };
+    return res.json() as Promise<{ success: boolean }>;
+  },
+
+  markAllAsRead: async () => {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/notifications/read-all`, {
+      method: "PATCH",
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to mark all notifications as read: ${res.status}`);
+    }
+    return res.json() as Promise<{ success: boolean; markedCount: number }>;
   },
 };
 

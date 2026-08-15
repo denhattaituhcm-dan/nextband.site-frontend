@@ -74,6 +74,14 @@ export function ClientSidebar() {
   const { user } = useAuth();
   const { state: lifecycleState } = useStudentLifecycle();
 
+  /**
+   * INVARIANT-01 & INVARIANT-05:
+   * Menu is only reduced to preEnrollmentNavigationItems when Backend
+   * authoritatively confirms no enrollment (state === "PRE_ENROLLMENT").
+   *
+   * For LOADING, API_ERROR, NETWORK_ERROR → keep fullNavigationItems.
+   * A failing API request is NOT evidence that the user has no classes.
+   */
   const navigationItems = lifecycleState === "PRE_ENROLLMENT"
     ? preEnrollmentNavigationItems
     : fullNavigationItems;
