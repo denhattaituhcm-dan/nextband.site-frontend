@@ -47,15 +47,12 @@ export function ClientHeader() {
         <div className="flex items-center gap-4">
           <SidebarTrigger className="-ml-1" />
           <div className="flex items-center gap-3">
-            <h2 className="text-sm font-semibold text-slate-800">
-              Xin chào, {user?.fullName || "Học viên"}
-            </h2>
             {hasClasses && activeClassName ? (
-              <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+              <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-soft text-primary border border-primary/20">
                 {activeClassName}
               </span>
             ) : (
-              <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+              <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-warning/10 text-warning-foreground border border-warning/20">
                 Chưa có lớp học
               </span>
             )}

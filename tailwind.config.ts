@@ -1,7 +1,21 @@
 import type { Config } from "tailwindcss";
 
+// ============================================================
+// ARIS Design System — Color Contract
+// ============================================================
+// RULE: Only semantic tokens are exposed as Tailwind utilities.
+// Raw palette colors (blue-600, emerald-500, amber-400, etc.)
+// are intentionally NOT in the color map.
+//
+// ✅ Use: text-primary, bg-success, text-warning, text-muted-foreground
+// ❌ Ban: text-blue-600, bg-emerald-500, text-amber-600, bg-sky-100
+//
+// To change brand color → edit CSS variables in index.css only.
+// ============================================================
+
 export default {
-  darkMode: ["class"],
+  // Dark mode is intentionally disabled. ARIS is a light-only product.
+  // Do not re-enable without a full dark-mode token audit first.
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
@@ -22,6 +36,8 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          hover: "hsl(var(--primary-hover))",
+          soft: "hsl(var(--primary-soft))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -47,6 +63,7 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // --- Semantic state colors ---
         success: {
           DEFAULT: "hsl(var(--success))",
           foreground: "hsl(var(--success-foreground))",
@@ -59,6 +76,7 @@ export default {
           DEFAULT: "hsl(var(--info))",
           foreground: "hsl(var(--info-foreground))",
         },
+        // --- Sidebar ---
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -69,7 +87,7 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Exam section colors
+        // --- Exam skill section colors ---
         listening: "hsl(var(--listening))",
         reading: "hsl(var(--reading))",
         writing: "hsl(var(--writing))",

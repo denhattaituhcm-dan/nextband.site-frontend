@@ -55,10 +55,10 @@ export default function HomePage() {
         ) : (
           <div className="space-y-6">
             {/* HERO WELCOME BANNER */}
-            <Card className="border-0 text-primary-foreground rounded-2xl shadow-lg p-6 md:p-8 bg-gradient-to-r from-primary via-primary/95 to-teal-700 space-y-5">
+            <Card className="border-0 text-primary-foreground rounded-2xl shadow-lg p-6 md:p-8 bg-primary space-y-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 text-white border border-white/20 text-xs font-bold backdrop-blur-md">
-                  <Sparkles className="w-4 h-4 text-teal-200" />
+                  <Sparkles className="w-4 h-4 text-white/70" />
                   <span>Đang chọn: {activeClassName}</span>
                 </div>
 
@@ -116,13 +116,13 @@ export default function HomePage() {
 
             {/* 3 STUDENT KPI CARDS (Real CSDL Semantics) */}
             <div className="grid gap-4 sm:grid-cols-3">
-              <Card className="p-4 space-y-1 bg-card border-slate-200 shadow-2xs">
+              <Card className="p-4 space-y-1 bg-card border-border shadow-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                    <CheckCircle2 className="h-4 w-4 text-success" />
                     Tổng bài đã nộp
                   </span>
-                  <Badge variant="outline" className="text-[10px] font-mono">
+                  <Badge variant="muted" className="text-[10px] font-mono">
                     submitted + graded
                   </Badge>
                 </div>
@@ -130,31 +130,31 @@ export default function HomePage() {
                 <p className="text-[11px] text-muted-foreground">Đã gửi cho giáo viên</p>
               </Card>
 
-              <Card className="p-4 space-y-1 bg-card border-slate-200 shadow-2xs">
+              <Card className="p-4 space-y-1 bg-card border-border shadow-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
-                    <Award className="h-4 w-4 text-blue-600" />
+                    <Award className="h-4 w-4 text-info" />
                     Bài đã nhận xét
                   </span>
-                  <Badge variant="outline" className="text-[10px] font-mono text-blue-600 border-blue-200">
+                  <Badge variant="info" className="text-[10px] font-mono">
                     graded
                   </Badge>
                 </div>
-                <h3 className="text-2xl font-bold text-blue-600">{gradedCount} bài</h3>
+                <h3 className="text-2xl font-bold text-info">{gradedCount} bài</h3>
                 <p className="text-[11px] text-muted-foreground">Đã có điểm & feedback</p>
               </Card>
 
-              <Card className="p-4 space-y-1 bg-card border-slate-200 shadow-2xs">
+              <Card className="p-4 space-y-1 bg-card border-border shadow-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
-                    <Clock className="h-4 w-4 text-amber-600" />
+                    <Clock className="h-4 w-4 text-warning" />
                     Bài chờ giáo viên chấm
                   </span>
-                  <Badge variant="outline" className="text-[10px] font-mono text-amber-600 border-amber-200">
+                  <Badge variant="warning" className="text-[10px] font-mono">
                     pending
                   </Badge>
                 </div>
-                <h3 className="text-2xl font-bold text-amber-600">{pendingCount} bài</h3>
+                <h3 className="text-2xl font-bold text-warning">{pendingCount} bài</h3>
                 <p className="text-[11px] text-muted-foreground">Đang trong hàng đợi chấm</p>
               </Card>
             </div>

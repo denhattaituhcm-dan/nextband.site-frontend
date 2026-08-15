@@ -83,76 +83,19 @@
     --writing: 223 68% 37%;
     --speaking: 354 85% 44%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(
-      135deg,
-      hsl(173 80% 40%),
-      hsl(199 89% 48%)
-    );
-    --gradient-accent: linear-gradient(
-      135deg,
-      hsl(25 95% 53%),
-      hsl(38 92% 50%)
-    );
+    /* Gradient — only for page-level background surfaces (e.g. auth page ambient) */
+    /* NOT for brand identity. Brand uses solid primary. */
     --gradient-hero: linear-gradient(
       135deg,
-      hsl(173 80% 95%),
-      hsl(250 50% 98%)
+      hsl(223 68% 97%),
+      hsl(210 20% 98%)
     );
   }
 
-  .dark {
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
-
-    --card: 222 47% 9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222 47% 9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 173 80% 45%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 250 30% 20%;
-    --secondary-foreground: 250 50% 80%;
-
-    --muted: 217 33% 15%;
-    --muted-foreground: 215 20% 65%;
-
-    --accent: 25 95% 55%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 63% 45%;
-    --destructive-foreground: 0 0% 100%;
-
-    --success: 142 76% 42%;
-    --success-foreground: 0 0% 100%;
-
-    --warning: 38 92% 55%;
-    --warning-foreground: 0 0% 0%;
-
-    --info: 199 89% 55%;
-    --info-foreground: 0 0% 100%;
-
-    --border: 217 33% 20%;
-    --input: 217 33% 20%;
-    --ring: 173 80% 45%;
-
-    --sidebar-background: 222 47% 9%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 173 80% 45%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 173 50% 15%;
-    --sidebar-accent-foreground: 173 80% 70%;
-    --sidebar-border: 217 33% 20%;
-    --sidebar-ring: 173 80% 45%;
-
-    --listening: 199 89% 55%;
-    --reading: 142 76% 50%;
-    --writing: 250 47% 65%;
-    --speaking: 25 95% 60%;
-  }
+  /* Dark mode is intentionally disabled for ARIS.
+   * The .dark class has no effect. Do not re-enable without a full token audit.
+   * Reason: was using a different brand hue (teal) in dark mode — breaking brand identity.
+   */
 }
 
 @layer base {
@@ -214,11 +157,8 @@
     @apply backdrop-blur-md bg-background/80 border border-border/50;
   }
 
-  /* Gradient text */
-  .gradient-text {
-    @apply bg-clip-text text-transparent;
-    background-image: var(--gradient-primary);
-  }
+  /* gradient-text intentionally removed — gradient-primary was teal/sky, not brand blue.
+   * Use text-primary for brand color. */
 
   /* Rich text content — WYSIWYG consistency between admin editor and exam interface */
   .rich-content {

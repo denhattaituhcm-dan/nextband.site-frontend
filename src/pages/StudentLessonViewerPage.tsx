@@ -17,6 +17,9 @@ import {
   Edit3,
   ArrowRight,
   MessageSquare,
+  CheckCircle2,
+  Clock,
+  Circle,
 } from "lucide-react";
 
 export default function StudentLessonViewerPage() {
@@ -105,13 +108,33 @@ export default function StudentLessonViewerPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "REVIEWED":
-        return <Badge className="bg-emerald-600 text-white text-[11px] font-bold">🟢 Đã nhận xét</Badge>;
+        return (
+          <Badge variant="success">
+            <CheckCircle2 className="h-3 w-3" />
+            Đã nhận xét
+          </Badge>
+        );
       case "SUBMITTED":
-        return <Badge className="bg-amber-500 text-white text-[11px] font-bold">🟡 Đã nộp (Chờ phản hồi)</Badge>;
+        return (
+          <Badge variant="warning">
+            <Clock className="h-3 w-3" />
+            Chờ phản hồi
+          </Badge>
+        );
       case "IN_PROGRESS":
-        return <Badge className="bg-blue-600 text-white text-[11px] font-bold">🔵 Đang làm</Badge>;
+        return (
+          <Badge variant="info">
+            <Edit3 className="h-3 w-3" />
+            Đang làm
+          </Badge>
+        );
       default:
-        return <Badge variant="outline" className="text-slate-600 border-slate-300 text-[11px] font-semibold">○ Chưa làm</Badge>;
+        return (
+          <Badge variant="muted">
+            <Circle className="h-3 w-3" />
+            Chưa làm
+          </Badge>
+        );
     }
   };
 

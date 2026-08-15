@@ -132,8 +132,8 @@ export function AdminSidebar() {
                   >
                     <NavLink
                       to={item.url}
-                      className="flex items-center gap-3 font-semibold text-slate-700 hover:text-blue-600"
-                      activeClassName="bg-blue-50 text-blue-700 font-bold border-r-2 border-blue-600"
+                      className="flex items-center gap-3"
+                      activeClassName="bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
                     >
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
@@ -164,10 +164,10 @@ export function AdminSidebar() {
                       <NavLink
                         to={item.url}
                         end={item.url === "/admin"}
-                        className="flex items-center gap-3 text-slate-600 hover:text-slate-900"
-                        activeClassName="bg-slate-100 text-slate-900 font-bold"
+                        className="flex items-center gap-3"
+                        activeClassName="bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
                       >
-                        <item.icon className="h-4 w-4 text-slate-500" />
+                        <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
                       </NavLink>
                     </SidebarMenuButton>
