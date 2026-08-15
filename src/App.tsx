@@ -17,38 +17,76 @@ import Auth from "@/pages/Auth";
 import HomePage from "@/pages/HomePage";
 import NotFound from "@/pages/NotFound";
 
+/**
+ * Detects stale Vite chunk errors (happen after a new deployment).
+ * Returns true for "Failed to fetch dynamically imported module" errors.
+ */
+const isChunkLoadError = (error: unknown): boolean => {
+  if (!(error instanceof Error)) return false;
+  return (
+    error.message.includes("Failed to fetch dynamically imported module") ||
+    error.message.includes("Importing a module script failed") ||
+    error.name === "ChunkLoadError"
+  );
+};
+
+const CHUNK_RELOAD_KEY = "__nb_chunk_reloaded__";
+
+/**
+ * Wraps React.lazy with automatic page reload on stale-chunk errors.
+ * Uses a sessionStorage flag to prevent infinite reload loops.
+ */
+function lazyWithRetry<T extends React.ComponentType<any>>(
+  factory: () => Promise<{ default: T }>
+): React.LazyExoticComponent<T> {
+  return lazy(() =>
+    factory().catch((err: unknown) => {
+      if (isChunkLoadError(err)) {
+        const alreadyReloaded = sessionStorage.getItem(CHUNK_RELOAD_KEY);
+        if (!alreadyReloaded) {
+          sessionStorage.setItem(CHUNK_RELOAD_KEY, "1");
+          window.location.reload();
+          // Return a never-resolving promise so React doesn't render anything
+          return new Promise(() => {}) as never;
+        }
+      }
+      throw err;
+    })
+  );
+}
+
 // Lazy-loaded routes for code splitting
-const StudentLessonViewerPage = lazy(() => import("@/pages/StudentLessonViewerPage"));
-const MyCourses = lazy(() => import("@/pages/MyCourses"));
-const MySubmissions = lazy(() => import("@/pages/MySubmissions"));
-const CourseDetail = lazy(() => import("@/pages/CourseDetail"));
-const SubmissionDetail = lazy(() => import("@/pages/SubmissionDetail"));
-const ExamInterface = lazy(() => import("@/pages/ExamInterface"));
-const Profile = lazy(() => import("@/pages/Profile"));
+const StudentLessonViewerPage = lazyWithRetry(() => import("@/pages/StudentLessonViewerPage"));
+const MyCourses = lazyWithRetry(() => import("@/pages/MyCourses"));
+const MySubmissions = lazyWithRetry(() => import("@/pages/MySubmissions"));
+const CourseDetail = lazyWithRetry(() => import("@/pages/CourseDetail"));
+const SubmissionDetail = lazyWithRetry(() => import("@/pages/SubmissionDetail"));
+const ExamInterface = lazyWithRetry(() => import("@/pages/ExamInterface"));
+const Profile = lazyWithRetry(() => import("@/pages/Profile"));
 
 // Lazy-loaded Admin Pages
-const AdminDashboard = lazy(() => import("@/pages/admin/Dashboard"));
-const AdminCourses = lazy(() => import("@/pages/admin/Courses"));
-const AdminCourseCreate = lazy(() => import("@/pages/admin/CourseCreate"));
-const AdminCourseEdit = lazy(() => import("@/pages/admin/CourseEdit"));
-const AdminExams = lazy(() => import("@/pages/admin/Exams"));
-const AdminExamCreate = lazy(() => import("@/pages/admin/ExamCreate"));
-const AdminExamEdit = lazy(() => import("@/pages/admin/ExamEdit"));
-const AdminSectionEdit = lazy(() => import("@/pages/admin/SectionEdit"));
-const AdminUsers = lazy(() => import("@/pages/admin/Users"));
-const AdminTeachers = lazy(() => import("@/pages/admin/Teachers"));
-const AdminAdmins = lazy(() => import("@/pages/admin/Admins"));
-const AdminCheckAttempt = lazy(() => import("@/pages/admin/CheckAttempt"));
-const AdminSubmissionGrade = lazy(() => import("@/pages/admin/SubmissionGrade"));
-const AdminLogViewer = lazy(() => import("@/pages/admin/LogViewer"));
-const AdminClasses = lazy(() => import("@/pages/admin/Classes"));
-const AdminClassEdit = lazy(() => import("@/pages/admin/ClassWorkspace"));
-const AdminSettings = lazy(() => import("@/pages/admin/Settings"));
-const TeacherWorkspace = lazy(() => import("@/pages/admin/TeacherWorkspace"));
-const AdminContentQADashboard = lazy(() =>
+const AdminDashboard = lazyWithRetry(() => import("@/pages/admin/Dashboard"));
+const AdminCourses = lazyWithRetry(() => import("@/pages/admin/Courses"));
+const AdminCourseCreate = lazyWithRetry(() => import("@/pages/admin/CourseCreate"));
+const AdminCourseEdit = lazyWithRetry(() => import("@/pages/admin/CourseEdit"));
+const AdminExams = lazyWithRetry(() => import("@/pages/admin/Exams"));
+const AdminExamCreate = lazyWithRetry(() => import("@/pages/admin/ExamCreate"));
+const AdminExamEdit = lazyWithRetry(() => import("@/pages/admin/ExamEdit"));
+const AdminSectionEdit = lazyWithRetry(() => import("@/pages/admin/SectionEdit"));
+const AdminUsers = lazyWithRetry(() => import("@/pages/admin/Users"));
+const AdminTeachers = lazyWithRetry(() => import("@/pages/admin/Teachers"));
+const AdminAdmins = lazyWithRetry(() => import("@/pages/admin/Admins"));
+const AdminCheckAttempt = lazyWithRetry(() => import("@/pages/admin/CheckAttempt"));
+const AdminSubmissionGrade = lazyWithRetry(() => import("@/pages/admin/SubmissionGrade"));
+const AdminLogViewer = lazyWithRetry(() => import("@/pages/admin/LogViewer"));
+const AdminClasses = lazyWithRetry(() => import("@/pages/admin/Classes"));
+const AdminClassEdit = lazyWithRetry(() => import("@/pages/admin/ClassWorkspace"));
+const AdminSettings = lazyWithRetry(() => import("@/pages/admin/Settings"));
+const TeacherWorkspace = lazyWithRetry(() => import("@/pages/admin/TeacherWorkspace"));
+const AdminContentQADashboard = lazyWithRetry(() =>
   import("@/pages/admin/AdminContentQADashboard").then((m) => ({ default: m.AdminContentQADashboard }))
 );
-const ClassAttendancePage = lazy(() => import("@/pages/admin/ClassAttendancePage"));
+const ClassAttendancePage = lazyWithRetry(() => import("@/pages/admin/ClassAttendancePage"));
 
 const PageLoader = () => (
   <div className="min-h-[400px] w-full flex flex-col items-center justify-center space-y-3 p-12">
@@ -70,8 +108,6 @@ const queryClient = new QueryClient({
   },
 });
 
-import React from "react";
-
 class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; error: any }> {
   constructor(props: { children: React.ReactNode }) {
     super(props);
@@ -83,6 +119,16 @@ class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, { 
   }
 
   componentDidCatch(error: any, errorInfo: any) {
+    // If this is a stale-chunk error that slipped past lazyWithRetry,
+    // silently reload the page once rather than showing the error UI.
+    if (isChunkLoadError(error)) {
+      const alreadyReloaded = sessionStorage.getItem(CHUNK_RELOAD_KEY);
+      if (!alreadyReloaded) {
+        sessionStorage.setItem(CHUNK_RELOAD_KEY, "1");
+        window.location.reload();
+        return;
+      }
+    }
     console.error("[CRITICAL_APP_ERROR]", error, errorInfo);
   }
 
