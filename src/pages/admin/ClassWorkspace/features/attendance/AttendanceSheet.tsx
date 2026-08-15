@@ -80,10 +80,21 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessi
   const [generatingSessions, setGeneratingSessions] = useState<boolean>(false);
   const [sessionData, setSessionData] = useState<SessionData | null>(null);
   const [items, setItems] = useState<StudentAttendanceItem[]>([]);
+  const [localSessionStatuses, setLocalSessionStatuses] = useState<Record<string, "SCHEDULED" | "COMPLETED" | "CANCELLED">>({});
 
-  // Synchronize selectedSessionId when sessions prop changes
+  // Synchronize localSessionStatuses and selectedSessionId when sessions prop changes
   useEffect(() => {
-    if (sessions.length > 0) {
+    if (sessions && sessions.length > 0) {
+      setLocalSessionStatuses((prev) => {
+        const next = { ...prev };
+        sessions.forEach((s) => {
+          if (!next[s.id] || (s.status === "COMPLETED" && next[s.id] !== "COMPLETED")) {
+            next[s.id] = s.status;
+          }
+        });
+        return next;
+      });
+
       const exists = sessions.some((s) => s.id === selectedSessionId);
       if (!exists || !selectedSessionId) {
         setSelectedSessionId(sessions[0].id);
@@ -111,6 +122,12 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessi
 
       if (data) {
         setSessionData(data as SessionData);
+        if (data.status) {
+          setLocalSessionStatuses((prev) => ({
+            ...prev,
+            [sessionId]: data.status as "SCHEDULED" | "COMPLETED" | "CANCELLED",
+          }));
+        }
 
         // Map and merge with active students to ensure all class students are listed
         const existingRecords = data.students || [];
@@ -246,6 +263,10 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessi
       await attendanceApi.completeSession(classId, selectedSessionId);
 
       setSessionData((prev) => (prev ? { ...prev, status: "COMPLETED" } : null));
+      setLocalSessionStatuses((prev) => ({
+        ...prev,
+        [selectedSessionId]: "COMPLETED",
+      }));
       toast({ title: "Thành công", description: "Buổi học đã được chốt và khóa điểm danh." });
       invalidateClassWorkspace(queryClient, classId);
       refetchClass();
@@ -263,6 +284,10 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessi
     try {
       await attendanceApi.unlockSession(classId, selectedSessionId);
       setSessionData((prev) => (prev ? { ...prev, status: "SCHEDULED" } : null));
+      setLocalSessionStatuses((prev) => ({
+        ...prev,
+        [selectedSessionId]: "SCHEDULED",
+      }));
       toast({ title: "Đã mở lại", description: "Buổi học đã được mở lại để chỉnh sửa điểm danh." });
       invalidateClassWorkspace(queryClient, classId);
       refetchClass();
@@ -304,7 +329,8 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessi
     }
   };
 
-  const isCompleted = sessionData?.status === "COMPLETED";
+  const currentSelectedStatus = localSessionStatuses[selectedSessionId] || sessionData?.status || "SCHEDULED";
+  const isCompleted = currentSelectedStatus === "COMPLETED";
 
   // Summary counts
   const presentCount = items.filter((it) => it.status === "PRESENT").length;
@@ -344,24 +370,48 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ classId, sessi
         <div className="flex flex-wrap items-center gap-3">
           <label className="text-xs font-semibold text-muted-foreground whitespace-nowrap">Chọn Buổi học:</label>
           <Select value={selectedSessionId} onValueChange={setSelectedSessionId}>
-            <SelectTrigger className="w-[380px] h-9 text-xs font-medium">
+            <SelectTrigger className="w-[440px] max-w-full h-9 text-xs font-medium bg-background">
               <SelectValue placeholder="Chọn buổi học" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-[340px]">
               {sessions.map((s) => {
                 const dateStr = s.scheduledDate || "";
                 const formattedDate = dateStr ? dateStr.slice(0, 10).split("-").reverse().join("/") : "—";
                 const lessonLabel = s.lessonTitle || `Lesson ${s.sessionNumber}`;
-                const statusTag =
-                  s.status === "COMPLETED"
-                    ? "✓ Đã chốt"
-                    : s.status === "CANCELLED"
-                    ? "🚫 Đã hủy"
-                    : "⏳ Chưa chốt";
+                const effectiveStatus = localSessionStatuses[s.id] || s.status || "SCHEDULED";
+                const isItemCompleted = effectiveStatus === "COMPLETED";
+                const isItemCancelled = effectiveStatus === "CANCELLED";
 
                 return (
-                  <SelectItem key={s.id} value={s.id} className="text-xs font-medium">
-                    Buổi {s.sessionNumber} • {formattedDate} • {lessonLabel} • {statusTag}
+                  <SelectItem
+                    key={s.id}
+                    value={s.id}
+                    className={`text-xs font-medium py-2 my-0.5 rounded-md transition-colors cursor-pointer ${
+                      isItemCompleted
+                        ? "bg-emerald-50/60 hover:bg-emerald-100/70 focus:bg-emerald-100/70 text-emerald-950 font-semibold"
+                        : isItemCancelled
+                        ? "bg-rose-50/40 text-rose-800"
+                        : "hover:bg-muted/70 focus:bg-muted/70"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full gap-3">
+                      <span className="truncate">
+                        Buổi {s.sessionNumber} • {formattedDate} • {lessonLabel}
+                      </span>
+                      {isItemCompleted ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-100/90 px-2 py-0.5 rounded-full border border-emerald-200 shrink-0">
+                          ✓ Đã chốt
+                        </span>
+                      ) : isItemCancelled ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-700 bg-rose-100/90 px-2 py-0.5 rounded-full border border-rose-200 shrink-0">
+                          🚫 Đã hủy
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-full border border-amber-200 shrink-0">
+                          ⏳ Chưa chốt
+                        </span>
+                      )}
+                    </div>
                   </SelectItem>
                 );
               })}

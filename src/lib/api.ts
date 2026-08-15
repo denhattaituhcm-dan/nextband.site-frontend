@@ -3311,13 +3311,28 @@ export const attendanceApi = {
 
   unlockSession: async (classId: string, sessionId: string) => {
     const token = await getAuthToken();
+    let restSuccess = false;
+    try {
+      const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/unlock`, {
+        method: "POST",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      if (response.ok) {
+        restSuccess = true;
+      }
+    } catch {
+      // Backend offline
+    }
+
     try {
       await supabase
         .from("class_sessions")
         .update({ status: "SCHEDULED", completed_at: null })
         .eq("id", sessionId);
-    } catch {
-      // ignore
+    } catch (dbErr) {
+      if (!restSuccess) throw dbErr;
     }
     return { success: true };
   },
