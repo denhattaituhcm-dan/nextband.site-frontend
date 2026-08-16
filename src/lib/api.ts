@@ -1108,16 +1108,22 @@ export const submissionsApi = {
       throw new Error("Vui lòng đăng nhập để nộp bài.");
     }
 
+    const finalIdempotencyKey =
+      options.idempotencyKey ||
+      (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : `idem_${id}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`);
+
     const response = await fetch(`${API_BASE_URL}/submissions/${id}/submit`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
-        ...(options.idempotencyKey ? { "X-Idempotency-Key": options.idempotencyKey } : {}),
+        "X-Idempotency-Key": finalIdempotencyKey,
       },
       body: JSON.stringify({
         answers,
-        idempotencyKey: options.idempotencyKey,
+        idempotencyKey: finalIdempotencyKey,
         version: options.version,
       }),
     });

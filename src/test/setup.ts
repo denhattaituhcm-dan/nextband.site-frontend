@@ -91,6 +91,12 @@ class MockObjectStore {
     setTimeout(() => req.triggerSuccess(), 0);
     return req;
   }
+  getAll() {
+    const req = new MockIDBRequest();
+    const results = Object.values(inMemoryIDBStores[this.name] || {});
+    setTimeout(() => req.triggerSuccess(results), 0);
+    return req;
+  }
   clear() {
     const req = new MockIDBRequest();
     inMemoryIDBStores[this.name] = {};
@@ -161,6 +167,62 @@ const mockIndexedDB = {
 
 Object.defineProperty(window, "indexedDB", {
   value: mockIndexedDB,
+  writable: true,
+  configurable: true,
+});
+
+// In-Memory BroadcastChannel Mock
+const broadcastChannels: Record<string, Set<any>> = {};
+
+class MockBroadcastChannel {
+  name: string;
+  onmessage: any = null;
+  private listeners: Set<any> = new Set();
+
+  constructor(name: string) {
+    this.name = name;
+    if (!broadcastChannels[name]) {
+      broadcastChannels[name] = new Set();
+    }
+    broadcastChannels[name].add(this);
+  }
+
+  postMessage(message: any) {
+    const channels = broadcastChannels[this.name];
+    if (channels) {
+      channels.forEach((ch) => {
+        if (ch !== this) {
+          if (ch.onmessage) {
+            ch.onmessage({ data: message });
+          }
+          ch.listeners.forEach((listener: any) => listener({ data: message }));
+        }
+      });
+    }
+  }
+
+  addEventListener(type: string, listener: any) {
+    if (type === "message") {
+      this.listeners.add(listener);
+    }
+  }
+
+  removeEventListener(type: string, listener: any) {
+    if (type === "message") {
+      this.listeners.delete(listener);
+    }
+  }
+
+  close() {
+    if (broadcastChannels[this.name]) {
+      broadcastChannels[this.name].delete(this);
+    }
+    this.listeners.clear();
+  }
+}
+
+Object.defineProperty(window, "BroadcastChannel", {
+  value: MockBroadcastChannel,
   writable: true,
   configurable: true,
 });

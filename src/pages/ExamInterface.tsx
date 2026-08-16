@@ -14,6 +14,17 @@ import {
   ExamAnswersMap,
 } from "@/lib/draftStore";
 import {
+  computeServerOffset,
+  getTrustedRemainingSeconds,
+  calculateExpiresAt,
+} from "@/lib/trustedClock";
+import { TabLeaseManager, TabLeaseRecord } from "@/lib/tabLeaseManager";
+import {
+  ExamSyncEngine,
+  SyncVisualState,
+  SubmissionFlowStatus,
+} from "@/lib/examSyncEngine";
+import {
   ArrowLeft,
   Clock,
   Headphones,
@@ -27,6 +38,9 @@ import {
   Eye,
   Flag,
   X,
+  AlertTriangle,
+  ShieldCheck,
+  WifiOff,
 } from "lucide-react";
 import { ListeningSection } from "@/components/exam/ListeningSection";
 import { ReadingSection } from "@/components/exam/ReadingSection";
@@ -101,6 +115,10 @@ export default function ExamInterface() {
   const [initialTimeLeft, setInitialTimeLeft] = useState<number | null>(null);
   const [isRecordingActive, setIsRecordingActive] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [syncVisualState, setSyncVisualState] = useState<SyncVisualState>("LOCAL_SAVED");
+  const [hasTabLease, setHasTabLease] = useState(true);
+  const [activeTabLease, setActiveTabLease] = useState<TabLeaseRecord | null>(null);
+
   const autoSubmitTriggeredRef = useRef(false);
   const autosaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const localDraftTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -109,6 +127,10 @@ export default function ExamInterface() {
   const serverHydratedAtRef = useRef<number>(0);
   const answersRef = useRef<Record<string, any>>({});
   answersRef.current = answers;
+
+  const syncEngineRef = useRef<ExamSyncEngine | null>(null);
+  const tabLeaseManagerRef = useRef<TabLeaseManager | null>(null);
+  const isSubmissionCompletedRef = useRef<boolean>(false);
 
   const questionRefs = useRef<Map<string, HTMLElement>>(new Map());
 
@@ -152,30 +174,59 @@ export default function ExamInterface() {
     (submissionError as any)?.message ||
     "";
 
+  // Initialize Tab Lease Manager & Sync Engine
   useEffect(() => {
-    if (!exam) return;
+    if (!submission?.id || !user?.id || !examId) return;
 
-    if (typeof submission?.remainingSeconds === "number") {
-      setInitialTimeLeft(Math.max(0, submission.remainingSeconds));
-      return;
-    }
+    // 1. Tab Lease Manager
+    const leaseMgr = new TabLeaseManager(submission.id);
+    tabLeaseManagerRef.current = leaseMgr;
+    const unsubLease = leaseMgr.subscribe((hasLease, leaseRecord) => {
+      setHasTabLease(hasLease);
+      setActiveTabLease(leaseRecord);
+    });
+    leaseMgr.start();
 
-    const durationSeconds = (exam.durationMinutes || 60) * 60;
-    if (!submission?.startedAt) {
-      setInitialTimeLeft(durationSeconds);
-      return;
-    }
-    const startedAt = new Date(submission.startedAt).getTime();
-    if (!Number.isFinite(startedAt)) {
-      setInitialTimeLeft(durationSeconds);
-      return;
-    }
-    const elapsedSeconds = Math.max(
-      0,
-      Math.floor((Date.now() - startedAt) / 1000),
-    );
-    setInitialTimeLeft(Math.max(0, durationSeconds - elapsedSeconds));
-  }, [exam, submission?.remainingSeconds, submission?.startedAt]);
+    // 2. Exam Sync Engine
+    const syncEngine = new ExamSyncEngine({
+      submissionId: submission.id,
+      userId: user.id,
+      examId,
+      onVisualStateChange: (state) => setSyncVisualState(state),
+    });
+    syncEngineRef.current = syncEngine;
+
+    // 3. BeforeUnload UX Guard
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!isSubmissionCompletedRef.current) {
+        e.preventDefault();
+        e.returnValue = "Bạn đang có bài thi chưa hoàn tất. Rời khỏi có thể làm gián đoạn bài làm.";
+        return e.returnValue;
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      unsubLease();
+      leaseMgr.destroy();
+      syncEngine.destroy();
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [submission?.id, user?.id, examId]);
+
+  // Trusted Clock Timer Calculation
+  useEffect(() => {
+    if (!exam || !submission) return;
+
+    const durationMinutes = exam.durationMinutes || 60;
+    const startedAt = submission.startedAt
+      ? new Date(submission.startedAt).getTime()
+      : Date.now();
+    const expiresAt = calculateExpiresAt(startedAt, durationMinutes);
+    const trustedRemaining = getTrustedRemainingSeconds(expiresAt);
+
+    setInitialTimeLeft(trustedRemaining);
+  }, [exam, submission?.startedAt, submission?.durationMinutes]);
 
   useEffect(() => {
     autoSubmitTriggeredRef.current = false;
@@ -454,6 +505,8 @@ export default function ExamInterface() {
 
   const handleAnswerChange = useCallback(
     (questionId: string, answer: any) => {
+      if (!hasTabLease) return; // Prevent mutation if secondary tab
+
       setAnswers((prev) => {
         const next = { ...prev, [questionId]: answer };
         answersRef.current = next;
@@ -476,6 +529,7 @@ export default function ExamInterface() {
             );
             if (res.status === "SAVE_SUCCESS") {
               draftVersionRef.current = res.version;
+              syncEngineRef.current?.onLocalSaved();
             }
           } catch (err) {
             console.error("[DraftStore Save Error]", err);
@@ -486,6 +540,7 @@ export default function ExamInterface() {
       // 2. Debounced Remote Backend Autosave (1500ms)
       if (submission?.id) {
         setSaveStatus("saving");
+        syncEngineRef.current?.onServerSyncPending();
         if (autosaveTimerRef.current) {
           clearTimeout(autosaveTimerRef.current);
         }
@@ -517,14 +572,16 @@ export default function ExamInterface() {
               await submissionsApi.saveAnswers(submission.id, answerEntries);
             }
             setSaveStatus("saved");
+            syncEngineRef.current?.onServerSyncSuccess();
           } catch (err) {
             console.error("[Autosave Error]", err);
             setSaveStatus("error");
+            syncEngineRef.current?.onServerSyncError();
           }
         }, 1500);
       }
     },
-    [submission?.id, sections, user?.id, examId],
+    [submission?.id, sections, user?.id, examId, hasTabLease],
   );
 
   const handleQuestionClick = useCallback((questionId: string) => {
@@ -586,7 +643,7 @@ export default function ExamInterface() {
   );
 
   const handleSubmit = useCallback(async () => {
-    if (!user || !examId || !submission) return;
+    if (!user || !examId || !submission || !syncEngineRef.current) return;
 
     // 1. Cancel pending debounce timer
     if (autosaveTimerRef.current) {
@@ -616,43 +673,56 @@ export default function ExamInterface() {
           };
         });
 
-      // 3. Submit atomically to canonical API
-      const result = await submissionsApi.submit(submission.id, answerEntries);
+      // 3. Submit atomically via Sync Engine (Atomic Enqueue -> Idempotent Post -> Reconciliation)
+      const res = await syncEngineRef.current.submitExam(answerEntries);
 
-      // Invariant: Clear draft ONLY upon confirmed server submission success (200/201)
-      await clearDraftLocally(submission.id);
+      if (res.success && res.status === "SUBMITTED") {
+        isSubmissionCompletedRef.current = true;
+        await clearDraftLocally(submission.id);
 
-      queryClient.invalidateQueries({ queryKey: ["my-submissions"] });
-      queryClient.invalidateQueries({ queryKey: ["my-enrollments"] });
+        queryClient.invalidateQueries({ queryKey: ["my-submissions"] });
+        queryClient.invalidateQueries({ queryKey: ["my-enrollments"] });
 
-      const correctCount = result?.correctAnswers;
-      const totalCount = result?.totalQuestions;
-      const resultText =
-        correctCount != null && totalCount != null
-          ? ` - Kết quả: ${correctCount}/${totalCount} câu đúng`
-          : "";
+        const correctCount = res.result?.correctAnswers;
+        const totalCount = res.result?.totalQuestions;
+        const resultText =
+          correctCount != null && totalCount != null
+            ? ` - Kết quả: ${correctCount}/${totalCount} câu đúng`
+            : "";
 
-      toast({
-        title: "Nộp bài thành công",
-        description: `Bài tập của bạn đã được ghi nhận${resultText}`,
-      });
+        toast({
+          title: "Nộp bài thành công",
+          description: `Bài tập của bạn đã được ghi nhận${resultText}`,
+        });
 
-      const exitDestination = resolveExitDestination(
-        exam,
-        searchParams,
-        location.state,
-      );
-      navigate(
-        `/submissions/${submission.id}?returnUrl=${encodeURIComponent(
-          exitDestination,
-        )}`,
-        {
-          state: {
-            exitContext: { destination: exitDestination },
-            returnUrl: exitDestination,
+        const exitDestination = resolveExitDestination(
+          exam,
+          searchParams,
+          location.state,
+        );
+        navigate(
+          `/submissions/${submission.id}?returnUrl=${encodeURIComponent(
+            exitDestination,
+          )}`,
+          {
+            state: {
+              exitContext: { destination: exitDestination },
+              returnUrl: exitDestination,
+            },
           },
-        },
-      );
+        );
+      } else if (res.status === "UNKNOWN" || res.status === "LOCAL_SEALED") {
+        toast({
+          title: "Bài làm đã được niêm phong an toàn",
+          description: res.error || "Hệ thống đang tự động kết nối lại máy chủ để xác nhận bài nộp.",
+        });
+      } else {
+        toast({
+          title: "Lỗi nộp bài",
+          description: res.error || "Có lỗi xảy ra khi nộp bài. Bài làm vẫn được bảo vệ trên máy.",
+          variant: "destructive",
+        });
+      }
     } catch (error: any) {
       toast({
         title: "Lỗi",
@@ -820,19 +890,25 @@ export default function ExamInterface() {
               Câu {currentQuestionIndex >= 0 ? currentQuestionIndex + 1 : 1}/{paginationQuestions.length}
             </span>
             <span className="text-muted-foreground/60">•</span>
-            {saveStatus === "saving" && (
+            {syncVisualState === "SERVER_SYNC_PENDING" && (
               <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1 animate-pulse">
-                Đang lưu...
+                ● Đang đồng bộ...
               </span>
             )}
-            {(saveStatus === "saved" || saveStatus === "idle") && (
+            {syncVisualState === "SERVER_SYNCED" && (
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                ✓ Đã lưu tự động
+                ✓ Đã đồng bộ máy chủ
               </span>
             )}
-            {saveStatus === "error" && (
+            {syncVisualState === "LOCAL_SAVED" && (
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                ✓ Đã lưu trên máy
+              </span>
+            )}
+            {syncVisualState === "SERVER_UNREACHABLE" && (
               <span className="text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1">
-                ⚠ Lưu thất bại
+                <WifiOff className="w-3.5 h-3.5" />
+                ⚠️ Ngắt kết nối (Đã lưu an toàn)
               </span>
             )}
             <span className="text-muted-foreground/40">|</span>
@@ -906,6 +982,26 @@ export default function ExamInterface() {
           </div>
         )}
       </header>
+
+      {/* Multi-Tab Secondary Warning Banner */}
+      {!hasTabLease && (
+        <div className="bg-amber-500/15 border-b border-amber-500/30 px-4 py-2.5 flex items-center justify-between gap-4 text-amber-900 dark:text-amber-200 text-xs sm:text-sm font-medium">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
+            <span>
+              <strong>Chế độ chỉ xem:</strong> Bài thi này đang hoạt động ở một Tab khác. Các chỉnh sửa ở Tab này đã được tạm khóa để chống ghi đè chéo.
+            </span>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => tabLeaseManagerRef.current?.forceTakeover()}
+            className="shrink-0 h-7 text-xs font-bold border-amber-500/40 hover:bg-amber-500/20"
+          >
+            Chuyển quyền làm bài sang Tab này
+          </Button>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="flex-1 overflow-hidden">
