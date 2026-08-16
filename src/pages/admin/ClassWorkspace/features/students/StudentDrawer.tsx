@@ -9,18 +9,21 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { HomeworkProgressStrip } from "./HomeworkProgressStrip";
-import { CheckCircle2, MessageSquare, Clock } from "lucide-react";
+import { CheckCircle2, MessageSquare, Clock, UserMinus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface StudentDrawerProps {
   student: any | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onRemoveStudent?: (student: any) => void;
 }
 
 export const StudentDrawer: React.FC<StudentDrawerProps> = ({
   student,
   open,
   onOpenChange,
+  onRemoveStudent,
 }) => {
   if (!student) return null;
 
@@ -85,6 +88,31 @@ export const StudentDrawer: React.FC<StudentDrawerProps> = ({
             </div>
           )}
         </div>
+
+        {/* Class Membership Action */}
+        {onRemoveStudent && (
+          <div className="pt-4 border-t space-y-2">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-rose-50/50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/40">
+              <div>
+                <h5 className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <UserMinus className="h-3.5 w-3.5 text-rose-600" />
+                  Rút học viên khỏi lớp
+                </h5>
+                <p className="text-[11px] text-muted-foreground">
+                  Gỡ học viên khỏi lớp này. Hồ sơ và bài làm tổng thể vẫn được bảo lưu.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-rose-600 border-rose-200 hover:bg-rose-100 hover:text-rose-700 text-xs shrink-0"
+                onClick={() => onRemoveStudent(student)}
+              >
+                Đưa ra khỏi lớp
+              </Button>
+            </div>
+          </div>
+        )}
       </SheetContent>
     </Sheet>
   );

@@ -1,19 +1,34 @@
 import React, { useState } from "react";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useWorkspace } from "../WorkspaceProvider";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { StudentDrawer } from "../features/students/StudentDrawer";
 import { AddStudentModal } from "../features/students/AddStudentModal";
 import { AttendanceSheet } from "../features/attendance/AttendanceSheet";
 import { AttendanceMatrix } from "../features/attendance/AttendanceMatrix";
-import { Users, Eye, UserPlus, CalendarCheck, Grid, List } from "lucide-react";
+import { classesApi, invalidateClassQueries } from "@/lib/api";
+import { Users, Eye, UserPlus, CalendarCheck, Grid, List, UserMinus, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export const StudentsTab: React.FC = () => {
-  const { classData, isAddStudentModalOpen, setIsAddStudentModalOpen } = useWorkspace();
+  const queryClient = useQueryClient();
+  const { classData, isAddStudentModalOpen, setIsAddStudentModalOpen, refetchClass } = useWorkspace();
   const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
+  const [studentToRemove, setStudentToRemove] = useState<any | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [subTab, setSubTab] = useState<string>("list");
 
@@ -27,6 +42,22 @@ export const StudentsTab: React.FC = () => {
     setSelectedStudent(student);
     setDrawerOpen(true);
   };
+
+  const removeStudentMutation = useMutation({
+    mutationFn: async (student: any) => {
+      const studentId = student.studentId || student.id;
+      return await classesApi.removeStudent(classId, studentId);
+    },
+    onSuccess: (_, student) => {
+      toast.success(`Đã đưa học viên ${student.fullName || student.email} ra khỏi lớp!`);
+      setStudentToRemove(null);
+      invalidateClassQueries(queryClient, classId);
+      refetchClass();
+    },
+    onError: (err: any) => {
+      toast.error(`Lỗi khi đưa học viên ra khỏi lớp: ${err.message || "Đã có lỗi xảy ra"}`);
+    },
+  });
 
   return (
     <div className="space-y-4 pt-2">
@@ -88,7 +119,7 @@ export const StudentsTab: React.FC = () => {
                   <TableHead>Homework hiện tại</TableHead>
                   <TableHead>Chuyên cần</TableHead>
                   <TableHead>Trạng thái</TableHead>
-                  <TableHead className="text-right">Profile</TableHead>
+                  <TableHead className="text-right">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -138,15 +169,27 @@ export const StudentsTab: React.FC = () => {
                         )}
                       </TableCell>
                       <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 text-xs text-emerald-600 hover:text-emerald-700"
-                          onClick={() => handleOpenProfile(student)}
-                        >
-                          <Eye className="mr-1 h-3.5 w-3.5" />
-                          Timeline Profile
-                        </Button>
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                            onClick={() => handleOpenProfile(student)}
+                          >
+                            <Eye className="mr-1 h-3.5 w-3.5" />
+                            Timeline Profile
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 gap-1"
+                            title="Đưa học viên ra khỏi lớp"
+                            onClick={() => setStudentToRemove(student)}
+                          >
+                            <UserMinus className="h-3.5 w-3.5" />
+                            <span className="hidden md:inline">Rút khỏi lớp</span>
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -176,12 +219,58 @@ export const StudentsTab: React.FC = () => {
         student={selectedStudent}
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
+        onRemoveStudent={(student) => {
+          setDrawerOpen(false);
+          setStudentToRemove(student);
+        }}
       />
 
       <AddStudentModal
         open={isAddStudentModalOpen}
         onOpenChange={setIsAddStudentModalOpen}
       />
+
+      {/* CONFIRM REMOVE STUDENT MODAL */}
+      <AlertDialog open={!!studentToRemove} onOpenChange={(open) => !open && setStudentToRemove(null)}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-base font-bold flex items-center gap-2 text-rose-600">
+              <UserMinus className="h-5 w-5" />
+              Đưa học viên ra khỏi lớp
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xs text-muted-foreground space-y-2 pt-2 text-left">
+              <p>
+                Bạn có chắc chắn muốn đưa học viên{" "}
+                <span className="font-semibold text-foreground">
+                  {studentToRemove?.fullName || studentToRemove?.email}
+                </span>{" "}
+                ra khỏi lớp <span className="font-semibold text-foreground">{classData?.name || "này"}</span> không?
+              </p>
+              <div className="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 text-amber-800 dark:text-amber-300 text-[11px] leading-relaxed">
+                ℹ️ <strong>Lưu ý:</strong> Thao tác này chỉ gỡ học viên khỏi danh sách lớp hiện tại. Tài khoản, hồ sơ và lịch sử làm bài tổng thể của học viên trên hệ thống vẫn được giữ nguyên vẹn.
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-4 gap-2">
+            <AlertDialogCancel disabled={removeStudentMutation.isPending} className="text-xs">
+              Hủy
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={removeStudentMutation.isPending}
+              onClick={(e) => {
+                e.preventDefault();
+                if (studentToRemove) {
+                  removeStudentMutation.mutate(studentToRemove);
+                }
+              }}
+              className="bg-rose-600 hover:bg-rose-700 text-white gap-1.5 text-xs"
+            >
+              {removeStudentMutation.isPending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+              Xác nhận đưa ra khỏi lớp
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
