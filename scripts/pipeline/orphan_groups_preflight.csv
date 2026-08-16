@@ -1,8 +1,0 @@
-source_group_id,source_section_id,source_exam_id,source_question_count,historical_answer_count,target_group_exists,target_section_exists,target_exam_exists,classification
-54d55784-1f9e-4b28-849c-12bb014f9d78,3981715b-0bcf-4c0b-9edc-6e5a5688e372,8e16507c-cdd6-42a6-b2a8-7efbff4f78d5,6,0,false,false,true,PARENT_DEPENDENCY_MISSING
-6dfab062-004f-401b-8ae8-51ad73c7f013,b5abf4bc-4164-4b16-8e73-dd3c4db7afdd,927916ef-5f91-4361-897e-9db28f9d5a32,5,0,false,false,true,PARENT_DEPENDENCY_MISSING
-33ecdbaa-fb31-4554-aebb-567bfd0eddb7,a9c2fccb-4805-428a-b9fb-71f216b214ad,8c3756f6-11ba-429b-9977-42bf93b61d61,9,9,false,true,true,HISTORICAL_DEPENDENCY
-3ae2d6c2-303d-4883-8839-05044f952f54,6dafba00-3683-4c8a-b75d-8088d11cf45c,a01e4765-02da-4bff-8590-6e68aa7aa3d1,7,0,false,true,true,NO_HISTORICAL_DEPENDENCY
-ef21db03-ea09-401d-999f-91f7fdb7d2d5,1208dd65-a83d-46b3-a62e-35f73d160c71,9f1b7594-8328-4adf-a970-63585d4afc4d,3,0,false,true,true,NO_HISTORICAL_DEPENDENCY
-85c7d5b8-c606-4c33-8faf-35cbbc0175b8,fd719b96-a29a-43a6-af92-f45b0d8db4bd,4d827565-1cc3-4cdc-9341-c444b613efa3,5,0,false,false,true,PARENT_DEPENDENCY_MISSING
-6ccae423-b961-4f96-ae93-3194acbee8a9,4f1e8463-ad90-4e98-8c7e-b62c67aa2472,b15091ab-f499-45dd-ada1-513a9a0650bb,5,0,true,true,true,NO_HISTORICAL_DEPENDENCY

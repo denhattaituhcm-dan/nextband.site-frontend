@@ -1,7 +1,0 @@
-{
-  "exams_found": 130,
-  "sections_found": 314,
-  "groups_found": 52,
-  "questions_found": 277,
-  "false_positives_explanation": "Unanchored regex counted substrings in HTML/audio_script content."
-}
