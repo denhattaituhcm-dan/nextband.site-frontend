@@ -2235,11 +2235,21 @@ export const classesApi = {
   claimProfileOnLogin: async (authUser: { id: string; email: string; user_metadata?: any }) => {
     if (!authUser.email) return;
 
+    const email = authUser.email.toLowerCase();
+    const fullName =
+      authUser.user_metadata?.full_name ||
+      authUser.user_metadata?.name ||
+      email.split("@")[0];
+    const avatarUrl =
+      authUser.user_metadata?.avatar_url ||
+      authUser.user_metadata?.picture ||
+      null;
+
     // Check if a pre-provisioned profile exists for this email
     const { data: existingProfile } = await supabase
       .from("profiles")
       .select("id, user_id")
-      .eq("email", authUser.email.toLowerCase())
+      .eq("email", email)
       .maybeSingle();
 
     if (existingProfile) {
@@ -2251,8 +2261,8 @@ export const classesApi = {
           .from("profiles")
           .update({
             user_id: authUser.id,
-            full_name: authUser.user_metadata?.full_name || authUser.email.split("@")[0],
-            avatar_url: authUser.user_metadata?.avatar_url || null,
+            full_name: fullName,
+            avatar_url: avatarUrl,
           })
           .eq("id", existingProfile.id);
       }
@@ -2271,6 +2281,44 @@ export const classesApi = {
             .eq("student_id", oldId);
         }
       }
+    } else {
+      // Brand new login (e.g. via Google SSO): Ensure profile exists in profiles table
+      try {
+        await supabase
+          .from("profiles")
+          .upsert(
+            {
+              id: authUser.id,
+              user_id: authUser.id,
+              email: email,
+              full_name: fullName,
+              avatar_url: avatarUrl,
+              is_active: true,
+            },
+            { onConflict: "user_id" }
+          );
+      } catch (upsertErr) {
+        console.warn("Profiles auto-provision notice:", upsertErr);
+      }
+    }
+
+    // Ensure user_roles has 'student' role for this user if not already present
+    try {
+      const { data: existingRoles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", authUser.id);
+
+      if (!existingRoles || existingRoles.length === 0) {
+        await supabase
+          .from("user_roles")
+          .insert({
+            user_id: authUser.id,
+            role: "student",
+          });
+      }
+    } catch (roleErr) {
+      console.warn("User role auto-provision notice:", roleErr);
     }
   },
 
