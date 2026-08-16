@@ -8,6 +8,12 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
+  saveDraftLocally,
+  loadDraftLocally,
+  clearDraftLocally,
+  ExamAnswersMap,
+} from "@/lib/draftStore";
+import {
   ArrowLeft,
   Clock,
   Headphones,
@@ -97,6 +103,10 @@ export default function ExamInterface() {
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const autoSubmitTriggeredRef = useRef(false);
   const autosaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const localDraftTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const draftVersionRef = useRef<number>(0);
+  const localDraftRestoredRef = useRef<boolean>(false);
+  const serverHydratedAtRef = useRef<number>(0);
   const answersRef = useRef<Record<string, any>>({});
   answersRef.current = answers;
 
@@ -182,16 +192,60 @@ export default function ExamInterface() {
     enabled: !!submission?.id,
   });
 
-  // Restore saved answers
+  // 1. Restore offline local draft (Triple-key identity check + conflict check)
+  useEffect(() => {
+    if (!submission?.id || !user?.id || !examId || localDraftRestoredRef.current) return;
+
+    let isMounted = true;
+    (async () => {
+      try {
+        const result = await loadDraftLocally(submission.id, user.id, examId);
+        if (!isMounted) return;
+
+        if (result.status === "DRAFT_LOADED") {
+          const draft = result.draft;
+          draftVersionRef.current = draft.draftVersion;
+
+          // Conflict check: Only restore if draft was saved after server baseline or server has no baseline
+          const isNewerThanServer = !serverHydratedAtRef.current || draft.lastSavedAt >= serverHydratedAtRef.current;
+          if (isNewerThanServer && Object.keys(draft.answers).length > 0) {
+            setAnswers((prev) => {
+              const merged = { ...draft.answers, ...prev };
+              answersRef.current = merged;
+              return merged;
+            });
+            localDraftRestoredRef.current = true;
+            toast({
+              title: "Đã khôi phục bản nháp",
+              description: "Các câu trả lời offline đã được tự động khôi phục từ bộ nhớ cục bộ.",
+            });
+          }
+        }
+      } catch (err) {
+        console.error("[DraftStore Restore Error]", err);
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [submission?.id, user?.id, examId, toast]);
+
+  // 2. Restore saved answers from server
   useEffect(() => {
     if (savedAnswersData && savedAnswersData.length > 0) {
+      serverHydratedAtRef.current = Date.now();
       const restored: Record<string, any> = {};
       savedAnswersData.forEach((a: any) => {
         if (!a.answerText) return;
         const parsed = safeJsonParse(a.answerText);
         restored[a.questionId] = parsed ?? a.answerText;
       });
-      setAnswers((prev) => ({ ...restored, ...prev }));
+      setAnswers((prev) => {
+        const merged = { ...restored, ...prev };
+        answersRef.current = merged;
+        return merged;
+      });
     }
   }, [savedAnswersData]);
 
@@ -406,6 +460,30 @@ export default function ExamInterface() {
         return next;
       });
 
+      // 1. Debounced Local Offline Persistence (300ms)
+      if (submission?.id && user?.id && examId) {
+        if (localDraftTimerRef.current) {
+          clearTimeout(localDraftTimerRef.current);
+        }
+        localDraftTimerRef.current = setTimeout(async () => {
+          try {
+            const res = await saveDraftLocally(
+              submission.id,
+              user.id,
+              examId,
+              answersRef.current as ExamAnswersMap,
+              draftVersionRef.current
+            );
+            if (res.status === "SAVE_SUCCESS") {
+              draftVersionRef.current = res.version;
+            }
+          } catch (err) {
+            console.error("[DraftStore Save Error]", err);
+          }
+        }, 300);
+      }
+
+      // 2. Debounced Remote Backend Autosave (1500ms)
       if (submission?.id) {
         setSaveStatus("saving");
         if (autosaveTimerRef.current) {
@@ -446,7 +524,7 @@ export default function ExamInterface() {
         }, 1500);
       }
     },
-    [submission?.id, sections],
+    [submission?.id, sections, user?.id, examId],
   );
 
   const handleQuestionClick = useCallback((questionId: string) => {
@@ -540,6 +618,9 @@ export default function ExamInterface() {
 
       // 3. Submit atomically to canonical API
       const result = await submissionsApi.submit(submission.id, answerEntries);
+
+      // Invariant: Clear draft ONLY upon confirmed server submission success (200/201)
+      await clearDraftLocally(submission.id);
 
       queryClient.invalidateQueries({ queryKey: ["my-submissions"] });
       queryClient.invalidateQueries({ queryKey: ["my-enrollments"] });
