@@ -59,7 +59,7 @@ export default function MyCourses() {
             Bạn chưa đăng ký khóa học nào
           </h3>
           <Button asChild>
-            <Link to="/">
+            <Link to="/courses">
               <BookOpen className="mr-2 h-4 w-4" />
               Khám phá khóa học
             </Link>

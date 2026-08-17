@@ -22,10 +22,11 @@ const getFullLogoUrl = (url: string) => {
 export function SiteLogo({
   className,
   alt,
-  fallbackSrc = "/Logo.png",
+  fallbackSrc = "/logo.png",
 }: SiteLogoProps) {
   const { settings } = useSiteSettings();
   const [hasLoadError, setHasLoadError] = useState(false);
+  const [hasFallbackError, setHasFallbackError] = useState(false);
 
   const customLogoUrl = settings?.logoUrl?.trim()
     ? getFullLogoUrl(settings.logoUrl)
@@ -34,10 +35,18 @@ export function SiteLogo({
   // Reset error state when custom logo URL changes
   useEffect(() => {
     setHasLoadError(false);
+    setHasFallbackError(false);
   }, [customLogoUrl, fallbackSrc]);
 
   // Determine final src to render
-  const logoSrc = !hasLoadError && customLogoUrl ? customLogoUrl : fallbackSrc;
+  let logoSrc = fallbackSrc;
+  if (!hasLoadError && customLogoUrl) {
+    logoSrc = customLogoUrl;
+  } else if (!hasFallbackError) {
+    logoSrc = fallbackSrc;
+  } else {
+    logoSrc = "/favicon.png";
+  }
 
   return (
     <img
@@ -45,9 +54,11 @@ export function SiteLogo({
       alt={alt || `${settings?.siteName || "NextBand"} Logo`}
       className={cn("object-contain", className)}
       onError={() => {
-        // If loading custom logo failed, fall back to fallbackSrc.
-        // If fallbackSrc itself fails, do nothing further to avoid infinite loop.
-        setHasLoadError(true);
+        if (!hasLoadError && customLogoUrl) {
+          setHasLoadError(true);
+        } else if (!hasFallbackError) {
+          setHasFallbackError(true);
+        }
       }}
     />
   );

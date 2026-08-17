@@ -53,21 +53,25 @@ export default function Auth() {
   const location = useLocation();
   const { toast } = useToast();
 
-  const from = (location.state as { from?: Location })?.from?.pathname || "/";
+  const queryParams = new URLSearchParams(location.search);
+  const nextParam = queryParams.get("next");
+  const rawFrom = (location.state as { from?: { pathname?: string } })?.from?.pathname;
+  const targetDestination = nextParam || rawFrom || "/app";
+  const studentTarget = targetDestination === "/" ? "/app" : targetDestination;
 
   useEffect(() => {
     if (user) {
       // Automatic role-based routing:
       // If user has teacher or admin role (logged in via Password), redirect to Teacher Workspace for grading
       if (user.roles?.includes("teacher") || user.roles?.includes("admin")) {
-        const adminTarget = from.startsWith("/admin") ? from : "/admin/teacher-workspace";
+        const adminTarget = studentTarget.startsWith("/admin") ? studentTarget : "/admin/teacher-workspace";
         navigate(adminTarget, { replace: true });
       } else {
-        // Students (logged in via Google OAuth) redirect to Student Workspace /
-        navigate(from, { replace: true });
+        // Students redirect to Student Workspace /app (or next destination)
+        navigate(studentTarget, { replace: true });
       }
     }
-  }, [user, navigate, from]);
+  }, [user, navigate, studentTarget]);
 
   useEffect(() => {
     const hidden = localStorage.getItem("google_login_hint_hidden") === "1";

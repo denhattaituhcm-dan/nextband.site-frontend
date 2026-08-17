@@ -11,7 +11,7 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ 
   children, 
   requiredRoles, 
-  redirectTo = '/auth' 
+  redirectTo = '/login' 
 }: ProtectedRouteProps) {
   const { user, roles, isLoading } = useAuth();
   const location = useLocation();
@@ -37,7 +37,7 @@ export function ProtectedRoute({
     
     if (!hasRequiredRole) {
       // Redirect non-admins trying to access admin routes
-      return <Navigate to="/" replace />;
+      return <Navigate to="/app" replace />;
     }
   }
 

@@ -37,7 +37,7 @@ export function ClientHeader() {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("/auth");
+    navigate("/login");
   };
 
   return (

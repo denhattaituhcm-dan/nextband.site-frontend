@@ -803,7 +803,7 @@ export default function ExamInterface() {
           bài tập không tồn tại hoặc bạn không có quyền truy cập.
         </p>
         <Button asChild>
-          <Link to="/">Quay về trang chủ</Link>
+          <Link to="/app">Quay về trang chủ</Link>
         </Button>
       </div>
     );
@@ -833,7 +833,7 @@ export default function ExamInterface() {
           viên.
         </p>
         <Button asChild variant="outline">
-          <Link to="/">Quay về trang chủ</Link>
+          <Link to="/app">Quay về trang chủ</Link>
         </Button>
       </div>
     );

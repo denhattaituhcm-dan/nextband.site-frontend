@@ -359,7 +359,7 @@ export default function MySubmissions() {
           </h3>
           {!debouncedSearch && statusFilter === "all" && (
             <Button asChild>
-              <Link to="/">Khám phá khóa học</Link>
+              <Link to="/courses">Khám phá khóa học</Link>
             </Button>
           )}
         </div>

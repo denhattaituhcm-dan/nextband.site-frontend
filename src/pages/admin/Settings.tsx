@@ -81,7 +81,7 @@ export default function AdminSettings() {
       const baseUrl = apiUrl.replace("/api/v1", "");
       return `${baseUrl}${url}`;
     }
-    return url || "/Logo.png";
+    return url || "/logo.png";
   };
 
   return (

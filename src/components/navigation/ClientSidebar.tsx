@@ -28,25 +28,25 @@ import { SiteLogo } from "@/components/common/SiteLogo";
 const fullNavigationItems = [
   {
     title: "Bài tập",
-    url: "/",
+    url: "/app",
     icon: ClipboardList,
     description: "Bàn làm việc bài tập",
   },
   {
     title: "Lớp học & Khóa học",
-    url: "/my-courses",
+    url: "/app/my-courses",
     icon: BookOpen,
     description: "Lớp học và lộ trình",
   },
   {
     title: "Kết quả & Nhận xét",
-    url: "/my-submissions",
+    url: "/app/my-submissions",
     icon: GraduationCap,
     description: "Lịch sử nộp bài & Đánh giá",
   },
   {
     title: "Cá nhân",
-    url: "/profile",
+    url: "/app/profile",
     icon: User,
     description: "Thông tin cá nhân",
   },
@@ -55,13 +55,13 @@ const fullNavigationItems = [
 const preEnrollmentNavigationItems = [
   {
     title: "Chào mừng",
-    url: "/",
+    url: "/app",
     icon: Home,
     description: "Trang hỗ trợ & Kích hoạt",
   },
   {
     title: "Cá nhân",
-    url: "/profile",
+    url: "/app/profile",
     icon: User,
     description: "Thông tin cá nhân",
   },
@@ -115,7 +115,7 @@ export function ClientSidebar() {
                   >
                     <NavLink
                       to={item.url}
-                      end={item.url === "/"}
+                      end={item.url === "/app"}
                       className="flex items-center gap-3"
                       activeClassName="bg-sidebar-accent text-sidebar-accent-foreground"
                     >

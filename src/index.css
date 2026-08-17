@@ -40,9 +40,14 @@
     --muted: 210 20% 96%;
     --muted-foreground: 215 16% 47%;
 
-    /* Accent - Brand Crimson for key highlights */
+    /* Accent - Brand Accent for key highlights */
     --accent: 354 85% 44%;
     --accent-foreground: 0 0% 100%;
+    --accent-soft: 354 85% 96%;
+
+    /* Surface tokens */
+    --surface-elevated: 0 0% 100%;
+    --surface-muted: 210 20% 96%;
 
     /* Destructive/Error states (Semantic Error Red) */
     --destructive: 0 84% 60%;

@@ -180,8 +180,8 @@ export function AdminSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t p-4">
-        <Button variant="outline" className="w-full justify-start text-xs font-semibold text-slate-600" asChild>
-          <Link to="/">
+        <Button variant="outline" className="w-full justify-start text-xs font-semibold text-muted-foreground" asChild>
+          <Link to="/app">
             <ChevronLeft className="mr-2 h-4 w-4" />
             {!collapsed && "Về Student Portal"}
           </Link>

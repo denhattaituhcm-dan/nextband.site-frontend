@@ -167,7 +167,7 @@ export default function StudentLessonViewerPage() {
       <div className="max-w-5xl mx-auto p-8 text-center space-y-4">
         <h2 className="text-xl font-bold text-destructive">Không thể tải bài tập Lớp học</h2>
         <p className="text-sm text-muted-foreground">{(error as any)?.message || "Bạn không có quyền truy cập lớp học này."}</p>
-        <Button onClick={() => navigate("/")} variant="outline">
+        <Button onClick={() => navigate("/app")} variant="outline">
           Quay lại Trang Welcome
         </Button>
       </div>
@@ -180,7 +180,7 @@ export default function StudentLessonViewerPage() {
         {/* HEADER & BACK TO WELCOME */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="rounded-full">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/app")} className="rounded-full">
               <ArrowLeft className="w-5 h-5 text-muted-foreground" />
             </Button>
             <div>
@@ -201,7 +201,7 @@ export default function StudentLessonViewerPage() {
             </div>
           </div>
 
-          <Button variant="outline" size="sm" onClick={() => navigate("/")} className="text-xs font-semibold rounded-xl">
+          <Button variant="outline" size="sm" onClick={() => navigate("/app")} className="text-xs font-semibold rounded-xl">
             Về Sảnh Chính
           </Button>
         </div>

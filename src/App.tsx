@@ -8,12 +8,12 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 // Layouts
+import PublicLayout from "@/layouts/PublicLayout";
 import ClientLayout from "@/layouts/ClientLayout";
 import AdminLayout from "@/layouts/AdminLayout";
 import MinimalLayout from "@/layouts/MinimalLayout";
 
 // Eagerly loaded core initial routes
-import Auth from "@/pages/Auth";
 import HomePage from "@/pages/HomePage";
 import NotFound from "@/pages/NotFound";
 
@@ -55,7 +55,29 @@ function lazyWithRetry<T extends React.ComponentType<any>>(
   );
 }
 
-// Lazy-loaded routes for code splitting
+// Lazy-loaded Public Pages
+const PublicHomePage = lazyWithRetry(() => import("@/pages/public/PublicHomePage"));
+const AboutPage = lazyWithRetry(() => import("@/pages/public/AboutPage"));
+const MethodPage = lazyWithRetry(() => import("@/pages/public/MethodPage"));
+const AcademicSystemPage = lazyWithRetry(() => import("@/pages/public/AcademicSystemPage"));
+const CoursesPage = lazyWithRetry(() => import("@/pages/public/CoursesPage"));
+const CourseDetailPage = lazyWithRetry(() => import("@/pages/public/CourseDetailPage"));
+const TeachersPage = lazyWithRetry(() => import("@/pages/public/TeachersPage"));
+const ResultsPage = lazyWithRetry(() => import("@/pages/public/ResultsPage"));
+const CareersPage = lazyWithRetry(() => import("@/pages/public/CareersPage"));
+const JobDetailPage = lazyWithRetry(() => import("@/pages/public/JobDetailPage"));
+const NewsPage = lazyWithRetry(() => import("@/pages/public/NewsPage"));
+const NewsDetailPage = lazyWithRetry(() => import("@/pages/public/NewsDetailPage"));
+const ContactPage = lazyWithRetry(() => import("@/pages/public/ContactPage"));
+const AssessmentPage = lazyWithRetry(() => import("@/pages/public/AssessmentPage"));
+const AssessmentResultPage = lazyWithRetry(() => import("@/pages/public/AssessmentResultPage"));
+
+// Lazy-loaded Auth Pages
+const LoginPage = lazyWithRetry(() => import("@/pages/auth/LoginPage"));
+const ForgotPasswordPage = lazyWithRetry(() => import("@/pages/auth/ForgotPasswordPage"));
+const ResetPasswordPage = lazyWithRetry(() => import("@/pages/auth/ResetPasswordPage"));
+
+// Lazy-loaded Student LMS Routes
 const StudentLessonViewerPage = lazyWithRetry(() => import("@/pages/StudentLessonViewerPage"));
 const MyCourses = lazyWithRetry(() => import("@/pages/MyCourses"));
 const MySubmissions = lazyWithRetry(() => import("@/pages/MySubmissions"));
@@ -173,10 +195,38 @@ const App = () => (
         <BrowserRouter>
           <Suspense fallback={<PageLoader />}>
             <Routes>
-              {/* Auth Routes */}
-              <Route path="/auth" element={<Auth />} />
+              {/* ============================================================ */}
+              {/* 1. PUBLIC WORLD (PublicLayout — Không yêu cầu đăng nhập)   */}
+              {/* ============================================================ */}
+              <Route element={<PublicLayout />}>
+                <Route path="/" element={<PublicHomePage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/method" element={<MethodPage />} />
+                <Route path="/academic-system" element={<AcademicSystemPage />} />
+                <Route path="/courses" element={<CoursesPage />} />
+                <Route path="/courses/:slug" element={<CourseDetailPage />} />
+                <Route path="/teachers" element={<TeachersPage />} />
+                <Route path="/results" element={<ResultsPage />} />
+                <Route path="/careers" element={<CareersPage />} />
+                <Route path="/careers/:jobSlug" element={<JobDetailPage />} />
+                <Route path="/news" element={<NewsPage />} />
+                <Route path="/news/:slug" element={<NewsDetailPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/assessment" element={<AssessmentPage />} />
+                <Route path="/assessment/result/:id" element={<AssessmentResultPage />} />
+              </Route>
 
-              {/* Client Routes */}
+              {/* ============================================================ */}
+              {/* 2. AUTH WORLD (Auth Pages)                                  */}
+              {/* ============================================================ */}
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/auth" element={<Navigate to="/login" replace />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+              {/* ============================================================ */}
+              {/* 3. APP WORLD — STUDENT LMS (/app/*)                          */}
+              {/* ============================================================ */}
               <Route
                 element={
                   <ProtectedRoute>
@@ -184,20 +234,28 @@ const App = () => (
                   </ProtectedRoute>
                 }
               >
-                <Route path="/" element={<HomePage />} />
-                <Route path="/my-courses" element={<MyCourses />} />
-                <Route path="/class/:classId/lessons" element={<StudentLessonViewerPage />} />
-                <Route path="/my-submissions" element={<MySubmissions />} />
-                <Route path="/course/:slug" element={<CourseDetail />} />
-                <Route path="/submissions/:id" element={<SubmissionDetail />} />
-                <Route
-                  path="/exam/:examId/review"
-                  element={<SubmissionDetail />}
-                />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/app" element={<HomePage />} />
+                <Route path="/app/my-courses" element={<MyCourses />} />
+                <Route path="/app/class/:classId/lessons" element={<StudentLessonViewerPage />} />
+                <Route path="/app/my-submissions" element={<MySubmissions />} />
+                <Route path="/app/course/:slug" element={<CourseDetail />} />
+                <Route path="/app/submissions/:id" element={<SubmissionDetail />} />
+                <Route path="/app/profile" element={<Profile />} />
               </Route>
 
-              {/* Exam Interface - Minimal Layout */}
+              {/* ============================================================ */}
+              {/* 4. BACKWARD-COMPATIBILITY REDIRECTS (Declarative /replace)   */}
+              {/* ============================================================ */}
+              <Route path="/my-courses" element={<Navigate to="/app/my-courses" replace />} />
+              <Route path="/profile" element={<Navigate to="/app/profile" replace />} />
+              <Route path="/class/:classId/lessons" element={<Navigate to="/app/class/:classId/lessons" replace />} />
+              <Route path="/my-submissions" element={<Navigate to="/app/my-submissions" replace />} />
+              <Route path="/submissions/:id" element={<Navigate to="/app/submissions/:id" replace />} />
+              <Route path="/course/:slug" element={<Navigate to="/app/course/:slug" replace />} />
+
+              {/* ============================================================ */}
+              {/* 5. EXAM RUNTIME INTERFACE (MinimalLayout)                    */}
+              {/* ============================================================ */}
               <Route
                 element={
                   <ProtectedRoute>
@@ -206,6 +264,7 @@ const App = () => (
                 }
               >
                 <Route path="/exam/:examId" element={<ExamInterface />} />
+                <Route path="/exam/:examId/review" element={<SubmissionDetail />} />
               </Route>
 
               {/* Admin Routes */}
