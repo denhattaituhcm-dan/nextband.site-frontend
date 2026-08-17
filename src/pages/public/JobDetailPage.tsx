@@ -226,19 +226,35 @@ export default function JobDetailPage() {
           </div>
 
           {/* Action Box */}
-          <div className="p-8 rounded-3xl bg-brand-blue text-white text-center space-y-4">
-            <h3 className="text-2xl font-black">Sẵn sàng ứng tuyển vị trí này?</h3>
-            <p className="text-sm sm:text-base text-white/90 max-w-xl mx-auto">
-              Gửi CV và các chứng chỉ liên quan về hòm thư học thuật của chúng tôi hoặc liên hệ trực tiếp bộ phận tuyển dụng.
+          <div className="p-8 sm:p-10 rounded-3xl bg-brand-blue text-white text-center space-y-5">
+            <h3 className="text-2xl sm:text-3xl font-black">
+              Sẵn sàng thử thách năng lực tại vị trí này?
+            </h3>
+            <p className="text-sm sm:text-base text-white/90 max-w-xl mx-auto leading-relaxed">
+              Gửi hồ sơ gồm <strong>CV chi tiết</strong> và <strong>Bản scan Bảng điểm IELTS</strong> trực tiếp về hòm thư học thuật của chúng tôi.
             </p>
-            <Button
-              size="lg"
-              onClick={() => navigate("/contact")}
-              className="rounded-2xl px-8 h-14 font-extrabold text-base bg-brand-red text-white hover:bg-brand-red-hover shadow-md border-0 gap-2 mt-2"
-            >
-              <Send className="h-4 w-4" />
-              <span>Nộp hồ sơ ứng tuyển ngay</span>
-            </Button>
+            <div className="p-4 rounded-2xl bg-white/10 border border-white/20 max-w-md mx-auto text-xs sm:text-sm text-left space-y-1.5">
+              <div>
+                <span className="text-brand-cyan font-bold">Email: </span>
+                <span className="font-mono text-white">arisieltsdeeplearning@gmail.com</span>
+              </div>
+              <div>
+                <span className="text-brand-cyan font-bold">Tiêu đề: </span>
+                <span className="font-mono text-white">[Ứng tuyển {job.title}] - Họ và tên</span>
+              </div>
+            </div>
+            <div className="pt-2">
+              <Button
+                size="lg"
+                onClick={() => {
+                  window.location.href = `mailto:arisieltsdeeplearning@gmail.com?subject=[Ứng tuyển ${job.title}] - Họ và tên`;
+                }}
+                className="rounded-2xl px-8 h-14 font-extrabold text-base bg-brand-red text-white hover:bg-brand-red-hover shadow-md border-0 gap-2"
+              >
+                <Send className="h-4 w-4" />
+                <span>Gửi Hồ Sơ Ứng Tuyển Ngay</span>
+              </Button>
+            </div>
           </div>
         </div>
       </SectionContainer>
