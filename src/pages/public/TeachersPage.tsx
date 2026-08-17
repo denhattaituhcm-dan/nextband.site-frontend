@@ -1,49 +1,252 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { SectionContainer } from "@/components/public/SectionContainer";
-import { PlaceholderCard } from "@/components/public/PlaceholderCard";
+import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/common/SEO";
+import {
+  Sparkles,
+  ShieldCheck,
+  CheckCircle2,
+  ArrowRight,
+  BookOpen,
+  Brain,
+  FileCheck,
+  Award,
+  Users,
+} from "lucide-react";
 
 export default function TeachersPage() {
+  const navigate = useNavigate();
+
   return (
-    <div className="space-y-12">
+    <div className="flex flex-col">
       <SEO
-        title="Đội Ngũ Giảng Viên ARIS IELTS"
-        description="Đội ngũ giảng viên và chuyên gia học thuật giàu kinh nghiệm tại ARIS. 100% sở hữu chứng chỉ IELTS 8.0+."
+        title="Ban Học Thuật & Đội Ngũ Giảng Dạy — Học Viện ARIS"
+        description="Đội ngũ giảng viên trực tiếp đứng lớp và chấm chữa bài tại ARIS. Tiêu chuẩn chuyên môn cao, không giao bài cho trợ giảng chấm đại trà."
       />
 
+      {/* Hero Header */}
+      <section className="relative overflow-hidden pt-14 pb-20 sm:pt-20 sm:pb-28 border-b border-border/80 bg-background">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue-soft text-brand-blue border border-brand-blue/20 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
+            <Sparkles className="h-4 w-4" />
+            <span>Ban Chuyên Môn ARIS</span>
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight leading-[1.12]">
+            Đội ngũ trực tiếp giảng dạy{" "}
+            <span className="text-brand-blue block sm:inline">
+              và chấm sửa từng câu.
+            </span>
+          </h1>
+
+          <p className="text-lg sm:text-xl lg:text-2xl text-foreground/85 font-normal leading-relaxed max-w-3xl mx-auto">
+            Không giao bài cho trợ giảng chấm đại trà. Mọi bài viết và bài nói của bạn đều được theo sát và phản hồi chi tiết bởi các giảng viên có chuyên môn học thuật vững vàng.
+          </p>
+
+          <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
+            <Button
+              size="lg"
+              onClick={() => navigate("/courses")}
+              className="rounded-2xl px-8 h-14 font-extrabold text-base sm:text-lg bg-brand-red hover:bg-brand-red-hover text-brand-red-foreground shadow-sm gap-2"
+            >
+              <span>Xem chương trình học</span>
+              <ArrowRight className="h-5 w-5" />
+            </Button>
+
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => navigate("/assessment")}
+              className="rounded-2xl px-8 h-14 font-bold text-base sm:text-lg border-2 border-border/80 hover:bg-muted text-foreground"
+            >
+              Đánh giá năng lực đầu vào
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Faculty Structure Grid */}
       <SectionContainer
-        badge="Đội Ngũ Học Thuật"
-        title="Giảng Viên &amp; Chuyên Gia Học Thuật"
-        description="Đội ngũ giảng viên tại ARIS được tuyển chọn khắt khe với chuyên môn vững vàng, khả năng sư phạm xuất sắc và sự tận tâm tuyệt đối."
+        badge="Cấu Trúc Chuyên Môn"
+        title="Các bộ phận phụ trách học thuật tại ARIS"
+        description="Mỗi giảng viên phụ trách đúng thế mạnh chuyên sâu để đảm bảo chất lượng bài giảng và độ chuẩn xác trong nhận xét."
         background="default"
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-          <PlaceholderCard
-            variant="teacher"
-            badge="Chuyên môn"
-            title="Lưu Văn Đẳng"
-            subtitle="Academic Director"
-            description="Phụ trách định hướng chiến lược đào tạo và phát triển hệ thống khảo thí ARIS. IELTS 8.0+ với nhiều năm kinh nghiệm huấn luyện học viên đạt band cao."
-            metadata={["IELTS 8.0+", "Trưởng ban Chuyên môn"]}
-          />
-          <PlaceholderCard
-            variant="teacher"
-            badge="Writing & Speaking"
-            title="Giảng Viên Cao Cấp A"
-            subtitle="Lead Instructor"
-            description="Chuyên sâu về huấn luyện tư duy phản biện, cấu trúc lập luận Writing Task 2 và phản xạ lưu loát Speaking Part 3."
-            metadata={["IELTS 8.5", "5+ năm kinh nghiệm"]}
-          />
-          <PlaceholderCard
-            variant="teacher"
-            badge="Reading & Listening"
-            title="Giảng Viên Cao Cấp B"
-            subtitle="Senior Instructor"
-            description="Chuyên gia giải phẫu văn bản học thuật và chiến thuật xử lý các bẫy đề thi Cambridge dưới áp lực thời gian."
-            metadata={["IELTS 8.0", "Thạc sĩ TESOL"]}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left">
+          {/* Card 1 */}
+          <div className="p-8 rounded-3xl bg-card border border-border/80 space-y-5 shadow-2xs">
+            <div className="p-3 rounded-2xl bg-brand-blue-soft text-brand-blue w-fit">
+              <ShieldCheck className="h-7 w-7" />
+            </div>
+            <div>
+              <span className="text-xs font-mono font-bold text-brand-blue uppercase tracking-wider">
+                Nghiên Cứu &amp; Phương Pháp
+              </span>
+              <h3 className="text-2xl font-black text-foreground mt-1">
+                Lưu Văn Đẳng
+              </h3>
+              <p className="text-sm font-bold text-muted-foreground">
+                Academic Lead — Phụ trách Chuyên môn ARIS
+              </p>
+            </div>
+            <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
+              Trực tiếp xây dựng khung năng lực 7 cấp bậc (ARIS-7) và phương pháp đào tạo The ARIS Way; phụ trách chuẩn hóa tiêu chí chấm chữa trên hệ thống NextBand.
+            </p>
+            <div className="pt-3 border-t border-border/60 space-y-2 text-xs sm:text-sm text-foreground/80 font-bold">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-success" />
+                <span>Định hướng phương pháp The ARIS Way</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-success" />
+                <span>Giám sát chất lượng chấm bài</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2 */}
+          <div className="p-8 rounded-3xl bg-card border border-border/80 space-y-5 shadow-2xs">
+            <div className="p-3 rounded-2xl bg-brand-blue-soft text-brand-blue w-fit">
+              <Brain className="h-7 w-7" />
+            </div>
+            <div>
+              <span className="text-xs font-mono font-bold text-brand-blue uppercase tracking-wider">
+                Sản Sinh Ngôn Ngữ
+              </span>
+              <h3 className="text-2xl font-black text-foreground mt-1">
+                Ban Writing &amp; Speaking
+              </h3>
+              <p className="text-sm font-bold text-muted-foreground">
+                Giảng viên chuyên sâu Kỹ năng Viết &amp; Nói
+              </p>
+            </div>
+            <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
+              Tập trung huấn luyện tư duy phản biện, tái cấu trúc lập luận Writing Task 2 và phản xạ Nói tự nhiên; trực tiếp sửa từng câu văn và ngữ điệu phát âm.
+            </p>
+            <div className="pt-3 border-t border-border/60 space-y-2 text-xs sm:text-sm text-foreground/80 font-bold">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-success" />
+                <span>Bóc tách cấu trúc lập luận Task 2</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-success" />
+                <span>Sửa lỗi dùng từ và văn phong học thuật</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3 */}
+          <div className="p-8 rounded-3xl bg-card border border-border/80 space-y-5 shadow-2xs">
+            <div className="p-3 rounded-2xl bg-brand-blue-soft text-brand-blue w-fit">
+              <BookOpen className="h-7 w-7" />
+            </div>
+            <div>
+              <span className="text-xs font-mono font-bold text-brand-blue uppercase tracking-wider">
+                Tiếp Nhận Ngôn Ngữ
+              </span>
+              <h3 className="text-2xl font-black text-foreground mt-1">
+                Ban Reading &amp; Listening
+              </h3>
+              <p className="text-sm font-bold text-muted-foreground">
+                Giảng viên chuyên sâu Kỹ năng Đọc &amp; Nghe
+              </p>
+            </div>
+            <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
+              Huấn luyện kỹ năng giải phẫu văn bản học thuật Cambridge, nhận diện bẫy paraphrase và tư duy xử lý thông tin dưới áp lực thời gian trong phòng thi.
+            </p>
+            <div className="pt-3 border-t border-border/60 space-y-2 text-xs sm:text-sm text-foreground/80 font-bold">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-success" />
+                <span>Giải mã bẫy đề thi Cambridge</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-success" />
+                <span>Kiểm soát tốc độ đọc hiểu không đoán mò</span>
+              </div>
+            </div>
+          </div>
         </div>
       </SectionContainer>
+
+      {/* Teaching Standards (4 Tiêu Chuẩn Giảng Dạy) */}
+      <SectionContainer
+        badge="Tiêu Chuẩn Giảng Dạy"
+        title="4 Chuẩn mực đào tạo bắt buộc tại ARIS"
+        description="Mọi hoạt động trên lớp và trên hệ thống NextBand đều được kiểm soát bởi quy trình sư phạm nghiêm ngặt."
+        background="muted"
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-left">
+          <div className="p-7 rounded-3xl bg-card border border-border/80 space-y-3 shadow-2xs">
+            <div className="text-xs font-mono font-black px-3 py-1 rounded-lg bg-brand-blue-soft text-brand-blue w-fit">
+              Tiêu chuẩn 01
+            </div>
+            <h3 className="font-black text-foreground text-xl">Chuẩn bị bài giảng</h3>
+            <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
+              Giáo án tập trung 100% vào bản chất ngôn ngữ và logic tư duy; tuyệt đối không đưa mẹo vặt hay văn mẫu học thuộc vào lớp học.
+            </p>
+          </div>
+
+          <div className="p-7 rounded-3xl bg-card border border-border/80 space-y-3 shadow-2xs">
+            <div className="text-xs font-mono font-black px-3 py-1 rounded-lg bg-brand-blue-soft text-brand-blue w-fit">
+              Tiêu chuẩn 02
+            </div>
+            <h3 className="font-black text-foreground text-xl">Phản hồi chi tiết</h3>
+            <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
+              Mỗi bài nộp đều được bóc tách từng câu văn, chỉ rõ cơ chế lỗi sai về ngữ pháp, dùng từ và hướng dẫn viết lại câu chuẩn xác.
+            </p>
+          </div>
+
+          <div className="p-7 rounded-3xl bg-card border border-border/80 space-y-3 shadow-2xs">
+            <div className="text-xs font-mono font-black px-3 py-1 rounded-lg bg-brand-blue-soft text-brand-blue w-fit">
+              Tiêu chuẩn 03
+            </div>
+            <h3 className="font-black text-foreground text-xl">Kiểm soát bài sửa</h3>
+            <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
+              Theo sát 100% việc làm lại bài sửa (Re-attempt) của học viên trên NextBand trước khi cho phép chuyển sang bài tập tiếp theo.
+            </p>
+          </div>
+
+          <div className="p-7 rounded-3xl bg-card border border-border/80 space-y-3 shadow-2xs">
+            <div className="text-xs font-mono font-black px-3 py-1 rounded-lg bg-brand-red-soft text-brand-red w-fit">
+              Tiêu chuẩn 04
+            </div>
+            <h3 className="font-black text-foreground text-xl">Năng lực xác thực</h3>
+            <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
+              Giảng viên có chứng chỉ chuyên môn được xác minh, liên tục cập nhật xu hướng đề thi Cambridge và tiêu chuẩn khảo thí quốc tế.
+            </p>
+          </div>
+        </div>
+      </SectionContainer>
+
+      {/* Final Action CTA */}
+      <section className="py-20 sm:py-24 bg-brand-blue text-white">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 text-white border border-white/20 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
+            <Award className="h-4 w-4 text-brand-cyan" />
+            <span>Đồng Hành Chuyên Môn</span>
+          </div>
+
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
+            Trải nghiệm phương pháp học cùng Ban Chuyên Môn ARIS.
+          </h2>
+
+          <p className="text-base sm:text-lg lg:text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
+            Bắt đầu bằng việc làm bài đánh giá năng lực 45 phút để nhận phân tích chi tiết từ ban học thuật.
+          </p>
+
+          <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
+            <Button
+              size="lg"
+              onClick={() => navigate("/assessment")}
+              className="rounded-2xl px-8 h-14 font-extrabold text-base sm:text-lg bg-brand-red text-white hover:bg-brand-red-hover shadow-md border-0 gap-2.5"
+            >
+              <span>Làm bài kiểm tra năng lực ngay</span>
+              <ArrowRight className="h-5 w-5 text-white" />
+            </Button>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

@@ -18,6 +18,7 @@ import {
   Clock,
   ShieldCheck,
   UserCheck,
+  Users,
 } from "lucide-react";
 
 export default function PublicHomePage() {
