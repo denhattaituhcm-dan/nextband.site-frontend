@@ -10,8 +10,8 @@ export interface VocabularyItem {
 }
 
 export interface SampleAnswers {
+  band65: string;
   band75: string;
-  band80: string;
 }
 
 export interface Season {

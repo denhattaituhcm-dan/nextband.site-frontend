@@ -9,17 +9,19 @@ interface SampleAnswerTabsProps {
 }
 
 export const SampleAnswerTabs: React.FC<SampleAnswerTabsProps> = ({ sampleAnswers }) => {
-  const [activeTab, setActiveTab] = useState<'band75' | 'band80'>('band80');
+  const sa = sampleAnswers as any;
+  const rawBand65 = sa?.band65 ?? (!sa?.band65 && sa?.band80 ? sa?.band75 : '');
+  const rawBand75 = sa?.band65 ? sa?.band75 : (sa?.band80 || sa?.band75 || '');
 
-  const hasBand75 = Boolean(sampleAnswers?.band75 && sampleAnswers.band75.trim());
-  const hasBand80 = Boolean(sampleAnswers?.band80 && sampleAnswers.band80.trim());
+  const hasBand65 = Boolean(rawBand65 && rawBand65.trim());
+  const hasBand75 = Boolean(rawBand75 && rawBand75.trim());
 
-  if (!hasBand75 && !hasBand80) return null;
+  if (!hasBand65 && !hasBand75) return null;
 
-  const defaultTab = hasBand80 ? 'band80' : 'band75';
+  const defaultTab = hasBand75 ? 'band75' : 'band65';
 
-  const cleanBand75 = DOMPurify.sanitize(sampleAnswers?.band75 || '');
-  const cleanBand80 = DOMPurify.sanitize(sampleAnswers?.band80 || '');
+  const cleanBand65 = DOMPurify.sanitize(rawBand65 || '');
+  const cleanBand75 = DOMPurify.sanitize(rawBand75 || '');
 
   return (
     <div className="space-y-3">
@@ -38,22 +40,22 @@ export const SampleAnswerTabs: React.FC<SampleAnswerTabsProps> = ({ sampleAnswer
         <Tabs defaultValue={defaultTab} className="w-full">
           <div className="border-b bg-muted/40 px-4 py-2.5 flex items-center justify-between">
             <TabsList className="bg-background/80 border p-1 h-9">
-              {hasBand80 && (
-                <TabsTrigger
-                  value="band80"
-                  className="text-xs font-bold gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-white"
-                >
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Band 8.0+ Advanced Sample
-                </TabsTrigger>
-              )}
               {hasBand75 && (
                 <TabsTrigger
                   value="band75"
                   className="text-xs font-bold gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-white"
                 >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Band 7.5 ★
+                </TabsTrigger>
+              )}
+              {hasBand65 && (
+                <TabsTrigger
+                  value="band65"
+                  className="text-xs font-bold gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-white"
+                >
                   <CheckCircle2 className="h-3.5 w-3.5" />
-                  Band 7.5+ Model Sample
+                  Band 6.5
                 </TabsTrigger>
               )}
             </TabsList>
@@ -63,20 +65,20 @@ export const SampleAnswerTabs: React.FC<SampleAnswerTabsProps> = ({ sampleAnswer
             </span>
           </div>
 
-          {hasBand80 && (
-            <TabsContent value="band80" className="p-5 sm:p-6 mt-0">
-              <div
-                className="prose prose-slate dark:prose-invert max-w-none text-sm sm:text-base leading-relaxed space-y-3"
-                dangerouslySetInnerHTML={{ __html: cleanBand80 }}
-              />
-            </TabsContent>
-          )}
-
           {hasBand75 && (
             <TabsContent value="band75" className="p-5 sm:p-6 mt-0">
               <div
                 className="prose prose-slate dark:prose-invert max-w-none text-sm sm:text-base leading-relaxed space-y-3"
                 dangerouslySetInnerHTML={{ __html: cleanBand75 }}
+              />
+            </TabsContent>
+          )}
+
+          {hasBand65 && (
+            <TabsContent value="band65" className="p-5 sm:p-6 mt-0">
+              <div
+                className="prose prose-slate dark:prose-invert max-w-none text-sm sm:text-base leading-relaxed space-y-3"
+                dangerouslySetInnerHTML={{ __html: cleanBand65 }}
               />
             </TabsContent>
           )}

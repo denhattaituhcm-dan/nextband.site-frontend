@@ -41,9 +41,9 @@ export const initialTopics: ForecastTopic[] = [
       'Have you ever seen a robot in real life or in movies?',
     ],
     sampleAnswers: {
-      band75:
+      band65:
         '<p>To be honest, I find robotic technology truly fascinating. Nowadays, automated appliances like robotic vacuum cleaners have made domestic tasks much more manageable. In the long run, although automation might displace certain repetitive manual roles, it will also generate high-value technological positions.</p>',
-      band80:
+      band75:
         '<p>I have always been deeply intrigued by the rapid progression of robotics and artificial intelligence. Autonomous gadgets have streamlined our daily routines, relieving us from monotonous domestic labor. While there are legitimate concerns regarding technological unemployment, I believe robotics will act as a catalyst for new industries rather than a purely disruptive force.</p>',
     },
     keyVocabulary: [
@@ -70,7 +70,7 @@ export const initialTopics: ForecastTopic[] = [
       '• Robots in everyday life: smart home appliances, robotic vacuums, delivery bots.\n• Benefits: saves time, increases precision, handles hazardous tasks.\n• Drawbacks: high initial investment, over-reliance, fear of job disruption.',
     seoTitle: 'IELTS Speaking Forecast Q3/2026 - Topic: Robots & Automation',
     metaDescription:
-      'Trọn bộ câu hỏi và bài mẫu IELTS Speaking Part 1 chủ đề Robots & Automation cho Quý 3/2026 kèm từ vựng Band 8.0+.',
+      'Trọn bộ câu hỏi và bài mẫu IELTS Speaking Part 1 chủ đề Robots & Automation cho Quý 3/2026 kèm từ vựng Band 7.5 ★.',
     slug: 'q3-2026-part1-robots-automation',
   },
   {
@@ -91,9 +91,9 @@ export const initialTopics: ForecastTopic[] = [
       'And explain why this journey was so memorable to you',
     ],
     sampleAnswers: {
-      band75:
+      band65:
         '<p>I would like to talk about a scenic train journey I took last summer across the central coast of Vietnam. I went with two of my closest university friends. We boarded the train early in the morning, and the ride took approximately six hours. The panoramic view of the coastline passing through the Hai Van pass was breathtaking. What made it memorable was the camaraderie and the picturesque landscapes.</p>',
-      band80:
+      band75:
         '<p>I would like to recount an unforgettable expedition via the coastal railway line between Da Nang and Hue. Traveling alongside two lifelong companions, the six-hour journey provided an uninterrupted panorama of lush mountain ranges juxtaposed against the azure coastline. What etched this experience in my memory was the nostalgic atmosphere of vintage carriage travel paired with insightful conversations with local passengers.</p>',
     },
     keyVocabulary: [
@@ -138,9 +138,9 @@ export const initialTopics: ForecastTopic[] = [
       'Do you think public transport should be completely free in major cities?',
     ],
     sampleAnswers: {
-      band75:
+      band65:
         '<p>Many commuters opt for private vehicles primarily due to autonomy and personal comfort. Private cars allow door-to-door transit without the need to adhere to rigid schedules. To incentivize public transit usage, municipal authorities must invest heavily in expanding subway networks and maintaining strict punctuality.</p>',
-      band80:
+      band75:
         '<p>The predilection for private mobility often boils down to perceived convenience, personal privacy, and the seamless nature of point-to-point travel. Nevertheless, to mitigate urban congestion, governments ought to subsidize fares, bolster transit frequencies, and establish dedicated bus rapid transit lanes to make public commuting undeniably superior in speed and reliability.</p>',
     },
     keyVocabulary: [
@@ -179,9 +179,9 @@ export const initialTopics: ForecastTopic[] = [
       'Do you think children nowadays read enough books?',
     ],
     sampleAnswers: {
-      band75:
+      band65:
         '<p>I lean towards physical books because I appreciate the tactile sensation of turning paper pages. However, e-books are undeniably convenient when traveling.</p>',
-      band80:
+      band75:
         '<p>While I recognize the sheer convenience and portability of digital e-readers, I still retain a nostalgic affinity for physical paperbacks. The tactile experience and the absence of screen glare make traditional reading far more immersive for me.</p>',
     },
     keyVocabulary: [
@@ -216,9 +216,9 @@ export const initialTopics: ForecastTopic[] = [
       'And explain what you have learned from them',
     ],
     sampleAnswers: {
-      band75:
+      band65:
         '<p>I would like to describe my high school physics teacher, Mr. Minh. He possessed an extraordinary ability to elucidate complex scientific theories into relatable, intuitive examples.</p>',
-      band80:
+      band75:
         '<p>I would like to shed light on a person of remarkable intellect, my former mentor Dr. Minh. Beyond his vast academic repertoire in theoretical physics, what truly distinguished his intelligence was his uncanny knack for synthesizing multifaceted problems and articulating them with crystal clarity.</p>',
     },
     keyVocabulary: [
@@ -256,9 +256,9 @@ export const initialTopics: ForecastTopic[] = [
       'What skills should future generations cultivate to stay relevant in the AI era?',
     ],
     sampleAnswers: {
-      band75:
+      band65:
         '<p>AI has already surpassed human capability in data processing and computation. However, emotional intelligence, authentic creativity, and ethical judgment remain distinctly human traits.</p>',
-      band80:
+      band75:
         '<p>While generative AI models exhibit superhuman prowess in computational tasks and pattern recognition, they fundamentally lack genuine consciousness, empathetic nuance, and moral reasoning. Consequently, human educators and leaders should prioritize critical thinking and emotional intelligence over rote learning.</p>',
     },
     keyVocabulary: [
@@ -291,9 +291,9 @@ export const initialTopics: ForecastTopic[] = [
       'Have you ever participated in an environmental clean-up campaign?',
     ],
     sampleAnswers: {
-      band75:
+      band65:
         '<p>I make a conscious effort to minimize single-use plastics and always carry a reusable canvas bag when shopping.</p>',
-      band80:
+      band75:
         '<p>I conscientiously adopt eco-friendly habits in my daily routine, such as eliminating disposable plastics, minimizing household food waste, and commuting via public bicycles whenever feasible.</p>',
     },
     keyVocabulary: [
@@ -325,9 +325,9 @@ export const initialTopics: ForecastTopic[] = [
       'What kinds of sounds annoy you the most?',
     ],
     sampleAnswers: {
-      band75:
+      band65:
         '<p>I am quite sensitive to noise, especially honking and construction sounds early in the morning.</p>',
-      band80:
+      band75:
         '<p>I find auditory clutter intensely aggravating. Continuous traffic honking and nearby industrial construction significantly impede cognitive concentration and sleep quality.</p>',
     },
     keyVocabulary: [

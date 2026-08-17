@@ -452,7 +452,7 @@ const App = () => (
                 <Route
                   path="/admin/speaking-forecast"
                   element={
-                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                    <ProtectedRoute requiredRoles={["admin"]}>
                       <AdminSpeakingForecast />
                     </ProtectedRoute>
                   }
@@ -460,7 +460,7 @@ const App = () => (
                 <Route
                   path="/admin/speaking-forecast/new"
                   element={
-                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                    <ProtectedRoute requiredRoles={["admin"]}>
                       <AdminSpeakingForecastCreate />
                     </ProtectedRoute>
                   }
@@ -468,7 +468,7 @@ const App = () => (
                 <Route
                   path="/admin/speaking-forecast/:id/edit"
                   element={
-                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                    <ProtectedRoute requiredRoles={["admin"]}>
                       <AdminSpeakingForecastEdit />
                     </ProtectedRoute>
                   }

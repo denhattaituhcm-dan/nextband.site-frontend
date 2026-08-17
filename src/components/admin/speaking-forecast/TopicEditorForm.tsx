@@ -84,12 +84,19 @@ export const TopicEditorForm: React.FC<TopicEditorFormProps> = ({
   );
 
   // Learning Content State
-  const [sampleAnswerBand75, setSampleAnswerBand75] = useState<string>(
-    initialTopic?.sampleAnswers?.band75 || ''
-  );
-  const [sampleAnswerBand80, setSampleAnswerBand80] = useState<string>(
-    initialTopic?.sampleAnswers?.band80 || ''
-  );
+  const [sampleAnswerBand65, setSampleAnswerBand65] = useState<string>(() => {
+    const sa = initialTopic?.sampleAnswers as any;
+    if (sa?.band65 !== undefined) return sa.band65;
+    if (sa?.band80 !== undefined && sa?.band75 !== undefined) return sa.band75;
+    return '';
+  });
+  const [sampleAnswerBand75, setSampleAnswerBand75] = useState<string>(() => {
+    const sa = initialTopic?.sampleAnswers as any;
+    if (sa?.band65 !== undefined && sa?.band75 !== undefined) return sa.band75;
+    if (sa?.band80 !== undefined) return sa.band80;
+    if (sa?.band75 !== undefined) return sa.band75;
+    return '';
+  });
   const [keyVocabulary, setKeyVocabulary] = useState<VocabularyItem[]>(
     initialTopic?.keyVocabulary || []
   );
@@ -211,8 +218,8 @@ export const TopicEditorForm: React.FC<TopicEditorFormProps> = ({
       type,
       status: finalStatus,
       sampleAnswers: {
+        band65: sampleAnswerBand65,
         band75: sampleAnswerBand75,
-        band80: sampleAnswerBand80,
       },
       keyVocabulary: keyVocabulary.filter((v) => v.word.trim() || v.meaning.trim()),
       ideas,
@@ -491,36 +498,36 @@ export const TopicEditorForm: React.FC<TopicEditorFormProps> = ({
           </CardDescription>
         </CardHeader>
         <CardContent className="p-5 space-y-6">
-          {/* Sample Answers Tabs (Band 7.5+ & Band 8.0+) */}
+          {/* Sample Answers Tabs (Band 6.5 & Band 7.5 ★) */}
           <div className="space-y-2">
             <Label className="text-xs font-semibold block">Sample Answers</Label>
-            <Tabs defaultValue="band75" className="w-full">
+            <Tabs defaultValue="band65" className="w-full">
               <TabsList className="grid w-full grid-cols-2 max-w-[280px] h-8">
-                <TabsTrigger value="band75" className="text-xs">
-                  Band 7.5+ Sample
+                <TabsTrigger value="band65" className="text-xs">
+                  Band 6.5
                 </TabsTrigger>
-                <TabsTrigger value="band80" className="text-xs">
-                  Band 8.0+ Sample
+                <TabsTrigger value="band75" className="text-xs">
+                  Band 7.5 ★
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="band65" className="mt-3">
+                <div className="rounded-md border">
+                  <RichTextEditor
+                    value={sampleAnswerBand65}
+                    onChange={setSampleAnswerBand65}
+                    placeholder="Enter Band 6.5 model response (mục tiêu trung cấp khá)..."
+                    minHeight={160}
+                  />
+                </div>
+              </TabsContent>
 
               <TabsContent value="band75" className="mt-3">
                 <div className="rounded-md border">
                   <RichTextEditor
                     value={sampleAnswerBand75}
                     onChange={setSampleAnswerBand75}
-                    placeholder="Enter Band 7.5+ model response..."
-                    minHeight={160}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="band80" className="mt-3">
-                <div className="rounded-md border">
-                  <RichTextEditor
-                    value={sampleAnswerBand80}
-                    onChange={setSampleAnswerBand80}
-                    placeholder="Enter Band 8.0+ sophisticated model response with rich collocations..."
+                    placeholder="Enter Band 7.5 ★ target model response (mục tiêu nâng cao / target)..."
                     minHeight={160}
                   />
                 </div>
@@ -687,7 +694,7 @@ export const TopicEditorForm: React.FC<TopicEditorFormProps> = ({
               </div>
               <div className="text-xs text-slate-600 line-clamp-2">
                 {metaDescription ||
-                  'Tổng hợp bộ đề IELTS Speaking Forecast mới nhất kèm bài mẫu Band 8.0+, từ vựng ăn điểm và gợi ý dàn ý chi tiết.'}
+                  'Tổng hợp bộ đề IELTS Speaking Forecast mới nhất kèm bài mẫu Band 7.5 ★, từ vựng ăn điểm và gợi ý dàn ý chi tiết.'}
               </div>
             </div>
           </div>

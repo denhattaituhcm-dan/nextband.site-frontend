@@ -50,11 +50,6 @@ const teachingItems = [
     url: "/admin/exams",
     icon: FolderKanban,
   },
-  {
-    title: "Speaking Forecast",
-    url: "/admin/speaking-forecast",
-    icon: Mic,
-  },
 ];
 
 // ⚙️ NHÓM 2: QUẢN TRỊ HỆ THỐNG (Chỉ Admin mới có)
@@ -68,6 +63,11 @@ const adminItems = [
     title: "Khóa học",
     url: "/admin/courses",
     icon: BookOpen,
+  },
+  {
+    title: "Speaking Forecast",
+    url: "/admin/speaking-forecast",
+    icon: Mic,
   },
   {
     title: "Evidence",

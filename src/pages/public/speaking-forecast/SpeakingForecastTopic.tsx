@@ -289,7 +289,7 @@ export default function SpeakingForecastTopic() {
           </section>
         )}
 
-        {/* SECTION 4: SAMPLE ANSWERS (BAND 7.5+ & 8.0+) */}
+        {/* SECTION 4: SAMPLE ANSWERS (BAND 6.5 & BAND 7.5 ★) */}
         {topic?.sampleAnswers && (
           <section>
             <SampleAnswerTabs sampleAnswers={topic.sampleAnswers} />

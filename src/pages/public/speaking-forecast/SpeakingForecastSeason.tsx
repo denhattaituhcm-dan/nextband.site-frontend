@@ -197,7 +197,7 @@ export default function SpeakingForecastSeason() {
             Bộ đề <strong>IELTS Speaking Forecast {seasonName}</strong> tổng hợp toàn bộ các chủ đề Part 1, Part 2 và Part 3 đang xuất hiện trong phòng thi thực tế tại IDP và British Council Việt Nam. Khoảng 50% số chủ đề là các đề giữ lại từ quý liền kề trước đó, và 50% là các chủ đề mới xuất hiện (được gắn nhãn <em>✨ Đề mới</em>).
           </p>
           <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-            Mỗi chủ đề đều được Ban Chuyên môn ARIS phân tích dàn ý tư duy phản biện, trích xuất bảng từ vựng học thuật (Collocations &amp; Idioms) và xây dựng 2 tầng bài mẫu tham khảo (Band 7.5+ và Band 8.0+) giúp học viên nắm chắc cách triển khai câu trả lời tự nhiên, mạch lạc.
+            Mỗi chủ đề đều được Ban Chuyên môn ARIS phân tích dàn ý tư duy phản biện, trích xuất bảng từ vựng học thuật (Collocations &amp; Idioms) và xây dựng 2 tầng bài mẫu tham khảo (Band 6.5 và Band 7.5 ★) giúp học viên nắm chắc cách triển khai câu trả lời tự nhiên, mạch lạc.
           </p>
         </div>
       </section>

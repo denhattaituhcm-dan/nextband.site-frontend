@@ -19,10 +19,35 @@ function getStoredSeasons(): Season[] {
   return initialSeasons;
 }
 
+function normalizeTopic(topic: ForecastTopic): ForecastTopic {
+  const sa = topic.sampleAnswers as any;
+  if (!sa) {
+    return {
+      ...topic,
+      sampleAnswers: { band65: '', band75: '' },
+    };
+  }
+  let band65 = sa.band65 ?? '';
+  let band75 = sa.band75 ?? '';
+  if (!band65 && sa.band80) {
+    band65 = sa.band75 ?? '';
+    band75 = sa.band80 ?? '';
+  }
+  return {
+    ...topic,
+    sampleAnswers: { band65, band75 },
+  };
+}
+
 function getStoredTopics(): ForecastTopic[] {
   try {
     const raw = localStorage.getItem(TOPICS_STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed.map(normalizeTopic);
+      }
+    }
   } catch (e) {
     console.error('Failed to load topics from storage', e);
   }
