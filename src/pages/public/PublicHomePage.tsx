@@ -331,47 +331,146 @@ export default function PublicHomePage() {
       </SectionContainer>
 
       {/* ========================================================================= */}
-      {/* SECTION 6: PROGRAMS & COURSES (CHƯƠNG TRÌNH ĐÀO TẠO)                     */}
+      {/* SECTION 6: 5-COURSE PROGRESSION PATHWAYS                                 */}
       {/* ========================================================================= */}
       <SectionContainer
-        badge="Lộ Trình Phù Hợp"
-        title="Chọn khóa học đúng với điểm xuất phát của bạn."
-        description="Không học lớp quá dễ gây lãng phí thời gian, không học lớp quá khó gây nản lòng. Các khóa học tại ARIS được thiết kế theo đúng từng mốc năng lực."
+        badge="Lộ Trình Đào Tạo"
+        title="5 Chặng rèn luyện bám sát từng mốc năng lực."
+        description="Không học lớp quá dễ gây lãng phí thời gian, không học lớp quá khó gây nản lòng. 5 khóa học của ARIS được cấu trúc thành 2 chặng phát triển rõ ràng."
         background="muted"
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left">
-          <PlaceholderCard
-            variant="course"
-            badge="Khởi động"
-            title="ARIS Foundation"
-            subtitle="Mục tiêu 3.5 - 5.0 (Học Đồ &amp; Học Giả)"
-            description="Củng cố phát âm chuẩn IPA, từ vựng cốt lõi và làm quen với ngữ pháp câu trong văn bản học thuật."
-            metadata={["Thời lượng: 12 tuần", "4 Kỹ năng căn bản", "NextBand LMS"]}
-            ctaLabel="Xem chi tiết khóa học"
-            onCtaClick={() => navigate("/courses/foundation")}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+          {/* Pathway 1: Foundation */}
+          <div className="p-8 rounded-3xl bg-card border border-border/80 space-y-6 shadow-2xs">
+            <div className="space-y-1.5 border-b border-border/60 pb-4">
+              <span className="text-xs font-mono uppercase tracking-widest text-brand-blue font-extrabold">
+                Giai Đoạn 1: Xây Nền Năng Lực
+              </span>
+              <h3 className="text-2xl font-black text-foreground">
+                Lộ Trình Nền Tảng (Mất gốc → 5.0)
+              </h3>
+              <p className="text-sm text-foreground/75 leading-relaxed">
+                Tập trung phát âm IPA chuẩn, làm chủ ngữ pháp câu và đọc/nghe hiểu văn bản học thuật.
+              </p>
+            </div>
 
-          <PlaceholderCard
-            variant="course"
-            badge="Trọng tâm"
-            title="ARIS Intensive"
-            subtitle="Mục tiêu 5.0 - 6.5 (Học Sĩ &amp; Học Sư)"
-            description="Luyện viết luận Task 2 có luận điểm sắc bén và phản xạ Nói theo các chủ đề chuyên sâu của bài thi IELTS."
-            metadata={["Thời lượng: 14 tuần", "Chấm bài chi tiết", "Thi thử định kỳ"]}
-            ctaLabel="Xem chi tiết khóa học"
-            onCtaClick={() => navigate("/courses/intensive")}
-          />
+            <div className="space-y-3">
+              <div
+                onClick={() => navigate("/courses/starter")}
+                className="p-4 rounded-2xl border border-border/70 bg-muted/20 hover:border-brand-blue/50 hover:bg-brand-blue-soft/30 transition-all cursor-pointer flex items-center justify-between gap-4"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-brand-blue-soft text-brand-blue">
+                      STARTER
+                    </span>
+                    <span className="text-sm font-extrabold text-foreground">Đầu ra 3.0</span>
+                  </div>
+                  <p className="text-xs text-foreground/70 mt-1">Mất gốc → Nền tảng phát âm IPA &amp; Từ vựng sinh hoạt</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              </div>
 
-          <PlaceholderCard
-            variant="course"
-            badge="Bứt phá"
-            title="ARIS Master"
-            subtitle="Mục tiêu 6.5 - 7.5+ (Học Bá &amp; Học Tôn)"
-            description="Tinh chỉnh văn phong tự nhiên, kiểm soát độ chính xác ngữ nghĩa và hoàn thiện tư duy phản biện cấp cao."
-            metadata={["Thời lượng: 10 tuần", "Giảng viên chuyên môn", "Phản hồi nâng cao"]}
-            ctaLabel="Xem chi tiết khóa học"
-            onCtaClick={() => navigate("/courses/master")}
-          />
+              <div
+                onClick={() => navigate("/courses/dreamer")}
+                className="p-4 rounded-2xl border border-border/70 bg-muted/20 hover:border-brand-blue/50 hover:bg-brand-blue-soft/30 transition-all cursor-pointer flex items-center justify-between gap-4"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-brand-blue-soft text-brand-blue">
+                      DREAMER
+                    </span>
+                    <span className="text-sm font-extrabold text-foreground">3.0 → 4.0</span>
+                  </div>
+                  <p className="text-xs text-foreground/70 mt-1">Ngữ pháp câu phức &amp; Đọc hiểu đoạn văn học thuật ngắn</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              </div>
+
+              <div
+                onClick={() => navigate("/courses/builder")}
+                className="p-4 rounded-2xl border border-border/70 bg-muted/20 hover:border-brand-blue/50 hover:bg-brand-blue-soft/30 transition-all cursor-pointer flex items-center justify-between gap-4"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-brand-blue-soft text-brand-blue">
+                      BUILDER
+                    </span>
+                    <span className="text-sm font-extrabold text-foreground">4.0 → 5.0</span>
+                  </div>
+                  <p className="text-xs text-foreground/70 mt-1">Làm quen 4 kỹ năng IELTS &amp; Viết đoạn văn có luận điểm</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              </div>
+            </div>
+          </div>
+
+          {/* Pathway 2: Breakthrough */}
+          <div className="p-8 rounded-3xl bg-card border border-border/80 space-y-6 shadow-2xs">
+            <div className="space-y-1.5 border-b border-border/60 pb-4">
+              <span className="text-xs font-mono uppercase tracking-widest text-brand-red font-extrabold">
+                Giai Đoạn 2: Bứt Phá Điểm Số
+              </span>
+              <h3 className="text-2xl font-black text-foreground">
+                Lộ Trình Chuyên Sâu (5.0 → 6.5+)
+              </h3>
+              <p className="text-sm text-foreground/75 leading-relaxed">
+                Huấn luyện phương pháp The ARIS Way, viết luận Task 2 và phản xạ nói đa chiều.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <div
+                onClick={() => navigate("/courses/master")}
+                className="p-4 rounded-2xl border border-border/70 bg-muted/20 hover:border-brand-red/50 hover:bg-brand-red-soft/30 transition-all cursor-pointer flex items-center justify-between gap-4"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-brand-red-soft text-brand-red">
+                      MASTER
+                    </span>
+                    <span className="text-sm font-extrabold text-foreground">5.0 → 6.0</span>
+                  </div>
+                  <p className="text-xs text-foreground/70 mt-1">Viết luận Task 2, mô tả biểu đồ Task 1 &amp; Phản xạ Speaking</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              </div>
+
+              <div
+                onClick={() => navigate("/courses/leader")}
+                className="p-4 rounded-2xl border border-border/70 bg-muted/20 hover:border-brand-red/50 hover:bg-brand-red-soft/30 transition-all cursor-pointer flex items-center justify-between gap-4"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-brand-red-soft text-brand-red">
+                      LEADER
+                    </span>
+                    <span className="text-sm font-extrabold text-foreground">6.0 → 6.5+</span>
+                  </div>
+                  <p className="text-xs text-foreground/70 mt-1">Văn phong học thuật tự nhiên &amp; Tư duy phản biện cấp cao</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-brand-blue-soft/50 border border-brand-blue/20 text-xs text-foreground/80 font-bold space-y-1">
+              <div className="flex items-center gap-2 text-brand-blue">
+                <Users className="h-4 w-4" />
+                <span>Quy chuẩn lớp học: Tối đa 08 học viên / lớp</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-10 text-center">
+          <Button
+            variant="outline"
+            onClick={() => navigate("/courses")}
+            className="rounded-2xl px-8 h-14 font-extrabold text-base sm:text-lg border-2 border-border/80 hover:bg-muted"
+          >
+            <span>Xem chi tiết toàn bộ 5 chương trình đào tạo</span>
+            <ArrowRight className="h-5 w-5 ml-2" />
+          </Button>
         </div>
       </SectionContainer>
 
