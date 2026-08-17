@@ -133,14 +133,6 @@ export function PublicFooter() {
               </li>
               <li>
                 <Link
-                  to="/news"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Tin tức &amp; Học thuật
-                </Link>
-              </li>
-              <li>
-                <Link
                   to="/contact"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import {
   EvidenceItem,
   getEvidenceList,
-  saveEvidenceItem,
-  deleteEvidenceItem,
+  fetchEvidenceListAsync,
+  saveEvidenceItemAsync,
+  deleteEvidenceItemAsync,
   toggleEvidencePublished,
   toggleEvidenceFeatured,
 } from "@/lib/evidenceStore";
@@ -47,8 +48,9 @@ export default function AdminEvidence() {
   const [editingItem, setEditingItem] = useState<Partial<EvidenceItem> | null>(null);
   const [previewItem, setPreviewItem] = useState<EvidenceItem | null>(null);
 
-  const loadData = () => {
-    setItems(getEvidenceList());
+  const loadData = async () => {
+    const list = await fetchEvidenceListAsync();
+    setItems(list);
   };
 
   useEffect(() => {
@@ -98,35 +100,35 @@ export default function AdminEvidence() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: string, name: string) => {
+  const handleDelete = async (id: string, name: string) => {
     if (window.confirm(`Bạn có chắc chắn muốn xóa câu chuyện của học viên "${name}" không?`)) {
-      deleteEvidenceItem(id);
-      loadData();
+      await deleteEvidenceItemAsync(id);
+      await loadData();
       toast.success(`Đã xóa thành công câu chuyện của ${name}`);
     }
   };
 
-  const handleTogglePublish = (item: EvidenceItem) => {
+  const handleTogglePublish = async (item: EvidenceItem) => {
     if (!item.published && !item.consentConfirmed) {
       toast.error("Không thể xuất bản: Vui lòng xác nhận sự đồng ý của học viên trước!");
       return;
     }
     try {
       toggleEvidencePublished(item.id, !item.published);
-      loadData();
+      await loadData();
       toast.success(item.published ? "Đã chuyển về bản nháp" : "Đã xuất bản thành công lên Public Website");
     } catch (err: any) {
       toast.error(err.message || "Lỗi cập nhật trạng thái");
     }
   };
 
-  const handleToggleFeatured = (item: EvidenceItem) => {
+  const handleToggleFeatured = async (item: EvidenceItem) => {
     toggleEvidenceFeatured(item.id, !item.featured);
-    loadData();
+    await loadData();
     toast.success(item.featured ? "Đã bỏ ghim nổi bật" : "Đã ghim nổi bật lên Trang Chủ");
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingItem?.studentName?.trim() || !editingItem?.title?.trim() || !editingItem?.overallScore?.trim()) {
       toast.error("Vui lòng điền đầy đủ các thông tin bắt buộc (*)");
@@ -138,8 +140,8 @@ export default function AdminEvidence() {
       return;
     }
 
-    saveEvidenceItem(editingItem);
-    loadData();
+    await saveEvidenceItemAsync(editingItem);
+    await loadData();
     setIsModalOpen(false);
     toast.success("Đã lưu câu chuyện tiến bộ thành công!");
   };

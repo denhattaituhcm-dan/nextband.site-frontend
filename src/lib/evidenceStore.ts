@@ -1,3 +1,5 @@
+import { supabase } from "./supabase";
+
 export interface EvidenceItem {
   id: string;
   studentName: string;
@@ -118,7 +120,33 @@ const INITIAL_EVIDENCE_DATA: EvidenceItem[] = [
   },
 ];
 
-// Helper to get raw items
+// Helper to normalize Supabase record to EvidenceItem
+function mapSupabaseToEvidence(row: any): EvidenceItem {
+  return {
+    id: row.id,
+    studentName: row.student_name || row.studentName || "Học viên ARIS",
+    studentSchool: row.student_school || row.studentSchool || "",
+    title: row.title || "Tiến bộ năng lực IELTS cùng ARIS",
+    imageUrl: row.image_url || row.imageUrl || "",
+    story: row.story || "",
+    scoreBefore: row.score_before || row.scoreBefore || "",
+    overallScore: row.overall_score || row.overallScore || "6.5",
+    listeningScore: row.listening_score || row.listeningScore || "",
+    readingScore: row.reading_score || row.readingScore || "",
+    writingScore: row.writing_score || row.writingScore || "",
+    speakingScore: row.speaking_score || row.speakingScore || "",
+    studyDuration: row.study_duration || row.studyDuration || "",
+    courseName: row.course_name || row.courseName || "",
+    featured: Boolean(row.featured),
+    published: Boolean(row.published),
+    consentConfirmed: Boolean(row.consent_confirmed ?? row.consentConfirmed),
+    displayOrder: row.display_order ?? row.displayOrder ?? 1,
+    createdAt: row.created_at || row.createdAt || new Date().toISOString(),
+    updatedAt: row.updated_at || row.updatedAt || new Date().toISOString(),
+  };
+}
+
+// Synchronous local store getter (fallback & cache)
 export function getEvidenceList(): EvidenceItem[] {
   if (typeof window === "undefined") return INITIAL_EVIDENCE_DATA;
   try {
@@ -133,7 +161,27 @@ export function getEvidenceList(): EvidenceItem[] {
   }
 }
 
-// Helper to get published items for public website
+// Fetch from Supabase with automatic cache sync
+export async function fetchEvidenceListAsync(): Promise<EvidenceItem[]> {
+  try {
+    const { data, error } = await supabase
+      .from("evidence")
+      .select("*")
+      .order("display_order", { ascending: true });
+
+    if (!error && data && data.length > 0) {
+      const mapped = data.map(mapSupabaseToEvidence);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(mapped));
+      return mapped;
+    }
+  } catch (err) {
+    console.warn("Using local evidence fallback", err);
+  }
+
+  return getEvidenceList();
+}
+
+// Published query for public website
 export function getPublishedEvidence(): EvidenceItem[] {
   const all = getEvidenceList();
   return all
@@ -141,14 +189,56 @@ export function getPublishedEvidence(): EvidenceItem[] {
     .sort((a, b) => a.displayOrder - b.displayOrder || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
 
-// Helper to get featured items for Homepage (top 3-4)
+// Featured query for homepage
 export function getFeaturedEvidence(): EvidenceItem[] {
   const published = getPublishedEvidence();
   const featured = published.filter((item) => item.featured);
   return featured.length > 0 ? featured.slice(0, 4) : published.slice(0, 3);
 }
 
-// Save or Update an item
+// Save or Update with Supabase sync
+export async function saveEvidenceItemAsync(itemData: Partial<EvidenceItem>): Promise<EvidenceItem> {
+  const localItem = saveEvidenceItem(itemData);
+
+  try {
+    const payload = {
+      student_name: localItem.studentName,
+      student_school: localItem.studentSchool,
+      title: localItem.title,
+      image_url: localItem.imageUrl,
+      story: localItem.story,
+      score_before: localItem.scoreBefore,
+      overall_score: localItem.overallScore,
+      listening_score: localItem.listeningScore,
+      reading_score: localItem.readingScore,
+      writing_score: localItem.writingScore,
+      speaking_score: localItem.speakingScore,
+      study_duration: localItem.studyDuration,
+      course_name: localItem.courseName,
+      featured: localItem.featured,
+      published: localItem.published,
+      consent_confirmed: localItem.consentConfirmed,
+      display_order: localItem.displayOrder,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (itemData.id && !itemData.id.startsWith("evi-")) {
+      await supabase.from("evidence").update(payload).eq("id", itemData.id);
+    } else {
+      const { data } = await supabase.from("evidence").insert(payload).select().single();
+      if (data?.id) {
+        localItem.id = data.id;
+        saveEvidenceItem(localItem);
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase evidence sync notice:", err);
+  }
+
+  return localItem;
+}
+
+// Synchronous save (updates local store immediately)
 export function saveEvidenceItem(itemData: Partial<EvidenceItem>): EvidenceItem {
   const all = getEvidenceList();
   const now = new Date().toISOString();
@@ -161,7 +251,6 @@ export function saveEvidenceItem(itemData: Partial<EvidenceItem>): EvidenceItem 
         ...itemData,
         updatedAt: now,
       } as EvidenceItem;
-      // Safeguard: cannot be published without consent
       if (!updated.consentConfirmed) {
         updated.published = false;
       }
@@ -201,7 +290,17 @@ export function saveEvidenceItem(itemData: Partial<EvidenceItem>): EvidenceItem 
   return newItem;
 }
 
-// Delete an item
+// Delete
+export async function deleteEvidenceItemAsync(id: string): Promise<boolean> {
+  deleteEvidenceItem(id);
+  try {
+    await supabase.from("evidence").delete().eq("id", id);
+  } catch (err) {
+    console.warn("Supabase delete notice:", err);
+  }
+  return true;
+}
+
 export function deleteEvidenceItem(id: string): boolean {
   const all = getEvidenceList();
   const filtered = all.filter((e) => e.id !== id);
@@ -221,6 +320,7 @@ export function toggleEvidencePublished(id: string, published: boolean): boolean
   item.published = published;
   item.updatedAt = new Date().toISOString();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  saveEvidenceItemAsync(item);
   return true;
 }
 
@@ -232,5 +332,6 @@ export function toggleEvidenceFeatured(id: string, featured: boolean): boolean {
   item.featured = featured;
   item.updatedAt = new Date().toISOString();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  saveEvidenceItemAsync(item);
   return true;
 }
