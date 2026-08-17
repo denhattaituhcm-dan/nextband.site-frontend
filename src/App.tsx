@@ -73,6 +73,9 @@ const AssessmentPage = lazyWithRetry(() => import("@/pages/public/AssessmentPage
 const AssessmentResultPage = lazyWithRetry(() => import("@/pages/public/AssessmentResultPage"));
 const TermsPage = lazyWithRetry(() => import("@/pages/public/TermsPage"));
 const PrivacyPage = lazyWithRetry(() => import("@/pages/public/PrivacyPage"));
+const SpeakingForecastHubPage = lazyWithRetry(() => import("@/pages/public/speaking-forecast/SpeakingForecastHub"));
+const SpeakingForecastSeasonPage = lazyWithRetry(() => import("@/pages/public/speaking-forecast/SpeakingForecastSeason"));
+const SpeakingForecastTopicPage = lazyWithRetry(() => import("@/pages/public/speaking-forecast/SpeakingForecastTopic"));
 
 // Lazy-loaded Auth Pages
 const LoginPage = lazyWithRetry(() => import("@/pages/auth/LoginPage"));
@@ -112,6 +115,9 @@ const AdminContentQADashboard = lazyWithRetry(() =>
 );
 const AdminEvidence = lazyWithRetry(() => import("@/pages/admin/Evidence"));
 const ClassAttendancePage = lazyWithRetry(() => import("@/pages/admin/ClassAttendancePage"));
+const AdminSpeakingForecast = lazyWithRetry(() => import("@/pages/admin/SpeakingForecast"));
+const AdminSpeakingForecastCreate = lazyWithRetry(() => import("@/pages/admin/SpeakingForecastCreate"));
+const AdminSpeakingForecastEdit = lazyWithRetry(() => import("@/pages/admin/SpeakingForecastEdit"));
 
 const PageLoader = () => (
   <div className="min-h-[400px] w-full flex flex-col items-center justify-center space-y-3 p-12">
@@ -217,6 +223,9 @@ const App = () => (
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/assessment" element={<AssessmentPage />} />
                 <Route path="/assessment/result/:id" element={<AssessmentResultPage />} />
+                <Route path="/ielts-speaking-forecast" element={<SpeakingForecastHubPage />} />
+                <Route path="/ielts-speaking-forecast/:seasonSlug" element={<SpeakingForecastSeasonPage />} />
+                <Route path="/ielts-speaking-forecast/:seasonSlug/:topicSlug" element={<SpeakingForecastTopicPage />} />
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
               </Route>
@@ -437,6 +446,30 @@ const App = () => (
                   element={
                     <ProtectedRoute requiredRoles={["admin"]}>
                       <AdminSettings />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/speaking-forecast"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                      <AdminSpeakingForecast />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/speaking-forecast/new"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                      <AdminSpeakingForecastCreate />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/speaking-forecast/:id/edit"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                      <AdminSpeakingForecastEdit />
                     </ProtectedRoute>
                   }
                 />

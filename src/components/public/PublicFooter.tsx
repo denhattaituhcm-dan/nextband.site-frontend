@@ -92,6 +92,22 @@ export function PublicFooter() {
               </li>
               <li>
                 <Link
+                  to="/academic-system"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Hệ thống học thuật
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/ielts-speaking-forecast"
+                  className="text-muted-foreground hover:text-foreground transition-colors font-semibold text-primary"
+                >
+                  IELTS Speaking Forecast
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/assessment"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >

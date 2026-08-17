@@ -25,8 +25,8 @@ const PUBLIC_NAV_ITEMS: NavItem[] = [
   { label: "Phương pháp", href: "/method" },
   { label: "Hệ thống học thuật", href: "/academic-system" },
   { label: "Khóa học", href: "/courses" },
+  { label: "Speaking Forecast", href: "/ielts-speaking-forecast" },
   { label: "Giảng viên", href: "/teachers" },
-  { label: "Tuyển dụng", href: "/careers" },
 ];
 
 export function PublicHeader() {

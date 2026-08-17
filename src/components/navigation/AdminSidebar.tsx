@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   FolderKanban,
   Award,
+  Mic,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -48,6 +49,11 @@ const teachingItems = [
     title: "Ngân hàng bài",
     url: "/admin/exams",
     icon: FolderKanban,
+  },
+  {
+    title: "Speaking Forecast",
+    url: "/admin/speaking-forecast",
+    icon: Mic,
   },
 ];
 

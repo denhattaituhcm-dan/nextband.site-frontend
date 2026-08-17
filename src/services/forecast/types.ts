@@ -1,0 +1,70 @@
+export type SpeakingPart = 'Part 1' | 'Part 2' | 'Part 3';
+export type TopicType = 'New' | 'Retained';
+export type TopicStatus = 'Draft' | 'Published';
+
+export interface VocabularyItem {
+  id: string;
+  word: string;
+  meaning: string;
+  example: string;
+}
+
+export interface SampleAnswers {
+  band75: string;
+  band80: string;
+}
+
+export interface Season {
+  id: string;
+  name: string; // e.g. "Q3 / 2026"
+  year: number;
+  quarter: 1 | 2 | 3 | 4;
+  isCurrent?: boolean;
+}
+
+export interface ForecastTopic {
+  id: string;
+  seasonId: string;
+  topicName: string;
+  category: string;
+  part: SpeakingPart;
+  type: TopicType;
+  status: TopicStatus;
+  updatedAt: string; // e.g. "18/08/2026" or "18 Aug 2026"
+
+  // Question Content (contextual by part)
+  questions?: string[]; // For Part 1 and Part 3
+  cueCardPrompt?: string; // For Part 2
+  cueCardBulletPoints?: string[]; // For Part 2 "You should say:"
+
+  // Learning Content
+  sampleAnswers: SampleAnswers;
+  keyVocabulary: VocabularyItem[];
+  ideas: string;
+
+  // SEO
+  seoTitle: string;
+  metaDescription: string;
+  slug: string;
+}
+
+export interface TopicFilters {
+  part?: string; // 'all' | 'Part 1' | 'Part 2' | 'Part 3'
+  type?: string; // 'all' | 'New' | 'Retained'
+  category?: string;
+  search?: string;
+  status?: TopicStatus;
+}
+
+export function formatSeasonSlug(year: number, quarter: number): string {
+  return `q${quarter}-${year}`;
+}
+
+export function parseSeasonSlug(slug: string): { quarter: number; year: number } | null {
+  const match = slug.toLowerCase().match(/^q([1-4])-(\d{4})$/);
+  if (!match) return null;
+  return {
+    quarter: parseInt(match[1], 10),
+    year: parseInt(match[2], 10),
+  };
+}
