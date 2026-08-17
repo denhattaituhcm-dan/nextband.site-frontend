@@ -15,6 +15,12 @@ import {
   Target,
   PenTool,
   MessageSquare,
+  HelpCircle,
+  Compass,
+  Zap,
+  BookOpen,
+  ShieldCheck,
+  Workflow,
 } from "lucide-react";
 
 export default function MethodPage() {
@@ -23,253 +29,450 @@ export default function MethodPage() {
   return (
     <div className="flex flex-col">
       <SEO
-        title="Phương Pháp Đào Tạo The ARIS Way — Tư Duy Học Thuật"
-        description="The ARIS Way — Phương pháp đào tạo IELTS tập trung vào bản chất ngôn ngữ, logic lập luận và vòng lặp phản hồi sửa lỗi triệt để."
+        title="Phương Pháp Đào Tạo The ARIS Way — Tư Duy Học Thuật & Tri Nhận Ngôn Ngữ"
+        description="The ARIS Way — Đừng chỉ học cách nói. Hãy hiểu cách tiếng Anh tạo ra ý nghĩa từ gốc rễ ý niệm, góc nhìn và cấu trúc lập luận."
       />
 
-      {/* Hero Header */}
-      <section className="relative overflow-hidden pt-14 pb-20 sm:pt-20 sm:pb-28 border-b border-border/80 bg-background">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue-soft text-brand-blue border border-brand-blue/20 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
+      {/* ========================================================================= */}
+      {/* 01. HERO SECTION                                                          */}
+      {/* ========================================================================= */}
+      <section className="relative overflow-hidden pt-16 pb-20 sm:pt-24 sm:pb-32 border-b border-border/80 bg-background">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-7">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue-soft text-brand-blue border border-brand-blue/20 text-xs sm:text-sm font-black uppercase tracking-wider">
             <Sparkles className="h-4 w-4" />
-            <span>Phương Pháp The ARIS Way</span>
+            <span>Phương Pháp Đào Tạo The ARIS Way</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight leading-[1.12]">
-            Học cách tư duy bằng tiếng Anh,{" "}
-            <span className="text-brand-red block sm:inline">
-              không học mẹo làm bài.
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-foreground tracking-tight leading-[1.08]">
+            Đừng chỉ học cách nói.{" "}
+            <span className="text-brand-blue block sm:inline">
+              Hãy hiểu cách tiếng Anh tạo ra ý nghĩa.
             </span>
           </h1>
 
-          <p className="text-lg sm:text-xl lg:text-2xl text-foreground/85 font-normal leading-relaxed max-w-3xl mx-auto">
-            Điểm số IELTS cao chỉ là kết quả tự nhiên khi bạn có khả năng tổ chức suy nghĩ logic và diễn đạt câu văn chuẩn xác.
+          <p className="text-lg sm:text-xl lg:text-2xl text-foreground/85 font-medium leading-relaxed max-w-3xl mx-auto">
+            Từ ý niệm → góc nhìn → cấu trúc → câu chữ. Khi năng lực ngôn ngữ thực sự thay đổi, điểm số mới có lý do để thay đổi.
           </p>
 
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
             <Button
               size="lg"
-              onClick={() => navigate("/academic-system")}
-              className="rounded-2xl px-8 h-14 font-extrabold text-base sm:text-lg bg-brand-blue hover:bg-brand-blue-hover text-white shadow-sm gap-2"
+              onClick={() => {
+                const el = document.getElementById("four-pillars");
+                el?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="rounded-2xl px-8 h-14 font-extrabold text-base sm:text-lg bg-brand-red hover:bg-brand-red-hover text-white shadow-md gap-2"
             >
-              <span>Xem Bản đồ 7 Cấp bậc ARIS-7</span>
+              <span>Khám phá 4 Nấc Thang Tri Nhận</span>
               <ArrowRight className="h-5 w-5" />
             </Button>
 
             <Button
               size="lg"
               variant="outline"
-              onClick={() => navigate("/assessment")}
+              onClick={() => navigate("/academic-system")}
               className="rounded-2xl px-8 h-14 font-bold text-base sm:text-lg border-2 border-border/80 hover:bg-muted text-foreground"
             >
-              Làm bài kiểm tra đầu vào
+              Xem Bản đồ 7 Cấp bậc ARIS-7
             </Button>
           </div>
         </div>
       </section>
 
-      {/* Section 1: 4 Trụ Cột The ARIS Way */}
+      {/* ========================================================================= */}
+      {/* 02. WHY: GỐC RỄ VẤN ĐỀ TRUYỀN THỐNG                                      */}
+      {/* ========================================================================= */}
       <SectionContainer
-        badge="4 Trụ Cột Phương Pháp"
-        title="Quy trình rèn luyện tư duy ngôn ngữ"
-        description="Mỗi bài học được thiết kế để dẫn dắt bạn đi từ việc hiểu đúng bản chất câu hỏi đến việc tạo ra bài viết hoặc bài nói hoàn chỉnh."
+        badge="Nút Thắt Ngôn Ngữ"
+        title="Vì sao biết rất nhiều từ vựng nhưng vẫn không thể diễn đạt tự nhiên?"
+        description="Phần lớn người học gặp bế tắc trong Writing và Speaking không phải vì thiếu từ, mà vì đang mắc kẹt trong cơ chế dịch thô từng chữ từ tiếng Việt."
         background="muted"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+          {/* Lối học truyền thống */}
+          <div className="p-8 sm:p-10 rounded-3xl border-2 border-border/80 bg-card space-y-6 shadow-2xs">
+            <div className="flex items-center gap-3">
+              <span className="font-mono font-black text-xs px-3 py-1.5 rounded-xl bg-destructive/15 text-destructive uppercase tracking-wider">
+                Lối Học Cũ
+              </span>
+              <h3 className="text-xl sm:text-2xl font-black text-foreground">
+                Dịch Thô &amp; Ghép Công Thức
+              </h3>
+            </div>
+
+            <div className="space-y-4 text-sm sm:text-base text-foreground/80">
+              <div className="p-4 rounded-2xl bg-destructive/5 border border-destructive/20 space-y-2">
+                <div className="font-bold text-destructive flex items-center gap-2 text-sm">
+                  <XCircle className="h-4 w-4 shrink-0" />
+                  <span>Quy trình hình thành câu máy móc:</span>
+                </div>
+                <div className="font-mono text-xs text-foreground/75 pl-6 space-y-1">
+                  <div>1. Nghĩ ý tưởng bằng tiếng Việt</div>
+                  <div>↓ (Tra từ điển tìm từ tương đương)</div>
+                  <div>2. Tìm từ vựng "đao to búa lớn" ép vào ngữ pháp</div>
+                  <div>↓ (Ghép nối gượng gạo)</div>
+                  <div>3. Câu văn dịch Word-by-Word, sai ngữ cảnh</div>
+                </div>
+              </div>
+              <p className="text-foreground/75 leading-relaxed">
+                Hậu quả: Người học mất nhiều thời gian suy nghĩ, phát âm ngập ngừng và bài viết bị giám khảo đánh giá là "thiếu tự nhiên", câu từ chắp vá.
+              </p>
+            </div>
+          </div>
+
+          {/* Phương pháp ARIS */}
+          <div className="p-8 sm:p-10 rounded-3xl border-2 border-brand-blue/30 bg-card space-y-6 shadow-2xs">
+            <div className="flex items-center gap-3">
+              <span className="font-mono font-black text-xs px-3 py-1.5 rounded-xl bg-brand-blue-soft text-brand-blue uppercase tracking-wider">
+                The ARIS Way
+              </span>
+              <h3 className="text-xl sm:text-2xl font-black text-foreground">
+                Tri Nhận Bản Chất Ngôn Ngữ
+              </h3>
+            </div>
+
+            <div className="space-y-4 text-sm sm:text-base text-foreground/80">
+              <div className="p-4 rounded-2xl bg-brand-blue-soft/40 border border-brand-blue/30 space-y-2">
+                <div className="font-bold text-brand-blue flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                  <span>Quy trình tri nhận tự nhiên:</span>
+                </div>
+                <div className="font-mono text-xs text-foreground/75 pl-6 space-y-1">
+                  <div>1. Kích hoạt Ý niệm &amp; Trường nghĩa (Concept)</div>
+                  <div>↓ (Lựa chọn góc nhìn biểu đạt)</div>
+                  <div>2. Chọn tiêu điểm &amp; Mối quan hệ giữa các thực thể</div>
+                  <div>↓ (Hình thành câu chuẩn xác)</div>
+                  <div>3. Câu văn mạch lạc, chính xác đúng tư duy bản xứ</div>
+                </div>
+              </div>
+              <p className="text-foreground/75 leading-relaxed">
+                Kết quả: Bạn phản xạ trực tiếp bằng tiếng Anh, kiểm soát hoàn toàn sắc thái câu chữ và xử lý mọi chủ đề Cambridge một cách vững vàng.
+              </p>
+            </div>
+          </div>
+        </div>
+      </SectionContainer>
+
+      {/* ========================================================================= */}
+      {/* 03. THE ARIS WAY: 4 NẤC THANG TRI NHẬN NGÔN NGỮ                           */}
+      {/* ========================================================================= */}
+      <SectionContainer
+        id="four-pillars"
+        badge="4 Nấc Thang Tri Nhận"
+        title="Phương pháp The ARIS Way hoạt động như thế nào?"
+        description="Không sử dụng các thuật ngữ học thuật phức tạp, ARIS chuyển hóa ngôn ngữ học tri nhận thành 4 bước rèn luyện rõ ràng và dễ tiếp cận."
+        background="default"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+          {/* Step 1 */}
           <div className="p-8 rounded-3xl border border-border/80 bg-card space-y-4 shadow-2xs">
             <div className="flex items-center gap-3">
               <span className="font-mono font-black text-base px-3.5 py-1.5 rounded-xl bg-brand-blue-soft text-brand-blue">
                 01
               </span>
               <h3 className="text-2xl font-black text-foreground">
-                Hiểu đúng bản chất đề
+                Hiểu ý nghĩa
               </h3>
             </div>
             <p className="text-base text-foreground/75 leading-relaxed">
-              Không đoán mò từ khóa. Bạn được hướng dẫn cách bóc tách chính xác yêu cầu của đề bài và tiêu chí chấm điểm của giám khảo Cambridge để trả lời trúng trọng tâm.
+              Không học từ vựng như những nhãn dán tiếng Việt đơn thuần. Một từ thực sự nghĩa là gì? Nó mô tả điều gì? Khi ngữ cảnh thay đổi thì sắc thái thay đổi ra sao?
             </p>
-            <div className="pt-2 text-sm text-foreground/80 font-bold flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-success" />
-              <span>Nhận diện bẫy thông tin và cấu trúc câu hỏi</span>
+            <div className="pt-2 text-sm text-brand-blue font-bold flex items-center gap-2 border-t border-border/60">
+              <CheckCircle2 className="h-4 w-4 shrink-0" />
+              <span>Hiểu trọn vẹn bản chất gốc rễ trước khi học cách dùng</span>
             </div>
           </div>
 
+          {/* Step 2 */}
           <div className="p-8 rounded-3xl border border-border/80 bg-card space-y-4 shadow-2xs">
             <div className="flex items-center gap-3">
               <span className="font-mono font-black text-base px-3.5 py-1.5 rounded-xl bg-brand-blue-soft text-brand-blue">
                 02
               </span>
               <h3 className="text-2xl font-black text-foreground">
-                Lập luận có cấu trúc
+                Chọn góc nhìn
               </h3>
             </div>
             <p className="text-base text-foreground/75 leading-relaxed">
-              Tập trung xây dựng chuỗi lập luận mạch lạc: Luận điểm chính $\rightarrow$ Lý giải nguyên nhân $\rightarrow$ Dẫn chứng thực tế. Triệt tiêu hoàn toàn thói quen viết câu rời rạc.
+              Cùng một sự việc có thể được diễn đạt theo nhiều cách. Ai là trọng tâm? Điều gì đang được nhấn mạnh? Mối quan hệ nhân quả giữa các ý là gì?
             </p>
-            <div className="pt-2 text-sm text-foreground/80 font-bold flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-success" />
-              <span>Kiểm soát tính mạch lạc và liên kết (Cohesion)</span>
+            <div className="pt-2 text-sm text-brand-blue font-bold flex items-center gap-2 border-t border-border/60">
+              <CheckCircle2 className="h-4 w-4 shrink-0" />
+              <span>Ngữ pháp là công cụ điều hướng góc nhìn, không chỉ là công thức</span>
             </div>
           </div>
 
+          {/* Step 3 */}
           <div className="p-8 rounded-3xl border border-border/80 bg-card space-y-4 shadow-2xs">
             <div className="flex items-center gap-3">
               <span className="font-mono font-black text-base px-3.5 py-1.5 rounded-xl bg-brand-blue-soft text-brand-blue">
                 03
               </span>
               <h3 className="text-2xl font-black text-foreground">
-                Rèn luyện có chủ đích
+                Biến ý thành câu
               </h3>
             </div>
             <p className="text-base text-foreground/75 leading-relaxed">
-              Không giải đề tràn lan để tạo cảm giác tiến bộ ảo. Bạn tập trung giải quyết dứt điểm các điểm nghẽn ngữ pháp câu phức và mở rộng vốn từ theo ngữ cảnh cụ thể.
+              Dẫn dắt suy nghĩ từ ý niệm: <strong>Ý tưởng → Mối quan hệ → Cấu trúc → Câu chữ</strong>. Đây là bước then chốt giúp bạn triệt tiêu hoàn toàn thói quen dịch thô từng từ.
             </p>
-            <div className="pt-2 text-sm text-foreground/80 font-bold flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-success" />
-              <span>Chữa đúng điểm yếu cá nhân thay vì học đại trà</span>
+            <div className="pt-2 text-sm text-brand-blue font-bold flex items-center gap-2 border-t border-border/60">
+              <CheckCircle2 className="h-4 w-4 shrink-0" />
+              <span>Xây dựng chuỗi lập luận tuyến tính và mạch lạc tự nhiên</span>
             </div>
           </div>
 
+          {/* Step 4 */}
           <div className="p-8 rounded-3xl border border-border/80 bg-card space-y-4 shadow-2xs">
             <div className="flex items-center gap-3">
               <span className="font-mono font-black text-base px-3.5 py-1.5 rounded-xl bg-brand-blue-soft text-brand-blue">
                 04
               </span>
               <h3 className="text-2xl font-black text-foreground">
-                Vòng lặp phản hồi khép kín
+                Sửa từ gốc
               </h3>
             </div>
             <p className="text-base text-foreground/75 leading-relaxed">
-              Mỗi bài nộp đều nhận nhận xét chi tiết từng câu từ giáo viên. Học viên bắt buộc phải tự tay viết lại bài sửa (Re-attempt) để hoàn thiện trước khi sang bài tiếp theo.
+              Khi câu sai, giáo viên không chỉ sửa câu chữ bề mặt mà đặt câu hỏi truy vấn: <em>"Vì sao bạn lại tạo ra câu theo cách đó?"</em> để giải phẫu tận gốc lỗi tư duy.
             </p>
-            <div className="pt-2 text-sm text-foreground/80 font-bold flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-success" />
-              <span>Lưu vết tiến trình bài nộp trên hệ thống NextBand</span>
+            <div className="pt-2 text-sm text-brand-blue font-bold flex items-center gap-2 border-t border-border/60">
+              <CheckCircle2 className="h-4 w-4 shrink-0" />
+              <span>Kết hợp Socratic Questioning và vòng lặp sửa bài khép kín</span>
             </div>
           </div>
         </div>
       </SectionContainer>
 
-      {/* Section 2: So Sánh Trực Quan Cách Học */}
+      {/* ========================================================================= */}
+      {/* 04. ONE REAL EXAMPLE: MỘT CÂU ĐƯỢC HÌNH THÀNH NHƯ THẾ NÀO?                */}
+      {/* ========================================================================= */}
       <SectionContainer
-        badge="So Sánh Phương Pháp"
-        title="Sự khác biệt trong cơ chế hình thành câu"
-        description="Vì sao cách học cũ khiến bạn lúng túng khi viết luận và phương pháp ARIS giải quyết tận gốc vấn đề này như thế nào."
-        background="default"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-          {/* Traditional Way */}
-          <div className="p-8 rounded-3xl border border-border/80 bg-card space-y-5 shadow-2xs opacity-90">
-            <div className="flex items-center gap-2 text-destructive font-black text-lg">
-              <XCircle className="h-5 w-5" />
-              <span>Cách Học Dịch Thô Truyền Thống</span>
-            </div>
-            <div className="p-5 rounded-2xl bg-muted/40 space-y-3 font-mono text-sm">
-              <div className="p-3 rounded-xl bg-background border border-border/60">
-                1. Nghĩ ý niệm bằng tiếng Việt
-              </div>
-              <div className="text-center text-muted-foreground">↓ (Dịch thô từng từ)</div>
-              <div className="p-3 rounded-xl bg-background border border-border/60">
-                2. Cố nhồi từ vựng khó / Mẫu câu học thuộc
-              </div>
-              <div className="text-center text-muted-foreground">↓ (Gượng ép)</div>
-              <div className="p-3 rounded-xl bg-destructive/10 text-destructive border border-destructive/20 font-bold">
-                3. Câu văn thiếu tự nhiên, sai ngữ pháp
-              </div>
-            </div>
-            <p className="text-sm text-foreground/75 leading-relaxed">
-              Hậu quả: Học viên mất nhiều thời gian suy nghĩ, dễ sai ngữ cảnh và bế tắc khi gặp các chủ đề lạ ngoài bộ đề đã học tủ.
-            </p>
-          </div>
-
-          {/* The ARIS Way */}
-          <div className="p-8 rounded-3xl border-2 border-brand-blue/30 bg-card space-y-5 shadow-sm">
-            <div className="flex items-center gap-2 text-brand-blue font-black text-lg">
-              <CheckCircle2 className="h-5 w-5 text-success" />
-              <span>Phương Pháp The ARIS Way</span>
-            </div>
-            <div className="p-5 rounded-2xl bg-brand-blue-soft/50 space-y-3 font-mono text-sm">
-              <div className="p-3 rounded-xl bg-background border border-border/60 font-bold text-foreground">
-                1. Xác định ý niệm &amp; Quan hệ logic
-              </div>
-              <div className="text-center text-brand-blue font-bold">↓ (Tổ chức tư duy)</div>
-              <div className="p-3 rounded-xl bg-background border border-border/60 font-bold text-foreground">
-                2. Lựa chọn cấu trúc ngữ pháp học thuật
-              </div>
-              <div className="text-center text-brand-blue font-bold">↓ (Biểu đạt tự nhiên)</div>
-              <div className="p-3 rounded-xl bg-primary text-white border-0 font-bold">
-                3. Câu văn mạch lạc, chính xác và tự nhiên
-              </div>
-            </div>
-            <p className="text-sm text-foreground/75 leading-relaxed">
-              Kết quả: Bạn phản xạ câu văn trực tiếp bằng tiếng Anh, kiểm soát hoàn toàn tính mạch lạc và tự tin xử lý mọi dạng đề Cambridge.
-            </p>
-          </div>
-        </div>
-      </SectionContainer>
-
-      {/* Section 3: Socratic Questioning Dialogue Example */}
-      <SectionContainer
-        badge="Ví Dụ Thực Tế"
-        title="Cách giáo viên ARIS hướng dẫn sửa bài"
-        description="Thay vì chỉ sửa đáp án một cách thụ động, giáo viên đặt câu hỏi truy vấn để bạn tự nhận diện lỗ hổng và hiểu sâu cơ chế của câu văn."
+        badge="Minh Họa Thực Tế"
+        title="Một câu tiếng Anh được hình thành như thế nào?"
+        description="Xem cách phương pháp The ARIS Way dẫn dắt người học từ một câu diễn đạt vụng về đến một cấu trúc học thuật chính xác và tự nhiên."
         background="muted"
       >
-        <div className="max-w-3xl mx-auto p-8 sm:p-10 rounded-3xl bg-card border border-border/80 space-y-6 text-left shadow-2xs">
-          <div className="flex items-center gap-3 border-b border-border/60 pb-4">
-            <div className="p-2.5 rounded-2xl bg-brand-blue-soft text-brand-blue font-mono font-bold text-xs">
-              HỘI THOẠI CHUYÊN MÔN
+        <div className="max-w-4xl mx-auto space-y-8 text-left">
+          {/* Initial Problem */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-card border border-border/80 space-y-4 shadow-2xs">
+            <div className="text-xs font-mono font-bold text-destructive uppercase tracking-wider flex items-center gap-2">
+              <XCircle className="h-4 w-4" />
+              <span>Câu diễn đạt ban đầu của người học:</span>
             </div>
-            <span className="text-sm font-bold text-foreground">Phân tích một trường hợp dùng từ</span>
+            <div className="p-4 rounded-2xl bg-destructive/10 border border-destructive/20 font-mono text-base sm:text-lg text-foreground font-bold">
+              "The government gave people a lot of money to help them."
+            </div>
+            <p className="text-sm text-foreground/75 leading-relaxed">
+              <strong>Cách luyện thi thông thường:</strong> Giáo viên chỉ bảo <em>"Hãy thay từ 'gave' và 'a lot of money' bằng từ cao cấp hơn"</em>, khiến người học nhét từ vựng gượng gạo mà không hiểu bản chất.
+            </p>
           </div>
 
-          <div className="space-y-4 text-sm sm:text-base">
-            <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-1">
-              <span className="font-bold text-foreground/70 text-xs uppercase tracking-wider">Học viên</span>
-              <p className="text-foreground italic">"Em dùng từ này trong bài viết vì nghe nó tự nhiên hơn ạ."</p>
+          {/* 4 Framing Questions */}
+          <div className="p-8 sm:p-10 rounded-3xl bg-card border-2 border-brand-blue/30 space-y-6 shadow-2xs">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-brand-blue">
+              <Compass className="h-4 w-4" />
+              <span>4 Câu Hỏi Định Hình Tư Duy Theo The ARIS Way:</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-brand-blue-soft/60 border border-brand-blue/30 space-y-1">
-              <span className="font-bold text-brand-blue text-xs uppercase tracking-wider">Giảng viên ARIS (Truy vấn Socratic)</span>
-              <p className="text-foreground font-medium">
-                "Tự nhiên hơn ở điểm nào? Từ này thay đổi sắc thái gì của câu? Nếu bỏ từ này đi thì ý nghĩa của câu còn chính xác với ngữ cảnh học thuật không?"
-              </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-1">
+                <div className="font-bold text-foreground">1. Ai đang thực hiện hành động?</div>
+                <div className="text-foreground/75 text-xs">
+                  → Chính phủ với vai trò quản trị và điều phối chính sách công.
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-1">
+                <div className="font-bold text-foreground">2. Trọng tâm của câu là gì?</div>
+                <div className="text-foreground/75 text-xs">
+                  → Khoản ngân sách công cụ: <code className="text-brand-blue font-bold">substantial funding</code>.
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-1">
+                <div className="font-bold text-foreground">3. Hành động cốt lõi là gì?</div>
+                <div className="text-foreground/75 text-xs">
+                  → Phân bổ / Cấp phát ngân sách: <code className="text-brand-blue font-bold">allocated</code>.
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-1">
+                <div className="font-bold text-foreground">4. Mục đích hướng đến là gì?</div>
+                <div className="text-foreground/75 text-xs">
+                  → Hỗ trợ các đối tượng thụ hưởng: <code className="text-brand-blue font-bold">to support...</code>.
+                </div>
+              </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-success/10 border border-success/30 space-y-1">
-              <span className="font-bold text-success text-xs uppercase tracking-wider">Kết quả chuyển hóa</span>
-              <p className="text-foreground font-medium">
-                → Học viên tự phát hiện vấn đề ngữ nghĩa, hiểu rõ bản chất cấu trúc và hình thành thói quen kiểm soát từ ngữ chặt chẽ.
+            {/* Final Natural Sentence */}
+            <div className="pt-4 border-t border-border/60 space-y-2">
+              <div className="text-xs font-mono font-bold text-success uppercase tracking-wider flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4" />
+                <span>Câu hoàn chỉnh chuẩn xác &amp; tự nhiên:</span>
+              </div>
+              <div className="p-5 rounded-2xl bg-brand-blue text-white font-mono text-base sm:text-lg font-bold shadow-md">
+                "The government allocated substantial funding to support vulnerable communities."
+              </div>
+              <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed pt-1">
+                Người học đạt được câu văn học thuật không phải do học vẹt từ điển, mà vì đã <strong>thấu hiểu cơ chế cấu trúc góc nhìn và chọn đúng ý niệm ngôn ngữ</strong>.
               </p>
             </div>
           </div>
         </div>
       </SectionContainer>
 
-      {/* Final CTA */}
-      <section className="py-20 sm:py-24 bg-brand-blue text-white">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 text-white border border-white/20 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
-            <Target className="h-4 w-4 text-brand-cyan" />
-            <span>Khám Phá Tiến Trình</span>
+      {/* ========================================================================= */}
+      {/* 05. SOCRATIC FEEDBACK: GIÁO VIÊN TRUY VẤN TẬN GỐC                       */}
+      {/* ========================================================================= */}
+      <SectionContainer
+        badge="Phương Pháp Truy Vấn"
+        title="Giáo viên không chỉ sửa câu. Giáo viên hỏi để bạn tự thấy vì sao câu sai."
+        description="Thay vì thụ động sửa lỗi bề mặt, giáo viên ARIS áp dụng phương pháp Socratic để giúp bạn nhận diện điểm nghẽn nhận thức và tự tay sửa lại bài nộp."
+        background="default"
+      >
+        <div className="max-w-4xl mx-auto p-8 sm:p-10 rounded-3xl bg-card border border-border/80 shadow-2xs space-y-6 text-left">
+          <div className="space-y-4">
+            {/* Dialogue Step 1 */}
+            <div className="flex items-start gap-4">
+              <div className="h-8 w-8 rounded-full bg-destructive/15 text-destructive font-black text-xs flex items-center justify-center shrink-0 mt-1">
+                HV
+              </div>
+              <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 text-sm sm:text-base text-foreground/90 space-y-1">
+                <div className="font-bold text-xs text-muted-foreground">Học viên viết:</div>
+                <div>"Due to the weather is bad, we canceled the trip."</div>
+              </div>
+            </div>
+
+            {/* Dialogue Step 2 */}
+            <div className="flex items-start gap-4">
+              <div className="h-8 w-8 rounded-full bg-brand-blue-soft text-brand-blue font-black text-xs flex items-center justify-center shrink-0 mt-1">
+                GV
+              </div>
+              <div className="p-4 rounded-2xl bg-brand-blue-soft/40 border border-brand-blue/20 text-sm sm:text-base text-foreground space-y-2">
+                <div className="font-bold text-xs text-brand-blue">Giảng viên ARIS truy vấn:</div>
+                <p>
+                  "Sau cụm từ <strong>'Due to'</strong>, em đang dùng một Mệnh đề (Clause) hay một Cụm danh từ (Noun Phrase)? Vì sao trong trường hợp này ta không dùng một mệnh đề có động từ đứng độc lập?"
+                </p>
+              </div>
+            </div>
+
+            {/* Dialogue Step 3 */}
+            <div className="flex items-start gap-4">
+              <div className="h-8 w-8 rounded-full bg-destructive/15 text-destructive font-black text-xs flex items-center justify-center shrink-0 mt-1">
+                HV
+              </div>
+              <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 text-sm sm:text-base text-foreground/90 space-y-1">
+                <div className="font-bold text-xs text-muted-foreground">Học viên nhận ra:</div>
+                <div>"Dạ, 'Due to' là giới từ nên phía sau phải là một cụm danh từ. Em đã bị quen miệng dịch từ 'bởi vì' trong tiếng Việt sang!"</div>
+              </div>
+            </div>
+
+            {/* Dialogue Step 4 */}
+            <div className="flex items-start gap-4">
+              <div className="h-8 w-8 rounded-full bg-success/15 text-success font-black text-xs flex items-center justify-center shrink-0 mt-1">
+                GV
+              </div>
+              <div className="p-4 rounded-2xl bg-success/10 border border-success/20 text-sm sm:text-base text-foreground space-y-1">
+                <div className="font-bold text-xs text-success">Kết quả viết lại hoàn chỉnh:</div>
+                <div className="font-bold font-mono text-foreground">
+                  → "Due to adverse weather conditions, the trip was canceled."
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </SectionContainer>
+
+      {/* ========================================================================= */}
+      {/* 06. NEXTBAND CLOSED-LOOP LEARNING                                         */}
+      {/* ========================================================================= */}
+      <SectionContainer
+        badge="Hạ Tầng Công Nghệ NextBand"
+        title="Vòng lặp rèn luyện khép kín: Nộp → Sửa → Làm lại → Lưu vết"
+        description="Phương pháp học thuật chỉ thực sự tạo ra tiến bộ khi được hỗ trợ bởi một hệ thống lưu trữ và bắt buộc sửa lỗi triệt để."
+        background="muted"
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+          <div className="p-6 rounded-3xl bg-card border border-border/80 space-y-3 shadow-2xs">
+            <div className="p-3 rounded-2xl bg-brand-blue-soft text-brand-blue w-fit">
+              <PenTool className="h-5 w-5" />
+            </div>
+            <div className="font-mono text-xs font-bold text-muted-foreground uppercase">Bước 01</div>
+            <h4 className="font-black text-foreground text-lg">Làm Bài Nộp</h4>
+            <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed">
+              Học viên nộp bài viết hoặc bản ghi âm trực tiếp lên nền tảng NextBand LMS theo từng bài học.
+            </p>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
-            Xem cách ARIS chuẩn hóa lộ trình thành 7 cấp bậc rõ ràng.
+          <div className="p-6 rounded-3xl bg-card border border-border/80 space-y-3 shadow-2xs">
+            <div className="p-3 rounded-2xl bg-brand-blue-soft text-brand-blue w-fit">
+              <Brain className="h-5 w-5" />
+            </div>
+            <div className="font-mono text-xs font-bold text-muted-foreground uppercase">Bước 02</div>
+            <h4 className="font-black text-foreground text-lg">Chấm Từng Câu</h4>
+            <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed">
+              Giáo viên bóc tách từng câu, chỉ rõ lỗi tư duy và gợi ý hướng tái cấu trúc ngôn ngữ chuẩn xác.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-card border border-border/80 space-y-3 shadow-2xs">
+            <div className="p-3 rounded-2xl bg-brand-red-soft text-brand-red w-fit">
+              <RefreshCw className="h-5 w-5" />
+            </div>
+            <div className="font-mono text-xs font-bold text-muted-foreground uppercase">Bước 03</div>
+            <h4 className="font-black text-foreground text-lg">Làm Lại (Re-attempt)</h4>
+            <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed">
+              Học viên bắt buộc phải tự tay viết lại bài sửa dựa trên nhận xét trước khi chuyển sang bài mới.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-card border border-border/80 space-y-3 shadow-2xs">
+            <div className="p-3 rounded-2xl bg-success/15 text-success w-fit">
+              <FileCheck className="h-5 w-5" />
+            </div>
+            <div className="font-mono text-xs font-bold text-muted-foreground uppercase">Bước 04</div>
+            <h4 className="font-black text-foreground text-lg">Lưu Vết Hồ Sơ</h4>
+            <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed">
+              Toàn bộ lịch sử bài làm, phiên bản sửa và điểm số được lưu vết minh bạch để đo lường tiến bộ thật.
+            </p>
+          </div>
+        </div>
+      </SectionContainer>
+
+      {/* ========================================================================= */}
+      {/* 07. FINAL CTA                                                             */}
+      {/* ========================================================================= */}
+      <section className="py-20 sm:py-28 bg-brand-blue text-white text-center">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-8">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 text-white border border-white/20 text-xs font-extrabold uppercase tracking-wider">
+            <ShieldCheck className="h-4 w-4 text-brand-cyan" />
+            <span>Lộ Trình Tiến Bộ Đo Lường Được</span>
+          </div>
+
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+            Sẵn sàng trải nghiệm phương pháp học sâu cùng ARIS?
           </h2>
 
-          <p className="text-base sm:text-lg lg:text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
-            Mỗi cấp bậc đều có tiêu chuẩn năng lực và 4 giai đoạn tiến trình cụ thể để bạn biết chính xác mình cần hoàn thiện điều gì.
+          <p className="text-lg sm:text-xl text-white/90 font-normal leading-relaxed max-w-2xl mx-auto">
+            Khám phá 7 cấp bậc năng lực học thuật hoặc liên hệ trực tiếp Ban Chuyên Môn để nhận tư vấn lộ trình phù hợp với bạn.
           </p>
 
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
             <Button
               size="lg"
               onClick={() => navigate("/academic-system")}
-              className="rounded-2xl px-8 h-14 font-extrabold text-base sm:text-lg bg-brand-red text-white hover:bg-brand-red-hover shadow-md border-0 gap-2.5"
+              className="rounded-2xl px-8 h-14 font-extrabold text-base bg-white text-brand-blue hover:bg-white/90 shadow-md gap-2"
             >
-              <span>Xem Hệ thống 7 Cấp bậc ARIS-7</span>
-              <ArrowRight className="h-5 w-5 text-white" />
+              <span>Xem Bản Đồ 7 Cấp Bậc ARIS-7</span>
+              <ArrowRight className="h-5 w-5" />
+            </Button>
+
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => navigate("/contact")}
+              className="rounded-2xl px-8 h-14 font-bold text-base border-2 border-white/40 text-white hover:bg-white/10"
+            >
+              Liên hệ tư vấn lộ trình
             </Button>
           </div>
         </div>

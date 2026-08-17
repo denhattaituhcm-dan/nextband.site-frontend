@@ -1,4 +1,19 @@
 User-agent: *
 Allow: /
+Allow: /about
+Allow: /method
+Allow: /academic-system
+Allow: /courses
+Allow: /teachers
+Allow: /results
+Allow: /careers
+Allow: /contact
+Allow: /assessment
+Allow: /terms
+Allow: /privacy
+
+Disallow: /app/
+Disallow: /admin/
+Disallow: /exam/
 
 Sitemap: https://nextband.site/sitemap.xml

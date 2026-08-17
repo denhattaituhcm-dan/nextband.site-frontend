@@ -149,15 +149,15 @@ export function PublicFooter() {
             © {currentYear} ARIS IELTS. Toàn bộ bản quyền thuộc về ARIS Academic Institution.
           </div>
           <div className="flex items-center gap-6">
-            <span className="hover:text-foreground transition-colors cursor-pointer">
+            <Link to="/terms" className="hover:text-foreground transition-colors">
               Điều khoản dịch vụ
-            </span>
-            <span className="hover:text-foreground transition-colors cursor-pointer">
+            </Link>
+            <Link to="/privacy" className="hover:text-foreground transition-colors">
               Chính sách bảo mật
-            </span>
-            <span className="hover:text-foreground transition-colors cursor-pointer">
+            </Link>
+            <Link to="/academic-system" className="hover:text-foreground transition-colors">
               Quy chuẩn học thuật
-            </span>
+            </Link>
           </div>
         </div>
       </div>

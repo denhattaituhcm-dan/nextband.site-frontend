@@ -71,6 +71,8 @@ const NewsDetailPage = lazyWithRetry(() => import("@/pages/public/NewsDetailPage
 const ContactPage = lazyWithRetry(() => import("@/pages/public/ContactPage"));
 const AssessmentPage = lazyWithRetry(() => import("@/pages/public/AssessmentPage"));
 const AssessmentResultPage = lazyWithRetry(() => import("@/pages/public/AssessmentResultPage"));
+const TermsPage = lazyWithRetry(() => import("@/pages/public/TermsPage"));
+const PrivacyPage = lazyWithRetry(() => import("@/pages/public/PrivacyPage"));
 
 // Lazy-loaded Auth Pages
 const LoginPage = lazyWithRetry(() => import("@/pages/auth/LoginPage"));
@@ -215,6 +217,8 @@ const App = () => (
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/assessment" element={<AssessmentPage />} />
                 <Route path="/assessment/result/:id" element={<AssessmentResultPage />} />
+                <Route path="/terms" element={<TermsPage />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
               </Route>
 
               {/* ============================================================ */}
