@@ -14,7 +14,7 @@ export const SoftConversionCTA: React.FC<SoftConversionCTAProps> = ({
   topicName,
 }) => {
   return (
-    <Card className="border-2 border-primary/20 bg-linear-to-br from-primary/5 via-card to-background overflow-hidden shadow-xs">
+    <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-card to-background overflow-hidden shadow-xs">
       <CardContent className="p-6 sm:p-8 space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1.5 max-w-xl">

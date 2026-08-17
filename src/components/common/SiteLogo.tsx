@@ -22,42 +22,48 @@ const getFullLogoUrl = (url: string) => {
 export function SiteLogo({
   className,
   alt,
-  fallbackSrc = "/logo.png",
+  fallbackSrc = "/Logo.png",
 }: SiteLogoProps) {
   const { settings } = useSiteSettings();
   const [hasLoadError, setHasLoadError] = useState(false);
-  const [hasFallbackError, setHasFallbackError] = useState(false);
+  const [fallbackIndex, setFallbackIndex] = useState(0);
 
   const customLogoUrl = settings?.logoUrl?.trim()
     ? getFullLogoUrl(settings.logoUrl)
     : "";
 
+  const fallbacks = [
+    fallbackSrc,
+    "/Logo.png",
+    "/logo.png",
+    "/favicon.png",
+    "/favicon.svg",
+  ];
+
   // Reset error state when custom logo URL changes
   useEffect(() => {
     setHasLoadError(false);
-    setHasFallbackError(false);
+    setFallbackIndex(0);
   }, [customLogoUrl, fallbackSrc]);
 
   // Determine final src to render
   let logoSrc = fallbackSrc;
   if (!hasLoadError && customLogoUrl) {
     logoSrc = customLogoUrl;
-  } else if (!hasFallbackError) {
-    logoSrc = fallbackSrc;
   } else {
-    logoSrc = "/favicon.png";
+    logoSrc = fallbacks[fallbackIndex] || "/logo.png";
   }
 
   return (
     <img
       src={logoSrc}
-      alt={alt || `${settings?.siteName || "NextBand"} Logo`}
+      alt={alt || `${settings?.siteName || "ARIS IELTS"} Logo`}
       className={cn("object-contain", className)}
       onError={() => {
         if (!hasLoadError && customLogoUrl) {
           setHasLoadError(true);
-        } else if (!hasFallbackError) {
-          setHasFallbackError(true);
+        } else if (fallbackIndex < fallbacks.length - 1) {
+          setFallbackIndex((prev) => prev + 1);
         }
       }}
     />
