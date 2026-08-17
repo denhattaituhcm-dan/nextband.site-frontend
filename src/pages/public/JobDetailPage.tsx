@@ -84,6 +84,32 @@ export default function JobDetailPage() {
         "Môi trường làm việc trẻ trung, năng động và tôn trọng cá nhân",
       ],
     },
+    "k12-english-teacher": {
+      title: "Giáo Viên Tiếng Anh THCS & THPT",
+      department: "Ban Đào Tạo Học Thuật Phổ Thông",
+      location: "68B Phan Bội Châu, P. Dĩ An, TP. Dĩ An, Tỉnh Bình Dương",
+      type: "Toàn thời gian / Bán thời gian (Linh hoạt theo ca)",
+      description:
+        "Giảng dạy và củng cố ngữ pháp, từ vựng và 4 kỹ năng tiếng Anh cho học sinh bậc THCS và THPT; theo sát tiến bộ học tập, luyện thi chuyển cấp và xây dựng nền tảng học thuật vững chắc.",
+      responsibilities: [
+        "Đứng lớp giảng dạy các lớp bổ trợ và tăng cường tiếng Anh THCS & THPT (sĩ số tối đa 8–10 học sinh/lớp)",
+        "Kiểm tra, chữa bài tập chi tiết và giải thích cặn kẽ bản chất ngữ pháp cho từng học sinh",
+        "Đánh giá định kỳ, theo dõi sự tiến bộ và duy trì báo cáo học tập trao đổi cùng phụ huynh",
+        "Phối hợp cùng Ban Chuyên Môn để chuẩn hóa giáo trình bám sát đề thi tuyển sinh 10 và tốt nghiệp THPT",
+      ],
+      requirements: [
+        "Tốt nghiệp Đại học chuyên ngành Ngôn ngữ Anh hoặc Sư phạm Tiếng Anh loại Khá trở lên",
+        "Chứng chỉ IELTS tối thiểu 7.0+ (hoặc chứng chỉ năng lực quốc tế tương đương)",
+        "Phát âm chuẩn xác, nắm vững bản chất ngữ pháp tiếng Anh phổ thông và học thuật",
+        "Tận tâm, có tinh thần trách nhiệm cao, kiên nhẫn và yêu thương học sinh",
+      ],
+      benefits: [
+        "Thù lao giảng dạy hấp dẫn theo sĩ số lớp (tối đa 10 học sinh/lớp)",
+        "Thưởng KPI đánh giá chất lượng giảng dạy, tỷ lệ học sinh tiến bộ và duy trì lớp",
+        "Thưởng gắn bó lâu dài theo các mốc 6 tháng, 12 tháng, 18 tháng, 24 tháng",
+        "Được bồi dưỡng phương pháp The ARIS Way và ưu tiên lộ trình phát triển lên Giảng viên IELTS Full-time",
+      ],
+    },
     "teaching-assistant": {
       title: "Trợ Giảng Học Thuật (Teaching Assistant)",
       department: "Ban Hỗ Trợ Học Tập",

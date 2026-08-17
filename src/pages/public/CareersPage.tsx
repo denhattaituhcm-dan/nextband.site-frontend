@@ -343,23 +343,34 @@ export default function CareersPage() {
               Các Vị Trí Đang Chiêu Mộ
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
               <PlaceholderCard
                 variant="job"
                 badge="Toàn thời gian / Bán thời gian"
                 title="Giảng Viên IELTS Writing &amp; Speaking"
                 subtitle="Ban Chuyên Môn"
                 description="Trực tiếp giảng dạy và chấm chữa bài viết, bài nói cho học viên theo phương pháp The ARIS Way; chịu trách nhiệm với sự tiến bộ của từng học viên."
-                metadata={["TP. Dĩ An, Tỉnh Bình Dương", "Lớp tối đa 8 học viên", "Môi trường học thuật"]}
+                metadata={["TP. Dĩ An, Tỉnh Bình Dương", "Lớp tối đa 8 học viên", "IELTS 7.5+"]}
                 ctaLabel="Xem chi tiết &amp; Ứng tuyển"
                 onCtaClick={() => navigate("/careers/ielts-teacher")}
               />
 
               <PlaceholderCard
                 variant="job"
+                badge="Toàn thời gian / Bán thời gian"
+                title="Giáo Viên Tiếng Anh THCS &amp; THPT"
+                subtitle="Ban Đào Tạo Phổ Thông"
+                description="Giảng dạy củng cố ngữ pháp, từ vựng và 4 kỹ năng; luyện thi chuyển cấp và xây dựng nền tảng học thuật cho học sinh THCS và THPT."
+                metadata={["TP. Dĩ An, Tỉnh Bình Dương", "Sĩ số 8–10 học sinh", "IELTS 7.0+ / ĐH Ngôn Ngữ Anh"]}
+                ctaLabel="Xem chi tiết &amp; Ứng tuyển"
+                onCtaClick={() => navigate("/careers/k12-english-teacher")}
+              />
+
+              <PlaceholderCard
+                variant="job"
                 badge="Toàn thời gian"
                 title="Chuyên Viên Điều Phối Học Thuật"
-                subtitle="Academic Coordinator"
+                subtitle="Phòng Vận Hành &amp; Khảo Thí"
                 description="Điều phối lịch học, theo dõi tiến độ nộp bài và làm bài sửa của học viên trên hệ thống NextBand; đảm bảo chất lượng vận hành lớp học."
                 metadata={["TP. Dĩ An, Tỉnh Bình Dương", "Vận hành NextBand LMS", "Chế độ đãi ngộ tốt"]}
                 ctaLabel="Xem chi tiết &amp; Ứng tuyển"
@@ -371,7 +382,7 @@ export default function CareersPage() {
                 badge="Bán thời gian"
                 title="Trợ Giảng Học Thuật (TA)"
                 subtitle="Ban Hỗ Trợ Học Tập"
-                description="Đồng hành hỗ trợ học viên luyện tập phát âm, giải đáp thắc mắc bài tập cơ bản và hỗ trợ tổ chức các kỳ thi thử Cambridge định kỳ."
+                description="Đồng hành hỗ trợ học viên luyện tập phát âm IPA, giải đáp thắc mắc bài tập cơ bản và hỗ trợ tổ chức các kỳ thi thử Cambridge định kỳ."
                 metadata={["TP. Dĩ An, Tỉnh Bình Dương", "Linh hoạt ca làm", "Cơ hội rèn luyện chuyên môn"]}
                 ctaLabel="Xem chi tiết &amp; Ứng tuyển"
                 onCtaClick={() => navigate("/careers/teaching-assistant")}
