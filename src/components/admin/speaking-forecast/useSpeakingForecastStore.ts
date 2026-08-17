@@ -24,7 +24,7 @@ function normalizeTopic(topic: ForecastTopic): ForecastTopic {
   if (!sa) {
     return {
       ...topic,
-      sampleAnswers: { band65: '', band75: '' },
+      sampleAnswers: { band65: '', band75: '', band65Audio: null, band75Audio: null },
     };
   }
   let band65 = sa.band65 ?? '';
@@ -35,7 +35,12 @@ function normalizeTopic(topic: ForecastTopic): ForecastTopic {
   }
   return {
     ...topic,
-    sampleAnswers: { band65, band75 },
+    sampleAnswers: {
+      band65,
+      band75,
+      band65Audio: sa.band65Audio ?? null,
+      band75Audio: sa.band75Audio ?? null,
+    },
   };
 }
 

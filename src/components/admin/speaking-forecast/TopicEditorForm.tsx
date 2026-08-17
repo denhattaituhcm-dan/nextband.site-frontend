@@ -7,7 +7,9 @@ import {
   TopicType,
   TopicStatus,
   VocabularyItem,
+  AudioSample,
 } from './types';
+import { SampleAudioUpload } from './SampleAudioUpload';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -96,6 +98,12 @@ export const TopicEditorForm: React.FC<TopicEditorFormProps> = ({
     if (sa?.band80 !== undefined) return sa.band80;
     if (sa?.band75 !== undefined) return sa.band75;
     return '';
+  });
+  const [sampleAnswerBand65Audio, setSampleAnswerBand65Audio] = useState<AudioSample | null>(() => {
+    return initialTopic?.sampleAnswers?.band65Audio || null;
+  });
+  const [sampleAnswerBand75Audio, setSampleAnswerBand75Audio] = useState<AudioSample | null>(() => {
+    return initialTopic?.sampleAnswers?.band75Audio || null;
   });
   const [keyVocabulary, setKeyVocabulary] = useState<VocabularyItem[]>(
     initialTopic?.keyVocabulary || []
@@ -220,6 +228,8 @@ export const TopicEditorForm: React.FC<TopicEditorFormProps> = ({
       sampleAnswers: {
         band65: sampleAnswerBand65,
         band75: sampleAnswerBand75,
+        band65Audio: sampleAnswerBand65Audio,
+        band75Audio: sampleAnswerBand75Audio,
       },
       keyVocabulary: keyVocabulary.filter((v) => v.word.trim() || v.meaning.trim()),
       ideas,
@@ -511,7 +521,7 @@ export const TopicEditorForm: React.FC<TopicEditorFormProps> = ({
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="band65" className="mt-3">
+              <TabsContent value="band65" className="mt-3 space-y-3">
                 <div className="rounded-md border">
                   <RichTextEditor
                     value={sampleAnswerBand65}
@@ -520,9 +530,14 @@ export const TopicEditorForm: React.FC<TopicEditorFormProps> = ({
                     minHeight={160}
                   />
                 </div>
+                <SampleAudioUpload
+                  value={sampleAnswerBand65Audio}
+                  onChange={setSampleAnswerBand65Audio}
+                  bandLabel="Band 6.5"
+                />
               </TabsContent>
 
-              <TabsContent value="band75" className="mt-3">
+              <TabsContent value="band75" className="mt-3 space-y-3">
                 <div className="rounded-md border">
                   <RichTextEditor
                     value={sampleAnswerBand75}
@@ -531,6 +546,11 @@ export const TopicEditorForm: React.FC<TopicEditorFormProps> = ({
                     minHeight={160}
                   />
                 </div>
+                <SampleAudioUpload
+                  value={sampleAnswerBand75Audio}
+                  onChange={setSampleAnswerBand75Audio}
+                  bandLabel="Band 7.5 ★"
+                />
               </TabsContent>
             </Tabs>
           </div>

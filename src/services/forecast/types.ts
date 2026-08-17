@@ -9,9 +9,19 @@ export interface VocabularyItem {
   example: string;
 }
 
+export interface AudioSample {
+  fileName: string;
+  fileUrl: string;
+  duration?: number;
+  fileSize?: number;
+  uploadedAt?: string;
+}
+
 export interface SampleAnswers {
   band65: string;
   band75: string;
+  band65Audio?: AudioSample | null;
+  band75Audio?: AudioSample | null;
 }
 
 export interface Season {
