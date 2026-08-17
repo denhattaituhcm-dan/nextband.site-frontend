@@ -54,7 +54,26 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          hover: "hsl(var(--accent-hover))",
           soft: "hsl(var(--accent-soft))",
+        },
+        brand: {
+          red: {
+            DEFAULT: "hsl(var(--brand-red))",
+            foreground: "hsl(var(--brand-red-foreground))",
+            hover: "hsl(var(--brand-red-hover))",
+            soft: "hsl(var(--brand-red-soft))",
+          },
+          blue: {
+            DEFAULT: "hsl(var(--brand-blue))",
+            foreground: "hsl(var(--brand-blue-foreground))",
+            hover: "hsl(var(--brand-blue-hover))",
+            soft: "hsl(var(--brand-blue-soft))",
+          },
+          cyan: {
+            DEFAULT: "hsl(var(--brand-cyan))",
+            soft: "hsl(var(--brand-cyan-soft))",
+          },
         },
         surface: {
           DEFAULT: "hsl(var(--card))",

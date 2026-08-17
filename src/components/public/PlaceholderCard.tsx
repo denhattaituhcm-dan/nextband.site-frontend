@@ -39,7 +39,7 @@ export function PlaceholderCard({
   return (
     <div
       className={cn(
-        "group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl bg-card border border-border/70 hover:border-primary/40 shadow-xs hover:shadow-md transition-all duration-200",
+        "group relative flex flex-col justify-between p-7 sm:p-8 rounded-3xl bg-card border border-border/80 hover:border-primary/50 shadow-2xs hover:shadow-md transition-all duration-200",
         className
       )}
     >
@@ -47,7 +47,7 @@ export function PlaceholderCard({
         {/* Top bar: Badge & Icon */}
         <div className="flex items-center justify-between gap-3">
           {badge ? (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-muted text-muted-foreground border border-border">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary-soft text-primary border border-primary/20">
               {badge}
             </span>
           ) : (
@@ -55,60 +55,60 @@ export function PlaceholderCard({
           )}
 
           {icon ? (
-            <div className="p-2 rounded-xl bg-primary-soft text-primary">
+            <div className="p-2.5 rounded-2xl bg-primary-soft text-primary">
               {icon}
             </div>
           ) : variant === "course" ? (
-            <div className="p-2 rounded-xl bg-primary-soft text-primary">
-              <BookOpen className="h-4 w-4" />
+            <div className="p-2.5 rounded-2xl bg-primary-soft text-primary">
+              <BookOpen className="h-5 w-5" />
             </div>
           ) : variant === "teacher" ? (
-            <div className="p-2 rounded-xl bg-primary-soft text-primary">
-              <User className="h-4 w-4" />
+            <div className="p-2.5 rounded-2xl bg-primary-soft text-primary">
+              <User className="h-5 w-5" />
             </div>
           ) : variant === "result" ? (
-            <div className="p-2 rounded-xl bg-accent-soft text-accent">
-              <Award className="h-4 w-4" />
+            <div className="p-2.5 rounded-2xl bg-accent-soft text-accent">
+              <Award className="h-5 w-5" />
             </div>
           ) : variant === "job" ? (
-            <div className="p-2 rounded-xl bg-info/10 text-info">
-              <Briefcase className="h-4 w-4" />
+            <div className="p-2.5 rounded-2xl bg-info/10 text-info">
+              <Briefcase className="h-5 w-5" />
             </div>
           ) : variant === "article" ? (
-            <div className="p-2 rounded-xl bg-muted text-muted-foreground">
-              <FileText className="h-4 w-4" />
+            <div className="p-2.5 rounded-2xl bg-muted text-muted-foreground">
+              <FileText className="h-5 w-5" />
             </div>
           ) : null}
         </div>
 
         {/* Title & Subtitle */}
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           {subtitle && (
-            <p className="text-xs font-semibold text-primary uppercase tracking-wider">
+            <p className="text-xs sm:text-sm font-bold text-primary uppercase tracking-wider">
               {subtitle}
             </p>
           )}
-          <h3 className="text-lg sm:text-xl font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">
+          <h3 className="text-xl sm:text-2xl font-black text-foreground tracking-tight group-hover:text-primary transition-colors">
             {title}
           </h3>
         </div>
 
         {/* Description */}
         {description && (
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
             {description}
           </p>
         )}
 
         {/* Metadata items */}
         {metadata.length > 0 && (
-          <div className="pt-2 flex flex-wrap gap-2 border-t border-border/50">
+          <div className="pt-3 flex flex-wrap gap-2.5 border-t border-border/60">
             {metadata.map((item, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1 text-xs text-muted-foreground font-medium"
+                className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-foreground/80 font-bold"
               >
-                <CheckCircle2 className="h-3 w-3 text-success shrink-0" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-success shrink-0" />
                 <span>{item}</span>
               </span>
             ))}
@@ -118,15 +118,15 @@ export function PlaceholderCard({
 
       {/* CTA Button / Link */}
       {ctaLabel && (
-        <div className="pt-6 mt-4 border-t border-border/40">
+        <div className="pt-6 mt-4 border-t border-border/50">
           <Button
             variant="ghost"
             size="sm"
             onClick={onCtaClick}
-            className="w-full justify-between px-3 text-xs font-bold text-foreground hover:text-primary hover:bg-primary-soft/50 rounded-xl group/btn"
+            className="w-full justify-between px-3 text-sm font-bold text-foreground hover:text-primary hover:bg-primary-soft/50 rounded-xl group/btn h-10"
           >
             <span>{ctaLabel}</span>
-            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-1" />
+            <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
           </Button>
         </div>
       )}

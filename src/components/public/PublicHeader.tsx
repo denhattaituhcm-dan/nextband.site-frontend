@@ -42,21 +42,21 @@ export function PublicHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/90 backdrop-blur-md supports-[backdrop-filter]:bg-background/70 transition-all">
+    <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/95 backdrop-blur-md transition-all shadow-2xs">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 sm:h-18 items-center justify-between gap-4">
+        <div className="flex h-20 items-center justify-between gap-6">
           {/* Brand Logo */}
           <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-2 group">
+            <Link to="/" className="flex items-center gap-3 group">
               <SiteLogo
                 alt="ARIS Logo"
-                className="max-h-9 sm:max-h-10 w-auto object-contain transition-transform group-hover:scale-105"
+                className="max-h-11 sm:max-h-12 w-auto object-contain transition-transform group-hover:scale-105"
               />
-              <div className="hidden sm:flex flex-col border-l border-border/70 pl-2.5">
-                <span className="font-extrabold tracking-tight text-sm text-foreground leading-none">
+              <div className="hidden sm:flex flex-col border-l border-border/80 pl-3">
+                <span className="font-black tracking-tight text-base sm:text-lg text-foreground leading-none">
                   ARIS
                 </span>
-                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider leading-none mt-0.5">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest leading-none mt-1">
                   Academic System
                 </span>
               </div>
@@ -64,7 +64,7 @@ export function PublicHeader() {
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+          <nav className="hidden lg:flex items-center gap-1.5 xl:gap-2.5">
             {PUBLIC_NAV_ITEMS.map((item) => {
               const active = isActive(item.href);
               return (
@@ -72,10 +72,10 @@ export function PublicHeader() {
                   key={item.href}
                   to={item.href}
                   className={cn(
-                    "px-3 py-1.5 rounded-lg text-xs font-semibold tracking-tight transition-colors",
+                    "px-3.5 py-2 rounded-xl text-sm sm:text-[15px] font-bold tracking-tight transition-all",
                     active
-                      ? "bg-primary-soft text-primary font-bold"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      ? "bg-primary-soft text-primary font-black shadow-2xs"
+                      : "text-foreground/75 hover:text-foreground hover:bg-muted/70"
                   )}
                 >
                   {item.label}
@@ -91,15 +91,15 @@ export function PublicHeader() {
                 {/* Authenticated quick state */}
                 <div
                   onClick={() => navigate("/app/profile")}
-                  className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-muted/60 border border-border/60 hover:bg-muted transition-colors cursor-pointer"
+                  className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-muted/60 border border-border/70 hover:bg-muted transition-colors cursor-pointer"
                 >
-                  <Avatar className="h-6 w-6">
+                  <Avatar className="h-7 w-7">
                     <AvatarImage src={user?.avatarUrl || undefined} />
-                    <AvatarFallback className="text-[10px] bg-primary text-primary-foreground font-bold">
+                    <AvatarFallback className="text-xs bg-primary text-primary-foreground font-bold">
                       {user?.fullName?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-xs font-semibold text-foreground max-w-[120px] truncate">
+                  <span className="text-sm font-bold text-foreground max-w-[140px] truncate">
                     {user?.fullName || "Học viên"}
                   </span>
                 </div>
@@ -109,9 +109,9 @@ export function PublicHeader() {
                     variant="outline"
                     size="sm"
                     onClick={() => navigate("/admin")}
-                    className="h-8 px-3 text-xs font-bold gap-1 border-border"
+                    className="h-10 px-3.5 text-xs font-bold gap-1.5 border-border"
                   >
-                    <Shield className="h-3 w-3 text-primary" />
+                    <Shield className="h-3.5 w-3.5 text-primary" />
                     <span>Quản trị</span>
                   </Button>
                 )}
@@ -120,10 +120,10 @@ export function PublicHeader() {
                 <Button
                   size="sm"
                   onClick={() => navigate("/app")}
-                  className="h-8 px-3.5 rounded-lg text-xs font-bold bg-primary hover:bg-primary-hover text-primary-foreground shadow-xs gap-1.5"
+                  className="h-10 px-5 rounded-xl text-sm font-extrabold bg-primary hover:bg-primary-hover text-primary-foreground shadow-xs gap-2"
                 >
                   <span>NextBand</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
+                  <ArrowRight className="h-4 w-4" />
                 </Button>
               </>
             ) : (
@@ -133,7 +133,7 @@ export function PublicHeader() {
                   variant="ghost"
                   size="sm"
                   asChild
-                  className="h-8 px-3 text-xs font-bold text-foreground hover:bg-muted"
+                  className="h-10 px-4 text-sm font-bold text-foreground hover:bg-muted rounded-xl"
                 >
                   <Link to="/login">Đăng nhập</Link>
                 </Button>
@@ -141,11 +141,11 @@ export function PublicHeader() {
                 <Button
                   size="sm"
                   asChild
-                  className="h-8 px-3.5 rounded-lg text-xs font-bold bg-primary hover:bg-primary-hover text-primary-foreground shadow-xs gap-1.5"
+                  className="h-10 px-5 rounded-xl text-sm font-extrabold bg-primary hover:bg-primary-hover text-primary-foreground shadow-xs gap-2"
                 >
                   <Link to="/login?next=/app">
                     <span>NextBand</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
+                    <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
               </>

@@ -9,8 +9,8 @@
 
 @layer base {
   :root {
-    /* Core backgrounds */
-    --background: 210 20% 98%;
+    /* Core backgrounds - Neutral Canvas (85-90% of visual area) */
+    --background: 210 20% 99%;
     --foreground: 222 47% 11%;
 
     /* Card surfaces */
@@ -21,35 +21,48 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Primary brand - ARIS Academic Blue (#1E429F) */
-    --primary: 223 68% 37%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 223 68% 28%;
-    --primary-soft: 223 68% 97%;
+    /* ARIS Brand Colors (Extracted directly from ARIS Logo) */
+    /* 1. ARIS Red (Logo Left: Coral/Red) - Emotional Anchor & Key CTAs */
+    --brand-red: 347 87% 48%;
+    --brand-red-hover: 347 87% 40%;
+    --brand-red-soft: 347 90% 97%;
+    --brand-red-foreground: 0 0% 100%;
 
-    /* Brand Accent - ARIS Crimson (#C00000) */
-    --brand-crimson: 354 85% 44%;
-    --brand-crimson-foreground: 0 0% 100%;
-    --brand-crimson-soft: 354 85% 96%;
+    /* 2. ARIS Blue (Logo Right: Academic Blue) - System & Infrastructure */
+    --brand-blue: 217 65% 36%;
+    --brand-blue-hover: 217 65% 28%;
+    --brand-blue-soft: 217 65% 97%;
+    --brand-blue-foreground: 0 0% 100%;
+
+    /* 3. ARIS Cyan (Logo Transition Accent) - Subtle Highlights */
+    --brand-cyan: 194 65% 50%;
+    --brand-cyan-soft: 194 65% 96%;
+
+    /* Semantic Primary (ARIS Blue) */
+    --primary: 217 65% 36%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 217 65% 28%;
+    --primary-soft: 217 65% 97%;
+
+    /* Semantic Accent (ARIS Red) */
+    --accent: 347 87% 48%;
+    --accent-foreground: 0 0% 100%;
+    --accent-hover: 347 87% 40%;
+    --accent-soft: 347 90% 97%;
 
     /* Secondary */
-    --secondary: 220 20% 96%;
-    --secondary-foreground: 222 47% 20%;
+    --secondary: 215 20% 96%;
+    --secondary-foreground: 222 47% 15%;
 
     /* Muted backgrounds */
-    --muted: 210 20% 96%;
+    --muted: 215 20% 96%;
     --muted-foreground: 215 16% 47%;
-
-    /* Accent - Brand Accent for key highlights */
-    --accent: 354 85% 44%;
-    --accent-foreground: 0 0% 100%;
-    --accent-soft: 354 85% 96%;
 
     /* Surface tokens */
     --surface-elevated: 0 0% 100%;
-    --surface-muted: 210 20% 96%;
+    --surface-muted: 215 20% 97%;
 
-    /* Destructive/Error states (Semantic Error Red) */
+    /* Destructive/Error states */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 

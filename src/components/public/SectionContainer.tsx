@@ -44,14 +44,14 @@ export function SectionContainer({
         {(badge || title || description) && (
           <div
             className={cn(
-              "space-y-3 mb-10 sm:mb-14",
-              align === "center" ? "text-center mx-auto max-w-3xl" : "text-left max-w-3xl"
+              "space-y-4 mb-12 sm:mb-16",
+              align === "center" ? "text-center mx-auto max-w-4xl" : "text-left max-w-4xl"
             )}
           >
             {badge && (
               <div
                 className={cn(
-                  "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider",
+                  "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-extrabold uppercase tracking-wider",
                   "bg-primary-soft text-primary border border-primary/20",
                   align === "center" ? "mx-auto" : ""
                 )}
@@ -60,12 +60,12 @@ export function SectionContainer({
               </div>
             )}
             {title && (
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-foreground tracking-tight leading-tight">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight leading-tight">
                 {title}
               </h2>
             )}
             {description && (
-              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+              <p className="text-base sm:text-lg lg:text-xl text-foreground/80 font-normal leading-relaxed">
                 {description}
               </p>
             )}
