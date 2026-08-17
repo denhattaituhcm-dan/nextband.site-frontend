@@ -14,6 +14,7 @@ import {
   FileCheck,
   Target,
   PenTool,
+  MessageSquare,
 } from "lucide-react";
 
 export default function MethodPage() {
@@ -143,7 +144,7 @@ export default function MethodPage() {
             </p>
             <div className="pt-2 text-sm text-foreground/80 font-bold flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-success" />
-              <span>Lưu vết toàn bộ tiến trình trên hệ thống NextBand</span>
+              <span>Lưu vết tiến trình bài nộp trên hệ thống NextBand</span>
             </div>
           </div>
         </div>
@@ -203,6 +204,44 @@ export default function MethodPage() {
             <p className="text-sm text-foreground/75 leading-relaxed">
               Kết quả: Bạn phản xạ câu văn trực tiếp bằng tiếng Anh, kiểm soát hoàn toàn tính mạch lạc và tự tin xử lý mọi dạng đề Cambridge.
             </p>
+          </div>
+        </div>
+      </SectionContainer>
+
+      {/* Section 3: Socratic Questioning Dialogue Example */}
+      <SectionContainer
+        badge="Ví Dụ Thực Tế"
+        title="Cách giáo viên ARIS hướng dẫn sửa bài"
+        description="Thay vì chỉ sửa đáp án một cách thụ động, giáo viên đặt câu hỏi truy vấn để bạn tự nhận diện lỗ hổng và hiểu sâu cơ chế của câu văn."
+        background="muted"
+      >
+        <div className="max-w-3xl mx-auto p-8 sm:p-10 rounded-3xl bg-card border border-border/80 space-y-6 text-left shadow-2xs">
+          <div className="flex items-center gap-3 border-b border-border/60 pb-4">
+            <div className="p-2.5 rounded-2xl bg-brand-blue-soft text-brand-blue font-mono font-bold text-xs">
+              HỘI THOẠI CHUYÊN MÔN
+            </div>
+            <span className="text-sm font-bold text-foreground">Phân tích một trường hợp dùng từ</span>
+          </div>
+
+          <div className="space-y-4 text-sm sm:text-base">
+            <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-1">
+              <span className="font-bold text-foreground/70 text-xs uppercase tracking-wider">Học viên</span>
+              <p className="text-foreground italic">"Em dùng từ này trong bài viết vì nghe nó tự nhiên hơn ạ."</p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-brand-blue-soft/60 border border-brand-blue/30 space-y-1">
+              <span className="font-bold text-brand-blue text-xs uppercase tracking-wider">Giảng viên ARIS (Truy vấn Socratic)</span>
+              <p className="text-foreground font-medium">
+                "Tự nhiên hơn ở điểm nào? Từ này thay đổi sắc thái gì của câu? Nếu bỏ từ này đi thì ý nghĩa của câu còn chính xác với ngữ cảnh học thuật không?"
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-success/10 border border-success/30 space-y-1">
+              <span className="font-bold text-success text-xs uppercase tracking-wider">Kết quả chuyển hóa</span>
+              <p className="text-foreground font-medium">
+                → Học viên tự phát hiện vấn đề ngữ nghĩa, hiểu rõ bản chất cấu trúc và hình thành thói quen kiểm soát từ ngữ chặt chẽ.
+              </p>
+            </div>
           </div>
         </div>
       </SectionContainer>

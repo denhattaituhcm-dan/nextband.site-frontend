@@ -20,9 +20,22 @@ import {
   UserCheck,
   Users,
 } from "lucide-react";
+import { getFeaturedEvidence, EvidenceItem } from "@/lib/evidenceStore";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function PublicHomePage() {
   const navigate = useNavigate();
+  const [featuredItems, setFeaturedItems] = React.useState<EvidenceItem[]>([]);
+  const [selectedEvidence, setSelectedEvidence] = React.useState<EvidenceItem | null>(null);
+
+  React.useEffect(() => {
+    setFeaturedItems(getFeaturedEvidence());
+  }, []);
 
   return (
     <div className="flex flex-col">
@@ -476,45 +489,185 @@ export default function PublicHomePage() {
       </SectionContainer>
 
       {/* ========================================================================= */}
-      {/* SECTION 7: EVIDENCE & FACULTY (KẾT QUẢ & ĐỘI NGŨ)                        */}
+      {/* SECTION 7: EVIDENCE OF PROGRESS (BẰNG CHỨNG TIẾN BỘ TẠI ARIS)             */}
       {/* ========================================================================= */}
       <SectionContainer
-        badge="Minh Chứng Thực Tế"
-        title="Tiến bộ được đo bằng năng lực thật, không phải lời hứa."
-        description="Quá trình rèn luyện kỷ luật trên hệ thống học tập kết hợp với sự hướng dẫn trực tiếp từ đội ngũ chuyên môn tạo ra sự tiến bộ có thể kiểm chứng."
+        id="evidence"
+        badge="Minh Chứng Tiến Bộ"
+        title="Bằng chứng tiến bộ tại Học Viện ARIS"
+        description="Mỗi câu chuyện là một hành trình rèn luyện kỷ luật thật, giải phẫu điểm nghẽn và đạt kết quả có thể kiểm chứng."
         background="default"
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left">
-          <PlaceholderCard
-            variant="result"
-            badge="Khảo thí chuẩn hóa"
-            title="Báo cáo năng lực 4 kỹ năng"
-            subtitle="Định vị theo từng giai đoạn"
-            description="Hệ thống khảo thí bóc tách chi tiết từng điểm mạnh và lỗ hổng kiến thức để định hình lộ trình học tập phù hợp."
-            metadata={["Ngữ pháp & Từ vựng", "Phản xạ & Logic", "Chuẩn Cambridge"]}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 text-left">
+          {featuredItems.map((item) => (
+            <div
+              key={item.id}
+              className="p-6 sm:p-7 rounded-3xl border-2 border-border/80 bg-card hover:border-brand-red/40 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+            >
+              <div className="flex gap-4 sm:gap-5 items-start justify-between">
+                {/* Left Text Info */}
+                <div className="space-y-2.5 flex-1 min-w-0">
+                  <h3 className="font-black text-foreground text-base sm:text-lg leading-snug line-clamp-2">
+                    {item.title}
+                  </h3>
 
-          <PlaceholderCard
-            variant="result"
-            badge="Tiến bộ thực nghiệm"
-            title="Lưu vết bài nộp & Sửa bài"
-            subtitle="Hệ thống NextBand"
-            description="Toàn bộ bài viết và bài nói được lưu trữ minh bạch để bạn thấy rõ sự cải thiện câu văn và lập luận qua từng ngày."
-            metadata={["Sửa từng câu", "Làm lại bài sai", "Nhật ký tiến độ"]}
-          />
+                  <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed line-clamp-3">
+                    "{item.story}"
+                  </p>
 
-          <PlaceholderCard
-            variant="teacher"
-            badge="Đội ngũ chuyên môn"
-            title="Ban Chuyên môn ARIS"
-            subtitle="Giảng viên chuyên môn"
-            description="Đội ngũ giảng viên có chứng chỉ chuyên môn, trực tiếp giảng dạy, chấm chữa bài và theo sát từng bài nộp của học viên."
-            metadata={["Chuyên môn vững vàng", "Trực tiếp sửa bài"]}
-            ctaLabel="Xem thêm về Ban Chuyên môn"
-            onCtaClick={() => navigate("/teachers")}
-          />
+                  <button
+                    onClick={() => setSelectedEvidence(item)}
+                    className="text-xs font-extrabold text-brand-blue hover:text-brand-red transition-colors inline-block pt-1"
+                  >
+                    Nhấn để xem thêm
+                  </button>
+                </div>
+
+                {/* Right Image with Score Badge */}
+                <div className="relative shrink-0">
+                  <img
+                    src={item.imageUrl}
+                    alt={item.studentName}
+                    className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl object-cover border border-border/80"
+                  />
+                  <div className="absolute top-2 right-2 px-2 py-0.5 rounded-lg bg-brand-red text-white font-black text-xs shadow-xs tracking-tight">
+                    {item.overallScore} IELTS
+                  </div>
+                </div>
+              </div>
+
+              {/* Card Footer: Student Info & Duration */}
+              <div className="pt-3 border-t border-border/60 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1.5 font-bold text-foreground">
+                  <span>{item.studentName}</span>
+                  {item.studentSchool && (
+                    <>
+                      <span className="text-muted-foreground">•</span>
+                      <span className="text-muted-foreground font-medium">{item.studentSchool}</span>
+                    </>
+                  )}
+                </div>
+
+                <div className="text-muted-foreground font-bold font-mono">
+                  {item.studyDuration}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom Banner: Vẫn còn rất nhiều câu chuyện khác */}
+        <div className="mt-12 p-8 sm:p-10 rounded-3xl bg-muted/40 border border-border/80 text-center space-y-5">
+          <div className="space-y-2">
+            <h4 className="text-xl sm:text-2xl font-black text-foreground">
+              Vẫn còn rất nhiều câu chuyện tiến bộ khác
+            </h4>
+            <p className="text-sm sm:text-base text-foreground/75 max-w-xl mx-auto">
+              Khám phá toàn bộ hồ sơ năng lực và các bước tiến bộ thực nghiệm của học viên tại ARIS.
+            </p>
+          </div>
+
+          <Button
+            size="lg"
+            onClick={() => navigate("/results")}
+            className="rounded-2xl px-8 h-14 font-extrabold text-base bg-brand-red hover:bg-brand-red-hover text-white shadow-md gap-2"
+          >
+            <span>Xem toàn bộ bằng chứng tiến bộ</span>
+            <ArrowRight className="h-5 w-5" />
+          </Button>
         </div>
       </SectionContainer>
+
+      {/* Story Detail Dialog */}
+      <Dialog open={Boolean(selectedEvidence)} onOpenChange={() => setSelectedEvidence(null)}>
+        <DialogContent className="max-w-2xl text-left">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black text-foreground">
+              {selectedEvidence?.title}
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedEvidence && (
+            <div className="space-y-6 pt-2">
+              <div className="flex gap-4 sm:gap-6 items-center">
+                <img
+                  src={selectedEvidence.imageUrl}
+                  alt={selectedEvidence.studentName}
+                  className="w-20 h-20 rounded-2xl object-cover border border-border/80 shrink-0"
+                />
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-extrabold text-foreground text-lg">
+                      {selectedEvidence.studentName}
+                    </span>
+                    {selectedEvidence.studentSchool && (
+                      <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-brand-blue-soft text-brand-blue">
+                        {selectedEvidence.studentSchool}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground font-bold">
+                    <span>{selectedEvidence.courseName}</span>
+                    <span>•</span>
+                    <span>{selectedEvidence.studyDuration}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Score Breakdown Bar */}
+              <div className="p-4 rounded-2xl bg-brand-blue-soft/50 border border-brand-blue/20 grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
+                <div className="space-y-0.5">
+                  <span className="text-[11px] uppercase font-bold text-muted-foreground">Overall</span>
+                  <p className="text-lg font-black text-brand-red">{selectedEvidence.overallScore}</p>
+                </div>
+                {selectedEvidence.listeningScore && (
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] uppercase font-bold text-muted-foreground">Listening</span>
+                    <p className="text-base font-extrabold text-foreground">{selectedEvidence.listeningScore}</p>
+                  </div>
+                )}
+                {selectedEvidence.readingScore && (
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] uppercase font-bold text-muted-foreground">Reading</span>
+                    <p className="text-base font-extrabold text-foreground">{selectedEvidence.readingScore}</p>
+                  </div>
+                )}
+                {selectedEvidence.writingScore && (
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] uppercase font-bold text-muted-foreground">Writing</span>
+                    <p className="text-base font-extrabold text-foreground">{selectedEvidence.writingScore}</p>
+                  </div>
+                )}
+                {selectedEvidence.speakingScore && (
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] uppercase font-bold text-muted-foreground">Speaking</span>
+                    <p className="text-base font-extrabold text-foreground">{selectedEvidence.speakingScore}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Story Content */}
+              <div className="space-y-2">
+                <h4 className="text-xs uppercase font-extrabold text-muted-foreground tracking-wider">
+                  Chia sẻ của học viên
+                </h4>
+                <p className="text-sm sm:text-base text-foreground/85 leading-relaxed bg-muted/30 p-5 rounded-2xl border border-border/60">
+                  "{selectedEvidence.story}"
+                </p>
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <Button
+                  onClick={() => setSelectedEvidence(null)}
+                  className="rounded-xl font-bold text-xs"
+                >
+                  Đóng
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* ========================================================================= */}
       {/* SECTION 8: FINAL CONVERSION BANNER (HÀNH ĐỘNG NGAY)                       */}

@@ -108,6 +108,7 @@ const TeacherWorkspace = lazyWithRetry(() => import("@/pages/admin/TeacherWorksp
 const AdminContentQADashboard = lazyWithRetry(() =>
   import("@/pages/admin/AdminContentQADashboard").then((m) => ({ default: m.AdminContentQADashboard }))
 );
+const AdminEvidence = lazyWithRetry(() => import("@/pages/admin/Evidence"));
 const ClassAttendancePage = lazyWithRetry(() => import("@/pages/admin/ClassAttendancePage"));
 
 const PageLoader = () => (
@@ -344,6 +345,14 @@ const App = () => (
                   element={
                     <ProtectedRoute requiredRoles={["admin"]}>
                       <AdminSectionEdit />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/evidence"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin"]}>
+                      <AdminEvidence />
                     </ProtectedRoute>
                   }
                 />

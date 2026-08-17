@@ -11,6 +11,7 @@ import {
   School,
   ShieldCheck,
   FolderKanban,
+  Award,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -61,6 +62,11 @@ const adminItems = [
     title: "Khóa học",
     url: "/admin/courses",
     icon: BookOpen,
+  },
+  {
+    title: "Evidence",
+    url: "/admin/evidence",
+    icon: Award,
   },
   {
     title: "Học viên",

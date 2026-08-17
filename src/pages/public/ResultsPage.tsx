@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { SectionContainer } from "@/components/public/SectionContainer";
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,41 @@ import {
   Target,
   FileCheck,
   Brain,
+  Award,
+  BookOpen,
 } from "lucide-react";
+import { getPublishedEvidence, EvidenceItem } from "@/lib/evidenceStore";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function ResultsPage() {
   const navigate = useNavigate();
+  const [evidenceList, setEvidenceList] = useState<EvidenceItem[]>([]);
+  const [activeBandFilter, setActiveBandFilter] = useState<string>("all");
+  const [selectedStory, setSelectedStory] = useState<EvidenceItem | null>(null);
+
+  useEffect(() => {
+    setEvidenceList(getPublishedEvidence());
+  }, []);
+
+  const filteredList = evidenceList.filter((item) => {
+    if (activeBandFilter === "all") return true;
+    if (activeBandFilter === "7.5+") {
+      const score = parseFloat(item.overallScore);
+      return score >= 7.5;
+    }
+    if (activeBandFilter === "7.0") {
+      return item.overallScore === "7.0";
+    }
+    if (activeBandFilter === "6.5") {
+      return item.overallScore === "6.5";
+    }
+    return true;
+  });
 
   return (
     <div className="flex flex-col">
@@ -72,7 +103,7 @@ export default function ResultsPage() {
         badge="Hành Trình Thực Nghiệm"
         title="Quá trình chuyển hóa năng lực thực tế"
         description="Sự thay đổi không diễn ra sau một đêm, mà là kết quả của việc kiên trì sửa chữa từng điểm nghẽn qua 3 giai đoạn."
-        background="default"
+        background="muted"
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left">
           {/* Phase 1: Before */}
@@ -134,6 +165,104 @@ export default function ResultsPage() {
               <div>✓ Tự tin thi thử trong phòng thi NextBand</div>
             </div>
           </div>
+        </div>
+      </SectionContainer>
+
+      {/* Dynamic Evidence Grid (Bằng Chứng Tiến Bộ) */}
+      <SectionContainer
+        id="evidence-stories"
+        badge="Câu Chuyện Học Viên"
+        title="Bằng chứng tiến bộ được kiểm chứng"
+        description="Mỗi câu chuyện là một hành trình rèn luyện kỷ luật thật, giải phẫu điểm nghẽn và đạt kết quả có thể đo lường."
+        background="default"
+      >
+        {/* Band Filters */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
+          {[
+            { key: "all", label: "Tất cả thành tích" },
+            { key: "7.5+", label: "IELTS 7.5+" },
+            { key: "7.0", label: "IELTS 7.0" },
+            { key: "6.5", label: "IELTS 6.5" },
+          ].map((tab) => (
+            <Button
+              key={tab.key}
+              variant={activeBandFilter === tab.key ? "default" : "outline"}
+              size="sm"
+              onClick={() => setActiveBandFilter(tab.key)}
+              className={`rounded-xl px-5 h-10 font-bold text-xs sm:text-sm transition-all ${
+                activeBandFilter === tab.key
+                  ? "bg-brand-blue text-white"
+                  : "border-border/80 hover:bg-muted"
+              }`}
+            >
+              {tab.label}
+            </Button>
+          ))}
+        </div>
+
+        {/* Evidence Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 text-left">
+          {filteredList.length === 0 ? (
+            <div className="col-span-2 py-12 text-center text-muted-foreground">
+              Không có câu chuyện nào thuộc nhóm điểm này.
+            </div>
+          ) : (
+            filteredList.map((item) => (
+              <div
+                key={item.id}
+                className="p-6 sm:p-7 rounded-3xl border-2 border-border/80 bg-card hover:border-brand-red/40 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+              >
+                <div className="flex gap-4 sm:gap-5 items-start justify-between">
+                  {/* Left Text Info */}
+                  <div className="space-y-2.5 flex-1 min-w-0">
+                    <h3 className="font-black text-foreground text-base sm:text-lg leading-snug line-clamp-2">
+                      {item.title}
+                    </h3>
+
+                    <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed line-clamp-3">
+                      "{item.story}"
+                    </p>
+
+                    <button
+                      onClick={() => setSelectedStory(item)}
+                      className="text-xs font-extrabold text-brand-blue hover:text-brand-red transition-colors inline-block pt-1"
+                    >
+                      Nhấn để xem thêm
+                    </button>
+                  </div>
+
+                  {/* Right Image with Score Badge */}
+                  <div className="relative shrink-0">
+                    <img
+                      src={item.imageUrl}
+                      alt={item.studentName}
+                      className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl object-cover border border-border/80"
+                    />
+                    <div className="absolute top-2 right-2 px-2 py-0.5 rounded-lg bg-brand-red text-white font-black text-xs shadow-xs tracking-tight">
+                      {item.overallScore} IELTS
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card Footer: Student Info & Duration */}
+                <div className="pt-3 border-t border-border/60 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-1.5 font-bold text-foreground">
+                    <span>{item.studentName}</span>
+                    {item.studentSchool && (
+                      <>
+                        <span className="text-muted-foreground">•</span>
+                        <span className="text-muted-foreground font-medium">{item.studentSchool}</span>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="text-muted-foreground font-bold font-mono">
+                    {item.studyDuration}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </SectionContainer>
 
@@ -211,6 +340,97 @@ export default function ResultsPage() {
           </div>
         </div>
       </section>
+
+      {/* Story Detail Dialog */}
+      <Dialog open={Boolean(selectedStory)} onOpenChange={() => setSelectedStory(null)}>
+        <DialogContent className="max-w-2xl text-left">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black text-foreground">
+              {selectedStory?.title}
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedStory && (
+            <div className="space-y-6 pt-2">
+              <div className="flex gap-4 sm:gap-6 items-center">
+                <img
+                  src={selectedStory.imageUrl}
+                  alt={selectedStory.studentName}
+                  className="w-20 h-20 rounded-2xl object-cover border border-border/80 shrink-0"
+                />
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-extrabold text-foreground text-lg">
+                      {selectedStory.studentName}
+                    </span>
+                    {selectedStory.studentSchool && (
+                      <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-brand-blue-soft text-brand-blue">
+                        {selectedStory.studentSchool}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground font-bold">
+                    <span>{selectedStory.courseName}</span>
+                    <span>•</span>
+                    <span>{selectedStory.studyDuration}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Score Breakdown Bar */}
+              <div className="p-4 rounded-2xl bg-brand-blue-soft/50 border border-brand-blue/20 grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
+                <div className="space-y-0.5">
+                  <span className="text-[11px] uppercase font-bold text-muted-foreground">Overall</span>
+                  <p className="text-lg font-black text-brand-red">{selectedStory.overallScore}</p>
+                </div>
+                {selectedStory.listeningScore && (
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] uppercase font-bold text-muted-foreground">Listening</span>
+                    <p className="text-base font-extrabold text-foreground">{selectedStory.listeningScore}</p>
+                  </div>
+                )}
+                {selectedStory.readingScore && (
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] uppercase font-bold text-muted-foreground">Reading</span>
+                    <p className="text-base font-extrabold text-foreground">{selectedStory.readingScore}</p>
+                  </div>
+                )}
+                {selectedStory.writingScore && (
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] uppercase font-bold text-muted-foreground">Writing</span>
+                    <p className="text-base font-extrabold text-foreground">{selectedStory.writingScore}</p>
+                  </div>
+                )}
+                {selectedStory.speakingScore && (
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] uppercase font-bold text-muted-foreground">Speaking</span>
+                    <p className="text-base font-extrabold text-foreground">{selectedStory.speakingScore}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Story Content */}
+              <div className="space-y-2">
+                <h4 className="text-xs uppercase font-extrabold text-muted-foreground tracking-wider">
+                  Chia sẻ của học viên
+                </h4>
+                <p className="text-sm sm:text-base text-foreground/85 leading-relaxed bg-muted/30 p-5 rounded-2xl border border-border/60">
+                  "{selectedStory.story}"
+                </p>
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <Button
+                  onClick={() => setSelectedStory(null)}
+                  className="rounded-xl font-bold text-xs"
+                >
+                  Đóng
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
