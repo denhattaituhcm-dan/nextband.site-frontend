@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { PublicHeader } from "@/components/public/PublicHeader";
 import { PublicFooter } from "@/components/public/PublicFooter";
+import { ConsultationBubble } from "@/components/public/ConsultationBubble";
 
 export default function PublicLayout() {
   const { pathname } = useLocation();
@@ -18,6 +19,7 @@ export default function PublicLayout() {
         <Outlet />
       </main>
       <PublicFooter />
+      <ConsultationBubble />
     </div>
   );
 }
