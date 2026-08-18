@@ -29,14 +29,14 @@ export function TeacherDetail({ teacher }: TeacherDetailProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="bg-card border border-border/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs flex flex-col justify-between h-full">
-      <div className="space-y-6">
-        {/* Header Profile */}
+    <div className="bg-card border border-border/80 rounded-3xl p-6 sm:p-7 space-y-6 shadow-sm flex flex-col justify-between">
+      <div className="space-y-5">
+        {/* Header: Teacher Name & Role */}
         <div className="space-y-2 border-b border-border/60 pb-4">
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-brand-blue-soft text-brand-blue border border-brand-blue/20 uppercase tracking-wider">
               <Sparkles className="h-3.5 w-3.5" />
-              <span>Chuyên môn IELTS</span>
+              <span>ARIS Academic Directorate</span>
             </span>
             {teacher.specialties.map((spec) => (
               <span
@@ -51,50 +51,47 @@ export function TeacherDetail({ teacher }: TeacherDetailProps) {
           <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
             {teacher.name}
           </h3>
-          <p className="text-sm sm:text-base font-bold text-brand-blue">
+          <p className="text-sm font-bold text-brand-blue">
             {teacher.role}
           </p>
         </div>
 
-        {/* Achievements / Credentials List */}
-        <div className="space-y-3.5">
-          <h4 className="text-xs font-mono font-black text-muted-foreground uppercase tracking-wider">
-            Năng lực &amp; Thành tích học thuật
-          </h4>
-          <ul className="space-y-2.5">
+        {/* Credentials / Achievements List */}
+        <div className="space-y-3">
+          <ul className="space-y-3">
             {teacher.achievements.map((item, index) => {
               const IconComponent = iconMap[item.type] || ShieldCheck;
               return (
-                <li key={index} className="flex items-start gap-3 text-sm sm:text-base text-foreground/85">
-                  <div className="p-1 rounded-lg bg-brand-blue-soft text-brand-blue mt-0.5 shrink-0">
+                <li key={index} className="flex items-start gap-3 text-xs sm:text-sm text-foreground/85">
+                  <div className="p-1.5 rounded-lg bg-brand-blue-soft text-brand-blue mt-0.5 shrink-0">
                     <IconComponent className="h-4 w-4" />
                   </div>
-                  <span className="leading-snug">{item.text}</span>
+                  <span className="leading-relaxed font-medium">{item.text}</span>
                 </li>
               );
             })}
           </ul>
         </div>
 
-        {/* Certificate Section */}
+        {/* Certificate Section: Full TRF Scan Frame */}
         {teacher.certificate && (
-          <div className="space-y-3 pt-2">
+          <div className="space-y-3 pt-2 border-t border-border/60">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-mono font-black text-muted-foreground uppercase tracking-wider">
-                Bảng điểm thi IELTS (TRF)
+              <h4 className="text-sm sm:text-base font-black text-foreground tracking-tight">
+                Bảng điểm thi IELTS
               </h4>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsModalOpen(true)}
-                className="text-xs font-bold text-brand-blue hover:text-brand-blue-hover gap-1.5 h-7 px-2.5 rounded-lg hover:bg-brand-blue-soft"
+                className="text-xs sm:text-sm font-bold text-brand-blue hover:text-brand-blue-hover gap-1.5 h-8 px-2.5 rounded-lg hover:bg-brand-blue-soft"
               >
-                <Maximize2 className="h-3.5 w-3.5" />
                 <span>Phóng to</span>
+                <Maximize2 className="h-3.5 w-3.5" />
               </Button>
             </div>
 
-            {/* Thumbnail Box */}
+            {/* Full Vertical TRF Image Preview */}
             <div
               role="button"
               tabIndex={0}
@@ -105,17 +102,17 @@ export function TeacherDetail({ teacher }: TeacherDetailProps) {
                   setIsModalOpen(true);
                 }
               }}
-              className="relative group rounded-2xl overflow-hidden border border-border/80 bg-muted/20 cursor-pointer aspect-[16/10] sm:aspect-[16/9] flex items-center justify-center transition-all hover:border-brand-blue hover:shadow-xs"
+              className="relative group rounded-2xl overflow-hidden border border-border/80 bg-white cursor-pointer shadow-2xs w-full flex items-center justify-center transition-all hover:border-brand-blue hover:shadow-md"
             >
               <img
                 src={teacher.certificate.image}
                 alt={teacher.certificate.alt}
                 loading="lazy"
-                className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-102"
+                className="w-full h-auto max-h-[520px] object-contain transition-transform duration-300 group-hover:scale-[1.01]"
               />
-              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs sm:text-sm font-bold backdrop-blur-[1px]">
+              <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs sm:text-sm font-bold backdrop-blur-[1px]">
                 <Maximize2 className="h-4 w-4" />
-                <span>Xem bảng điểm gốc</span>
+                <span>Phóng to Bảng điểm TRF chính thức</span>
               </div>
             </div>
           </div>
