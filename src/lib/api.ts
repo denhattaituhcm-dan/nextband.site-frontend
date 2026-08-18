@@ -2790,33 +2790,40 @@ export const sessionsApi = {
 // =============================================
 export const siteSettingsApi = {
   get: async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/site-settings`);
-      if (res.ok) {
-        const data = await res.json();
-        return normalizeSiteSettings(data);
-      }
-    } catch {}
-    return normalizeSiteSettings({});
+    const res = await fetch(`${API_BASE_URL}/site-settings`);
+    if (!res.ok) {
+      throw new Error("Không thể tải cài đặt hệ thống");
+    }
+    const data = await res.json();
+    return normalizeSiteSettings(data);
   },
 
   update: async (payload: Record<string, unknown>) => {
     const token = await getAuthToken();
-    try {
-      const res = await fetch(`${API_BASE_URL}/site-settings`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        return normalizeSiteSettings(data);
-      }
-    } catch {}
-    return normalizeSiteSettings(payload);
+    const res = await fetch(`${API_BASE_URL}/site-settings`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      let errorMessage = "Không thể lưu cài đặt hệ thống";
+      try {
+        const errorData = await res.json();
+        errorMessage = errorData?.error || errorData?.message || errorMessage;
+      } catch {}
+      throw new Error(errorMessage);
+    }
+
+    const data = await res.json();
+    if (!data || typeof data !== "object" || !data.id) {
+      throw new Error("Dữ liệu phản hồi từ máy chủ không hợp lệ");
+    }
+
+    return normalizeSiteSettings(data);
   },
 };
 

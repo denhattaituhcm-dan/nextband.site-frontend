@@ -46,7 +46,7 @@ export default function AdminSettings() {
         error?.message ||
         error?.error_description ||
         error?.response?.data?.error ||
-        "Không thể lưu cài đặt (Vui lòng kiểm tra quyền RLS hoặc bảng site_settings trong Supabase).";
+        "Không thể lưu cài đặt hệ thống. Vui lòng kiểm tra kết nối mạng hoặc liên hệ quản trị viên.";
       toast({
         title: "Lỗi",
         description: errMsg,
