@@ -7,6 +7,21 @@ import React, { Component, ErrorInfo, ReactNode } from "react";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+// Auto-recover from stale chunks on new deployments (with reload loop guard)
+window.addEventListener("vite:preloadError", (event) => {
+  const CHUNK_RELOAD_KEY = "nb_chunk_reload_ts";
+  const now = Date.now();
+  const lastReload = Number(sessionStorage.getItem(CHUNK_RELOAD_KEY) || 0);
+
+  // Auto-reload at most once within a 15-second window
+  if (!lastReload || now - lastReload > 15000) {
+    sessionStorage.setItem(CHUNK_RELOAD_KEY, String(now));
+    window.location.reload();
+  } else {
+    console.error("[CRITICAL_CHUNK_LOAD_FAILED] Dynamic import failed persistently after reload:", event);
+  }
+});
+
 interface Props {
   children: ReactNode;
 }

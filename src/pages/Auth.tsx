@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -142,16 +142,25 @@ export default function Auth() {
 
         {/* Unified Brand Header (Logo + ARIS IELTS + Cambridge Badge + Subtitle) */}
         <div className="relative z-10 space-y-3">
-          <div className="flex items-center gap-3">
-            <SiteLogo alt="ARIS IELTS" className="max-h-12 w-auto object-contain" />
-            <div className="border-l border-border pl-3">
-              <div className="font-bold text-foreground text-lg leading-tight tracking-tight">ARIS IELTS</div>
+          <Link
+            to="/"
+            className="inline-flex items-center gap-3 group transition-opacity hover:opacity-90 cursor-pointer"
+            title="Quay về trang chủ ARIS IELTS"
+          >
+            <SiteLogo
+              alt="ARIS IELTS"
+              className="max-h-12 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
+            />
+            <div className="border-l border-border pl-3 text-left">
+              <div className="font-bold text-foreground text-lg leading-tight tracking-tight group-hover:text-primary transition-colors">
+                ARIS IELTS
+              </div>
               <span className="inline-flex items-center gap-1 text-xs font-semibold text-warning mt-0.5">
                 <Award className="h-3.5 w-3.5" />
                 Cambridge Standard
               </span>
             </div>
-          </div>
+          </Link>
           <div className="space-y-1">
             <p className="text-base font-semibold tracking-tight text-muted-foreground">
               {settings.authTagline}
@@ -232,7 +241,13 @@ export default function Auth() {
         <Card className="w-full max-w-[520px] border border-border shadow-lg rounded-2xl bg-card p-7 sm:p-8">
           <CardHeader className="space-y-1.5 text-center p-0 pb-5">
             <div className="lg:hidden flex items-center justify-center gap-2 mb-3">
-              <SiteLogo alt="ARIS IELTS Logo" className="max-h-9 w-auto object-contain" />
+              <Link
+                to="/"
+                className="inline-flex items-center justify-center group transition-opacity hover:opacity-90 cursor-pointer"
+                title="Quay về trang chủ ARIS IELTS"
+              >
+                <SiteLogo alt="ARIS IELTS Logo" className="max-h-9 w-auto object-contain transition-transform duration-200 group-hover:scale-105" />
+              </Link>
             </div>
             <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
               Đăng nhập

@@ -30,7 +30,13 @@ export default function ForgotPasswordPage() {
       <Card className="w-full max-w-md border border-border shadow-lg rounded-2xl bg-card p-6 sm:p-8">
         <CardHeader className="space-y-2 text-center p-0 pb-6">
           <div className="flex justify-center mb-2">
-            <SiteLogo alt="ARIS Logo" className="max-h-10 w-auto object-contain" />
+            <Link
+              to="/"
+              className="inline-flex items-center justify-center group transition-opacity hover:opacity-90 cursor-pointer"
+              title="Quay về trang chủ ARIS IELTS"
+            >
+              <SiteLogo alt="ARIS Logo" className="max-h-10 w-auto object-contain transition-transform duration-200 group-hover:scale-105" />
+            </Link>
           </div>
           <CardTitle className="text-xl font-bold text-foreground">
             Quên Mật Khẩu
