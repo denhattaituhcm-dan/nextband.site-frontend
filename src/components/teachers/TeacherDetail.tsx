@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   Maximize2,
   ExternalLink,
-  Sparkles,
 } from "lucide-react";
 
 interface TeacherDetailProps {
@@ -33,21 +32,6 @@ export function TeacherDetail({ teacher }: TeacherDetailProps) {
       <div className="space-y-5">
         {/* Header: Teacher Name & Role */}
         <div className="space-y-2 border-b border-border/60 pb-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-brand-blue-soft text-brand-blue border border-brand-blue/20 uppercase tracking-wider">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>ARIS Academic Directorate</span>
-            </span>
-            {teacher.specialties.map((spec) => (
-              <span
-                key={spec}
-                className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-muted text-muted-foreground border border-border/60"
-              >
-                {spec}
-              </span>
-            ))}
-          </div>
-
           <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
             {teacher.name}
           </h3>
