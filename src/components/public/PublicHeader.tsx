@@ -116,35 +116,26 @@ export function PublicHeader() {
                   </Button>
                 )}
 
-                {/* Primary NextBand Entry CTA */}
+                {/* Primary Homework Entry CTA */}
                 <Button
                   size="sm"
                   onClick={() => navigate("/app")}
-                  className="h-10 px-5 rounded-xl text-xs sm:text-[13px] font-black uppercase tracking-wider bg-primary hover:bg-primary-hover text-white shadow-sm gap-2"
+                  className="h-10 px-5 rounded-xl text-xs sm:text-[13px] font-black uppercase tracking-wider bg-gradient-to-r from-rose-600 via-red-500 to-amber-500 hover:from-rose-500 hover:via-red-400 hover:to-amber-400 text-white shadow-lg shadow-rose-600/25 border border-white/20 hover:scale-[1.02] active:scale-[0.98] transition-all gap-2"
                 >
-                  <span>NextBand</span>
+                  <span>Homework</span>
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </>
             ) : (
               <>
-                {/* Guest State */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  asChild
-                  className="h-10 px-4 text-xs sm:text-[13px] font-bold uppercase tracking-wider text-slate-200 hover:text-white hover:bg-white/10 rounded-xl"
-                >
-                  <Link to="/login">Đăng nhập</Link>
-                </Button>
-
+                {/* Guest State - Direct Homework CTA */}
                 <Button
                   size="sm"
                   asChild
-                  className="h-10 px-5 rounded-xl text-xs sm:text-[13px] font-black uppercase tracking-wider bg-primary hover:bg-primary-hover text-white shadow-sm gap-2"
+                  className="h-10 px-5 rounded-xl text-xs sm:text-[13px] font-black uppercase tracking-wider bg-gradient-to-r from-rose-600 via-red-500 to-amber-500 hover:from-rose-500 hover:via-red-400 hover:to-amber-400 text-white shadow-lg shadow-rose-600/25 border border-white/20 hover:scale-[1.02] active:scale-[0.98] transition-all gap-2"
                 >
                   <Link to="/login?next=/app">
-                    <span>NextBand</span>
+                    <span>Homework</span>
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
@@ -158,18 +149,17 @@ export function PublicHeader() {
               <Button
                 size="sm"
                 onClick={() => navigate("/app")}
-                className="h-8 px-2.5 text-xs font-bold uppercase tracking-wider bg-primary text-white"
+                className="h-8 px-3 text-xs font-black uppercase tracking-wider bg-gradient-to-r from-rose-600 to-amber-500 text-white shadow-sm"
               >
-                NextBand →
+                Homework →
               </Button>
             ) : (
               <Button
                 size="sm"
-                variant="outline"
                 asChild
-                className="h-8 px-2.5 text-xs font-bold uppercase tracking-wider border-slate-700 bg-transparent text-white"
+                className="h-8 px-3 text-xs font-black uppercase tracking-wider bg-gradient-to-r from-rose-600 to-amber-500 text-white shadow-sm"
               >
-                <Link to="/login">Đăng nhập</Link>
+                <Link to="/login?next=/app">Homework →</Link>
               </Button>
             )}
 
@@ -213,42 +203,29 @@ export function PublicHeader() {
 
           <div className="pt-3 border-t border-slate-800 space-y-2">
             {isAuthenticated ? (
-              <div className="space-y-2">
-                <Button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    navigate("/app");
-                  }}
-                  className="w-full h-10 font-bold uppercase tracking-wider text-xs bg-primary text-white justify-center gap-2"
-                >
-                  <GraduationCap className="h-4 w-4" />
-                  <span>Vào Học NextBand</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </div>
+              <Button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate("/app");
+                }}
+                className="w-full h-10 font-black uppercase tracking-wider text-xs bg-gradient-to-r from-rose-600 via-red-500 to-amber-500 hover:from-rose-500 hover:via-red-400 hover:to-amber-400 text-white justify-center gap-2 shadow-md shadow-rose-950/40"
+              >
+                <GraduationCap className="h-4 w-4" />
+                <span>Vào Học Homework</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
             ) : (
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    navigate("/login");
-                  }}
-                  className="w-full h-9 font-bold uppercase tracking-wider text-xs border-slate-700 bg-transparent text-white hover:bg-white/10"
-                >
-                  Đăng nhập
-                </Button>
-                <Button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    navigate("/login?next=/app");
-                  }}
-                  className="w-full h-9 font-bold uppercase tracking-wider text-xs bg-primary text-white gap-1"
-                >
-                  <span>NextBand</span>
-                  <ArrowRight className="h-3 w-3" />
-                </Button>
-              </div>
+              <Button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate("/login?next=/app");
+                }}
+                className="w-full h-10 font-black uppercase tracking-wider text-xs bg-gradient-to-r from-rose-600 via-red-500 to-amber-500 hover:from-rose-500 hover:via-red-400 hover:to-amber-400 text-white justify-center gap-2 shadow-md shadow-rose-950/40"
+              >
+                <GraduationCap className="h-4 w-4" />
+                <span>Homework</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
             )}
           </div>
         </div>
