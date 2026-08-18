@@ -4,6 +4,7 @@ import { SectionContainer } from "@/components/public/SectionContainer";
 import { PlaceholderCard } from "@/components/public/PlaceholderCard";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/common/SEO";
+import { COURSE_CATALOG } from "@/constants/courses";
 import {
   Sparkles,
   Target,
@@ -78,33 +79,36 @@ export default function CoursesPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left">
           <PlaceholderCard
             variant="course"
-            badge="Chặng 01"
-            title="Khóa STARTER"
-            subtitle="Đầu vào: Mất gốc → Đầu ra: 3.0 (Rank 3)"
-            description="Chuẩn hóa phát âm IPA, từ vựng sinh hoạt thông dụng và cấu trúc câu đơn căn bản trong tiếng Anh."
-            metadata={["Thời lượng: 09 Tuần (27 buổi)", "Lớp tối đa 8 học viên", "NextBand LMS"]}
+            theme={COURSE_CATALOG.starter.theme}
+            badge={COURSE_CATALOG.starter.stageNumber}
+            title={COURSE_CATALOG.starter.title}
+            subtitle={COURSE_CATALOG.starter.target}
+            description={COURSE_CATALOG.starter.description}
+            metadata={COURSE_CATALOG.starter.metadata}
             ctaLabel="Xem chi tiết khóa học"
             onCtaClick={() => navigate("/courses/starter")}
           />
 
           <PlaceholderCard
             variant="course"
-            badge="Chặng 02"
-            title="Khóa DREAMER"
-            subtitle="Đầu vào: 3.0 → Đầu ra: 4.0 (Rank 4)"
-            description="Xây dựng ngữ pháp câu ghép, câu phức và kỹ năng đọc hiểu đoạn văn học thuật ngắn không đoán mò."
-            metadata={["Thời lượng: 09 Tuần (27 buổi)", "Lớp tối đa 8 học viên", "Chấm bài chi tiết"]}
+            theme={COURSE_CATALOG.dreamer.theme}
+            badge={COURSE_CATALOG.dreamer.stageNumber}
+            title={COURSE_CATALOG.dreamer.title}
+            subtitle={COURSE_CATALOG.dreamer.target}
+            description={COURSE_CATALOG.dreamer.description}
+            metadata={COURSE_CATALOG.dreamer.metadata}
             ctaLabel="Xem chi tiết khóa học"
             onCtaClick={() => navigate("/courses/dreamer")}
           />
 
           <PlaceholderCard
             variant="course"
-            badge="Chặng 03"
-            title="Khóa BUILDER"
-            subtitle="Đầu vào: 4.0 → Đầu ra: 5.0 (Rank 5)"
-            description="Làm quen cấu trúc 4 kỹ năng IELTS, viết đoạn văn học thuật có luận điểm và phản xạ câu trả lời mạch lạc."
-            metadata={["Thời lượng: 09 Tuần (27 buổi)", "Lớp tối đa 8 học viên", "Thi thử định kỳ"]}
+            theme={COURSE_CATALOG.builder.theme}
+            badge={COURSE_CATALOG.builder.stageNumber}
+            title={COURSE_CATALOG.builder.title}
+            subtitle={COURSE_CATALOG.builder.target}
+            description={COURSE_CATALOG.builder.description}
+            metadata={COURSE_CATALOG.builder.metadata}
             ctaLabel="Xem chi tiết khóa học"
             onCtaClick={() => navigate("/courses/builder")}
           />
@@ -121,22 +125,24 @@ export default function CoursesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left max-w-4xl mx-auto">
           <PlaceholderCard
             variant="course"
-            badge="Chặng 04"
-            title="Khóa MASTER"
-            subtitle="Đầu vào: 5.0 → Đầu ra: 6.0 (Rank 6)"
-            description="Luyện viết luận Task 2 có lập luận chặt chẽ, mô tả biểu đồ Task 1 chính xác và phản xạ Nói theo các chủ đề chuyên sâu."
-            metadata={["Thời lượng: 09 Tuần (27 buổi)", "Lớp tối đa 8 học viên", "Chấm chữa 1:1 từng câu"]}
+            theme={COURSE_CATALOG.master.theme}
+            badge={COURSE_CATALOG.master.stageNumber}
+            title={COURSE_CATALOG.master.title}
+            subtitle={COURSE_CATALOG.master.target}
+            description={COURSE_CATALOG.master.description}
+            metadata={COURSE_CATALOG.master.metadata}
             ctaLabel="Xem chi tiết khóa học"
             onCtaClick={() => navigate("/courses/master")}
           />
 
           <PlaceholderCard
             variant="course"
-            badge="Chặng 05"
-            title="Khóa LEADER"
-            subtitle="Đầu vào: 6.0 → Đầu ra: 6.5+ (Rank 7)"
-            description="Tinh chỉnh văn phong học thuật tự nhiên, kiểm soát độ chính xác ngữ nghĩa và hoàn thiện tư duy phản biện cấp cao."
-            metadata={["Thời lượng: 10 Tuần (30 buổi)", "Lớp tối đa 8 học viên", "Luyện đề phòng thi NextBand"]}
+            theme={COURSE_CATALOG.leader.theme}
+            badge={COURSE_CATALOG.leader.stageNumber}
+            title={COURSE_CATALOG.leader.title}
+            subtitle={COURSE_CATALOG.leader.target}
+            description={COURSE_CATALOG.leader.description}
+            metadata={COURSE_CATALOG.leader.metadata}
             ctaLabel="Xem chi tiết khóa học"
             onCtaClick={() => navigate("/courses/leader")}
           />

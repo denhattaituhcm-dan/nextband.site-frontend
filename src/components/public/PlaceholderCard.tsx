@@ -11,6 +11,18 @@ export type PlaceholderCardVariant =
   | "job"
   | "article";
 
+export interface PlaceholderCardTheme {
+  badgeBg?: string;
+  badgeText?: string;
+  badgeBorder?: string;
+  iconBg?: string;
+  iconText?: string;
+  borderHover?: string;
+  titleHover?: string;
+  shadowHover?: string;
+  buttonHover?: string;
+}
+
 interface PlaceholderCardProps {
   variant?: PlaceholderCardVariant;
   badge?: string;
@@ -22,6 +34,10 @@ interface PlaceholderCardProps {
   onCtaClick?: () => void;
   icon?: React.ReactNode;
   className?: string;
+  theme?: PlaceholderCardTheme;
+  badgeClassName?: string;
+  iconClassName?: string;
+  subtitleClassName?: string;
 }
 
 export function PlaceholderCard({
@@ -35,11 +51,17 @@ export function PlaceholderCard({
   onCtaClick,
   icon,
   className,
+  theme,
+  badgeClassName,
+  iconClassName,
+  subtitleClassName,
 }: PlaceholderCardProps) {
   return (
     <div
       className={cn(
-        "group relative flex flex-col justify-between p-7 sm:p-8 rounded-3xl bg-card border border-border/80 hover:border-primary/50 shadow-2xs hover:shadow-md transition-all duration-200",
+        "group relative flex flex-col justify-between p-7 sm:p-8 rounded-3xl bg-card border border-border/80 shadow-2xs hover:shadow-md transition-all duration-200",
+        theme?.borderHover || "hover:border-primary/50",
+        theme?.shadowHover,
         className
       )}
     >
@@ -47,7 +69,15 @@ export function PlaceholderCard({
         {/* Top bar: Badge & Icon */}
         <div className="flex items-center justify-between gap-3">
           {badge ? (
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary-soft text-primary border border-primary/20">
+            <span
+              className={cn(
+                "inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border",
+                theme
+                  ? cn(theme.badgeBg, theme.badgeText, theme.badgeBorder)
+                  : "bg-primary-soft text-primary border-primary/20",
+                badgeClassName
+              )}
+            >
               {badge}
             </span>
           ) : (
@@ -55,11 +85,27 @@ export function PlaceholderCard({
           )}
 
           {icon ? (
-            <div className="p-2.5 rounded-2xl bg-primary-soft text-primary">
+            <div
+              className={cn(
+                "p-2.5 rounded-2xl",
+                theme
+                  ? cn(theme.iconBg, theme.iconText)
+                  : "bg-primary-soft text-primary",
+                iconClassName
+              )}
+            >
               {icon}
             </div>
           ) : variant === "course" ? (
-            <div className="p-2.5 rounded-2xl bg-primary-soft text-primary">
+            <div
+              className={cn(
+                "p-2.5 rounded-2xl",
+                theme
+                  ? cn(theme.iconBg, theme.iconText)
+                  : "bg-primary-soft text-primary",
+                iconClassName
+              )}
+            >
               <BookOpen className="h-5 w-5" />
             </div>
           ) : variant === "teacher" ? (
@@ -84,11 +130,22 @@ export function PlaceholderCard({
         {/* Title & Subtitle */}
         <div className="space-y-1.5">
           {subtitle && (
-            <p className="text-xs sm:text-sm font-bold text-primary uppercase tracking-wider">
+            <p
+              className={cn(
+                "text-xs sm:text-sm font-bold uppercase tracking-wider",
+                theme?.badgeText || "text-primary",
+                subtitleClassName
+              )}
+            >
               {subtitle}
             </p>
           )}
-          <h3 className="text-xl sm:text-2xl font-black text-foreground tracking-tight group-hover:text-primary transition-colors">
+          <h3
+            className={cn(
+              "text-xl sm:text-2xl font-black text-foreground tracking-tight transition-colors",
+              theme?.titleHover || "group-hover:text-primary"
+            )}
+          >
             {title}
           </h3>
         </div>
@@ -123,7 +180,10 @@ export function PlaceholderCard({
             variant="ghost"
             size="sm"
             onClick={onCtaClick}
-            className="w-full justify-between px-3 text-sm font-bold text-foreground hover:text-primary hover:bg-primary-soft/50 rounded-xl group/btn h-10"
+            className={cn(
+              "w-full justify-between px-3 text-sm font-bold text-foreground rounded-xl group/btn h-10 transition-colors",
+              theme?.buttonHover || "hover:text-primary hover:bg-primary-soft/50"
+            )}
           >
             <span>{ctaLabel}</span>
             <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />

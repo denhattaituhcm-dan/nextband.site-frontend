@@ -367,11 +367,11 @@ export default function PublicHomePage() {
             <div className="space-y-3">
               <div
                 onClick={() => navigate("/courses/starter")}
-                className="p-4 rounded-2xl border border-border/70 bg-muted/20 hover:border-brand-blue/50 hover:bg-brand-blue-soft/30 transition-all cursor-pointer flex items-center justify-between gap-4"
+                className="p-4 rounded-2xl border border-border/70 bg-muted/20 hover:border-[#EE6873]/50 hover:bg-[#EE6873]/5 transition-all cursor-pointer flex items-center justify-between gap-4"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-brand-blue-soft text-brand-blue">
+                    <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-[#EE6873]/15 text-[#EE6873] border border-[#EE6873]/30">
                       STARTER
                     </span>
                     <span className="text-sm font-extrabold text-foreground">Đầu ra 3.0</span>
@@ -383,11 +383,11 @@ export default function PublicHomePage() {
 
               <div
                 onClick={() => navigate("/courses/dreamer")}
-                className="p-4 rounded-2xl border border-border/70 bg-muted/20 hover:border-brand-blue/50 hover:bg-brand-blue-soft/30 transition-all cursor-pointer flex items-center justify-between gap-4"
+                className="p-4 rounded-2xl border border-border/70 bg-muted/20 hover:border-[#294398]/50 hover:bg-[#294398]/5 transition-all cursor-pointer flex items-center justify-between gap-4"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-brand-blue-soft text-brand-blue">
+                    <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-[#294398]/15 text-[#294398] border border-[#294398]/30">
                       DREAMER
                     </span>
                     <span className="text-sm font-extrabold text-foreground">3.0 → 4.0</span>
@@ -399,11 +399,11 @@ export default function PublicHomePage() {
 
               <div
                 onClick={() => navigate("/courses/builder")}
-                className="p-4 rounded-2xl border border-border/70 bg-muted/20 hover:border-brand-blue/50 hover:bg-brand-blue-soft/30 transition-all cursor-pointer flex items-center justify-between gap-4"
+                className="p-4 rounded-2xl border border-border/70 bg-muted/20 hover:border-[#F37C42]/50 hover:bg-[#F37C42]/5 transition-all cursor-pointer flex items-center justify-between gap-4"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-brand-blue-soft text-brand-blue">
+                    <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-[#F37C42]/15 text-[#F37C42] border border-[#F37C42]/30">
                       BUILDER
                     </span>
                     <span className="text-sm font-extrabold text-foreground">4.0 → 5.0</span>
@@ -432,11 +432,11 @@ export default function PublicHomePage() {
             <div className="space-y-3">
               <div
                 onClick={() => navigate("/courses/master")}
-                className="p-4 rounded-2xl border border-border/70 bg-muted/20 hover:border-brand-red/50 hover:bg-brand-red-soft/30 transition-all cursor-pointer flex items-center justify-between gap-4"
+                className="p-4 rounded-2xl border border-border/70 bg-muted/20 hover:border-[#538442]/50 hover:bg-[#538442]/5 transition-all cursor-pointer flex items-center justify-between gap-4"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-brand-red-soft text-brand-red">
+                    <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-[#538442]/15 text-[#538442] border border-[#538442]/30">
                       MASTER
                     </span>
                     <span className="text-sm font-extrabold text-foreground">5.0 → 6.0</span>
@@ -448,11 +448,11 @@ export default function PublicHomePage() {
 
               <div
                 onClick={() => navigate("/courses/leader")}
-                className="p-4 rounded-2xl border border-border/70 bg-muted/20 hover:border-brand-red/50 hover:bg-brand-red-soft/30 transition-all cursor-pointer flex items-center justify-between gap-4"
+                className="p-4 rounded-2xl border border-border/70 bg-muted/20 hover:border-[#D12E33]/50 hover:bg-[#D12E33]/5 transition-all cursor-pointer flex items-center justify-between gap-4"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-brand-red-soft text-brand-red">
+                    <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-[#D12E33]/15 text-[#D12E33] border border-[#D12E33]/30">
                       LEADER
                     </span>
                     <span className="text-sm font-extrabold text-foreground">6.0 → 6.5+</span>

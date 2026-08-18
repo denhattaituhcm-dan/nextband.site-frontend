@@ -151,11 +151,11 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
         {/* ROADMAP GRID (5 COLUMNS DESKTOP / VERTICAL TIMELINE MOBILE) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-2 relative">
           {/* LEVEL 1: STARTER */}
-          <div className="relative group flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-pink-50/30 border border-slate-200/80 hover:border-[#D84B85]/60 hover:shadow-xl hover:shadow-pink-500/10 transition-all duration-300 hover:-translate-y-1">
+          <div className="relative group flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-rose-50/30 border border-slate-200/80 hover:border-[#EE6873]/60 hover:shadow-xl hover:shadow-rose-500/10 transition-all duration-300 hover:-translate-y-1">
             {/* TOP IELTS BAND BADGE */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-1 rounded-full bg-[#D84B85] text-white text-[11px] font-black shadow-xs">
+                <span className="px-2.5 py-1 rounded-full bg-[#EE6873] text-white text-[11px] font-black shadow-xs">
                   BAND 3.0
                 </span>
                 <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
@@ -165,12 +165,12 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
 
               <div>
                 <div className="font-black text-base text-slate-900 tracking-tight">STARTER</div>
-                <div className="text-[11px] font-bold text-[#D84B85] italic">"I start"</div>
+                <div className="text-[11px] font-bold text-[#EE6873] italic">"I start"</div>
               </div>
 
               {/* PROGRESSIVE METAPHOR ILLUSTRATION: FOUNDATION STONE */}
               <div className="py-3 flex justify-center items-center">
-                <div className="w-14 h-14 rounded-2xl bg-pink-100/80 text-[#D84B85] flex items-center justify-center shadow-inner border border-pink-200 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-14 h-14 rounded-2xl bg-rose-100/80 text-[#EE6873] flex items-center justify-center shadow-inner border border-rose-200 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
                   </svg>
@@ -182,15 +182,15 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
                 <div className="text-xs font-extrabold text-slate-800">Hiểu bản chất một câu văn</div>
                 <ul className="text-[11px] text-slate-600 space-y-1 font-medium">
                   <li className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#D84B85]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#EE6873]" />
                     <span>Cách các thành phần liên hệ</span>
                   </li>
                   <li className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#D84B85]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#EE6873]" />
                     <span>Áp dụng để tự tin Viết/Đọc/Nói</span>
                   </li>
                   <li className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#D84B85]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#EE6873]" />
                     <span>Nền tảng từ vựng Pre IELTS</span>
                   </li>
                 </ul>
@@ -204,10 +204,10 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
           </div>
 
           {/* LEVEL 2: DREAMER */}
-          <div className="relative group flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-cyan-50/30 border border-slate-200/80 hover:border-[#0093A8]/60 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 hover:-translate-y-1">
+          <div className="relative group flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-blue-50/30 border border-slate-200/80 hover:border-[#294398]/60 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 hover:-translate-y-1">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-1 rounded-full bg-[#0093A8] text-white text-[11px] font-black shadow-xs">
+                <span className="px-2.5 py-1 rounded-full bg-[#294398] text-white text-[11px] font-black shadow-xs">
                   BAND 4.0
                 </span>
                 <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
@@ -217,12 +217,12 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
 
               <div>
                 <div className="font-black text-base text-slate-900 tracking-tight">DREAMER</div>
-                <div className="text-[11px] font-bold text-[#0093A8] italic">"I dream"</div>
+                <div className="text-[11px] font-bold text-[#294398] italic">"I dream"</div>
               </div>
 
               {/* PROGRESSIVE METAPHOR ILLUSTRATION: BLUEPRINT */}
               <div className="py-3 flex justify-center items-center">
-                <div className="w-14 h-14 rounded-2xl bg-cyan-100/80 text-[#0093A8] flex items-center justify-center shadow-inner border border-cyan-200 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-14 h-14 rounded-2xl bg-blue-100/80 text-[#294398] flex items-center justify-center shadow-inner border border-blue-200 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2" />
                     <path d="M3 9h18" />
@@ -235,15 +235,15 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
                 <div className="text-xs font-extrabold text-slate-800">Sự mạch lạc của đoạn văn</div>
                 <ul className="text-[11px] text-slate-600 space-y-1 font-medium">
                   <li className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#0093A8]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#294398]" />
                     <span>Liên kết các câu văn với nhau</span>
                   </li>
                   <li className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#0093A8]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#294398]" />
                     <span>Tự tin viết/đọc/nói đoạn dài</span>
                   </li>
                   <li className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#0093A8]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#294398]" />
                     <span>Tư duy phản xạ bài thi IELTS</span>
                   </li>
                 </ul>
@@ -257,10 +257,10 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
           </div>
 
           {/* LEVEL 3: BUILDER */}
-          <div className="relative group flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-orange-50/30 border border-slate-200/80 hover:border-[#EE771D]/60 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 hover:-translate-y-1">
+          <div className="relative group flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-orange-50/30 border border-slate-200/80 hover:border-[#F37C42]/60 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 hover:-translate-y-1">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-1 rounded-full bg-[#EE771D] text-white text-[11px] font-black shadow-xs">
+                <span className="px-2.5 py-1 rounded-full bg-[#F37C42] text-white text-[11px] font-black shadow-xs">
                   BAND 5.0
                 </span>
                 <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
@@ -270,12 +270,12 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
 
               <div>
                 <div className="font-black text-base text-slate-900 tracking-tight">BUILDER</div>
-                <div className="text-[11px] font-bold text-[#EE771D] italic">"I build"</div>
+                <div className="text-[11px] font-bold text-[#F37C42] italic">"I build"</div>
               </div>
 
               {/* PROGRESSIVE METAPHOR ILLUSTRATION: BUILDING UNDER CONSTRUCTION */}
               <div className="py-3 flex justify-center items-center">
-                <div className="w-14 h-14 rounded-2xl bg-orange-100/80 text-[#EE771D] flex items-center justify-center shadow-inner border border-orange-200 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-14 h-14 rounded-2xl bg-orange-100/80 text-[#F37C42] flex items-center justify-center shadow-inner border border-orange-200 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18" />
                     <path d="M6 12h12" />
@@ -289,15 +289,15 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
                 <div className="text-xs font-extrabold text-slate-800">Thi IELTS cơ bản</div>
                 <ul className="text-[11px] text-slate-600 space-y-1 font-medium">
                   <li className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#EE771D]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#F37C42]" />
                     <span>Hiểu bản chất kỳ thi IELTS</span>
                   </li>
                   <li className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#EE771D]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#F37C42]" />
                     <span>Trả lời tự nhiên & logic</span>
                   </li>
                   <li className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#EE771D]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#F37C42]" />
                     <span>Ứng dụng được Tiếng Anh thực tế</span>
                   </li>
                 </ul>
@@ -311,10 +311,10 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
           </div>
 
           {/* LEVEL 4: MASTER */}
-          <div className="relative group flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-emerald-50/30 border border-slate-200/80 hover:border-[#00B956]/60 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 hover:-translate-y-1">
+          <div className="relative group flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-emerald-50/30 border border-slate-200/80 hover:border-[#538442]/60 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 hover:-translate-y-1">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-1 rounded-full bg-[#00B956] text-white text-[11px] font-black shadow-xs">
+                <span className="px-2.5 py-1 rounded-full bg-[#538442] text-white text-[11px] font-black shadow-xs">
                   BAND 6.0
                 </span>
                 <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
@@ -324,12 +324,12 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
 
               <div>
                 <div className="font-black text-base text-slate-900 tracking-tight">MASTER</div>
-                <div className="text-[11px] font-bold text-[#00B956] italic">"I master"</div>
+                <div className="text-[11px] font-bold text-[#538442] italic">"I master"</div>
               </div>
 
               {/* PROGRESSIVE METAPHOR ILLUSTRATION: COMPLETED ACADEMY */}
               <div className="py-3 flex justify-center items-center">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-100/80 text-[#00B956] flex items-center justify-center shadow-inner border border-emerald-200 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-100/80 text-[#538442] flex items-center justify-center shadow-inner border border-emerald-200 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M3 21h18" />
                     <path d="M5 21V7l7-4 7 4v14" />
@@ -342,15 +342,15 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
                 <div className="text-xs font-extrabold text-slate-800">Luyện thi nâng cao</div>
                 <ul className="text-[11px] text-slate-600 space-y-1 font-medium">
                   <li className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#00B956]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#538442]" />
                     <span>Lập luận tốt tất cả dạng đề</span>
                   </li>
                   <li className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#00B956]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#538442]" />
                     <span>Nắm rõ xử lý các dạng đề khó</span>
                   </li>
                   <li className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#00B956]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#538442]" />
                     <span>Tối ưu hóa thời gian thi thực tế</span>
                   </li>
                 </ul>
@@ -364,10 +364,10 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
           </div>
 
           {/* LEVEL 5: LEADER */}
-          <div className="relative group flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-rose-50/40 border border-slate-200/80 hover:border-[#B82B37]/60 hover:shadow-xl hover:shadow-rose-500/10 transition-all duration-300 hover:-translate-y-1">
+          <div className="relative group flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-red-50/40 border border-slate-200/80 hover:border-[#D12E33]/60 hover:shadow-xl hover:shadow-red-500/10 transition-all duration-300 hover:-translate-y-1">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-1 rounded-full bg-[#B82B37] text-white text-[11px] font-black shadow-xs">
+                <span className="px-2.5 py-1 rounded-full bg-[#D12E33] text-white text-[11px] font-black shadow-xs">
                   BAND 7.0+
                 </span>
                 <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
@@ -377,12 +377,12 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
 
               <div>
                 <div className="font-black text-base text-slate-900 tracking-tight">LEADER</div>
-                <div className="text-[11px] font-bold text-[#B82B37] italic">"I lead"</div>
+                <div className="text-[11px] font-bold text-[#D12E33] italic">"I lead"</div>
               </div>
 
               {/* PROGRESSIVE METAPHOR ILLUSTRATION: LANDMARK WITH CROWN */}
               <div className="py-3 flex justify-center items-center">
-                <div className="w-14 h-14 rounded-2xl bg-rose-100/80 text-[#B82B37] flex items-center justify-center shadow-inner border border-rose-200 group-hover:scale-110 transition-transform duration-300 relative">
+                <div className="w-14 h-14 rounded-2xl bg-red-100/80 text-[#D12E33] flex items-center justify-center shadow-inner border border-red-200 group-hover:scale-110 transition-transform duration-300 relative">
                   <Sparkles className="w-4 h-4 text-amber-500 absolute -top-1 -right-1 animate-pulse" />
                   <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" />
@@ -394,15 +394,15 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
                 <div className="text-xs font-extrabold text-slate-800">Master & Chinh phục 7.0+</div>
                 <ul className="text-[11px] text-slate-600 space-y-1 font-medium">
                   <li className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#B82B37]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#D12E33]" />
                     <span>Tư duy & lập luận chuyên sâu</span>
                   </li>
                   <li className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#B82B37]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#D12E33]" />
                     <span>Lưu khoát & tự nhiên như bản xứ</span>
                   </li>
                   <li className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#B82B37]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#D12E33]" />
                     <span>Dẫn dắt & định hình phản xạ</span>
                   </li>
                 </ul>
