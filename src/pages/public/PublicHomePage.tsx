@@ -98,10 +98,6 @@ export default function PublicHomePage() {
               <div className="pt-7 border-t border-border/80 flex flex-wrap items-center gap-6 sm:gap-8 text-sm sm:text-base text-foreground/80 font-bold">
                 <span className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-success" />
-                  Định dạng đề chuẩn Cambridge
-                </span>
-                <span className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-success" />
                   Giảng viên có chứng chỉ chuyên môn
                 </span>
                 <span className="flex items-center gap-2">

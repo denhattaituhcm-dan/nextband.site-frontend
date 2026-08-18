@@ -1,3 +1,4 @@
+import { API_BASE_URL, getAuthToken } from "./api";
 import { supabase } from "./supabase";
 
 export interface ContactLead {
@@ -7,7 +8,7 @@ export interface ContactLead {
   email?: string;
   goal?: string;
   source?: string;
-  status: "new" | "contacted" | "enrolled" | "archived";
+  status: "NEW" | "CONTACTED" | "ENROLLED" | "CANCELLED" | "ARCHIVED" | "new" | "contacted" | "enrolled" | "archived";
   createdAt: string;
 }
 
@@ -38,8 +39,8 @@ function saveLocalLead(lead: ContactLead) {
 
 /**
  * Submit a real contact lead
- * 1. Attempts to persist to Supabase `contact_leads` table.
- * 2. Always persists to local store to guarantee zero lead loss.
+ * 1. Calls Backend API `POST /leads` to record lead & trigger instant staff email alert to arisieltsdeeplearning@gmail.com.
+ * 2. Fallbacks to Supabase + LocalStorage if offline or backend is unreachable to guarantee zero lead loss.
  */
 export async function submitContactLead(params: {
   fullName: string;
@@ -49,21 +50,55 @@ export async function submitContactLead(params: {
   source?: string;
 }): Promise<{ success: boolean; lead: ContactLead; message?: string }> {
   const now = new Date().toISOString();
-  const lead: ContactLead = {
+  let lead: ContactLead = {
     id: `lead-${Date.now()}`,
     fullName: params.fullName.trim(),
     phone: params.phone.trim(),
     email: params.email?.trim() || "",
     goal: params.goal?.trim() || "",
     source: params.source || "contact_page",
-    status: "new",
+    status: "NEW",
     createdAt: now,
   };
 
-  // Always save locally first to guarantee no loss
-  saveLocalLead(lead);
+  // 1. Try Backend Fastify Server
+  try {
+    const res = await fetch(`${API_BASE_URL}/leads`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fullName: lead.fullName,
+        phone: lead.phone,
+        email: lead.email || undefined,
+        goal: lead.goal || undefined,
+        source: lead.source,
+      }),
+    });
 
-  // Attempt to save to Supabase
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.data) {
+        lead = {
+          ...lead,
+          id: data.data.id || lead.id,
+          createdAt: data.data.createdAt || lead.createdAt,
+        };
+      }
+      // Save copy in local for fast reference
+      saveLocalLead(lead);
+      return {
+        success: true,
+        lead,
+        message: data.message || "Gửi thông tin thành công! Ban Học Thuật ARIS sẽ liên hệ tư vấn trong thời gian sớm nhất.",
+      };
+    }
+  } catch (apiErr) {
+    console.warn("[ContactService] Backend API not reachable, falling back to direct persistence:", apiErr);
+  }
+
+  // 2. Direct Supabase Fallback (if backend is temporarily offline)
   try {
     const { data, error } = await supabase
       .from("contact_leads")
@@ -78,14 +113,15 @@ export async function submitContactLead(params: {
       .select()
       .single();
 
-    if (error) {
-      console.warn("Supabase insert notice (stored locally):", error.message);
-    } else if (data?.id) {
+    if (!error && data?.id) {
       lead.id = data.id;
     }
   } catch (err: any) {
-    console.warn("Supabase connection notice (lead secured in local storage):", err?.message);
+    console.warn("[ContactService] Supabase fallback warning:", err?.message);
   }
+
+  // 3. Guarantee local persistence
+  saveLocalLead(lead);
 
   return {
     success: true,
@@ -95,9 +131,39 @@ export async function submitContactLead(params: {
 }
 
 /**
- * Admin: Get all leads (combines Supabase + Local)
+ * Admin: Get all leads (Backend Server -> Supabase -> Local)
  */
 export async function fetchAllContactLeads(): Promise<ContactLead[]> {
+  // 1. Try Backend Server
+  try {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/leads`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+
+    if (res.ok) {
+      const result = await res.json();
+      if (Array.isArray(result.data)) {
+        return result.data.map((d: any) => ({
+          id: d.id,
+          fullName: d.fullName || d.full_name,
+          phone: d.phone,
+          email: d.email || "",
+          goal: d.goal || "",
+          source: d.source || "contact_page",
+          status: d.status || "NEW",
+          createdAt: d.createdAt || d.created_at,
+        }));
+      }
+    }
+  } catch (err) {
+    console.warn("[ContactService] Backend leads list unavailable, trying fallback");
+  }
+
+  // 2. Try Supabase
   try {
     const { data, error } = await supabase
       .from("contact_leads")
@@ -122,3 +188,4 @@ export async function fetchAllContactLeads(): Promise<ContactLead[]> {
 
   return getLocalLeads();
 }
+
