@@ -76,7 +76,7 @@ export function TeacherShowcase() {
       {/* MODE 2: FACULTY SHOWCASE (3 - 5 Teachers)                                 */}
       {/* ========================================================================= */}
       {count >= 3 && count <= 5 && (
-        <div className="space-y-8 max-w-5xl mx-auto">
+        <div className="space-y-8 w-full">
           {/* Top Horizontal Faculty Selector Bar */}
           <div className="flex flex-wrap items-center justify-center gap-3">
             {teachers.map((t) => {
@@ -126,7 +126,7 @@ export function TeacherShowcase() {
       {/* MODE 3: FACULTY GRID & ROSTER (6+ Teachers)                               */}
       {/* ========================================================================= */}
       {count >= 6 && (
-        <div className="space-y-6 max-w-6xl mx-auto">
+        <div className="space-y-6 w-full">
           {/* Specialty Filter Pills */}
           <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="text-xs font-mono font-bold text-muted-foreground mr-1 flex items-center gap-1">
