@@ -1,18 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { SectionContainer } from "@/components/public/SectionContainer";
+import { TeacherShowcase } from "@/components/teachers/TeacherShowcase";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/common/SEO";
 import {
   Sparkles,
-  ShieldCheck,
-  CheckCircle2,
   ArrowRight,
-  BookOpen,
-  Brain,
-  FileCheck,
   Award,
-  Users,
 } from "lucide-react";
 
 export default function TeachersPage() {
@@ -66,108 +61,8 @@ export default function TeachersPage() {
         </div>
       </section>
 
-      {/* Faculty Structure Grid */}
-      <SectionContainer
-        badge="Cấu Trúc Chuyên Môn"
-        title="Các bộ phận phụ trách học thuật tại ARIS"
-        description="Mỗi giảng viên phụ trách đúng thế mạnh chuyên sâu để đảm bảo chất lượng bài giảng và độ chuẩn xác trong nhận xét."
-        background="default"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left">
-          {/* Card 1 */}
-          <div className="p-8 rounded-3xl bg-card border border-border/80 space-y-5 shadow-2xs">
-            <div className="p-3 rounded-2xl bg-brand-blue-soft text-brand-blue w-fit">
-              <ShieldCheck className="h-7 w-7" />
-            </div>
-            <div>
-              <span className="text-xs font-mono font-bold text-brand-blue uppercase tracking-wider">
-                Nghiên Cứu &amp; Phương Pháp
-              </span>
-              <h3 className="text-2xl font-black text-foreground mt-1">
-                Lưu Văn Đẳng
-              </h3>
-              <p className="text-sm font-bold text-muted-foreground">
-                Academic Lead — Phụ trách Chuyên môn ARIS
-              </p>
-            </div>
-            <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
-              Trực tiếp xây dựng khung năng lực 7 cấp bậc (ARIS-7) và phương pháp đào tạo The ARIS Way; phụ trách chuẩn hóa tiêu chí chấm chữa trên hệ thống NextBand.
-            </p>
-            <div className="pt-3 border-t border-border/60 space-y-2 text-xs sm:text-sm text-foreground/80 font-bold">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-success" />
-                <span>Định hướng phương pháp The ARIS Way</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-success" />
-                <span>Giám sát chất lượng chấm bài</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2 */}
-          <div className="p-8 rounded-3xl bg-card border border-border/80 space-y-5 shadow-2xs">
-            <div className="p-3 rounded-2xl bg-brand-blue-soft text-brand-blue w-fit">
-              <Brain className="h-7 w-7" />
-            </div>
-            <div>
-              <span className="text-xs font-mono font-bold text-brand-blue uppercase tracking-wider">
-                Sản Sinh Ngôn Ngữ
-              </span>
-              <h3 className="text-2xl font-black text-foreground mt-1">
-                Ban Writing &amp; Speaking
-              </h3>
-              <p className="text-sm font-bold text-muted-foreground">
-                Giảng viên chuyên sâu Kỹ năng Viết &amp; Nói
-              </p>
-            </div>
-            <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
-              Tập trung huấn luyện tư duy phản biện, tái cấu trúc lập luận Writing Task 2 và phản xạ Nói tự nhiên; trực tiếp sửa từng câu văn và ngữ điệu phát âm.
-            </p>
-            <div className="pt-3 border-t border-border/60 space-y-2 text-xs sm:text-sm text-foreground/80 font-bold">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-success" />
-                <span>Bóc tách cấu trúc lập luận Task 2</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-success" />
-                <span>Sửa lỗi dùng từ và văn phong học thuật</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 3 */}
-          <div className="p-8 rounded-3xl bg-card border border-border/80 space-y-5 shadow-2xs">
-            <div className="p-3 rounded-2xl bg-brand-blue-soft text-brand-blue w-fit">
-              <BookOpen className="h-7 w-7" />
-            </div>
-            <div>
-              <span className="text-xs font-mono font-bold text-brand-blue uppercase tracking-wider">
-                Tiếp Nhận Ngôn Ngữ
-              </span>
-              <h3 className="text-2xl font-black text-foreground mt-1">
-                Ban Reading &amp; Listening
-              </h3>
-              <p className="text-sm font-bold text-muted-foreground">
-                Giảng viên chuyên sâu Kỹ năng Đọc &amp; Nghe
-              </p>
-            </div>
-            <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
-              Huấn luyện kỹ năng giải phẫu văn bản học thuật Cambridge, nhận diện bẫy paraphrase và tư duy xử lý thông tin dưới áp lực thời gian trong phòng thi.
-            </p>
-            <div className="pt-3 border-t border-border/60 space-y-2 text-xs sm:text-sm text-foreground/80 font-bold">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-success" />
-                <span>Giải mã bẫy đề thi Cambridge</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-success" />
-                <span>Kiểm soát tốc độ đọc hiểu không đoán mò</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </SectionContainer>
+      {/* Teacher Showcase: Master-Detail Bảng Điểm Đội Ngũ */}
+      <TeacherShowcase />
 
       {/* Teaching Standards (4 Tiêu Chuẩn Giảng Dạy) */}
       <SectionContainer
