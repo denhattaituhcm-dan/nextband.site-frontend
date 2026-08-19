@@ -144,6 +144,11 @@ export default {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.7" },
         },
+        "signal-ripple": {
+          "0%": { transform: "scale(1)", opacity: "0.35" },
+          "45%": { transform: "scale(1.45)", opacity: "0.15" },
+          "100%": { transform: "scale(2.0)", opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -151,6 +156,8 @@ export default {
         "fade-in": "fade-in 0.3s ease-out",
         "slide-in-left": "slide-in-left 0.3s ease-out",
         "pulse-soft": "pulse-soft 2s ease-in-out infinite",
+        "signal-ripple": "signal-ripple 3.6s cubic-bezier(0.16, 1, 0.3, 1) infinite",
+        "signal-ripple-delayed": "signal-ripple 3.6s cubic-bezier(0.16, 1, 0.3, 1) 1.2s infinite",
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
