@@ -46,6 +46,7 @@ export interface ForecastTopic {
   questions?: string[]; // For Part 1 and Part 3
   cueCardPrompt?: string; // For Part 2
   cueCardBulletPoints?: string[]; // For Part 2 "You should say:"
+  part3Questions?: string[]; // For Part 2 associated Part 3 discussion questions
 
   // Learning Content
   sampleAnswers: SampleAnswers;

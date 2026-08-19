@@ -33,14 +33,15 @@ export default function StudentLessonViewerPage() {
   const { user } = useAuth();
   const { state: lifecycleState, resolveClass, retry: retryLifecycle } = useStudentLifecycle();
 
-  const handleOpenExam = (hwId: string) => {
+  const handleOpenExam = (targetExamId: string) => {
     const returnUrl = location.pathname;
-    navigate(`/exam/${hwId}?returnUrl=${encodeURIComponent(returnUrl)}`, {
+    navigate(`/exam/${targetExamId}?returnUrl=${encodeURIComponent(returnUrl)}`, {
       state: {
         exitContext: {
           destination: returnUrl,
-          source: "class_homework",
+          source: "class_lessons",
           classId,
+          examId: targetExamId,
         },
         returnUrl,
       },
@@ -192,6 +193,7 @@ export default function StudentLessonViewerPage() {
 
     return {
       id: item.id,
+      examId: item.id,
       hwNum: String(idx + 1).padStart(2, "0"),
       title: item.title || `Homework ${String(idx + 1).padStart(2, "0")}`,
       description: item.description || `Bài tập buổi ${idx + 1}`,
@@ -312,7 +314,7 @@ export default function StudentLessonViewerPage() {
                 </div>
 
                 <Button
-                  onClick={() => handleOpenExam(nextHomework.id)}
+                  onClick={() => handleOpenExam(nextHomework.examId || nextHomework.id)}
                   className="bg-white text-primary hover:bg-white/95 font-bold px-6 py-2.5 rounded-xl text-xs shadow-xs shrink-0"
                 >
                   <span>Làm bài ngay</span>
@@ -417,7 +419,7 @@ export default function StudentLessonViewerPage() {
                       size="sm"
                       variant={hw.status === "REVIEWED" ? "outline" : "default"}
                       className="font-bold text-xs gap-1.5"
-                      onClick={() => handleOpenExam(hw.id)}
+                      onClick={() => handleOpenExam(hw.examId || hw.id)}
                     >
                       {hw.status === "REVIEWED"
                         ? "Xem phản hồi"

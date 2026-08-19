@@ -2901,98 +2901,6 @@ export interface TeacherWorkspaceContract {
 }
 
 export const homeworksApi = {
-  getWorkspace: async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return { success: false, data: null as any };
-
-    // 1. Fetch student class membership via class_students
-    const { data: classStudents } = await supabase
-      .from("class_students")
-      .select("class_id, classes(*, courses(*))")
-      .eq("student_id", user.id);
-
-    if (!classStudents || classStudents.length === 0) {
-      return {
-        success: true,
-        data: {
-          dueToday: [],
-          upcoming: [],
-          completed: [],
-          continue: null,
-        },
-      };
-    }
-
-    const cls = classStudents[0]?.classes;
-    const courseId = cls?.course_id;
-
-    // 2. Fetch all exams (homeworks) for the course
-    let exams: any[] = [];
-    if (courseId) {
-      const { data: examData } = await supabase
-        .from("exams")
-        .select("id, title, description, week, exam_type, exam_sections(id, section_type, title)")
-        .eq("course_id", courseId)
-        .order("week", { ascending: true });
-      exams = examData || [];
-    }
-
-    // 3. Fetch submissions
-    const examIds = exams.map((e) => e.id);
-    let submissionsMap: Record<string, any> = {};
-
-    if (examIds.length > 0) {
-      const { data: subs } = await supabase
-        .from("exam_submissions")
-        .select("id, exam_id, status, total_score, submitted_at")
-        .eq("student_id", user.id)
-        .in("exam_id", examIds);
-
-      (subs || []).forEach((s: any) => {
-        submissionsMap[s.exam_id] = s;
-      });
-    }
-
-    // 4. Group tasks into dueToday, upcoming, completed
-    const upcoming: any[] = [];
-    const completed: any[] = [];
-
-    exams.forEach((ex: any, idx: number) => {
-      const sub = submissionsMap[ex.id];
-      const isDone = sub?.status === "graded" || sub?.status === "submitted";
-      const hwItem = {
-        id: ex.id,
-        homeworkId: ex.id,
-        classId: cls.id,
-        title: ex.title || `Homework ${String(idx + 1).padStart(2, "0")}`,
-        description: ex.description || `Buổi học ${ex.week || idx + 1}`,
-        week: ex.week || idx + 1,
-        status: isDone ? "COMPLETED" : "AVAILABLE",
-        submittedAt: sub?.submitted_at || null,
-        score: sub?.total_score || null,
-      };
-
-      if (isDone) {
-        completed.push(hwItem);
-      } else {
-        upcoming.push(hwItem);
-      }
-    });
-
-    const firstAvailable = upcoming[0] || null;
-
-    return {
-      success: true,
-      data: {
-        dueToday: [],
-        upcoming,
-        completed,
-        continue: firstAvailable,
-      },
-    };
-  },
 
   getTeacherWorkspace: async (classId?: string) => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -3594,20 +3502,5 @@ export interface StudentWorkspaceViewModel {
   announcements: any[];
   notifications: any[];
 }
-
-export const workspaceApi = {
-  getStudentWorkspace: async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.access_token;
-    const response = await fetch(`${API_BASE_URL}/me/workspace`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "Failed to fetch student workspace");
-    return result as { success: boolean; data: StudentWorkspaceViewModel };
-  },
-};
 
 export default supabase;
