@@ -701,7 +701,7 @@ export default function ExamInterface() {
           location.state,
         );
         navigate(
-          `/submissions/${submission.id}?returnUrl=${encodeURIComponent(
+          `/app/submissions/${submission.id}?returnUrl=${encodeURIComponent(
             exitDestination,
           )}`,
           {

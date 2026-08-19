@@ -199,7 +199,7 @@ export default function HomePage() {
               {enrolledClassId && (
                 <div className="pt-1">
                   <Button
-                    onClick={() => navigate(`/class/${enrolledClassId}/lessons`)}
+                    onClick={() => navigate(`/app/class/${enrolledClassId}/lessons`)}
                     className="rounded-xl bg-white text-primary hover:bg-white/95 font-bold px-6 py-5 shadow-sm active:scale-95 text-sm transition-all gap-2 border-0"
                   >
                     <BookOpen className="h-4 w-4 text-primary" />

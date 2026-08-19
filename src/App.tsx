@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
@@ -194,6 +194,21 @@ class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, { 
   }
 }
 
+function RedirectClassLessons() {
+  const { classId } = useParams<{ classId: string }>();
+  return <Navigate to={`/app/class/${classId}/lessons`} replace />;
+}
+
+function RedirectSubmission() {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={`/app/submissions/${id}`} replace />;
+}
+
+function RedirectCourse() {
+  const { slug } = useParams<{ slug: string }>();
+  return <Navigate to={`/app/course/${slug}`} replace />;
+}
+
 const App = () => (
   <AppErrorBoundary>
     <QueryClientProvider client={queryClient}>
@@ -262,10 +277,10 @@ const App = () => (
               {/* ============================================================ */}
               <Route path="/my-courses" element={<Navigate to="/app/my-courses" replace />} />
               <Route path="/profile" element={<Navigate to="/app/profile" replace />} />
-              <Route path="/class/:classId/lessons" element={<Navigate to="/app/class/:classId/lessons" replace />} />
+              <Route path="/class/:classId/lessons" element={<RedirectClassLessons />} />
               <Route path="/my-submissions" element={<Navigate to="/app/my-submissions" replace />} />
-              <Route path="/submissions/:id" element={<Navigate to="/app/submissions/:id" replace />} />
-              <Route path="/course/:slug" element={<Navigate to="/app/course/:slug" replace />} />
+              <Route path="/submissions/:id" element={<RedirectSubmission />} />
+              <Route path="/course/:slug" element={<RedirectCourse />} />
 
               {/* ============================================================ */}
               {/* 5. EXAM RUNTIME INTERFACE (MinimalLayout)                    */}

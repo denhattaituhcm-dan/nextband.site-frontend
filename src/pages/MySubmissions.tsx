@@ -300,7 +300,7 @@ export default function MySubmissions() {
                             </Button>
                           ) : (
                             <Button size="sm" variant="outline" asChild>
-                              <Link to={`/submissions/${submission.id}`}>
+                              <Link to={`/app/submissions/${submission.id}`}>
                                 <Eye className="mr-1 h-3.5 w-3.5" />
                                 {submission.status === "graded"
                                   ? "Xem kết quả"

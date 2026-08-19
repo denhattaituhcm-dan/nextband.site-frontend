@@ -216,67 +216,182 @@ export default function PublicHomePage() {
       </SectionContainer>
 
       {/* ========================================================================= */}
-      {/* SECTION 3: THE ARIS WAY (CÁCH HỌC KHÁC BIỆT)                             */}
+      {/* SECTION 3: THE ARIS WAY (CƠ CHẾ TRI NHẬN NGÔN NGỮ)                       */}
       {/* ========================================================================= */}
       <SectionContainer
-        badge="Phương Pháp Học"
-        title="Biến ý tưởng trong đầu thành câu tiếng Anh chuẩn xác."
-        description="Thay vì dịch từng từ từ tiếng Việt hay cố nhồi từ vựng phức tạp, ARIS hướng dẫn bạn cách tổ chức suy nghĩ mạch lạc và biểu đạt đúng ngữ cảnh qua 3 bước trực quan."
+        badge="The ARIS Way"
+        title="ARIS không bắt đầu từ câu tiếng Anh. Chúng tôi bắt đầu từ cách bạn tổ chức suy nghĩ."
+        description="Thay vì dịch ghép từng từ từ tiếng Việt, The ARIS Way dẫn dắt bạn bóc tách ý niệm, xác định góc nhìn và định hình cấu trúc trước khi tạo lập câu văn hoàn chỉnh."
         background="default"
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left">
-          <div className="p-8 rounded-3xl border border-border/80 bg-card space-y-4 shadow-2xs">
-            <div className="flex items-center gap-3">
-              <span className="font-mono font-black text-base px-3.5 py-1.5 rounded-xl bg-brand-blue-soft text-brand-blue">
-                01
-              </span>
-              <h3 className="font-black text-foreground text-lg sm:text-xl">
-                Hiểu bản chất câu hỏi
-              </h3>
+        <div className="space-y-8 text-left max-w-5xl mx-auto">
+          {/* Input Thought / Điểm xuất phát ý niệm */}
+          <div className="p-5 sm:p-6 rounded-3xl bg-muted/40 border border-border/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-muted-foreground font-mono">
+                <span className="h-2 w-2 rounded-full bg-brand-blue animate-pulse" />
+                <span>Ý tưởng ban đầu (The Input Thought)</span>
+              </div>
+              <p className="text-base sm:text-lg font-bold text-foreground">
+                "Chính phủ cần cấp ngân sách đáng kể để hỗ trợ các cộng đồng gặp khó khăn."
+              </p>
             </div>
-            <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
-              Nhận diện chính xác yêu cầu của đề bài, bóc tách các tiêu chí chấm điểm để phản xạ câu trả lời đúng trọng tâm.
-            </p>
+            <div className="shrink-0 text-xs font-bold px-3 py-1.5 rounded-xl bg-brand-blue-soft text-brand-blue border border-brand-blue/20 w-fit">
+              Xuất phát điểm tư duy
+            </div>
           </div>
 
-          <div className="p-8 rounded-3xl border border-border/80 bg-card space-y-4 shadow-2xs">
-            <div className="flex items-center gap-3">
-              <span className="font-mono font-black text-base px-3.5 py-1.5 rounded-xl bg-brand-blue-soft text-brand-blue">
-                02
-              </span>
-              <h3 className="font-black text-foreground text-lg sm:text-xl">
-                Sắp xếp ý tưởng mạch lạc
-              </h3>
+          {/* 2-Column Transformation Comparison (Desktop) / Vertical (Mobile) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+            {/* Left: Lối dịch trực tiếp */}
+            <div className="lg:col-span-5 p-6 sm:p-8 rounded-3xl border border-border/80 bg-card space-y-5 shadow-2xs flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between gap-2 border-b border-border/60 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="h-6 w-6 rounded-lg bg-muted text-muted-foreground text-xs font-mono font-black flex items-center justify-center">
+                      A
+                    </span>
+                    <h3 className="font-black text-foreground text-base sm:text-lg">
+                      Lối Dịch Trực Tiếp
+                    </h3>
+                  </div>
+                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2.5 py-1 rounded-md">
+                    Direct Translation
+                  </span>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-muted/50 border border-border/70 space-y-2">
+                  <div className="text-xs font-mono font-bold text-muted-foreground uppercase">
+                    Câu hình thành:
+                  </div>
+                  <p className="font-mono text-sm sm:text-base font-bold text-foreground leading-relaxed">
+                    "The government gave a lot of money to help poor people."
+                  </p>
+                </div>
+
+                <div className="space-y-2.5 text-xs sm:text-sm text-foreground/75 leading-relaxed">
+                  <p>
+                    <strong className="text-foreground">Đặc điểm:</strong> Người học dịch nối từng cụm từ tiếng Việt sang tiếng Anh. Câu truyền đạt được nghĩa cơ bản nhưng ở văn phong sinh hoạt thông thường, chưa thể hiện được sự tinh tế và chuẩn xác trong ngữ cảnh học thuật.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-border/60 text-xs text-muted-foreground font-medium italic">
+                Dừng lại ở việc biểu đạt nghĩa bề mặt.
+              </div>
             </div>
-            <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
-              Xây dựng luận điểm logic, có mở đầu, lý giải nguyên nhân và ví dụ cụ thể thay vì liệt kê ý rời rạc.
-            </p>
+
+            {/* Right: The ARIS Way (4 nấc thang tri nhận) */}
+            <div className="lg:col-span-7 p-6 sm:p-8 rounded-3xl border-2 border-brand-blue/30 bg-card space-y-6 shadow-2xs flex flex-col justify-between relative overflow-hidden">
+              <div className="space-y-5">
+                <div className="flex items-center justify-between gap-2 border-b border-brand-blue/20 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="h-6 w-6 rounded-lg bg-brand-blue text-white text-xs font-mono font-black flex items-center justify-center shadow-xs">
+                      B
+                    </span>
+                    <h3 className="font-black text-foreground text-base sm:text-lg">
+                      Cơ Chế The ARIS Way
+                    </h3>
+                  </div>
+                  <span className="text-[11px] font-mono font-extrabold uppercase tracking-wider text-brand-blue bg-brand-blue-soft px-2.5 py-1 rounded-md border border-brand-blue/20">
+                    Cognitive Framing
+                  </span>
+                </div>
+
+                {/* 4 Nấc thang */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs sm:text-sm">
+                  <div className="p-3.5 rounded-2xl bg-muted/30 border border-border/70 space-y-1">
+                    <div className="flex items-center gap-2 font-black text-foreground">
+                      <span className="font-mono text-xs px-2 py-0.5 rounded-md bg-brand-blue-soft text-brand-blue font-bold">
+                        01
+                      </span>
+                      <span>Ý Niệm (Concept)</span>
+                    </div>
+                    <p className="text-foreground/75 pl-7 text-xs leading-relaxed">
+                      Phân bổ ngân sách công vụ &amp; Nhóm yếu thế.
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-2xl bg-muted/30 border border-border/70 space-y-1">
+                    <div className="flex items-center gap-2 font-black text-foreground">
+                      <span className="font-mono text-xs px-2 py-0.5 rounded-md bg-brand-blue-soft text-brand-blue font-bold">
+                        02
+                      </span>
+                      <span>Góc Nhìn (Perspective)</span>
+                    </div>
+                    <p className="text-foreground/75 pl-7 text-xs leading-relaxed">
+                      Chính phủ là chủ thể điều phối nguồn lực.
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-2xl bg-muted/30 border border-border/70 space-y-1">
+                    <div className="flex items-center gap-2 font-black text-foreground">
+                      <span className="font-mono text-xs px-2 py-0.5 rounded-md bg-brand-blue-soft text-brand-blue font-bold">
+                        03
+                      </span>
+                      <span>Cấu Trúc (Structure)</span>
+                    </div>
+                    <p className="text-foreground/75 pl-7 text-xs leading-relaxed font-mono">
+                      allocated [funding] to support...
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-2xl bg-brand-blue-soft/50 border border-brand-blue/30 space-y-1">
+                    <div className="flex items-center gap-2 font-black text-brand-blue">
+                      <span className="font-mono text-xs px-2 py-0.5 rounded-md bg-brand-blue text-white font-bold">
+                        04
+                      </span>
+                      <span>Diễn Đạt (Expression)</span>
+                    </div>
+                    <p className="text-foreground/80 pl-7 text-xs leading-relaxed font-medium">
+                      Lựa chọn từ ngữ học thuật chuẩn xác.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Final Sentence Result */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-brand-blue text-white space-y-1.5 shadow-sm">
+                  <div className="text-xs font-mono font-black uppercase tracking-wider text-brand-cyan flex items-center gap-1.5">
+                    <CheckCircle2 className="h-4 w-4" />
+                    <span>Câu hoàn chỉnh theo cấu trúc học thuật:</span>
+                  </div>
+                  <p className="font-mono text-sm sm:text-base font-bold text-white leading-relaxed">
+                    "The government allocated substantial funding to support vulnerable communities."
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-border/60 text-xs text-brand-blue font-bold flex items-center gap-1.5">
+                <ShieldCheck className="h-4 w-4 shrink-0" />
+                <span>Hiểu cơ chế lựa chọn ngôn ngữ thay vì học thuộc bài mẫu.</span>
+              </div>
+            </div>
           </div>
 
-          <div className="p-8 rounded-3xl border border-border/80 bg-card space-y-4 shadow-2xs">
-            <div className="flex items-center gap-3">
-              <span className="font-mono font-black text-base px-3.5 py-1.5 rounded-xl bg-brand-blue-soft text-brand-blue">
-                03
-              </span>
-              <h3 className="font-black text-foreground text-lg sm:text-xl">
-                Sửa lỗi đến khi chuẩn
-              </h3>
+          {/* Socratic & NextBand Learning Loop Box */}
+          <div className="p-6 sm:p-7 rounded-3xl bg-muted/30 border border-border/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 text-left shadow-2xs">
+            <div className="space-y-1.5 flex-1">
+              <div className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-brand-blue font-mono">
+                <RefreshCw className="h-3.5 w-3.5 text-brand-blue" />
+                <span>Vòng Lặp Rèn Luyện (The Learning Loop)</span>
+              </div>
+              <h4 className="font-black text-foreground text-base sm:text-lg">
+                Giáo viên hỏi để bạn tự thấy nguyên nhân câu chưa chuẩn.
+              </h4>
+              <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed">
+                Khi có câu viết chưa đạt, giáo viên đặt câu hỏi truy vấn logic để bạn tự nhận ra lỗi tư duy, tự tay hoàn thành bài sửa (Re-attempt) và lưu vết tiến trình trên hệ thống NextBand.
+              </p>
             </div>
-            <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
-              Giáo viên nhận xét chi tiết từng câu văn và bạn tự tay viết lại bài sửa để không lặp lại lỗi cũ trong bài tiếp theo.
-            </p>
-          </div>
-        </div>
 
-        <div className="mt-10 text-center">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/method")}
-            className="text-sm sm:text-base font-extrabold text-primary hover:text-primary-hover hover:bg-primary-soft gap-2 px-6 h-12 rounded-xl"
-          >
-            <span>Tìm hiểu chi tiết phương pháp The ARIS Way</span>
-            <ArrowRight className="h-4 w-4" />
-          </Button>
+            <Button
+              variant="outline"
+              onClick={() => navigate("/method")}
+              className="rounded-2xl px-6 h-12 text-xs sm:text-sm font-extrabold border-2 border-border/80 hover:bg-muted text-foreground shrink-0 gap-2 w-full sm:w-auto"
+            >
+              <span>Khám phá chi tiết phương pháp</span>
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </SectionContainer>
 

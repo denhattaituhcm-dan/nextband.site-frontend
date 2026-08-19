@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useStudentLifecycle } from "@/hooks/useStudentLifecycle";
+import { isValidUUID, classifyClassError } from "@/lib/classContext";
 import {
   BookOpen,
   ArrowLeft,
@@ -19,6 +21,9 @@ import {
   CheckCircle2,
   Clock,
   Circle,
+  AlertCircle,
+  RefreshCw,
+  Sparkles,
 } from "lucide-react";
 
 export default function StudentLessonViewerPage() {
@@ -26,6 +31,7 @@ export default function StudentLessonViewerPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const { state: lifecycleState, resolveClass, retry: retryLifecycle } = useStudentLifecycle();
 
   const handleOpenExam = (hwId: string) => {
     const returnUrl = location.pathname;
@@ -41,10 +47,20 @@ export default function StudentLessonViewerPage() {
     });
   };
 
-  const { data: classLessonData, isLoading, error } = useQuery({
+  // 1. Boundary Guard & Authorization Resolution (Pure Client Boundary)
+  const isUUIDValid = isValidUUID(classId);
+  const resolvedClass = isUUIDValid ? resolveClass(classId) : null;
+
+  // 2. Fetch Lessons Query (Only enabled when UUID is strictly valid)
+  const {
+    data: classLessonData,
+    isLoading: isLoadingLessons,
+    error: lessonsError,
+    refetch: refetchLessons,
+  } = useQuery({
     queryKey: ["class-lessons", classId],
     queryFn: () => lessonsApi.getClassLessons(classId!),
-    enabled: !!classId,
+    enabled: !!classId && isUUIDValid && lifecycleState === "ENROLLED",
   });
 
   const { data: submissionsData } = useQuery({
@@ -53,8 +69,95 @@ export default function StudentLessonViewerPage() {
     enabled: !!user?.id,
   });
 
-  const classData = classLessonData?.data;
-  const lessons = classData?.lessons || [];
+  // Client Boundary Failure: Invalid UUID parameter (e.g. ":classId" or garbage)
+  if (!isUUIDValid) {
+    return (
+      <div className="max-w-2xl mx-auto p-8 pt-16 text-center space-y-5">
+        <div className="w-14 h-14 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto">
+          <AlertCircle className="w-7 h-7" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-extrabold text-foreground tracking-tight">
+            Đường dẫn lớp học không hợp lệ
+          </h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Mã nhận diện lớp học trên thanh địa chỉ không đúng định dạng chuẩn. Vui lòng quay lại danh sách lớp học để chọn lại.
+          </p>
+        </div>
+        <Button onClick={() => navigate("/app")} className="font-bold rounded-xl gap-2 shadow-sm">
+          <ArrowLeft className="w-4 h-4" />
+          Quay lại Bàn làm việc
+        </Button>
+      </div>
+    );
+  }
+
+  // Authorization Check: Student is enrolled, but targetClassId does not belong to student
+  if (lifecycleState === "ENROLLED" && resolvedClass && resolvedClass.status === "CLASS_ACCESS_DENIED") {
+    return (
+      <div className="max-w-2xl mx-auto p-8 pt-16 text-center space-y-5">
+        <div className="w-14 h-14 rounded-2xl bg-warning/10 text-warning flex items-center justify-center mx-auto">
+          <AlertCircle className="w-7 h-7" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-extrabold text-foreground tracking-tight">
+            Từ chối quyền truy cập lớp học
+          </h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Tài khoản của bạn không nằm trong danh sách học viên của lớp học này. Vui lòng liên hệ giáo viên phụ trách để được hỗ trợ.
+          </p>
+        </div>
+        <Button onClick={() => navigate("/app")} variant="outline" className="font-bold rounded-xl gap-2">
+          <ArrowLeft className="w-4 h-4" />
+          Quay lại Bàn làm việc
+        </Button>
+      </div>
+    );
+  }
+
+  if (isLoadingLessons || lifecycleState === "LOADING") {
+    return (
+      <div className="max-w-5xl mx-auto p-12 text-center space-y-4">
+        <div className="w-9 h-9 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+        <p className="text-sm text-muted-foreground font-medium">Đang tải không gian luyện tập lớp học...</p>
+      </div>
+    );
+  }
+
+  if (lessonsError || !classLessonData?.data) {
+    const errorDetails = classifyClassError(lessonsError);
+    return (
+      <div className="max-w-2xl mx-auto p-8 pt-16 text-center space-y-5">
+        <div className="w-14 h-14 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto">
+          <AlertCircle className="w-7 h-7" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-xl font-extrabold text-foreground tracking-tight">
+            {errorDetails.type === "AUTH_REQUIRED"
+              ? "Yêu cầu đăng nhập lại"
+              : errorDetails.type === "NETWORK_ERROR"
+              ? "Không thể kết nối máy chủ"
+              : "Không thể tải bài tập Lớp học"}
+          </h2>
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
+            {errorDetails.message}
+          </p>
+        </div>
+        <div className="flex items-center justify-center gap-3 pt-2">
+          <Button onClick={() => refetchLessons()} variant="default" className="font-bold rounded-xl gap-2">
+            <RefreshCw className="w-4 h-4" />
+            Thử lại
+          </Button>
+          <Button onClick={() => navigate("/app")} variant="outline" className="font-bold rounded-xl">
+            Về Trang Chính
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const classData = classLessonData.data;
+  const lessons = classData.lessons || [];
   const userSubmissions = Array.isArray(submissionsData?.data) ? submissionsData.data : [];
 
   // Sort submissions by createdAt DESC (latest attempt ordering)
@@ -151,27 +254,6 @@ export default function StudentLessonViewerPage() {
         return <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />;
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="max-w-5xl mx-auto p-8 text-center space-y-4">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-        <p className="text-sm text-muted-foreground">Đang tải danh sách Bài tập Lớp học...</p>
-      </div>
-    );
-  }
-
-  if (error || !classData) {
-    return (
-      <div className="max-w-5xl mx-auto p-8 text-center space-y-4">
-        <h2 className="text-xl font-bold text-destructive">Không thể tải bài tập Lớp học</h2>
-        <p className="text-sm text-muted-foreground">{(error as any)?.message || "Bạn không có quyền truy cập lớp học này."}</p>
-        <Button onClick={() => navigate("/app")} variant="outline">
-          Quay lại Trang Welcome
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background pb-16">
@@ -284,53 +366,70 @@ export default function StudentLessonViewerPage() {
             </div>
           </div>
 
-          <div className="grid gap-3">
-            {homeworkList.map((hw) => (
-              <Card
-                key={hw.id}
-                className="p-4 rounded-xl border border-border bg-card hover:border-primary/40 hover:shadow-xs transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-              >
-                <div className="space-y-1.5 flex-1">
-                  <div className="flex items-center gap-2.5">
-                    <h3 className="font-bold text-sm text-foreground">{hw.title}</h3>
-                    {getStatusBadge(hw.status)}
+          {homeworkList.length === 0 ? (
+            <Card className="p-10 text-center space-y-4 border-dashed rounded-2xl bg-muted/20">
+              <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <div className="space-y-1 max-w-md mx-auto">
+                <h3 className="font-bold text-base text-foreground">Lớp học chưa có bài tập nào được giao</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Toàn bộ danh sách bài tập của khóa học sẽ hiển thị tại đây ngay khi giáo viên cập nhật bài tập mới.
+                </p>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => navigate("/app")} className="rounded-xl font-bold">
+                Quay lại Bàn làm việc
+              </Button>
+            </Card>
+          ) : (
+            <div className="grid gap-3">
+              {homeworkList.map((hw) => (
+                <Card
+                  key={hw.id}
+                  className="p-4 rounded-xl border border-border bg-card hover:border-primary/40 hover:shadow-xs transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                >
+                  <div className="space-y-1.5 flex-1">
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="font-bold text-sm text-foreground">{hw.title}</h3>
+                      {getStatusBadge(hw.status)}
+                    </div>
+
+                    {hw.resources && hw.resources.length > 0 ? (
+                      <div className="flex flex-wrap items-center gap-2 pt-1">
+                        <span className="text-[11px] font-medium text-muted-foreground">Hoạt động:</span>
+                        {hw.resources.map((res: any, idx: number) => (
+                          <span
+                            key={idx}
+                            className="inline-flex items-center gap-1 text-[11px] font-semibold bg-muted text-foreground px-2 py-0.5 rounded-md"
+                          >
+                            {getSkillIcon(res.type)}
+                            {res.type?.toUpperCase()}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">{hw.description}</p>
+                    )}
                   </div>
 
-                  {hw.resources && hw.resources.length > 0 ? (
-                    <div className="flex flex-wrap items-center gap-2 pt-1">
-                      <span className="text-[11px] font-medium text-muted-foreground">Hoạt động:</span>
-                      {hw.resources.map((res: any, idx: number) => (
-                        <span
-                          key={idx}
-                          className="inline-flex items-center gap-1 text-[11px] font-semibold bg-muted text-foreground px-2 py-0.5 rounded-md"
-                        >
-                          {getSkillIcon(res.type)}
-                          {res.type?.toUpperCase()}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-xs text-muted-foreground">{hw.description}</p>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  <Button
-                    size="sm"
-                    variant={hw.status === "REVIEWED" ? "outline" : "default"}
-                    className="font-bold text-xs gap-1.5"
-                    onClick={() => handleOpenExam(hw.id)}
-                  >
-                    {hw.status === "REVIEWED"
-                      ? "Xem phản hồi"
-                      : hw.status === "SUBMITTED"
-                      ? "Xem bài làm"
-                      : "Làm bài ngay"}
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Button
+                      size="sm"
+                      variant={hw.status === "REVIEWED" ? "outline" : "default"}
+                      className="font-bold text-xs gap-1.5"
+                      onClick={() => handleOpenExam(hw.id)}
+                    >
+                      {hw.status === "REVIEWED"
+                        ? "Xem phản hồi"
+                        : hw.status === "SUBMITTED"
+                        ? "Xem bài làm"
+                        : "Làm bài ngay"}
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

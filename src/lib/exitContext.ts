@@ -8,7 +8,7 @@ export interface ExitContext {
 /**
  * Chống lỗ hổng Open Redirect bằng cách chỉ cho phép các route nội bộ hợp lệ của NextBand
  */
-export function sanitizeInternalRoute(path: string | null | undefined, fallback: string = "/my-courses"): string {
+export function sanitizeInternalRoute(path: string | null | undefined, fallback: string = "/app"): string {
   if (!path || typeof path !== "string") {
     return fallback;
   }
@@ -36,7 +36,7 @@ export function sanitizeInternalRoute(path: string | null | undefined, fallback:
  * 1. Explicit current navigation context (State)
  * 2. Persisted return context (URL Query parameter: returnUrl)
  * 3. Domain fallback (dựa theo classId hoặc courseId của exam)
- * 4. Global fallback (/my-courses)
+ * 4. Global fallback (/app)
  */
 export function resolveExitDestination(
   exam?: { classId?: string; courseId?: string } | null,
@@ -59,12 +59,12 @@ export function resolveExitDestination(
 
   // 3. Domain Fallback (Exam metadata)
   if (exam?.classId) {
-    return `/class/${exam.classId}`;
+    return `/app/class/${exam.classId}/lessons`;
   }
   if (exam?.courseId) {
-    return `/course/${exam.courseId}`;
+    return `/app/course/${exam.courseId}`;
   }
 
   // 4. Global Fallback
-  return "/my-courses";
+  return "/app";
 }

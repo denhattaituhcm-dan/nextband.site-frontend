@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { classStudentsApi, MyClassEnrollment, workspaceApi } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 import { useCallback } from "react";
+import { resolveClassContext, ResolveClassResult } from "@/lib/classContext";
 
 /**
  * Authoritative lifecycle states for a student session.
@@ -48,8 +49,6 @@ export function useStudentLifecycle() {
     queryFn: () => classStudentsApi.getMyClasses(),
     enabled: !!isAuthenticated && !!user?.id,
     staleTime: 1000 * 60 * 2,
-    // Do NOT use retry: false — let React Query retry on network errors naturally.
-    // But do NOT transform errors into empty arrays (handled in getMyClasses itself).
   });
 
   // ─── Derive authoritative lifecycle state ───────────────────────────────────
@@ -60,17 +59,14 @@ export function useStudentLifecycle() {
   if (!isLoadingEnrollments && classesResult !== undefined) {
     switch (classesResult.status) {
       case "ok":
-        // INVARIANT-02 & INVARIANT-03: only 200 may produce PRE/ENROLLED
         enrollments = classesResult.data;
         state = enrollments.length > 0 ? "ENROLLED" : "PRE_ENROLLMENT";
         break;
       case "unauthenticated":
-        // Treat as API_ERROR in lifecycle — auth redirect handled by ProtectedRoute
         state = "API_ERROR";
         lifecycleError = { httpStatus: 401, message: "Session expired" };
         break;
       case "api_error":
-        // INVARIANT-01: 4xx/5xx MUST NOT become PRE_ENROLLMENT
         state = "API_ERROR";
         lifecycleError = {
           httpStatus: classesResult.httpStatus,
@@ -85,6 +81,14 @@ export function useStudentLifecycle() {
   }
 
   const hasEnrollments = state === "ENROLLED";
+
+  // ─── Pure Context Resolver (No Silent Fallback) ─────────────────────────────
+  const resolveClass = useCallback(
+    (targetClassId?: string | null): ResolveClassResult => {
+      return resolveClassContext(enrollments, targetClassId);
+    },
+    [enrollments]
+  );
 
   // ─── Secondary: workspace (INVARIANT-04: only when ENROLLED) ─────────────────
   const { data: workspace, isLoading: isLoadingWorkspace } = useQuery({
@@ -108,9 +112,6 @@ export function useStudentLifecycle() {
 
   /**
    * Retry: invalidates the primary membership query and resets lifecycle to LOADING.
-   * UI components should call this on "Retry" buttons — it restarts the full resolution.
-   *
-   * INVARIANT: Retry MUST reset to LOADING → full GET /classes/my-classes → resolve state.
    */
   const retry = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: [MY_CLASSES_QUERY_KEY, user?.id] });
@@ -119,6 +120,7 @@ export function useStudentLifecycle() {
   return {
     state,
     enrollments,
+    resolveClass,
     lifecycleError,
     workspace: workspace?.data ?? null,
     hasEnrollments,

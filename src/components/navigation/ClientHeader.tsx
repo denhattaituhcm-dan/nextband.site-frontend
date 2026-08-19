@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useStudentLifecycle } from "@/hooks/useStudentLifecycle";
 import { NotificationBell } from "./NotificationBell";
 import { useAuth as useAuthInner } from "@/hooks/useAuth";
@@ -18,22 +18,15 @@ import { useAuth as useAuthInner } from "@/hooks/useAuth";
 export function ClientHeader() {
   const { user, signOut, isAdmin, isAuthenticated, isTeacher } = useAuth();
   const navigate = useNavigate();
+  const { classId: urlClassId } = useParams<{ classId?: string }>();
 
-  /**
-   * INVARIANT-05: Header reads lifecycle state exclusively from useStudentLifecycle.
-   * It does NOT independently call classStudentsApi or read from any enrollment API.
-   *
-   * Badge display rules:
-   *   ENROLLED       → show active class name
-   *   PRE_ENROLLMENT → show "Chưa có lớp học" (Backend confirmed empty)
-   *   LOADING        → show nothing (avoids flicker)
-   *   API_ERROR      → show nothing (do NOT say "Chưa có lớp học")
-   *   NETWORK_ERROR  → show nothing (do NOT say "Chưa có lớp học")
-   */
-  const { state, enrollments } = useStudentLifecycle();
+  const { state, resolveClass } = useStudentLifecycle();
 
+  const resolved = resolveClass(urlClassId);
   const activeClassName =
-    state === "ENROLLED" ? (enrollments[0]?.className ?? null) : null;
+    state === "ENROLLED" && resolved.status === "AUTHORIZED"
+      ? resolved.activeClass.className
+      : null;
 
   const handleSignOut = async () => {
     await signOut();

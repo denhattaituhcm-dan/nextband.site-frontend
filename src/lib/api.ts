@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { normalizeSiteSettings } from "./site-settings";
+import { isValidUUID } from "./classContext";
 
 export const resolveApiBaseUrl = (): string => {
   const envUrl =
@@ -3112,6 +3113,11 @@ export interface ClassLessonContract {
 
 export const lessonsApi = {
   getClassLessons: async (classId: string) => {
+    // 0. Boundary Guard: Validate UUID format
+    if (!isValidUUID(classId)) {
+      throw new Error("Mã định danh lớp học không hợp lệ. Vui lòng kiểm tra lại URL.");
+    }
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -3128,9 +3134,10 @@ export const lessonsApi = {
       throw new Error("Không tìm thấy thông tin lớp học");
     }
 
-    const courseId = cls.course_id;
-    const className = cls.name || cls.courses?.title || "Lớp học";
-    const courseTitle = cls.courses?.title || className;
+    const courseObj = Array.isArray(cls.courses) ? cls.courses[0] : cls.courses;
+    const courseId = cls.course_id || courseObj?.id;
+    const courseTitle = courseObj?.title || cls.name || "Lớp học";
+    const className = cls.name || courseTitle || "Lớp học";
 
     // 2. Fetch all exams (homeworks) for this course from Supabase
     let exams: any[] = [];
