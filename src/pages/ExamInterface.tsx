@@ -924,6 +924,12 @@ export default function ExamInterface() {
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 inline-block" />
                 Phòng Làm Bài
               </span>
+              {searchParams.get("isRevision") === "true" && (
+                <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-700 items-center gap-1">
+                  <AlertTriangle className="w-3 h-3 text-amber-600" />
+                  Bài Sửa (Attempt 2)
+                </span>
+              )}
               <h1 className="font-bold text-sm md:text-base tracking-tight truncate max-w-[160px] sm:max-w-[220px] md:max-w-none">
                 {exam.title}
               </h1>

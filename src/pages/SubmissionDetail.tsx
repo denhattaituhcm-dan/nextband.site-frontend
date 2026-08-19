@@ -19,7 +19,11 @@ import {
   Trophy,
   Eye,
   EyeOff,
+  MessageSquare,
+  Edit3,
+  Sparkles,
 } from "lucide-react";
+import { toast } from "sonner";
 import { AnswerResultCard } from "@/components/submission/AnswerResultCard";
 import { RichContent } from "@/components/exam/RichContent";
 import { getFillBlankBlankCount } from "@/lib/fillBlank";
@@ -94,6 +98,25 @@ export default function SubmissionDetail() {
   const { isAuthenticated, isAdmin, isTeacher } = useAuth();
   const submissionId = id || searchParams.get("submissionId") || undefined;
   const [showCorrectAnswers, setShowCorrectAnswers] = useState(false);
+  const [isStartingRevision, setIsStartingRevision] = useState(false);
+
+  const handleStartRevision = async () => {
+    const targetExamId = submission?.examId || submission?.exam_id || exam?.id;
+    if (!targetExamId) return;
+    setIsStartingRevision(true);
+    try {
+      const revisionSub = await submissionsApi.startRevision({
+        examId: targetExamId,
+        clonePreviousAnswers: true,
+      });
+      toast.success("Đã tạo phiên làm bài sửa (Attempt 2). Bài làm cũ của bạn được bảo toàn nguyên vẹn.");
+      navigate(`/exam/${targetExamId}?submissionId=${revisionSub.id}&isRevision=true`);
+    } catch (err: any) {
+      toast.error(err.message || "Không thể tạo bài sửa.");
+    } finally {
+      setIsStartingRevision(false);
+    }
+  };
 
   const { data: submission, isLoading } = useQuery({
     queryKey: ["student-submission", submissionId],
@@ -485,6 +508,52 @@ export default function SubmissionDetail() {
                 <span className="text-sm text-muted-foreground font-semibold"> / {totalPoints}</span>
               </div>
             </div>
+          )}
+
+          {/* TEACHER QUALITATIVE FEEDBACK & REVISION REQUIRED BLOCK (P1 Lean Learning Loop) */}
+          {(submission.feedback || submission.revisionRequired) && (
+            <Card className="mt-3 border border-amber-200/90 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/80 p-4 rounded-xl space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4 text-amber-700 dark:text-amber-400" />
+                  <span className="font-bold text-sm text-amber-950 dark:text-amber-200">
+                    Phản Hồi & Đánh Giá Của Giáo Viên
+                  </span>
+                </div>
+                {submission.primaryErrorCategory && (
+                  <Badge variant="outline" className="bg-amber-100 dark:bg-amber-900/50 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-300 font-bold text-xs">
+                    Lỗi chính: {submission.primaryErrorCategory}
+                  </Badge>
+                )}
+              </div>
+
+              {submission.feedback && (
+                <p className="text-xs text-amber-900/90 dark:text-amber-200/90 whitespace-pre-wrap leading-relaxed">
+                  {submission.feedback}
+                </p>
+              )}
+
+              {submission.revisionRequired && (
+                <div className="pt-3 border-t border-amber-200 dark:border-amber-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="text-xs font-semibold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
+                    <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                    <span>Giáo viên yêu cầu viết bài sửa (Attempt 2) để khắc phục lỗi được chỉ ra.</span>
+                  </div>
+                  <Button
+                    onClick={handleStartRevision}
+                    disabled={isStartingRevision}
+                    className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs gap-1.5 rounded-xl shadow-xs shrink-0"
+                  >
+                    {isStartingRevision ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Edit3 className="h-3.5 w-3.5" />
+                    )}
+                    <span>Làm bài sửa (Attempt 2)</span>
+                  </Button>
+                </div>
+              )}
+            </Card>
           )}
 
           <Separator />

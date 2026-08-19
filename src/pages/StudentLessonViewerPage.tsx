@@ -22,6 +22,7 @@ import {
   Clock,
   Circle,
   AlertCircle,
+  AlertTriangle,
   RefreshCw,
   Sparkles,
 } from "lucide-react";
@@ -180,11 +181,11 @@ export default function StudentLessonViewerPage() {
   // Homework items formatted for Practice Platform
   const homeworkList = lessons.map((item: any, idx: number) => {
     const sub = submissionsMap[item.id] || item.submission;
-    let status: "NOT_STARTED" | "IN_PROGRESS" | "SUBMITTED" | "REVIEWED" = "NOT_STARTED";
+    let status: "NOT_STARTED" | "IN_PROGRESS" | "SUBMITTED" | "REVIEWED" | "REVISION_REQUIRED" = "NOT_STARTED";
 
-    // Sole Source of Truth: submission.status
+    // Sole Source of Truth: submission.status & revisionRequired
     if (sub?.status === "graded" || sub?.status === "GRADED" || sub?.grade_status === "graded") {
-      status = "REVIEWED";
+      status = sub?.revisionRequired ? "REVISION_REQUIRED" : "REVIEWED";
     } else if (sub?.status === "submitted" || sub?.status === "SUBMITTED") {
       status = "SUBMITTED";
     } else if (sub?.status === "in_progress" || sub?.status === "IN_PROGRESS") {
@@ -203,7 +204,7 @@ export default function StudentLessonViewerPage() {
     };
   });
 
-  const nextHomework = homeworkList.find((hw) => hw.status === "NOT_STARTED" || hw.status === "IN_PROGRESS") || homeworkList[0];
+  const nextHomework = homeworkList.find((hw) => hw.status === "NOT_STARTED" || hw.status === "IN_PROGRESS" || hw.status === "REVISION_REQUIRED") || homeworkList[0];
 
   const notStartedCount = homeworkList.filter((hw) => hw.status === "NOT_STARTED").length;
   const submittedCount = homeworkList.filter((hw) => hw.status === "SUBMITTED").length;
@@ -211,11 +212,18 @@ export default function StudentLessonViewerPage() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
+      case "REVISION_REQUIRED":
+        return (
+          <Badge variant="destructive" className="bg-amber-500/10 text-amber-800 border-amber-300 font-bold gap-1">
+            <AlertTriangle className="h-3 w-3 text-amber-600" />
+            Cần sửa bài (Attempt 2)
+          </Badge>
+        );
       case "REVIEWED":
         return (
           <Badge variant="success">
             <CheckCircle2 className="h-3 w-3" />
-            Đã nhận xét
+            Đã hoàn thành
           </Badge>
         );
       case "SUBMITTED":
@@ -418,10 +426,18 @@ export default function StudentLessonViewerPage() {
                     <Button
                       size="sm"
                       variant={hw.status === "REVIEWED" ? "outline" : "default"}
-                      className="font-bold text-xs gap-1.5"
-                      onClick={() => handleOpenExam(hw.examId || hw.id)}
+                      className={`font-bold text-xs gap-1.5 ${hw.status === "REVISION_REQUIRED" ? "bg-amber-600 hover:bg-amber-700 text-white shadow-xs" : ""}`}
+                      onClick={() => {
+                        if (hw.submission?.id && (hw.status === "REVIEWED" || hw.status === "REVISION_REQUIRED")) {
+                          navigate(`/submission/${hw.submission.id}`);
+                        } else {
+                          handleOpenExam(hw.examId || hw.id);
+                        }
+                      }}
                     >
-                      {hw.status === "REVIEWED"
+                      {hw.status === "REVISION_REQUIRED"
+                        ? "Làm bài sửa (Attempt 2)"
+                        : hw.status === "REVIEWED"
                         ? "Xem phản hồi"
                         : hw.status === "SUBMITTED"
                         ? "Xem bài làm"

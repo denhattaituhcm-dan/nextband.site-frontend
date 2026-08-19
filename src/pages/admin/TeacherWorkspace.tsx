@@ -1,12 +1,13 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { classesApi, homeworksApi } from "@/lib/api";
+import { classesApi, homeworksApi, submissionsApi } from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -28,11 +29,14 @@ import {
   Award,
   ChevronRight,
   FolderOpen,
+  AlertTriangle,
 } from "lucide-react";
 
 // Model Workbook Homework Item (Gắn với Buổi học / Lesson)
 interface WorkbookItem {
   id: string;
+  submissionId?: string;
+  answerId?: string;
   lessonNumber: number;
   lessonTitle: string;
   orderIndex: number;
@@ -46,6 +50,9 @@ interface WorkbookItem {
   submittedAt?: string;
   answerText?: string;
   audioUrl?: string;
+  objectiveScore?: number;
+  bandScore?: number;
+  criteriaScores?: any;
 }
 
 export default function TeacherWorkspace() {
@@ -61,12 +68,14 @@ export default function TeacherWorkspace() {
   const [reopenTargetId, setReopenTargetId] = useState<string | null>(null);
   const [reopenDate, setReopenDate] = useState<string>("");
 
-  // Form Chấm Điểm (Khởi tạo rỗng, không mặc định Band 6.0)
+  // Form Chấm Điểm
   const [taskResponse, setTaskResponse] = useState<string>("");
   const [coherence, setCoherence] = useState<string>("");
   const [lexical, setLexical] = useState<string>("");
   const [grammar, setGrammar] = useState<string>("");
   const [feedback, setFeedback] = useState<string>("");
+  const [primaryErrorCategory, setPrimaryErrorCategory] = useState<"CONCEPT" | "STRUCTURE" | "EXPRESSION" | "GRAMMAR">("STRUCTURE");
+  const [revisionRequired, setRevisionRequired] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // 1. Fetch danh sách Lớp học phụ trách
@@ -242,16 +251,32 @@ export default function TeacherWorkspace() {
     setIsSubmitting(true);
     try {
       if (currentHomework && currentStudent) {
-        await homeworksApi.grade({
-          homeworkId: currentHomework.id,
-          studentId: currentStudent.id,
-          score: parseFloat(calculatedOverall),
-          feedback,
-        });
+        if (currentHomework.submissionId || currentHomework.id) {
+          try {
+            await submissionsApi.grade(
+              currentHomework.submissionId || currentHomework.id,
+              [{ answerId: currentHomework.answerId || currentHomework.id, score: parseFloat(calculatedOverall), feedback }],
+              parseFloat(calculatedOverall),
+              {
+                feedback,
+                primaryErrorCategory: revisionRequired ? primaryErrorCategory : undefined,
+                revisionRequired,
+              }
+            );
+          } catch {
+            // Fallback to legacy endpoint if called from legacy context
+            await homeworksApi.grade({
+              homeworkId: currentHomework.id,
+              studentId: currentStudent.id,
+              score: parseFloat(calculatedOverall),
+              feedback,
+            });
+          }
+        }
 
         toast({
           title: "Đã trả bài thành công 🎉",
-          description: `Đã lưu điểm Band ${calculatedOverall} cho học viên ${currentStudent.fullName}.`,
+          description: `Đã lưu điểm Band ${calculatedOverall} cho học viên ${currentStudent.fullName}.${revisionRequired ? " (Đã gửi yêu cầu sửa bài Attempt 2)" : ""}`,
         });
 
         // 🟢 LOGIC TỰ ĐỘNG CHUYỂN BÀI CHỜ CHẤM THEO QUEUE (Cột 2 / Cột 1)
@@ -718,9 +743,58 @@ export default function TeacherWorkspace() {
                 <Textarea
                   value={feedback || currentHomework?.feedback || ""}
                   onChange={(e) => setFeedback(e.target.value)}
-                  placeholder="Gõ nhận xét cho học viên (Ví dụ: Bài làm tốt, cần chú ý vốn từ vựng...)"
+                  placeholder="Gõ nhận xét cho học viên (Ví dụ: Bài làm tốt, cần chú ý cấu trúc đoạn thân bài 2...)"
                   className="min-h-[90px] text-xs font-sans border-slate-200 focus-visible:ring-1 focus-visible:ring-blue-500/40"
                 />
+              </div>
+
+              {/* P1 LEAN LEARNING LOOP CONTROLS */}
+              <div className="pt-3 border-t border-slate-200/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
+                      Yêu cầu học viên sửa bài (Attempt 2)
+                    </Label>
+                    <p className="text-[11px] text-slate-500">
+                      Bật nếu học viên cần nộp bài sửa trước khi tính hoàn thành.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={revisionRequired}
+                    onCheckedChange={setRevisionRequired}
+                  />
+                </div>
+
+                {revisionRequired && (
+                  <div className="space-y-1.5 p-3 rounded-lg bg-amber-50/60 border border-amber-200">
+                    <Label className="text-[11px] font-bold text-amber-900">
+                      Lỗi chính cần tập trung khắc phục (Primary Error)
+                    </Label>
+                    <Select
+                      value={primaryErrorCategory}
+                      onValueChange={(val: any) => setPrimaryErrorCategory(val)}
+                    >
+                      <SelectTrigger className="h-8 text-xs font-bold bg-white border-amber-300 text-amber-900">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="CONCEPT" className="text-xs font-semibold">
+                          CONCEPT — Hiểu sai đề / Luận điểm chưa phù hợp
+                        </SelectItem>
+                        <SelectItem value="STRUCTURE" className="text-xs font-semibold">
+                          STRUCTURE — Bố cục chưa chuẩn / Thiếu liên kết (Coherence & Cohesion)
+                        </SelectItem>
+                        <SelectItem value="EXPRESSION" className="text-xs font-semibold">
+                          EXPRESSION — Dùng từ chưa chuẩn / Thiếu tự nhiên (Lexical Resource)
+                        </SelectItem>
+                        <SelectItem value="GRAMMAR" className="text-xs font-semibold">
+                          GRAMMAR — Sai ngữ pháp / Thì / Dấu câu
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </div>
             </Card>
           </div>
