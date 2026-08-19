@@ -9,6 +9,8 @@ export interface ContactLead {
   goal?: string;
   source?: string;
   status: "NEW" | "CONTACTED" | "ENROLLED" | "CANCELLED" | "ARCHIVED" | "new" | "contacted" | "enrolled" | "archived";
+  assignedTo?: string;
+  notes?: string;
   createdAt: string;
 }
 
@@ -178,7 +180,9 @@ export async function fetchAllContactLeads(): Promise<ContactLead[]> {
         email: d.email || "",
         goal: d.goal || "",
         source: d.source || "contact_page",
-        status: d.status || "new",
+        status: d.status || "NEW",
+        assignedTo: d.assigned_to || "",
+        notes: d.notes || "",
         createdAt: d.created_at,
       }));
     }
@@ -187,5 +191,73 @@ export async function fetchAllContactLeads(): Promise<ContactLead[]> {
   }
 
   return getLocalLeads();
+}
+
+/**
+ * Admin: Update lead status / notes / assigned staff
+ */
+export async function updateContactLead(
+  id: string,
+  params: {
+    status?: "NEW" | "CONTACTED" | "ENROLLED" | "CANCELLED" | "ARCHIVED";
+    assignedTo?: string | null;
+    notes?: string | null;
+  }
+): Promise<{ success: boolean; data?: any; error?: string }> {
+  // 1. Try Backend Server
+  try {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/leads/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(params),
+    });
+
+    if (res.ok) {
+      const json = await res.json();
+      return { success: true, data: json.data };
+    }
+  } catch (err) {
+    console.warn("[ContactService] Failed to update lead via API, trying fallback:", err);
+  }
+
+  // 2. Supabase Fallback
+  try {
+    const payload: any = {};
+    if (params.status) payload.status = params.status;
+    if (params.assignedTo !== undefined) payload.assigned_to = params.assignedTo;
+    if (params.notes !== undefined) payload.notes = params.notes;
+
+    const { data, error } = await supabase
+      .from("contact_leads")
+      .update(payload)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (!error && data) {
+      return { success: true, data };
+    }
+  } catch (err: any) {
+    console.warn("[ContactService] Supabase update error:", err);
+  }
+
+  // 3. Local fallback
+  try {
+    const leads = getLocalLeads();
+    const idx = leads.findIndex((l) => l.id === id);
+    if (idx !== -1) {
+      leads[idx] = { ...leads[idx], ...params, status: (params.status || leads[idx].status) as any };
+      localStorage.setItem(LOCAL_LEADS_KEY, JSON.stringify(leads));
+      return { success: true, data: leads[idx] };
+    }
+  } catch (err) {
+    console.error("Local leads update error", err);
+  }
+
+  return { success: false, error: "Không thể cập nhật lead" };
 }
 

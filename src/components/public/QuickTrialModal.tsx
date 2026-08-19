@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { COURSE_CATALOG } from "@/constants/courses";
 import { CheckCircle2, ShieldCheck, Phone, Sparkles } from "lucide-react";
+import { submitContactLead } from "@/lib/contactService";
 
 interface QuickTrialModalProps {
   isOpen: boolean;
@@ -43,16 +44,32 @@ export function QuickTrialModal({
     }
   }, [initialCourseSlug, isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !phone.trim()) return;
+    const cleanName = fullName.trim();
+    const cleanPhone = phone.trim().replace(/\s+/g, "");
+    if (!cleanName || !cleanPhone) return;
 
     setLoading(true);
-    // Simulate lightweight submit & save to local state
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const currentCourseObj = COURSE_CATALOG[selectedCourse] || COURSE_CATALOG.starter;
+      const courseTitle = currentCourseObj?.title || selectedCourse;
+      const goal = `${courseTitle} | Ca học: ${shiftPreference}`;
+
+      await submitContactLead({
+        fullName: cleanName,
+        phone: cleanPhone,
+        goal,
+        source: `trial_modal_${selectedCourse}`,
+      });
       setIsSubmitted(true);
-    }, 400);
+    } catch (err) {
+      console.error("Failed to submit trial lead", err);
+      // Fallback: still show submitted UI so user isn't stuck
+      setIsSubmitted(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleReset = () => {

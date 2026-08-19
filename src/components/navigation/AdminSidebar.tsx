@@ -13,6 +13,7 @@ import {
   FolderKanban,
   Award,
   Mic,
+  UserPlus,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -58,6 +59,11 @@ const adminItems = [
     title: "Dashboard",
     url: "/admin",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Khách tư vấn (Leads)",
+    url: "/admin/leads",
+    icon: UserPlus,
   },
   {
     title: "Khóa học",

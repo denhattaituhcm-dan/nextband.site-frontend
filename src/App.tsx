@@ -118,6 +118,7 @@ const ClassAttendancePage = lazyWithRetry(() => import("@/pages/admin/ClassAtten
 const AdminSpeakingForecast = lazyWithRetry(() => import("@/pages/admin/SpeakingForecast"));
 const AdminSpeakingForecastCreate = lazyWithRetry(() => import("@/pages/admin/SpeakingForecastCreate"));
 const AdminSpeakingForecastEdit = lazyWithRetry(() => import("@/pages/admin/SpeakingForecastEdit"));
+const AdminLeads = lazyWithRetry(() => import("@/pages/admin/Leads"));
 
 const PageLoader = () => (
   <div className="min-h-[400px] w-full flex flex-col items-center justify-center space-y-3 p-12">
@@ -453,6 +454,14 @@ const App = () => (
                   element={
                     <ProtectedRoute requiredRoles={["admin", "teacher"]}>
                       <TeacherWorkspace />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/leads"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                      <AdminLeads />
                     </ProtectedRoute>
                   }
                 />
