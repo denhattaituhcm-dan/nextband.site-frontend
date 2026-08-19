@@ -1,16 +1,29 @@
-import React, { useState } from "react";
-import { teachers } from "@/data/teachers";
+import React, { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { facultyService, INITIAL_FACULTY_SEED } from "@/lib/facultyService";
 import { TeacherCard } from "./TeacherCard";
 import { TeacherDetail } from "./TeacherDetail";
 import { SectionContainer } from "@/components/public/SectionContainer";
 
 export function TeacherShowcase() {
-  const [selectedTeacherId, setSelectedTeacherId] = useState<string>(
-    teachers[0]?.id ?? ""
-  );
+  const { data: facultyList = [INITIAL_FACULTY_SEED], isLoading } = useQuery({
+    queryKey: ["public-faculty-profiles"],
+    queryFn: () => facultyService.getPublicFaculty(),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
 
-  const selectedTeacher =
-    teachers.find((t) => t.id === selectedTeacherId) ?? teachers[0];
+  const [selectedTeacherId, setSelectedTeacherId] = useState<string>("");
+
+  useEffect(() => {
+    if (facultyList.length > 0 && !selectedTeacherId) {
+      setSelectedTeacherId(facultyList[0].id);
+    } else if (facultyList.length > 0 && !facultyList.some((f) => f.id === selectedTeacherId)) {
+      setSelectedTeacherId(facultyList[0].id);
+    }
+  }, [facultyList, selectedTeacherId]);
+
+  const activeTeacher =
+    facultyList.find((t) => t.id === selectedTeacherId) || facultyList[0] || INITIAL_FACULTY_SEED;
 
   return (
     <SectionContainer
@@ -25,12 +38,12 @@ export function TeacherShowcase() {
         <div className="lg:col-span-7 space-y-6">
           {/* Grid of Teacher Avatar Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4">
-            {teachers.map((t) => (
+            {facultyList.map((teacher) => (
               <TeacherCard
-                key={t.id}
-                teacher={t}
-                selected={t.id === selectedTeacher?.id}
-                onSelect={() => setSelectedTeacherId(t.id)}
+                key={teacher.id}
+                teacher={teacher}
+                selected={teacher.id === activeTeacher?.id}
+                onSelect={() => setSelectedTeacherId(teacher.id)}
               />
             ))}
           </div>
@@ -38,8 +51,8 @@ export function TeacherShowcase() {
 
         {/* Right Column: Active Teacher Credentials & Full TRF (Sticky) */}
         <div className="lg:col-span-5 lg:sticky lg:top-24">
-          {selectedTeacher ? (
-            <TeacherDetail teacher={selectedTeacher} />
+          {activeTeacher ? (
+            <TeacherDetail teacher={activeTeacher} />
           ) : (
             <div className="p-8 rounded-3xl bg-card border border-border/80 text-center text-muted-foreground">
               Chọn giảng viên bên trái để xem bảng điểm và thông tin chi tiết.
@@ -50,6 +63,3 @@ export function TeacherShowcase() {
     </SectionContainer>
   );
 }
-
-
-

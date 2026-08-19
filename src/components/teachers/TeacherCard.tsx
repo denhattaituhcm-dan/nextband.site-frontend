@@ -1,14 +1,29 @@
 import React from "react";
-import { Teacher } from "@/data/teachers";
 import { cn } from "@/lib/utils";
 
 interface TeacherCardProps {
-  teacher: Teacher;
+  teacher: any;
   selected: boolean;
   onSelect: () => void;
 }
 
 export function TeacherCard({ teacher, selected, onSelect }: TeacherCardProps) {
+  const avatarSrc = teacher.avatar_url || teacher.avatar || "/placeholder.svg";
+  const ieltsScore =
+    teacher.ielts_badge ||
+    (typeof teacher.ielts?.overall === "number"
+      ? teacher.ielts.overall.toFixed(1)
+      : teacher.ielts?.overall || "8.0");
+
+  const ieltsSub =
+    teacher.ielts_badge_sub ||
+    (teacher.ielts?.highlight
+      ? `${teacher.ielts.highlight.label} ${teacher.ielts.highlight.value}`
+      : null);
+
+  const isSuperScore =
+    parseFloat(ieltsScore) >= 8.5 || String(ieltsScore).includes("8.5");
+
   return (
     <div
       role="button"
@@ -31,8 +46,8 @@ export function TeacherCard({ teacher, selected, onSelect }: TeacherCardProps) {
       {/* Teacher Name */}
       <p
         className={cn(
-          "text-xs sm:text-sm font-black text-center line-clamp-1 duration-200",
-          selected ? "text-brand-red" : "text-foreground group-hover:text-brand-blue"
+          "text-xs sm:text-sm font-medium text-center line-clamp-1 duration-200",
+          selected ? "text-brand-red font-semibold" : "text-foreground group-hover:text-brand-blue"
         )}
       >
         {teacher.name}
@@ -41,12 +56,11 @@ export function TeacherCard({ teacher, selected, onSelect }: TeacherCardProps) {
       {/* Avatar Container */}
       <div className="relative aspect-square w-full max-w-[130px] rounded-xl overflow-hidden bg-muted/40 border border-border/40 my-1">
         <img
-          src={teacher.avatar}
+          src={avatarSrc}
           alt={teacher.name}
           loading="lazy"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           onError={(e) => {
-            // Fallback placeholder if image missing
             (e.target as HTMLImageElement).src = "/placeholder.svg";
           }}
         />
@@ -59,17 +73,17 @@ export function TeacherCard({ teacher, selected, onSelect }: TeacherCardProps) {
             "p-1 sm:p-1.5 rounded-xl border flex flex-col items-center justify-center text-center shadow-2xs",
             selected
               ? "bg-brand-red text-white border-brand-red"
-              : teacher.ielts.overall >= 8.5
+              : isSuperScore
               ? "bg-brand-red text-white border-brand-red"
               : "bg-brand-blue text-white border-brand-blue"
           )}
         >
           <span className="text-xs sm:text-sm font-black tracking-tight leading-none">
-            IELTS {teacher.ielts.overall.toFixed(1)}
+            IELTS {ieltsScore}
           </span>
-          {teacher.ielts.highlight && (
-            <span className="text-[10px] sm:text-[11px] font-bold opacity-90 leading-tight mt-0.5">
-              {teacher.ielts.highlight.label} {teacher.ielts.highlight.value}
+          {ieltsSub && (
+            <span className="text-[10px] sm:text-[11px] font-bold opacity-90 leading-tight mt-0.5 line-clamp-1">
+              {ieltsSub}
             </span>
           )}
         </div>

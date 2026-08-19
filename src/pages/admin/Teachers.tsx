@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { usersApi } from "@/lib/api";
+import { cn } from "@/lib/utils";
+import { PublicFacultyTab } from "@/components/admin/faculty/PublicFacultyTab";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -70,6 +72,7 @@ import {
   RefreshCw,
   UserX,
   ExternalLink,
+  Award,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DataTablePagination } from "@/components/admin/DataTablePagination";
@@ -99,6 +102,17 @@ const emptyForm = {
 
 export default function AdminTeachers() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentTab = searchParams.get("tab") === "public" ? "public" : "accounts";
+
+  const handleTabChange = (tab: "accounts" | "public") => {
+    if (tab === "public") {
+      setSearchParams({ tab: "public" });
+    } else {
+      setSearchParams({});
+    }
+  };
+
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -338,24 +352,58 @@ export default function AdminTeachers() {
 
   return (
     <div className="space-y-6">
-      {/* Header & Subtitle Stats */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-            <GraduationCap className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Quản lý giáo viên</h1>
-            <p className="text-sm text-muted-foreground">
-              {total} giáo viên • {teachingCount} đang giảng dạy • {unassignedCount} chưa phân lớp • {inactiveCount} bị khóa
-            </p>
-          </div>
-        </div>
-        <Button onClick={openCreate} className="self-start sm:self-auto">
-          <Plus className="mr-2 h-4 w-4" />
-          Thêm giáo viên
-        </Button>
+      {/* Top Tab Switcher */}
+      <div className="flex items-center gap-1.5 p-1 bg-muted/70 rounded-2xl w-fit border border-border/80">
+        <button
+          type="button"
+          onClick={() => handleTabChange("accounts")}
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer",
+            currentTab === "accounts"
+              ? "bg-card text-foreground shadow-xs"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <GraduationCap className="h-4 w-4 text-primary" />
+          <span>Tài khoản & Phân công</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => handleTabChange("public")}
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer",
+            currentTab === "public"
+              ? "bg-card text-foreground shadow-xs"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <Award className="h-4 w-4 text-brand-blue" />
+          <span>Hồ sơ công khai</span>
+        </button>
       </div>
+
+      {currentTab === "public" ? (
+        <PublicFacultyTab />
+      ) : (
+        <>
+          {/* Header & Subtitle Stats */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                <GraduationCap className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight">Quản lý giáo viên</h1>
+                <p className="text-sm text-muted-foreground">
+                  {total} giáo viên • {teachingCount} đang giảng dạy • {unassignedCount} chưa phân lớp • {inactiveCount} bị khóa
+                </p>
+              </div>
+            </div>
+            <Button onClick={openCreate} className="self-start sm:self-auto">
+              <Plus className="mr-2 h-4 w-4" />
+              Thêm giáo viên
+            </Button>
+          </div>
 
       {/* Toolbar: Search + Chip Filters */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 justify-between">
@@ -774,6 +822,8 @@ export default function AdminTeachers() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+        </>
+      )}
     </div>
   );
 }
