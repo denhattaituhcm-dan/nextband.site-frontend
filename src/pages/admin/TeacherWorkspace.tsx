@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { classesApi, homeworksApi, submissionsApi } from "@/lib/api";
+import { classesApi, examsApi, submissionsApi } from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -99,13 +99,103 @@ export default function TeacherWorkspace() {
     return classes.find((c: any) => c.id === selectedClassId) || classes[0];
   }, [classes, selectedClassId]);
 
-  // 2. Fetch View Model dữ liệu thật từ Backend API (Real Data View Model)
+  // 2. Fetch View Model dữ liệu thật từ Canonical APIs (Classes + Exams + Submissions)
   const { data: workspaceData, isLoading: isWorkspaceLoading, refetch: refetchWorkspace } = useQuery({
     queryKey: ["teacher-workspace-data", selectedClassId],
     queryFn: async () => {
       if (!selectedClassId) return null;
-      const res = await homeworksApi.getTeacherWorkspace(selectedClassId);
-      return res.data || null;
+      const cls = await classesApi.getById(selectedClassId);
+      if (!cls) return null;
+
+      const courseId = cls.courseId || cls.course_id;
+      let exams: any[] = [];
+      if (courseId) {
+        try {
+          const examRes = await examsApi.list({ courseId, limit: 100 });
+          exams = examRes.data || [];
+        } catch (e) {
+          console.warn("[TeacherWorkspace] Could not load exams:", e);
+        }
+      }
+
+      let submissions: any[] = [];
+      try {
+        const subRes = await submissionsApi.list({ classId: selectedClassId, limit: 200 });
+        submissions = subRes.data || [];
+      } catch (e) {
+        console.warn("[TeacherWorkspace] Could not load submissions:", e);
+      }
+
+      const rawStudents = cls.students || cls.class_students || [];
+      const canonicalStudents = rawStudents.map((st: any) => {
+        const studentId = st.studentId || st.student_id || st.id;
+        const studentName = st.fullName || st.full_name || st.name || st.email || "Học viên";
+        const avatarUrl = st.avatarUrl || st.avatar_url;
+
+        const studentSubs = submissions.filter(
+          (sub: any) => sub.studentId === studentId || sub.student_id === studentId,
+        );
+
+        const homeworks = exams.map((ex: any, idx: number) => {
+          const sub = studentSubs.find(
+            (s: any) => s.examId === ex.id || s.exam_id === ex.id,
+          );
+          const firstAnswer = sub?.answers?.[0];
+          const rawStatus = sub?.status?.toLowerCase();
+          const normalizedStatus =
+            rawStatus === "graded"
+              ? "graded"
+              : rawStatus === "submitted"
+                ? "submitted"
+                : rawStatus === "in_progress"
+                  ? "in_progress"
+                  : "unsubmitted";
+
+          return {
+            id: ex.id,
+            submissionId: sub?.id,
+            answerId: firstAnswer?.id || sub?.id,
+            lessonNumber: ex.week || Math.ceil((idx + 1) / 2),
+            lessonTitle: `Buổi ${ex.week || Math.ceil((idx + 1) / 2)}`,
+            orderIndex: idx + 1,
+            title: ex.title || `Bài tập ${String(idx + 1).padStart(2, "0")}`,
+            type: ex.examType === "writing" ? "writing" : ex.examType === "speaking" ? "speaking" : "homework",
+            status: normalizedStatus,
+            isOverdue: false,
+            score: sub?.totalScore ?? sub?.total_score ?? sub?.bandScore ?? null,
+            bandScore: sub?.bandScore ?? sub?.band_score ?? null,
+            objectiveScore: sub?.objectiveScore ?? sub?.objective_score ?? null,
+            criteriaScores: sub?.criteriaScores || null,
+            feedback: firstAnswer?.feedback || sub?.feedback || "",
+            submittedAt: sub?.submittedAt || sub?.submitted_at,
+            answerText: firstAnswer?.studentAnswer || firstAnswer?.answerText || "",
+            audioUrl: firstAnswer?.audioUrl || firstAnswer?.audio_url || "",
+          };
+        });
+
+        const submittedCount = homeworks.filter((h: any) => h.status === "submitted" || h.status === "graded").length;
+        const gradedCount = homeworks.filter((h: any) => h.status === "graded").length;
+        const pendingCount = homeworks.filter((h: any) => h.status === "submitted").length;
+        const unsubmittedCount = homeworks.filter((h: any) => h.status === "unsubmitted").length;
+
+        return {
+          id: studentId,
+          fullName: studentName,
+          email: st.email || "",
+          avatarUrl,
+          totalAssignedCount: exams.length,
+          submittedCount,
+          gradedCount,
+          pendingCount,
+          unsubmittedCount,
+          hasPending: pendingCount > 0,
+          homeworks,
+        };
+      });
+
+      return {
+        students: canonicalStudents,
+      };
     },
     enabled: !!selectedClassId,
   });
@@ -250,34 +340,24 @@ export default function TeacherWorkspace() {
   const handleGradeSubmit = async () => {
     setIsSubmitting(true);
     try {
-      if (currentHomework && currentStudent) {
-        if (currentHomework.submissionId || currentHomework.id) {
-          try {
-            await submissionsApi.grade(
-              currentHomework.submissionId || currentHomework.id,
-              [{ answerId: currentHomework.answerId || currentHomework.id, score: parseFloat(calculatedOverall), feedback }],
-              parseFloat(calculatedOverall),
-              {
-                feedback,
-                primaryErrorCategory: revisionRequired ? primaryErrorCategory : undefined,
-                revisionRequired,
-              }
-            );
-          } catch {
-            // Fallback to legacy endpoint if called from legacy context
-            await homeworksApi.grade({
-              homeworkId: currentHomework.id,
-              studentId: currentStudent.id,
-              score: parseFloat(calculatedOverall),
-              feedback,
-            });
+      if (currentHomework && currentStudent && currentHomework.submissionId) {
+        await submissionsApi.grade(
+          currentHomework.submissionId,
+          [{ answerId: currentHomework.answerId || currentHomework.submissionId, score: parseFloat(calculatedOverall), feedback }],
+          parseFloat(calculatedOverall),
+          {
+            feedback,
+            primaryErrorCategory: revisionRequired ? primaryErrorCategory : undefined,
+            revisionRequired,
           }
-        }
+        );
 
         toast({
           title: "Đã trả bài thành công 🎉",
           description: `Đã lưu điểm Band ${calculatedOverall} cho học viên ${currentStudent.fullName}.${revisionRequired ? " (Đã gửi yêu cầu sửa bài Attempt 2)" : ""}`,
         });
+
+        refetchWorkspace();
 
         // 🟢 LOGIC TỰ ĐỘNG CHUYỂN BÀI CHỜ CHẤM THEO QUEUE (Cột 2 / Cột 1)
         const nextPendingInWorkbook = workbookItems.find(
