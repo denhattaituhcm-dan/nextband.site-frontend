@@ -41,6 +41,8 @@ import {
   AlertTriangle,
   ShieldCheck,
   WifiOff,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import { ListeningSection } from "@/components/exam/ListeningSection";
 import { ReadingSection } from "@/components/exam/ReadingSection";
@@ -134,7 +136,12 @@ export default function ExamInterface() {
 
   const questionRefs = useRef<Map<string, HTMLElement>>(new Map());
 
-  const { data: examData, isLoading: examLoading } = useQuery({
+  const {
+    data: examData,
+    isLoading: examLoading,
+    error: examError,
+    refetch: refetchExam,
+  } = useQuery({
     queryKey: ["exam", examId],
     queryFn: () => examsApi.getById(examId!),
     enabled: !!examId,
@@ -795,16 +802,61 @@ export default function ExamInterface() {
     );
   }
 
-  if (!exam) {
+  if (examError || !exam) {
+    const httpStatus = (examError as any)?.httpStatus || (examError as any)?.status;
+    const errorMessage = (examError as any)?.message || "";
+
+    const is401 = httpStatus === 401 || errorMessage.includes("hết hạn") || errorMessage.includes("AUTH_REQUIRED");
+    const is403 = httpStatus === 403 || errorMessage.includes("quyền truy cập") || errorMessage.includes("CLASS_ACCESS_DENIED");
+    const is404 = httpStatus === 404 || errorMessage.includes("Không tìm thấy");
+    const isNetwork = httpStatus === 503 || errorMessage.includes("máy chủ") || errorMessage.includes("kết nối") || errorMessage.includes("fetch");
+
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <h2 className="text-xl font-semibold">Không tìm thấy bài thi</h2>
-        <p className="text-muted-foreground">
-          bài tập không tồn tại hoặc bạn không có quyền truy cập.
-        </p>
-        <Button asChild>
-          <Link to="/app">Quay về trang chủ</Link>
-        </Button>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4 text-center">
+        <div className="w-14 h-14 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto">
+          <AlertCircle className="w-7 h-7" />
+        </div>
+        <div className="space-y-2 max-w-md mx-auto">
+          <h2 className="text-xl font-bold">
+            {is401
+              ? "Phiên đăng nhập đã hết hạn"
+              : is403
+              ? "Từ chối quyền truy cập bài thi"
+              : is404
+              ? "Không tìm thấy bài thi"
+              : isNetwork
+              ? "Không thể kết nối máy chủ"
+              : "Có lỗi xảy ra khi tải bài thi"}
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {is401
+              ? "Vui lòng đăng nhập lại để tiếp tục làm bài."
+              : is403
+              ? "Bạn chưa được phân quyền vào lớp học hoặc khóa học chứa bài thi này."
+              : is404
+              ? "Bài tập này không tồn tại hoặc đã bị xóa khỏi hệ thống."
+              : isNetwork
+              ? "Không thể kết nối tới máy chủ. Vui lòng kiểm tra lại kết nối mạng."
+              : errorMessage || "Hệ thống đang gặp sự cố. Vui lòng thử lại sau."}
+          </p>
+        </div>
+        <div className="flex items-center gap-3 pt-2">
+          {is401 ? (
+            <Button asChild className="font-bold rounded-xl">
+              <Link to="/login">Đăng nhập lại</Link>
+            </Button>
+          ) : (
+            <>
+              <Button onClick={() => refetchExam()} className="font-bold rounded-xl gap-2">
+                <RefreshCw className="w-4 h-4" />
+                Thử lại
+              </Button>
+              <Button variant="outline" asChild className="font-bold rounded-xl">
+                <Link to="/app">Quay về trang chủ</Link>
+              </Button>
+            </>
+          )}
+        </div>
       </div>
     );
   }

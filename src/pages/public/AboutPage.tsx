@@ -47,10 +47,10 @@ export default function AboutPage() {
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
             <Button
               size="lg"
-              onClick={() => navigate("/method")}
+              onClick={() => navigate("/academic-system")}
               className="rounded-2xl px-8 h-14 font-extrabold text-base sm:text-lg bg-brand-red hover:bg-brand-red-hover text-brand-red-foreground shadow-sm gap-2"
             >
-              <span>Khám phá phương pháp The ARIS Way</span>
+              <span>Khám phá Hệ thống học thuật</span>
               <ArrowRight className="h-5 w-5" />
             </Button>
 

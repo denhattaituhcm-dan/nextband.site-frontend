@@ -51,18 +51,18 @@ export function PublicFooter() {
               </li>
               <li>
                 <Link
-                  to="/method"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Phương pháp đào tạo
-                </Link>
-              </li>
-              <li>
-                <Link
                   to="/academic-system"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Hệ thống học thuật
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/academic-system#the-aris-way"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Phương pháp The ARIS Way
                 </Link>
               </li>
               <li>

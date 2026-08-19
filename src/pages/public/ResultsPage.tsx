@@ -88,10 +88,10 @@ export default function ResultsPage() {
             <Button
               size="lg"
               variant="outline"
-              onClick={() => navigate("/method")}
+              onClick={() => navigate("/academic-system")}
               className="rounded-2xl px-8 h-14 font-bold text-base sm:text-lg border-2 border-border/80 hover:bg-muted text-foreground"
             >
-              Xem phương pháp The ARIS Way
+              Khám phá hệ thống học thuật
             </Button>
           </div>
         </div>

@@ -87,10 +87,10 @@ export default function PublicHomePage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  onClick={() => navigate("/method")}
+                  onClick={() => navigate("/academic-system")}
                   className="rounded-2xl px-8 h-14 font-bold text-base sm:text-lg border-2 border-border/80 hover:bg-muted text-foreground"
                 >
-                  Khám phá phương pháp học
+                  Khám phá hệ thống học thuật
                 </Button>
               </div>
 
@@ -385,7 +385,7 @@ export default function PublicHomePage() {
 
             <Button
               variant="outline"
-              onClick={() => navigate("/method")}
+              onClick={() => navigate("/academic-system#the-aris-way")}
               className="rounded-2xl px-6 h-12 text-xs sm:text-sm font-extrabold border-2 border-border/80 hover:bg-muted text-foreground shrink-0 gap-2 w-full sm:w-auto"
             >
               <span>Khám phá chi tiết phương pháp</span>

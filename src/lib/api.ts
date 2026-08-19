@@ -62,7 +62,7 @@ export function normalizeExamData(exam: any): any {
       orderIndex: s.orderIndex ?? s.order_index ?? 0,
       audioUrl: formatStorageUrl(s.audioUrl || s.audio_url || ""),
       audio_url: formatStorageUrl(s.audio_url || s.audioUrl || ""),
-      audioScript: s.audioScript || s.audio_script || "",
+      audioScript: s.audioScript ?? s.audio_script ?? undefined,
       // Normalize nested question_groups / questionGroups
       questionGroups: normalizeGroups(s.questionGroups || s.question_groups || []),
       question_groups: normalizeGroups(s.questionGroups || s.question_groups || []),
@@ -522,21 +522,88 @@ export const examsApi = {
   },
 
   getById: async (id: string) => {
-    const token = await getAuthToken();
-    const res = await fetch(`${API_BASE_URL}/exams/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      return normalizeExamData(data);
+    if (!isValidUUID(id)) {
+      const err = new Error("Mã bài thi không hợp lệ.");
+      (err as any).httpStatus = 400;
+      throw err;
     }
 
-    const errData = await res.json().catch(() => ({}));
-    throw new Error(errData.error || "Không tìm thấy bài thi");
+    const token = await getAuthToken();
+
+    // 1. Primary Path: Fastify API Gateway
+    try {
+      const res = await fetch(`${API_BASE_URL}/exams/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        return normalizeExamData(data);
+      }
+
+      // INVARIANT: Do NOT fallback on 401, 403, 404!
+      if (res.status === 401 || res.status === 403 || res.status === 404) {
+        const errData = await res.json().catch(() => ({}));
+        const message =
+          errData.error ||
+          errData.message ||
+          (res.status === 401
+            ? "Phiên đăng nhập đã hết hạn"
+            : res.status === 403
+            ? "Bạn không có quyền truy cập bài thi này"
+            : "Không tìm thấy bài thi");
+        const err = new Error(message);
+        (err as any).httpStatus = res.status;
+        throw err;
+      }
+    } catch (networkErr: any) {
+      // If error already has an explicit client/auth status code, rethrow immediately (no fallback)
+      if (networkErr?.httpStatus === 401 || networkErr?.httpStatus === 403 || networkErr?.httpStatus === 404) {
+        throw networkErr;
+      }
+      // Otherwise (fetch failed, server offline, 5xx), proceed to Read-Only Supabase Fallback below
+    }
+
+    // 2. Read-Only Resilience Fallback: Supabase Direct Query (Offline / Network Failure only)
+    const { data: rawExam, error: dbErr } = await supabase
+      .from("exams")
+      .select("*, courses(id, title), exam_sections(*, question_groups(*, questions(*)))")
+      .eq("id", id)
+      .single();
+
+    if (dbErr || !rawExam) {
+      const err = new Error("Không thể kết nối máy chủ để tải bài thi.");
+      (err as any).httpStatus = 503;
+      throw err;
+    }
+
+    // Security Sanitization: Zero Secret Leaks for students
+    const sanitizedSections = (rawExam.exam_sections || []).map((sec: any) => ({
+      ...sec,
+      audio_script: undefined,
+      audioScript: undefined,
+      question_groups: (sec.question_groups || []).map((grp: any) => ({
+        ...grp,
+        questions: (grp.questions || []).map((q: any) => ({
+          ...q,
+          answer_key: undefined,
+          answerKey: undefined,
+          correct_answer: null,
+          correctAnswer: null,
+        })),
+      })),
+    }));
+
+    const sanitizedExam = {
+      ...rawExam,
+      exam_sections: sanitizedSections,
+      sections: sanitizedSections,
+    };
+
+    return normalizeExamData(sanitizedExam);
   },
 
   create: async (exam: {
