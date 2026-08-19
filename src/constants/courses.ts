@@ -24,16 +24,54 @@ export interface CourseData {
   durationWeeks: number;
   durationHours: string;
   durationLabel: string;
+  totalLessons: number;
+  totalHours: number;
   schedule: string;
   classSize: string;
   tuition: string;
   tuitionNum: number;
   description: string;
   metadata: string[];
+  inclusions: string[];
+  trustBadges: string[];
   modules: string[];
   outcomes: string[];
   theme: CourseTheme;
 }
+
+export interface TrustPoint {
+  key: string;
+  title: string;
+  description: string;
+  iconName: "Users" | "GraduationCap" | "ShieldCheck" | "Gift";
+}
+
+export const TRUST_POINTS: TrustPoint[] = [
+  {
+    key: "class-size",
+    title: "SĨ SỐ TỐI ĐA 8",
+    description: "Lớp nhỏ, giáo viên có thể theo sát từng học viên.",
+    iconName: "Users",
+  },
+  {
+    key: "teacher",
+    title: "100% GV IELTS 8.0+",
+    description: "Giáo viên trực tiếp đứng lớp.",
+    iconName: "GraduationCap",
+  },
+  {
+    key: "trial",
+    title: "HỌC THỬ 02 BUỔI",
+    description: "Trải nghiệm trước khi quyết định.",
+    iconName: "ShieldCheck",
+  },
+  {
+    key: "scholarship",
+    title: "HỌC BỔNG ĐẾN 10%",
+    description: "Áp dụng theo điều kiện chương trình.",
+    iconName: "Gift",
+  },
+];
 
 export const COURSE_CATALOG: Record<string, CourseData> = {
   starter: {
@@ -46,15 +84,29 @@ export const COURSE_CATALOG: Record<string, CourseData> = {
     target: "Đầu vào: Mất gốc → Đầu ra: 3.0 (Rank 3)",
     rank: "Tương ứng Rank 3 — Học Đồ",
     durationWeeks: 9,
-    durationHours: "27 buổi",
-    durationLabel: "Thời lượng: 09 Tuần (27 buổi)",
+    durationHours: "27 buổi (54 giờ)",
+    durationLabel: "9 tuần · 27 buổi · 54 giờ",
+    totalLessons: 27,
+    totalHours: 54,
     schedule: "03 buổi / tuần, 02 giờ / buổi",
     classSize: "Tối đa 08 học viên / lớp",
-    tuition: "3.900.000đ",
-    tuitionNum: 3900000,
+    tuition: "4.400.000đ",
+    tuitionNum: 4400000,
     description:
       "Chuẩn hóa phát âm IPA, từ vựng sinh hoạt thông dụng và cấu trúc câu đơn căn bản trong tiếng Anh.",
-    metadata: ["Thời lượng: 09 Tuần (27 buổi)", "Lớp tối đa 8 học viên", "NextBand LMS"],
+    metadata: ["9 tuần · 27 buổi · 54 giờ", "Tối đa 8 học viên", "NextBand LMS"],
+    inclusions: [
+      "100% GV IELTS 8.0+ trực tiếp đứng lớp",
+      "Lớp tối đa 8 học viên",
+      "Trọn bộ tài liệu & giáo trình",
+      "Tài khoản NextBand LMS",
+      "Chữa bài Speaking & Writing 1-1",
+      "02 bài thi thử Mock Tests chuẩn phòng thi",
+    ],
+    trustBadges: [
+      "100% GV IELTS 8.0+ trực tiếp dạy",
+      "Học thử 02 buổi",
+    ],
     modules: [
       "Chuẩn hóa 44 âm quốc tế IPA và nhận diện trọng âm từ",
       "Ngữ pháp câu đơn: Các thì căn bản, trật tự từ và các từ loại chính",
@@ -92,15 +144,29 @@ export const COURSE_CATALOG: Record<string, CourseData> = {
     target: "Đầu vào: 3.0 → Đầu ra: 4.0 (Rank 4)",
     rank: "Tương ứng Rank 4 — Học Giả",
     durationWeeks: 9,
-    durationHours: "27 buổi",
-    durationLabel: "Thời lượng: 09 Tuần (27 buổi)",
+    durationHours: "27 buổi (54 giờ)",
+    durationLabel: "9 tuần · 27 buổi · 54 giờ",
+    totalLessons: 27,
+    totalHours: 54,
     schedule: "03 buổi / tuần, 02 giờ / buổi",
     classSize: "Tối đa 08 học viên / lớp",
-    tuition: "4.400.000đ",
-    tuitionNum: 4400000,
+    tuition: "4.900.000đ",
+    tuitionNum: 4900000,
     description:
       "Xây dựng ngữ pháp câu ghép, câu phức và kỹ năng đọc hiểu đoạn văn học thuật ngắn không đoán mò.",
-    metadata: ["Thời lượng: 09 Tuần (27 buổi)", "Lớp tối đa 8 học viên", "Chấm bài chi tiết"],
+    metadata: ["9 tuần · 27 buổi · 54 giờ", "Tối đa 8 học viên", "Chấm bài chi tiết"],
+    inclusions: [
+      "100% GV IELTS 8.0+ trực tiếp đứng lớp",
+      "Lớp tối đa 8 học viên",
+      "Trọn bộ tài liệu & giáo trình",
+      "Tài khoản NextBand LMS",
+      "Chữa bài Speaking & Writing 1-1",
+      "02 bài thi thử Mock Tests chuẩn phòng thi",
+    ],
+    trustBadges: [
+      "100% GV IELTS 8.0+ trực tiếp dạy",
+      "Học thử 02 buổi",
+    ],
     modules: [
       "Cấu trúc câu ghép và câu phức: Mệnh đề quan hệ, liên từ chỉ nguyên nhân/kết quả",
       "Phương pháp đọc hiểu skimming & scanning nhận diện thông tin chính",
@@ -138,15 +204,29 @@ export const COURSE_CATALOG: Record<string, CourseData> = {
     target: "Đầu vào: 4.0 → Đầu ra: 5.0 (Rank 5)",
     rank: "Tương ứng Rank 5 — Học Sĩ",
     durationWeeks: 9,
-    durationHours: "27 buổi",
-    durationLabel: "Thời lượng: 09 Tuần (27 buổi)",
+    durationHours: "27 buổi (54 giờ)",
+    durationLabel: "9 tuần · 27 buổi · 54 giờ",
+    totalLessons: 27,
+    totalHours: 54,
     schedule: "03 buổi / tuần, 02 giờ / buổi",
     classSize: "Tối đa 08 học viên / lớp",
-    tuition: "4.900.000đ",
-    tuitionNum: 4900000,
+    tuition: "5.400.000đ",
+    tuitionNum: 5400000,
     description:
       "Làm quen cấu trúc 4 kỹ năng IELTS, viết đoạn văn học thuật có luận điểm và phản xạ câu trả lời mạch lạc.",
-    metadata: ["Thời lượng: 09 Tuần (27 buổi)", "Lớp tối đa 8 học viên", "Thi thử định kỳ"],
+    metadata: ["9 tuần · 27 buổi · 54 giờ", "Tối đa 8 học viên", "Thi thử định kỳ"],
+    inclusions: [
+      "100% GV IELTS 8.0+ trực tiếp đứng lớp",
+      "Lớp tối đa 8 học viên",
+      "Trọn bộ tài liệu & giáo trình",
+      "Tài khoản NextBand LMS",
+      "Chữa bài Speaking & Writing 1-1",
+      "02 bài thi thử Mock Tests chuẩn phòng thi",
+    ],
+    trustBadges: [
+      "100% GV IELTS 8.0+ trực tiếp dạy",
+      "Học thử 02 buổi",
+    ],
     modules: [
       "Làm quen cấu trúc đề thi 4 kỹ năng chuẩn Cambridge",
       "Tổ chức đoạn văn Writing Task 2 có câu chủ đề và giải thích lý do",
@@ -184,15 +264,29 @@ export const COURSE_CATALOG: Record<string, CourseData> = {
     target: "Đầu vào: 5.0 → Đầu ra: 6.0 (Rank 6)",
     rank: "Tương ứng Rank 6 — Học Sư",
     durationWeeks: 9,
-    durationHours: "27 buổi",
-    durationLabel: "Thời lượng: 09 Tuần (27 buổi)",
+    durationHours: "27 buổi (54 giờ)",
+    durationLabel: "9 tuần · 27 buổi · 54 giờ",
+    totalLessons: 27,
+    totalHours: 54,
     schedule: "03 buổi / tuần, 02 giờ / buổi",
     classSize: "Tối đa 08 học viên / lớp",
-    tuition: "5.400.000đ",
-    tuitionNum: 5400000,
+    tuition: "5.900.000đ",
+    tuitionNum: 5900000,
     description:
       "Luyện viết luận Task 2 có lập luận chặt chẽ, mô tả biểu đồ Task 1 chính xác và phản xạ Nói theo các chủ đề chuyên sâu.",
-    metadata: ["Thời lượng: 09 Tuần (27 buổi)", "Lớp tối đa 8 học viên", "Chấm chữa 1:1 từng câu"],
+    metadata: ["9 tuần · 27 buổi · 54 giờ", "Tối đa 8 học viên", "Chấm chữa 1:1 từng câu"],
+    inclusions: [
+      "100% GV IELTS 8.0+ trực tiếp đứng lớp",
+      "Lớp tối đa 8 học viên",
+      "Trọn bộ tài liệu & giáo trình",
+      "Tài khoản NextBand LMS",
+      "Chữa bài Speaking & Writing 1-1",
+      "02 bài thi thử Mock Tests chuẩn phòng thi",
+    ],
+    trustBadges: [
+      "100% GV IELTS 8.0+ trực tiếp dạy",
+      "Học thử 02 buổi",
+    ],
     modules: [
       "Tái cấu trúc lập luận Writing Task 2 theo phương pháp The ARIS Way",
       "Phân tích chuyên sâu và chọn lọc số liệu nổi bật Writing Task 1",
@@ -230,15 +324,29 @@ export const COURSE_CATALOG: Record<string, CourseData> = {
     target: "Đầu vào: 6.0 → Đầu ra: 6.5+ (Rank 7)",
     rank: "Tương ứng Rank 7 — Học Bá",
     durationWeeks: 10,
-    durationHours: "30 buổi",
-    durationLabel: "Thời lượng: 10 Tuần (30 buổi)",
+    durationHours: "30 buổi (60 giờ)",
+    durationLabel: "10 tuần · 30 buổi · 60 giờ",
+    totalLessons: 30,
+    totalHours: 60,
     schedule: "03 buổi / tuần, 02 giờ / buổi",
     classSize: "Tối đa 08 học viên / lớp",
-    tuition: "5.900.000đ",
-    tuitionNum: 5900000,
+    tuition: "6.400.000đ",
+    tuitionNum: 6400000,
     description:
       "Tinh chỉnh văn phong học thuật tự nhiên, kiểm soát độ chính xác ngữ nghĩa và hoàn thiện tư duy phản biện cấp cao.",
-    metadata: ["Thời lượng: 10 Tuần (30 buổi)", "Lớp tối đa 8 học viên", "Luyện đề phòng thi NextBand"],
+    metadata: ["10 tuần · 30 buổi · 60 giờ", "Tối đa 8 học viên", "Luyện đề phòng thi NextBand"],
+    inclusions: [
+      "100% GV IELTS 8.0+ trực tiếp đứng lớp",
+      "Lớp tối đa 8 học viên",
+      "Trọn bộ tài liệu & giáo trình",
+      "Tài khoản NextBand LMS",
+      "Chữa bài Speaking & Writing 1-1",
+      "02 bài thi thử Mock Tests chuẩn phòng thi",
+    ],
+    trustBadges: [
+      "100% GV IELTS 8.0+ trực tiếp dạy",
+      "Học thử 02 buổi",
+    ],
     modules: [
       "Kiểm soát độ mạch lạc cấp cao (Advanced Cohesion & Coherence)",
       "Văn phong bản ngữ và linh hoạt từ vựng theo ngữ cảnh học thuật chuyên sâu",

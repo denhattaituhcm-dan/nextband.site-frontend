@@ -1,24 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SectionContainer } from "@/components/public/SectionContainer";
-import { PlaceholderCard } from "@/components/public/PlaceholderCard";
+import { CoursePricingCard } from "@/components/public/CoursePricingCard";
+import { TrustValueStrip } from "@/components/public/TrustValueStrip";
+import { QuickTrialModal } from "@/components/public/QuickTrialModal";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/common/SEO";
 import { COURSE_CATALOG } from "@/constants/courses";
 import {
   BookOpen,
   Target,
-  CheckCircle2,
   ArrowRight,
   ShieldCheck,
   Clock,
   Brain,
   Users,
-  Layers,
 } from "lucide-react";
 
 export default function CoursesPage() {
   const navigate = useNavigate();
+  const [trialModalOpen, setTrialModalOpen] = useState(false);
+  const [selectedCourseSlug, setSelectedCourseSlug] = useState("starter");
+
+  const handleOpenTrial = (slug: string) => {
+    setSelectedCourseSlug(slug);
+    setTrialModalOpen(true);
+  };
+
+  const handleOpenDetail = (slug: string) => {
+    navigate(`/courses/${slug}`);
+  };
 
   return (
     <div className="flex flex-col">
@@ -28,7 +39,7 @@ export default function CoursesPage() {
       />
 
       {/* Hero Header */}
-      <section className="relative overflow-hidden pt-14 pb-20 sm:pt-20 sm:pb-28 border-b border-border/80 bg-background">
+      <section className="relative overflow-hidden pt-14 pb-16 sm:pt-20 sm:pb-20 border-b border-border/80 bg-background">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue-soft text-brand-blue border border-brand-blue/20 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
             <BookOpen className="h-4 w-4" />
@@ -43,30 +54,33 @@ export default function CoursesPage() {
           </h1>
 
           <p className="text-lg sm:text-xl lg:text-2xl text-foreground/85 font-normal leading-relaxed max-w-3xl mx-auto">
-            Khung chuẩn 7 cấp bậc định vị năng lực hiện tại; 5 khóa học của ARIS là các chặng rèn luyện bài bản giúp bạn từng bước nâng cao năng lực và đạt band điểm mục tiêu.
+            Lớp học siêu nhỏ tối đa 08 học viên, 100% giáo viên IELTS 8.0+ trực tiếp đứng lớp, học phí minh bạch và trải nghiệm 02 buổi học thử trước khi quyết định.
           </p>
 
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
             <Button
               size="lg"
-              onClick={() => navigate("/assessment")}
+              onClick={() => handleOpenTrial("starter")}
               className="rounded-2xl px-8 h-14 font-extrabold text-base sm:text-lg bg-brand-red hover:bg-brand-red-hover text-brand-red-foreground shadow-sm gap-2"
             >
-              <span>Đánh giá năng lực để xếp lớp</span>
+              <span>Nhận lịch học thử 02 buổi</span>
               <ArrowRight className="h-5 w-5" />
             </Button>
 
             <Button
               size="lg"
               variant="outline"
-              onClick={() => navigate("/contact")}
+              onClick={() => navigate("/assessment")}
               className="rounded-2xl px-8 h-14 font-bold text-base sm:text-lg border-2 border-border/80 hover:bg-muted text-foreground"
             >
-              Nhận tư vấn lộ trình
+              Đánh giá năng lực để xếp lớp
             </Button>
           </div>
         </div>
       </section>
+
+      {/* 4 Trust Points Strip */}
+      <TrustValueStrip />
 
       {/* Pathway 1: Giai Đoạn Xây Nền Năng Lực (3 Khóa) */}
       <SectionContainer
@@ -76,40 +90,22 @@ export default function CoursesPage() {
         background="default"
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left">
-          <PlaceholderCard
-            variant="course"
-            theme={COURSE_CATALOG.starter.theme}
-            badge={COURSE_CATALOG.starter.stageNumber}
-            title={COURSE_CATALOG.starter.title}
-            subtitle={COURSE_CATALOG.starter.target}
-            description={COURSE_CATALOG.starter.description}
-            metadata={COURSE_CATALOG.starter.metadata}
-            ctaLabel="Xem chi tiết khóa học"
-            onCtaClick={() => navigate("/courses/starter")}
+          <CoursePricingCard
+            course={COURSE_CATALOG.starter}
+            onTrialClick={handleOpenTrial}
+            onDetailClick={handleOpenDetail}
           />
 
-          <PlaceholderCard
-            variant="course"
-            theme={COURSE_CATALOG.dreamer.theme}
-            badge={COURSE_CATALOG.dreamer.stageNumber}
-            title={COURSE_CATALOG.dreamer.title}
-            subtitle={COURSE_CATALOG.dreamer.target}
-            description={COURSE_CATALOG.dreamer.description}
-            metadata={COURSE_CATALOG.dreamer.metadata}
-            ctaLabel="Xem chi tiết khóa học"
-            onCtaClick={() => navigate("/courses/dreamer")}
+          <CoursePricingCard
+            course={COURSE_CATALOG.dreamer}
+            onTrialClick={handleOpenTrial}
+            onDetailClick={handleOpenDetail}
           />
 
-          <PlaceholderCard
-            variant="course"
-            theme={COURSE_CATALOG.builder.theme}
-            badge={COURSE_CATALOG.builder.stageNumber}
-            title={COURSE_CATALOG.builder.title}
-            subtitle={COURSE_CATALOG.builder.target}
-            description={COURSE_CATALOG.builder.description}
-            metadata={COURSE_CATALOG.builder.metadata}
-            ctaLabel="Xem chi tiết khóa học"
-            onCtaClick={() => navigate("/courses/builder")}
+          <CoursePricingCard
+            course={COURSE_CATALOG.builder}
+            onTrialClick={handleOpenTrial}
+            onDetailClick={handleOpenDetail}
           />
         </div>
       </SectionContainer>
@@ -122,28 +118,16 @@ export default function CoursesPage() {
         background="muted"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left max-w-4xl mx-auto">
-          <PlaceholderCard
-            variant="course"
-            theme={COURSE_CATALOG.master.theme}
-            badge={COURSE_CATALOG.master.stageNumber}
-            title={COURSE_CATALOG.master.title}
-            subtitle={COURSE_CATALOG.master.target}
-            description={COURSE_CATALOG.master.description}
-            metadata={COURSE_CATALOG.master.metadata}
-            ctaLabel="Xem chi tiết khóa học"
-            onCtaClick={() => navigate("/courses/master")}
+          <CoursePricingCard
+            course={COURSE_CATALOG.master}
+            onTrialClick={handleOpenTrial}
+            onDetailClick={handleOpenDetail}
           />
 
-          <PlaceholderCard
-            variant="course"
-            theme={COURSE_CATALOG.leader.theme}
-            badge={COURSE_CATALOG.leader.stageNumber}
-            title={COURSE_CATALOG.leader.title}
-            subtitle={COURSE_CATALOG.leader.target}
-            description={COURSE_CATALOG.leader.description}
-            metadata={COURSE_CATALOG.leader.metadata}
-            ctaLabel="Xem chi tiết khóa học"
-            onCtaClick={() => navigate("/courses/leader")}
+          <CoursePricingCard
+            course={COURSE_CATALOG.leader}
+            onTrialClick={handleOpenTrial}
+            onDetailClick={handleOpenDetail}
           />
         </div>
       </SectionContainer>
@@ -226,6 +210,13 @@ export default function CoursesPage() {
           </div>
         </div>
       </section>
+
+      {/* Quick Trial Booking Modal */}
+      <QuickTrialModal
+        isOpen={trialModalOpen}
+        onOpenChange={setTrialModalOpen}
+        initialCourseSlug={selectedCourseSlug}
+      />
     </div>
   );
 }
