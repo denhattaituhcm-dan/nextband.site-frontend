@@ -35,9 +35,9 @@ export function TeacherShowcase() {
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Grid of Teachers (Click to inspect) */}
-        <div className="lg:col-span-7 space-y-6">
+        <div className="lg:col-span-6 space-y-6">
           {/* Grid of Teacher Avatar Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-3.5 sm:gap-4">
             {facultyList.map((teacher) => (
               <TeacherCard
                 key={teacher.id}
@@ -50,7 +50,7 @@ export function TeacherShowcase() {
         </div>
 
         {/* Right Column: Active Teacher Credentials & Full TRF (Sticky) */}
-        <div className="lg:col-span-5 lg:sticky lg:top-24">
+        <div className="lg:col-span-6 lg:sticky lg:top-24">
           {activeTeacher ? (
             <TeacherDetail teacher={activeTeacher} />
           ) : (

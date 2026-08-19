@@ -132,7 +132,7 @@ export function TeacherDetail({ teacher }: TeacherDetailProps) {
                 src={certificateData.image}
                 alt={certificateData.alt}
                 loading="lazy"
-                className="w-full h-auto max-h-[520px] object-contain transition-transform duration-300 group-hover:scale-[1.01]"
+                className="w-full h-auto max-h-[680px] object-contain transition-transform duration-300 group-hover:scale-[1.01]"
               />
               <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs sm:text-sm font-bold backdrop-blur-[1px]">
                 <Maximize2 className="h-4 w-4" />
