@@ -183,10 +183,10 @@ export const ACADEMIC_RANKS: AcademicRank[] = [
 ];
 
 export const PROGRESSION_STAGES = [
-  { id: "stage-1", stars: "1★", label: "Sơ kỳ", code: "Phase I" },
-  { id: "stage-2", stars: "2★", label: "Trung kỳ", code: "Phase II" },
-  { id: "stage-3", stars: "3★", label: "Hậu kỳ", code: "Phase III" },
-  { id: "stage-4", stars: "4★", label: "Đỉnh phong", code: "Apex" },
+  { id: "stage-1", starCount: 1, label: "Sơ kỳ", code: "Phase I" },
+  { id: "stage-2", starCount: 2, label: "Trung kỳ", code: "Phase II" },
+  { id: "stage-3", starCount: 3, label: "Hậu kỳ", code: "Phase III" },
+  { id: "stage-4", starCount: 4, label: "Đỉnh phong", code: "Apex" },
 ];
 
 interface AcademicRankSystemProps {
@@ -313,12 +313,20 @@ export function AcademicRankSystem({
               {activeRankData.description}
             </p>
 
-            {/* 4 Progression Stages Visualizer (Sơ kỳ -> Đỉnh phong với số sao ★) */}
+            {/* 4 Progression Stages Visualizer (Sơ kỳ -> Đỉnh phong với ảnh ngôi sao) */}
             <div className="space-y-3 pt-3 border-t border-border/60">
               <div className="text-xs font-black text-muted-foreground uppercase tracking-wider flex items-center justify-between">
                 <span>4 Giai Đoạn Tiến Trình</span>
-                <span className="font-mono text-xs text-foreground/75">
-                  1★ Sơ kỳ → 4★ Đỉnh phong
+                <span className="font-mono text-xs text-foreground/75 inline-flex items-center gap-1">
+                  <span className="inline-flex items-center gap-0.5 font-bold">
+                    1<img src="/images/star.png" alt="star" className="w-3.5 h-3.5 object-contain inline-block -mt-0.5" />
+                  </span>
+                  <span>Sơ kỳ</span>
+                  <span className="text-muted-foreground font-normal">→</span>
+                  <span className="inline-flex items-center gap-0.5 font-bold">
+                    4<img src="/images/star.png" alt="star" className="w-3.5 h-3.5 object-contain inline-block -mt-0.5" />
+                  </span>
+                  <span>Đỉnh phong</span>
                 </span>
               </div>
 
@@ -329,8 +337,13 @@ export function AcademicRankSystem({
                     className="p-3.5 rounded-2xl border border-border/80 bg-muted/30 text-center space-y-1.5 hover:border-border transition-all"
                   >
                     <div className="flex items-center justify-center gap-1">
-                      <span className="text-xs font-mono font-black px-2 py-0.5 rounded-md bg-background border border-border text-foreground">
-                        {stage.stars}
+                      <span className="inline-flex items-center gap-1 text-xs font-mono font-black px-2 py-0.5 rounded-md bg-background border border-border text-foreground shadow-2xs">
+                        <span>{stage.starCount}</span>
+                        <img
+                          src="/images/star.png"
+                          alt="star"
+                          className="w-3.5 h-3.5 object-contain inline-block -mt-0.5"
+                        />
                       </span>
                     </div>
                     <div className="font-black text-sm text-foreground">

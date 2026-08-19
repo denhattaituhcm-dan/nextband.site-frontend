@@ -76,8 +76,9 @@ export default function AcademicSystemPage() {
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-left">
           <div className="p-7 rounded-3xl bg-card border border-border/80 space-y-3 shadow-2xs">
-            <div className="text-xs font-mono font-black px-3 py-1 rounded-lg bg-brand-blue-soft text-brand-blue w-fit">
-              Giai đoạn 1
+            <div className="inline-flex items-center gap-1.5 text-xs font-mono font-black px-3 py-1 rounded-lg bg-brand-blue-soft text-brand-blue w-fit">
+              <span>Giai đoạn 1</span>
+              <img src="/images/star.png" alt="star" className="w-3.5 h-3.5 object-contain inline-block -mt-0.5" />
             </div>
             <h3 className="font-black text-foreground text-xl">Sơ Kỳ (Phase I)</h3>
             <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
@@ -86,8 +87,12 @@ export default function AcademicSystemPage() {
           </div>
 
           <div className="p-7 rounded-3xl bg-card border border-border/80 space-y-3 shadow-2xs">
-            <div className="text-xs font-mono font-black px-3 py-1 rounded-lg bg-brand-blue-soft text-brand-blue w-fit">
-              Giai đoạn 2
+            <div className="inline-flex items-center gap-1.5 text-xs font-mono font-black px-3 py-1 rounded-lg bg-brand-blue-soft text-brand-blue w-fit">
+              <span>Giai đoạn 2</span>
+              <div className="inline-flex items-center -space-x-0.5">
+                <img src="/images/star.png" alt="star" className="w-3.5 h-3.5 object-contain inline-block -mt-0.5" />
+                <img src="/images/star.png" alt="star" className="w-3.5 h-3.5 object-contain inline-block -mt-0.5" />
+              </div>
             </div>
             <h3 className="font-black text-foreground text-xl">Trung Kỳ (Phase II)</h3>
             <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
@@ -96,8 +101,13 @@ export default function AcademicSystemPage() {
           </div>
 
           <div className="p-7 rounded-3xl bg-card border border-border/80 space-y-3 shadow-2xs">
-            <div className="text-xs font-mono font-black px-3 py-1 rounded-lg bg-brand-blue-soft text-brand-blue w-fit">
-              Giai đoạn 3
+            <div className="inline-flex items-center gap-1.5 text-xs font-mono font-black px-3 py-1 rounded-lg bg-brand-blue-soft text-brand-blue w-fit">
+              <span>Giai đoạn 3</span>
+              <div className="inline-flex items-center -space-x-0.5">
+                <img src="/images/star.png" alt="star" className="w-3.5 h-3.5 object-contain inline-block -mt-0.5" />
+                <img src="/images/star.png" alt="star" className="w-3.5 h-3.5 object-contain inline-block -mt-0.5" />
+                <img src="/images/star.png" alt="star" className="w-3.5 h-3.5 object-contain inline-block -mt-0.5" />
+              </div>
             </div>
             <h3 className="font-black text-foreground text-xl">Hậu Kỳ (Phase III)</h3>
             <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
@@ -106,8 +116,14 @@ export default function AcademicSystemPage() {
           </div>
 
           <div className="p-7 rounded-3xl bg-card border border-border/80 space-y-3 shadow-2xs">
-            <div className="text-xs font-mono font-black px-3 py-1 rounded-lg bg-brand-red-soft text-brand-red w-fit">
-              Giai đoạn 4
+            <div className="inline-flex items-center gap-1.5 text-xs font-mono font-black px-3 py-1 rounded-lg bg-brand-red-soft text-brand-red w-fit">
+              <span>Giai đoạn 4</span>
+              <div className="inline-flex items-center -space-x-0.5">
+                <img src="/images/star.png" alt="star" className="w-3.5 h-3.5 object-contain inline-block -mt-0.5" />
+                <img src="/images/star.png" alt="star" className="w-3.5 h-3.5 object-contain inline-block -mt-0.5" />
+                <img src="/images/star.png" alt="star" className="w-3.5 h-3.5 object-contain inline-block -mt-0.5" />
+                <img src="/images/star.png" alt="star" className="w-3.5 h-3.5 object-contain inline-block -mt-0.5" />
+              </div>
             </div>
             <h3 className="font-black text-foreground text-xl">Đỉnh Phong (Apex)</h3>
             <p className="text-sm sm:text-base text-foreground/75 leading-relaxed">
