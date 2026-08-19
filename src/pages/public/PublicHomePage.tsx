@@ -812,7 +812,7 @@ export default function PublicHomePage() {
               size="lg"
               variant="outline"
               onClick={() => navigate("/contact")}
-              className="rounded-2xl px-8 h-14 font-bold text-base sm:text-lg border-2 border-white/40 text-white hover:bg-white/10"
+              className="rounded-2xl px-8 h-14 font-bold text-base sm:text-lg border-2 border-white/40 text-white bg-transparent hover:bg-white/10 hover:text-white"
             >
               Liên hệ nhận tư vấn trực tiếp
             </Button>
