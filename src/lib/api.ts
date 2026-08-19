@@ -3087,26 +3087,110 @@ export const lessonsApi = {
     }
 
     const token = await getAuthToken();
-    const response = await fetch(`${API_BASE_URL}/classes/${classId}/lessons`, {
-      headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/classes/${classId}/lessons`, {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
 
-    if (response.ok) {
-      const result = await response.json();
-      if (result?.success && result?.data) {
-        return result.data;
+      if (response.ok) {
+        const result = await response.json();
+        if (result?.success && result?.data) {
+          return result.data;
+        }
       }
+    } catch {
+      // Backend offline or mock test environment -> proceed to Supabase read fallback
     }
 
-    const clsRes = await classesApi.getById(classId).catch(() => null);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthenticated");
+
+    // 1. Fetch class & course info
+    const { data: cls, error: clsErr } = await supabase
+      .from("classes")
+      .select("id, name, course_id, courses(*)")
+      .eq("id", classId)
+      .single();
+
+    if (clsErr || !cls) {
+      throw new Error("Không tìm thấy thông tin lớp học");
+    }
+
+    const courseObj = Array.isArray(cls.courses) ? cls.courses[0] : cls.courses;
+    const courseId = cls.course_id || courseObj?.id;
+    const courseTitle = courseObj?.title || cls.name || "Lớp học";
+    const className = cls.name || courseTitle || "Lớp học";
+
+    // 2. Fetch all exams (homeworks) for this course from Supabase
+    let exams: any[] = [];
+    if (courseId) {
+      const { data: examData } = await supabase
+        .from("exams")
+        .select("id, title, description, week, exam_type, exam_sections(id, section_type, title, instructions, order_index)")
+        .eq("course_id", courseId)
+        .order("week", { ascending: true });
+      exams = examData || [];
+    }
+
+    // 3. Fetch student submissions for these exams
+    const examIds = exams.map((e) => e.id);
+    let submissionsMap: Record<string, any> = {};
+
+    if (examIds.length > 0) {
+      const { data: subs } = await supabase
+        .from("exam_submissions")
+        .select("id, exam_id, status, total_score, submitted_at")
+        .eq("student_id", user.id)
+        .in("exam_id", examIds);
+
+      (subs || []).forEach((s: any) => {
+        submissionsMap[s.exam_id] = s;
+      });
+    }
+
+    // 4. Format lessons array for student lesson viewer
+    const lessons = exams.map((ex: any, idx: number) => {
+      const sub = submissionsMap[ex.id];
+      const isCompleted = sub?.status === "graded" || sub?.status === "submitted";
+      const hwNum = String(idx + 1).padStart(2, "0");
+
+      return {
+        id: ex.id,
+        title: ex.title || `Homework ${hwNum}`,
+        description: ex.description || `Bài tập buổi ${ex.week || idx + 1}`,
+        week: ex.week || idx + 1,
+        status: isCompleted ? "COMPLETED" : "AVAILABLE",
+        submission: sub || null,
+        resources: (ex.exam_sections || []).map((sec: any) => ({
+          id: sec.id,
+          title: sec.title || `Kỹ năng ${sec.section_type?.toUpperCase()}`,
+          type: sec.section_type || "general",
+          detail: sec.instructions || `Luyện tập phần ${sec.section_type}`,
+        })),
+      };
+    });
+
+    const completedLessons = lessons.filter((l) => l.status === "COMPLETED").length;
+    const totalLessons = lessons.length;
+    const percentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+
     return {
-      classId,
-      className: clsRes?.name || "Lớp học",
-      courseTitle: clsRes?.course?.title || clsRes?.name || "Khóa học",
-      progress: { completedLessons: 0, totalLessons: 0, percentage: 0 },
-      lessons: [],
+      success: true,
+      data: {
+        classId: cls.id,
+        className,
+        courseTitle,
+        progress: {
+          completedLessons,
+          totalLessons,
+          percentage,
+        },
+        lessons,
+      },
     };
   },
 };
