@@ -3086,93 +3086,27 @@ export const lessonsApi = {
       throw new Error("Mã định danh lớp học không hợp lệ. Vui lòng kiểm tra lại URL.");
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) throw new Error("Unauthenticated");
-
-    // 1. Fetch class & course info
-    const { data: cls, error: clsErr } = await supabase
-      .from("classes")
-      .select("id, name, course_id, courses(*)")
-      .eq("id", classId)
-      .single();
-
-    if (clsErr || !cls) {
-      throw new Error("Không tìm thấy thông tin lớp học");
-    }
-
-    const courseObj = Array.isArray(cls.courses) ? cls.courses[0] : cls.courses;
-    const courseId = cls.course_id || courseObj?.id;
-    const courseTitle = courseObj?.title || cls.name || "Lớp học";
-    const className = cls.name || courseTitle || "Lớp học";
-
-    // 2. Fetch all exams (homeworks) for this course from Supabase
-    let exams: any[] = [];
-    if (courseId) {
-      const { data: examData } = await supabase
-        .from("exams")
-        .select("id, title, description, week, exam_type, exam_sections(id, section_type, title, instructions, order_index)")
-        .eq("course_id", courseId)
-        .order("week", { ascending: true });
-      exams = examData || [];
-    }
-
-    // 3. Fetch student submissions for these exams
-    const examIds = exams.map((e) => e.id);
-    let submissionsMap: Record<string, any> = {};
-
-    if (examIds.length > 0) {
-      const { data: subs } = await supabase
-        .from("exam_submissions")
-        .select("id, exam_id, status, total_score, submitted_at")
-        .eq("student_id", user.id)
-        .in("exam_id", examIds);
-
-      (subs || []).forEach((s: any) => {
-        submissionsMap[s.exam_id] = s;
-      });
-    }
-
-    // 4. Format lessons array for student lesson viewer
-    const lessons = exams.map((ex: any, idx: number) => {
-      const sub = submissionsMap[ex.id];
-      const isCompleted = sub?.status === "graded" || sub?.status === "submitted";
-      const hwNum = String(idx + 1).padStart(2, "0");
-
-      return {
-        id: ex.id,
-        title: ex.title || `Homework ${hwNum}`,
-        description: ex.description || `Bài tập buổi ${ex.week || idx + 1}`,
-        week: ex.week || idx + 1,
-        status: isCompleted ? "COMPLETED" : "AVAILABLE",
-        submission: sub || null,
-        resources: (ex.exam_sections || []).map((sec: any) => ({
-          id: sec.id,
-          title: sec.title || `Kỹ năng ${sec.section_type?.toUpperCase()}`,
-          type: sec.section_type || "general",
-          detail: sec.instructions || `Luyện tập phần ${sec.section_type}`,
-        })),
-      };
+    const token = await getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/classes/${classId}/lessons`, {
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
     });
 
-    const completedLessons = lessons.filter((l) => l.status === "COMPLETED").length;
-    const totalLessons = lessons.length;
-    const percentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+    if (response.ok) {
+      const result = await response.json();
+      if (result?.success && result?.data) {
+        return result.data;
+      }
+    }
 
+    const clsRes = await classesApi.getById(classId).catch(() => null);
     return {
-      success: true,
-      data: {
-        classId: cls.id,
-        className,
-        courseTitle,
-        progress: {
-          completedLessons,
-          totalLessons,
-          percentage,
-        },
-        lessons,
-      },
+      classId,
+      className: clsRes?.name || "Lớp học",
+      courseTitle: clsRes?.course?.title || clsRes?.name || "Khóa học",
+      progress: { completedLessons: 0, totalLessons: 0, percentage: 0 },
+      lessons: [],
     };
   },
 };
@@ -3216,57 +3150,79 @@ export const attendanceApi = {
       if (response.ok) {
         const result = await response.json();
         if (result?.success && result?.data) {
-          return result as { success: boolean; data: SessionAttendanceContract };
+          return result;
         }
       }
     } catch {
-      // Proceed to Supabase fallback
+      // Backend offline
     }
 
     try {
-      const [sessionRes, attendanceRes] = await Promise.all([
+      const [sessionRes, attendanceRes, studentsRes] = await Promise.all([
         supabase.from("class_sessions").select("*").eq("id", sessionId).maybeSingle(),
         supabase.from("class_attendance").select("*").eq("session_id", sessionId),
+        supabase.from("class_students").select("student_id").eq("class_id", classId),
       ]);
 
       const session = sessionRes.data;
-      const attRows = attendanceRes.data || [];
+      const attendance = attendanceRes.data || [];
+      const studentIds = (studentsRes.data || []).map((s: any) => s.student_id).filter(Boolean);
+
+      let profiles: any[] = [];
+      if (studentIds.length > 0) {
+        const { data: profs } = await supabase
+          .from("profiles")
+          .select("user_id, full_name, email, avatar_url")
+          .in("user_id", studentIds);
+        profiles = profs || [];
+      }
+
+      const total = studentIds.length;
+      let present = 0;
+      let absent = 0;
+      let late = 0;
+      let excused = 0;
+      let unmarked = 0;
+
+      const studentList = studentIds.map((sId: string) => {
+        const prof = profiles.find((p: any) => (p.user_id || p.id) === sId);
+        const att = attendance.find((a: any) => a.student_id === sId);
+        const status: AttendanceStatus = att ? att.status : "UNMARKED";
+
+        if (status === "PRESENT") present++;
+        else if (status === "ABSENT") absent++;
+        else if (status === "LATE") late++;
+        else if (status === "EXCUSED") excused++;
+        else unmarked++;
+
+        return {
+          studentId: sId,
+          studentName: prof?.full_name || prof?.fullName || prof?.email || "Học viên",
+          avatarUrl: prof?.avatar_url || prof?.avatarUrl,
+          email: prof?.email || "",
+          status,
+          note: att?.note || null,
+        };
+      });
 
       return {
         success: true,
         data: {
-          classId,
-          className: "",
-          sessionId,
-          sessionTitle: session?.title || `Buổi ${session?.session_number || 1}`,
-          sessionDate: session?.session_date || session?.planned_date || "",
+          sessionNumber: session?.session_number || 1,
+          sessionDate: session?.session_date || session?.planned_date || new Date().toISOString(),
+          title: session?.title || `Buổi ${session?.session_number || 1}`,
           status: session?.status || "SCHEDULED",
-          summary: {
-            total: attRows.length,
-            present: attRows.filter((r: any) => r.status === "PRESENT").length,
-            absent: attRows.filter((r: any) => r.status === "ABSENT").length,
-            late: attRows.filter((r: any) => r.status === "LATE").length,
-            excused: attRows.filter((r: any) => r.status === "EXCUSED").length,
-            unmarked: 0,
-          },
-          students: attRows.map((r: any) => ({
-            studentId: r.student_id,
-            studentName: "",
-            avatarUrl: null,
-            status: (r.status as AttendanceStatus) || "PRESENT",
-            notes: r.note || null,
-          })),
+          summary: { total, present, absent, late, excused, unmarked },
+          students: studentList,
         },
       };
     } catch {
       return {
         success: true,
         data: {
-          classId,
-          className: "",
-          sessionId,
-          sessionTitle: `Buổi học`,
-          sessionDate: "",
+          sessionNumber: 1,
+          sessionDate: new Date().toISOString(),
+          title: "Buổi học",
           status: "SCHEDULED",
           summary: { total: 0, present: 0, absent: 0, late: 0, excused: 0, unmarked: 0 },
           students: [],
@@ -3281,36 +3237,18 @@ export const attendanceApi = {
     items: Array<{ studentId: string; status: AttendanceStatus; note?: string | null; notes?: string | null }>
   ) => {
     const token = await getAuthToken();
-    let restSuccess = false;
-    try {
-      const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/attendance`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ items }),
-      });
-      if (response.ok) {
-        restSuccess = true;
-      }
-    } catch {
-      // Backend offline
-    }
+    const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/attendance`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ items }),
+    });
 
-    try {
-      const records = items.map((it) => ({
-        class_id: classId,
-        session_id: sessionId,
-        student_id: it.studentId,
-        status: it.status,
-        note: it.note || it.notes || null,
-      }));
-      await supabase.from("class_attendance").upsert(records, {
-        onConflict: "session_id,student_id",
-      });
-    } catch (dbErr) {
-      if (!restSuccess) throw dbErr;
+    if (!response.ok) {
+      const errJson = await response.json().catch(() => ({}));
+      throw new Error(errJson.error || errJson.message || "Không thể cập nhật điểm danh");
     }
 
     return { success: true };
@@ -3318,28 +3256,16 @@ export const attendanceApi = {
 
   completeSession: async (classId: string, sessionId: string) => {
     const token = await getAuthToken();
-    let restSuccess = false;
-    try {
-      const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/complete`, {
-        method: "POST",
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
-      if (response.ok) {
-        restSuccess = true;
-      }
-    } catch {
-      // Backend offline
-    }
+    const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/complete`, {
+      method: "POST",
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
 
-    try {
-      await supabase
-        .from("class_sessions")
-        .update({ status: "COMPLETED", completed_at: new Date().toISOString() })
-        .eq("id", sessionId);
-    } catch (dbErr) {
-      if (!restSuccess) throw dbErr;
+    if (!response.ok) {
+      const errJson = await response.json().catch(() => ({}));
+      throw new Error(errJson.error || errJson.message || "Không thể chốt điểm danh buổi học");
     }
 
     return { success: true };
@@ -3347,29 +3273,18 @@ export const attendanceApi = {
 
   unlockSession: async (classId: string, sessionId: string) => {
     const token = await getAuthToken();
-    let restSuccess = false;
-    try {
-      const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/unlock`, {
-        method: "POST",
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
-      if (response.ok) {
-        restSuccess = true;
-      }
-    } catch {
-      // Backend offline
+    const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/unlock`, {
+      method: "POST",
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+
+    if (!response.ok) {
+      const errJson = await response.json().catch(() => ({}));
+      throw new Error(errJson.error || errJson.message || "Không thể mở khóa buổi học");
     }
 
-    try {
-      await supabase
-        .from("class_sessions")
-        .update({ status: "SCHEDULED", completed_at: null })
-        .eq("id", sessionId);
-    } catch (dbErr) {
-      if (!restSuccess) throw dbErr;
-    }
     return { success: true };
   },
 
