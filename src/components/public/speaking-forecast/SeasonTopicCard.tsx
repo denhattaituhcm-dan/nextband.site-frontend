@@ -61,8 +61,10 @@ export const SeasonTopicCard: React.FC<SeasonTopicCardProps> = ({
 
   return (
     <Card
+      id={`topic-${topic.id}`}
+      style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 260px' }}
       className={cn(
-        'group bg-card hover:bg-card border border-border/80 shadow-2xs hover:shadow-md hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between overflow-hidden rounded-xl',
+        'group bg-card hover:bg-card border border-border/80 shadow-2xs hover:shadow-md hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between overflow-hidden rounded-xl scroll-mt-24',
         partConfig.borderTopClass
       )}
     >
@@ -106,7 +108,14 @@ export const SeasonTopicCard: React.FC<SeasonTopicCardProps> = ({
           {/* Content Preview Box */}
           <div className="p-2.5 rounded-lg bg-muted/40 border border-border/40 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
             {topic.part === 'Part 2' && topic.cueCardPrompt ? (
-              <p className="italic">“{topic.cueCardPrompt}”</p>
+              <div>
+                <p className="italic font-medium text-foreground/90 line-clamp-1">“{topic.cueCardPrompt}”</p>
+                {topic.part3Questions && topic.part3Questions.length > 0 && (
+                  <p className="text-[11px] text-indigo-600 font-semibold mt-1">
+                    + Kèm {topic.part3Questions.length} câu hỏi thảo luận Part 3
+                  </p>
+                )}
+              </div>
             ) : topic.questions && topic.questions.length > 0 ? (
               <p className="font-medium text-foreground/80">• {topic.questions[0]}</p>
             ) : (

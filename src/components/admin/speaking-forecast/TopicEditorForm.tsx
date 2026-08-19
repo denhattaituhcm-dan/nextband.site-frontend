@@ -83,6 +83,11 @@ export const TopicEditorForm: React.FC<TopicEditorFormProps> = ({
       ? initialTopic.cueCardBulletPoints
       : ['']
   );
+  const [part3Questions, setPart3Questions] = useState<string[]>(
+    initialTopic?.part3Questions && initialTopic.part3Questions.length > 0
+      ? initialTopic.part3Questions
+      : ['']
+  );
 
   // Learning Content State
   const [sampleAnswerBand65, setSampleAnswerBand65] = useState<string>(() => {
@@ -181,6 +186,25 @@ export const TopicEditorForm: React.FC<TopicEditorFormProps> = ({
     setCueCardBulletPoints(cueCardBulletPoints.filter((_, i) => i !== index));
   };
 
+  // Part 3 associated questions handlers (for Part 2 topic)
+  const handleAddPart3Question = () => {
+    setPart3Questions([...part3Questions, '']);
+  };
+
+  const handleUpdatePart3Question = (index: number, val: string) => {
+    const updated = [...part3Questions];
+    updated[index] = val;
+    setPart3Questions(updated);
+  };
+
+  const handleRemovePart3Question = (index: number) => {
+    if (part3Questions.length === 1) {
+      setPart3Questions(['']);
+      return;
+    }
+    setPart3Questions(part3Questions.filter((_, i) => i !== index));
+  };
+
   // Vocabulary handlers
   const handleAddVocabulary = () => {
     const newItem: VocabularyItem = {
@@ -240,6 +264,7 @@ export const TopicEditorForm: React.FC<TopicEditorFormProps> = ({
     if (part === 'Part 2') {
       payload.cueCardPrompt = cueCardPrompt.trim();
       payload.cueCardBulletPoints = cueCardBulletPoints.filter((b) => b.trim());
+      payload.part3Questions = part3Questions.filter((q) => q.trim());
     } else {
       payload.questions = questions.filter((q) => q.trim());
     }
@@ -488,6 +513,53 @@ export const TopicEditorForm: React.FC<TopicEditorFormProps> = ({
                 >
                   <Plus className="h-3.5 w-3.5" />
                   Add Bullet Point
+                </Button>
+              </div>
+
+              {/* Associated Part 3 Discussion Questions */}
+              <div className="space-y-2 pt-4 border-t">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-semibold text-primary block">
+                    Part 3 Discussion Questions (Câu hỏi thảo luận mở rộng)
+                  </Label>
+                  <span className="text-[11px] text-muted-foreground">Optional</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Các câu hỏi Part 3 liên quan trực tiếp đến chủ đề Cue Card này.
+                </p>
+
+                {part3Questions.map((q, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-muted-foreground w-7 text-right">
+                      P3.{idx + 1}
+                    </span>
+                    <Input
+                      placeholder={`Enter Part 3 question ${idx + 1}...`}
+                      value={q}
+                      onChange={(e) => handleUpdatePart3Question(idx, e.target.value)}
+                      className="h-9 flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemovePart3Question(idx)}
+                      className="h-9 w-9 text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddPart3Question}
+                  className="gap-1.5 text-xs mt-1"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Add Part 3 Question
                 </Button>
               </div>
             </div>

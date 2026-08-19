@@ -66,7 +66,7 @@ function getStoredSelectedSeason(): string {
   } catch (e) {
     console.error('Failed to load selected season from storage', e);
   }
-  return 'season-2026-q3';
+  return initialSeasons[0]?.id || 'season-2026-q2';
 }
 
 function emitStoreUpdate() {

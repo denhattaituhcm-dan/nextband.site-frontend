@@ -932,18 +932,46 @@ export const questionsApi = {
 export function normalizeSubmissionData(data: any, examData?: any): any {
   if (!data) return null;
 
+  let overallFeedback = "";
+  let primaryErrorCategory: string | null = null;
+  let revisionRequired = false;
+
   const rawAnswers = data.answers || [];
-  const normalizedAnswers = rawAnswers.map((a: any) => ({
-    id: a.id,
-    submissionId: a.submission_id || a.submissionId,
-    questionId: a.question_id || a.questionId,
-    answerText: a.answer_text || a.answerText || "",
-    audioUrl: formatStorageUrl(a.audio_url || a.audioUrl),
-    score: a.score != null ? Number(a.score) : null,
-    feedback: a.feedback || "",
-    createdAt: a.created_at || a.createdAt,
-    updatedAt: a.updated_at || a.updatedAt,
-  }));
+  const normalizedAnswers = rawAnswers.map((a: any) => {
+    let parsedFeedback = a.feedback || "";
+    let ansErrorCategory: string | null = null;
+    let ansRevisionRequired = false;
+
+    if (parsedFeedback && typeof parsedFeedback === "string" && parsedFeedback.startsWith("{")) {
+      try {
+        const json = JSON.parse(parsedFeedback);
+        parsedFeedback = json.text || json.feedback || "";
+        ansErrorCategory = json.primaryErrorCategory || null;
+        ansRevisionRequired = !!json.revisionRequired;
+        if (!primaryErrorCategory && ansErrorCategory) primaryErrorCategory = ansErrorCategory;
+        if (ansRevisionRequired) revisionRequired = true;
+        if (!overallFeedback && parsedFeedback) overallFeedback = parsedFeedback;
+      } catch {
+        // Fallback to raw string if JSON parsing fails
+      }
+    } else if (parsedFeedback && !overallFeedback) {
+      overallFeedback = parsedFeedback;
+    }
+
+    return {
+      id: a.id,
+      submissionId: a.submission_id || a.submissionId,
+      questionId: a.question_id || a.questionId,
+      answerText: a.answer_text || a.answerText || "",
+      audioUrl: formatStorageUrl(a.audio_url || a.audioUrl),
+      score: a.score != null ? Number(a.score) : null,
+      feedback: parsedFeedback,
+      primaryErrorCategory: ansErrorCategory,
+      revisionRequired: ansRevisionRequired,
+      createdAt: a.created_at || a.createdAt,
+      updatedAt: a.updated_at || a.updatedAt,
+    };
+  });
 
   const rawStudent = data.profiles || data.student;
   const normalizedStudent = rawStudent
@@ -990,6 +1018,9 @@ export function normalizeSubmissionData(data: any, examData?: any): any {
     gradedBy: data.graded_by || data.gradedBy,
     gradedAt: data.graded_at || data.gradedAt,
     createdAt: data.created_at || data.createdAt,
+    feedback: overallFeedback,
+    primaryErrorCategory,
+    revisionRequired,
     student: normalizedStudent,
     exam: normalizedExam,
     answers: normalizedAnswers,
@@ -1206,10 +1237,40 @@ export const submissionsApi = {
     throw new Error(errMsg);
   },
 
+  startRevision: async (payload: { examId: string; clonePreviousAnswers?: boolean }) => {
+    const token = await getAuthToken();
+    if (!token) {
+      throw new Error("Vui lòng đăng nhập để bắt đầu bài sửa.");
+    }
+
+    const response = await fetch(`${API_BASE_URL}/submissions/revision`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return normalizeSubmissionData(data);
+    }
+
+    const errData = await response.json().catch(() => ({}));
+    const errMsg = errData.error || errData.message || "Không thể tạo bài sửa";
+    throw new Error(errMsg);
+  },
+
   grade: async (
     id: string,
     grades: Array<{ answerId: string; score: number; feedback?: string }>,
     totalScore?: number,
+    options?: {
+      feedback?: string;
+      primaryErrorCategory?: "CONCEPT" | "STRUCTURE" | "EXPRESSION" | "GRAMMAR";
+      revisionRequired?: boolean;
+    }
   ) => {
     const token = await getAuthToken();
     if (!token) {
@@ -1222,7 +1283,13 @@ export const submissionsApi = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ grades, totalScore }),
+      body: JSON.stringify({
+        grades,
+        totalScore,
+        feedback: options?.feedback,
+        primaryErrorCategory: options?.primaryErrorCategory,
+        revisionRequired: options?.revisionRequired,
+      }),
     });
 
     if (response.ok) {

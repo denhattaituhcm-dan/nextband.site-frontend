@@ -63,7 +63,7 @@ export default function SpeakingForecastHub() {
 
   const latestSeasonSlug = latestSeason
     ? formatSeasonSlug(latestSeason.year, latestSeason.quarter)
-    : 'q3-2026';
+    : 'q2-2026';
 
   const filteredTopics = allTopics.filter((t) => {
     if (activePartFilter === 'all') return true;
@@ -180,7 +180,7 @@ export default function SpeakingForecastHub() {
                 <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2 text-slate-200">
                     <Clock className="h-4 w-4 text-primary" />
-                    <span>Chu kỳ áp dụng: <strong>Tháng 9 – Tháng 12</strong></span>
+                    <span>Chu kỳ áp dụng: <strong>Tháng 5 – Tháng 8</strong></span>
                   </div>
                   <Link
                     to={`/ielts-speaking-forecast/${latestSeasonSlug}`}
@@ -305,34 +305,34 @@ export default function SpeakingForecastHub() {
               </p>
             </div>
 
-            {/* Season 2 */}
-            <div className="p-6 sm:p-7 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4 hover:border-slate-700 transition-all">
+            {/* Season 2 (Active) */}
+            <div className="p-6 sm:p-7 rounded-2xl bg-slate-900/90 border border-primary/40 space-y-4 shadow-lg shadow-primary/5">
               <div className="flex items-center justify-between">
                 <span className="text-2xl font-black text-primary">02</span>
-                <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
+                <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-primary/20 text-primary border border-primary/30">
                   Tháng 5 – Tháng 8
                 </span>
               </div>
-              <h3 className="text-lg font-bold text-white">Quý 2 (Season 2)</h3>
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <span>Quý 2 (Season 2)</span>
+                <span className="text-[10px] font-extrabold uppercase bg-emerald-500 text-white px-2 py-0.5 rounded">
+                  Đang diễn ra
+                </span>
+              </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 Đỉnh sóng giữa năm. Giữ lại 50% chủ đề của Quý 1 và cập nhật 50% bộ đề mới từ đầu tháng 5, phục vụ giai đoạn thi mùa hè.
               </p>
             </div>
 
             {/* Season 3 */}
-            <div className="p-6 sm:p-7 rounded-2xl bg-slate-900/90 border border-primary/40 space-y-4 shadow-lg shadow-primary/5">
+            <div className="p-6 sm:p-7 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4 hover:border-slate-700 transition-all">
               <div className="flex items-center justify-between">
                 <span className="text-2xl font-black text-primary">03</span>
-                <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-primary/20 text-primary border border-primary/30">
+                <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
                   Tháng 9 – Tháng 12
                 </span>
               </div>
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <span>Quý 3 (Season 3)</span>
-                <span className="text-[10px] font-extrabold uppercase bg-emerald-500 text-white px-2 py-0.5 rounded">
-                  Đang diễn ra
-                </span>
-              </h3>
+              <h3 className="text-lg font-bold text-white">Quý 3 (Season 3)</h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 Mùa cao điểm nộp hồ sơ du học và xét tuyển đại học. Giữ lại 50% chủ đề từ Quý 2 và xuất hiện 50% đề mới từ tháng 9.
               </p>
