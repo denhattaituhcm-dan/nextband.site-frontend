@@ -32,12 +32,29 @@
     content="Kho đề thi IELTS sát thực tế nhất. Chấm điểm AI, phân tích lỗi sai và lộ trình nâng band cấp tốc." />
   <meta property="og:image" content="/favicon.png" />
 
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://nextband.site/" />
-  <meta name="twitter:title" content="NextBand - Luyện thi IELTS 8.0+" />
-  <meta name="twitter:description" content="Trải nghiệm phòng thi IELTS thực tế ngay tại nhà với NextBand." />
-  <meta name="twitter:image" content="/favicon.png" />
+  <!-- Global Stylesheet Resilience Listener -->
+  <script>
+    (function () {
+      var CSS_RELOAD_KEY = "nb_css_reload_ts";
+      window.addEventListener(
+        "error",
+        function (event) {
+          var target = event.target || event.srcElement;
+          if (target && target.tagName === "LINK" && target.rel === "stylesheet") {
+            var now = Date.now();
+            var lastReload = Number(sessionStorage.getItem(CSS_RELOAD_KEY) || 0);
+            if (!lastReload || now - lastReload > 15000) {
+              sessionStorage.setItem(CSS_RELOAD_KEY, String(now));
+              window.location.reload();
+            } else {
+              console.error("[CRITICAL_CSS_LOAD_FAILED] Stylesheet failed to load persistently:", target.href);
+            }
+          }
+        },
+        true
+      );
+    })();
+  </script>
 </head>
 
 <body>
