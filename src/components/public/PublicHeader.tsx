@@ -52,11 +52,11 @@ export function PublicHeader() {
                 alt="ARIS IELTS"
                 className="h-10 w-10 sm:h-11 sm:w-11 object-contain transition-transform group-hover:scale-105 shrink-0"
               />
-              <div className="hidden sm:flex flex-col border-l border-white/20 pl-3 justify-center">
-                <span className="font-black tracking-wider text-base sm:text-lg text-white leading-none uppercase">
+              <div className="flex flex-col border-l border-white/20 pl-2.5 sm:pl-3 justify-center">
+                <span className="font-black tracking-[0.04em] text-base sm:text-lg text-white leading-none uppercase">
                   ARIS
                 </span>
-                <span className="text-[11px] font-bold text-slate-300 uppercase tracking-widest leading-none mt-1">
+                <span className="text-xs sm:text-[13px] font-extrabold text-slate-200 uppercase tracking-[0.02em] leading-none mt-[3px]">
                   IELTS
                 </span>
               </div>

@@ -2355,78 +2355,8 @@ export const classesApi = {
     if (!response.ok) throw new Error(result.error || "Failed to update student status");
     return result;
   },
-
-  listSchedules: async (classId: string) => {
-    const { data, error } = await supabase
-      .from("class_schedules")
-      .select("*")
-      .eq("class_id", classId);
-
-    if (error) throw error;
-    return data;
-  },
-
-  createSchedule: async (classId: string, body: any) => {
-    const { data, error } = await supabase
-      .from("class_schedules")
-      .insert({ ...body, class_id: classId })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  },
-
-  deleteSchedule: async (classId: string, scheduleId: string) => {
-    const { error } = await supabase
-      .from("class_schedules")
-      .delete()
-      .eq("id", scheduleId);
-
-    if (error) throw error;
-    return { success: true };
-  },
-
-  getAttendance: async (classId: string, sessionDate: string) => {
-    const { data, error } = await supabase
-      .from("class_attendance")
-      .select("*")
-      .eq("class_id", classId)
-      .eq("session_date", sessionDate);
-
-    if (error) throw error;
-    return data;
-  },
-
-  upsertAttendance: async (classId: string, body: any) => {
-    const records = body.records.map((r: any) => ({
-      class_id: classId,
-      session_date: body.sessionDate,
-      student_id: r.studentId,
-      status: r.status,
-      note: r.note,
-    }));
-
-    const { data, error } = await supabase
-      .from("class_attendance")
-      .upsert(records, {
-        onConflict: "class_id,student_id,session_date",
-      });
-
-    if (error) throw error;
-    return data;
-  },
-
-  getAttendanceHistory: async (classId: string) => {
-    const { data, error } = await supabase
-      .from("class_attendance")
-      .select("*")
-      .eq("class_id", classId);
-
-    if (error) throw error;
-    return data;
-  },
 };
+
 
 /**
  * Standardized Universal Cache Invalidation Helper for Class Workspace
@@ -2779,12 +2709,8 @@ export const sessionsApi = {
       createdAt: new Date().toISOString(),
     };
   },
-
-  /** Xóa tất cả sessions của lớp */
-  deleteAllForClass: async (classId: string) => {
-    return { success: true };
-  },
 };
+
 
 // =============================================
 // SITE SETTINGS API (REST FASTIFY ADAPTER)
