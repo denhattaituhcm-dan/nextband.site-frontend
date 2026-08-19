@@ -30,7 +30,6 @@ import {
   Eye,
   CheckCircle2,
   AlertTriangle,
-  Sparkles,
   ExternalLink,
   ShieldCheck,
   Clock,
@@ -582,7 +581,7 @@ export default function AdminEvidence() {
               {/* Group C: Display & Consent Safeguard */}
               <div className="space-y-4 p-5 rounded-2xl bg-muted/30 border border-border/80">
                 <h4 className="font-extrabold text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-warning" />
+                  <ShieldCheck className="h-4 w-4 text-brand-blue" />
                   <span>C. Xuất Bản &amp; Cam Kết Quyền Riêng Tư</span>
                 </h4>
 

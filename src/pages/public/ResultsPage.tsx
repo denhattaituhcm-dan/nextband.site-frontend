@@ -4,7 +4,6 @@ import { SectionContainer } from "@/components/public/SectionContainer";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/common/SEO";
 import {
-  Sparkles,
   ShieldCheck,
   CheckCircle2,
   ArrowRight,
@@ -61,7 +60,7 @@ export default function ResultsPage() {
       <section className="relative overflow-hidden pt-14 pb-20 sm:pt-20 sm:pb-28 border-b border-border/80 bg-background">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue-soft text-brand-blue border border-brand-blue/20 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
-            <Sparkles className="h-4 w-4" />
+            <TrendingUp className="h-4 w-4" />
             <span>Minh Chứng Thực Nghiệm</span>
           </div>
 

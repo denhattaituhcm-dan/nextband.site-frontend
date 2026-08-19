@@ -5,9 +5,8 @@ import { TeacherShowcase } from "@/components/teachers/TeacherShowcase";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/common/SEO";
 import {
-  Sparkles,
-  ArrowRight,
   Award,
+  ArrowRight,
 } from "lucide-react";
 
 export default function TeachersPage() {
@@ -24,7 +23,7 @@ export default function TeachersPage() {
       <section className="relative overflow-hidden pt-14 pb-20 sm:pt-20 sm:pb-28 border-b border-border/80 bg-background">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue-soft text-brand-blue border border-brand-blue/20 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
-            <Sparkles className="h-4 w-4" />
+            <Award className="h-4 w-4" />
             <span>Ban Chuyên Môn ARIS</span>
           </div>
 

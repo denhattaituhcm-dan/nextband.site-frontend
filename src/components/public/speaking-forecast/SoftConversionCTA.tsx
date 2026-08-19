@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { GraduationCap, FileDown, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { GraduationCap, FileDown, ArrowRight, ShieldCheck, Mic } from 'lucide-react';
 
 interface SoftConversionCTAProps {
   seasonName?: string;
@@ -19,7 +19,7 @@ export const SoftConversionCTA: React.FC<SoftConversionCTAProps> = ({
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1.5 max-w-xl">
             <div className="inline-flex items-center gap-1.5 text-xs font-bold text-primary uppercase tracking-wider">
-              <Sparkles className="h-3.5 w-3.5" />
+              <Mic className="h-3.5 w-3.5" />
               Nâng cao năng lực Speaking thực chiến
             </div>
             <h4 className="text-lg sm:text-xl font-bold text-foreground leading-snug">

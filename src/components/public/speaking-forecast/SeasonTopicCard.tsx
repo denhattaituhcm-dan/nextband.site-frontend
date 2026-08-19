@@ -4,7 +4,6 @@ import { ForecastTopic } from '@/services/forecast';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   ArrowRight,
-  Sparkles,
   Layers,
   Calendar,
   Mic,
@@ -83,13 +82,13 @@ export const SeasonTopicCard: React.FC<SeasonTopicCardProps> = ({
               </span>
 
               {topic.type === 'New' ? (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                  <Sparkles className="h-3 w-3 text-emerald-600" />
-                  ✨ Đề mới
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block" />
+                  Đề mới
                 </span>
               ) : (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
-                  🔄 Giữ lại
+                  Giữ lại
                 </span>
               )}
             </div>

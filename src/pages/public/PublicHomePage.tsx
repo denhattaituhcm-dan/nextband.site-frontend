@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/common/SEO";
 import {
   ArrowRight,
-  Sparkles,
+  GraduationCap,
   BookOpen,
   Target,
   Brain,
@@ -53,7 +53,7 @@ export default function PublicHomePage() {
             {/* Left: Headline, Subheadline & Primary Action */}
             <div className="lg:col-span-7 space-y-7 text-left">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-red-soft text-brand-red border border-brand-red/20 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
-                <Sparkles className="h-4 w-4" />
+                <GraduationCap className="h-4 w-4" />
                 <span>Học Viện ARIS</span>
               </div>
 

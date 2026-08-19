@@ -13,7 +13,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Calendar,
-  Sparkles,
   ArrowRight,
   BookOpen,
   Award,
@@ -102,7 +101,7 @@ export default function SpeakingForecastHub() {
             {/* Left Column: Headlines & CTAs */}
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-primary border border-white/15 text-xs font-black uppercase tracking-wider backdrop-blur-xs">
-                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                <Mic className="h-3.5 w-3.5 text-primary" />
                 <span>IELTS Speaking Forecast Hub</span>
               </div>
 

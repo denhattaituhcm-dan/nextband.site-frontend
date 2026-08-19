@@ -18,7 +18,6 @@ import {
   Lock,
   Play,
   ArrowRight,
-  Sparkles,
   Award,
   ChevronRight,
   ChevronDown,
@@ -157,7 +156,7 @@ export default function CourseDetail() {
               <CardContent className="p-6 md:p-8 space-y-6 relative z-10">
                 <div className="flex items-center justify-between">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    <Sparkles className="w-3.5 h-3.5" />
+                    <BookOpen className="w-3.5 h-3.5" />
                     Lesson {completedCount + 1} of {totalExams}
                   </span>
                   <span className="text-xs text-slate-400 font-medium flex items-center gap-1">

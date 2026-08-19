@@ -9,7 +9,6 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   BookOpen,
   ArrowLeft,
-  Sparkles,
   Headphones,
   FileText,
   Mic,
@@ -247,7 +246,7 @@ export default function StudentLessonViewerPage() {
               <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Tình trạng Bài tập cá nhân
               </h3>
-              <Sparkles className="w-4 h-4 text-primary" />
+              <FileText className="w-4 h-4 text-primary" />
             </div>
 
             <div className="grid grid-cols-3 gap-2 text-center">

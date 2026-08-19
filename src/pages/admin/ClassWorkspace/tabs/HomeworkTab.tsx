@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HomeworkSidebar, HomeworkItemData } from "../components/HomeworkSidebar";
 import { ActivityChecklist } from "../components/ActivityChecklist";
 import { PendingSubmissionsList } from "../components/PendingSubmissionsList";
-import { Sparkles, Users, Inbox, PlusCircle } from "lucide-react";
+import { BookOpen, Users, Inbox, PlusCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const HomeworkTab: React.FC = () => {
@@ -117,7 +117,7 @@ export const HomeworkTab: React.FC = () => {
       <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 p-3.5 rounded-xl">
         <div className="flex items-center gap-2.5">
           <div className="p-2 rounded-lg bg-emerald-500 text-white">
-            <Sparkles className="h-4 w-4" />
+            <BookOpen className="h-4 w-4" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SampleAnswers } from '@/services/forecast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Award, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Award, CheckCircle2 } from 'lucide-react';
 import DOMPurify from 'dompurify';
 
 interface SampleAnswerTabsProps {
@@ -45,7 +45,7 @@ export const SampleAnswerTabs: React.FC<SampleAnswerTabsProps> = ({ sampleAnswer
                   value="band75"
                   className="text-xs font-bold gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-white"
                 >
-                  <Sparkles className="h-3.5 w-3.5" />
+                  <Award className="h-3.5 w-3.5" />
                   Band 7.5 ★
                 </TabsTrigger>
               )}

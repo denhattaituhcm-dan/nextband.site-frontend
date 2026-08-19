@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/common/SEO";
 import { COURSE_CATALOG } from "@/constants/courses";
 import {
-  Sparkles,
+  BookOpen,
   Target,
   CheckCircle2,
   ArrowRight,
@@ -15,7 +15,6 @@ import {
   Brain,
   Users,
   Layers,
-  BookOpen,
 } from "lucide-react";
 
 export default function CoursesPage() {
@@ -32,7 +31,7 @@ export default function CoursesPage() {
       <section className="relative overflow-hidden pt-14 pb-20 sm:pt-20 sm:pb-28 border-b border-border/80 bg-background">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue-soft text-brand-blue border border-brand-blue/20 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
-            <Sparkles className="h-4 w-4" />
+            <BookOpen className="h-4 w-4" />
             <span>Lộ Trình 5 Chặng Đào Tạo</span>
           </div>
 

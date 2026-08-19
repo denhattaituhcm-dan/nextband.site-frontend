@@ -12,7 +12,6 @@ import { useStudentLifecycle } from "@/hooks/useStudentLifecycle";
 import {
   BookOpen,
   ArrowRight,
-  Sparkles,
   CheckCircle2,
   Clock,
   Award,
@@ -154,7 +153,7 @@ export default function HomePage() {
             <Card className="border-0 text-primary-foreground rounded-2xl shadow-md p-6 md:p-8 bg-primary space-y-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 text-white border border-white/20 text-xs font-semibold backdrop-blur-md">
-                  <Sparkles className="w-4 h-4 text-white/70" />
+                  <BookOpen className="w-4 h-4 text-white/70" />
                   <span>Đang chọn: {activeClassName}</span>
                 </div>
 

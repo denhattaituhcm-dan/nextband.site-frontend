@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Award, ChevronRight, CheckCircle2, ShieldCheck, Sparkles, Star, Shield } from "lucide-react";
+import { Award, ChevronRight, CheckCircle2, ShieldCheck, Star, Shield } from "lucide-react";
 
 export interface AcademicRank {
   rankNumber: number;
@@ -238,7 +238,7 @@ export function AcademicRankSystem({
                   Rank {rank.rankNumber}
                 </span>
                 {isSelected ? (
-                  <Sparkles className="h-4 w-4 text-white/90 shrink-0 animate-pulse" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-white shrink-0 shadow-xs" />
                 ) : (
                   <div
                     className="w-2 h-2 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"

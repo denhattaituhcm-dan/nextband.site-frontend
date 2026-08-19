@@ -7,7 +7,6 @@ import {
   Brain,
   Layers,
   RefreshCw,
-  Sparkles,
   ArrowRight,
   CheckCircle2,
   XCircle,
@@ -39,7 +38,7 @@ export default function MethodPage() {
       <section className="relative overflow-hidden pt-16 pb-20 sm:pt-24 sm:pb-32 border-b border-border/80 bg-background">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-7">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue-soft text-brand-blue border border-brand-blue/20 text-xs sm:text-sm font-black uppercase tracking-wider">
-            <Sparkles className="h-4 w-4" />
+            <Brain className="h-4 w-4" />
             <span>Phương Pháp Đào Tạo The ARIS Way</span>
           </div>
 

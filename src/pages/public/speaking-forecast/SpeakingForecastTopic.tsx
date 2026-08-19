@@ -15,7 +15,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Calendar,
-  Sparkles,
   ArrowLeft,
   Lightbulb,
   HelpCircle,
@@ -160,13 +159,13 @@ export default function SpeakingForecastTopic() {
             <div className="flex flex-wrap items-center gap-2">
               {getPartBadge(topic?.part)}
               {topic?.type === 'New' ? (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  <Sparkles className="h-3 w-3 text-emerald-600" />
-                  ✨ Đề mới xuất hiện
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block" />
+                  Đề mới xuất hiện
                 </span>
               ) : (
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                  🔄 Đề giữ lại từ quý trước
+                  Đề giữ lại từ quý trước
                 </span>
               )}
               <span className="text-xs font-medium text-muted-foreground bg-muted px-2.5 py-0.5 rounded-full">

@@ -7,12 +7,11 @@ import {
   ShieldCheck,
   Target,
   Award,
-  Sparkles,
+  Compass,
   ArrowRight,
   BookOpen,
   CheckCircle2,
   Brain,
-  Compass,
   Layers,
 } from "lucide-react";
 
@@ -30,7 +29,7 @@ export default function AboutPage() {
       <section className="relative overflow-hidden pt-14 pb-20 sm:pt-20 sm:pb-28 border-b border-border/80 bg-background">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-red-soft text-brand-red border border-brand-red/20 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
-            <Sparkles className="h-4 w-4" />
+            <Compass className="h-4 w-4" />
             <span>Bản Sắc &amp; Sứ Mệnh</span>
           </div>
 

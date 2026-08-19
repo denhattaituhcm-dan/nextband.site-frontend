@@ -6,7 +6,7 @@ import { TopicFilterBar } from '@/components/admin/speaking-forecast/TopicFilter
 import { TopicTable } from '@/components/admin/speaking-forecast/TopicTable';
 import { NewSeasonDialog } from '@/components/admin/speaking-forecast/NewSeasonDialog';
 import { Button } from '@/components/ui/button';
-import { Plus, Mic, Sparkles } from 'lucide-react';
+import { Plus, Mic } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SpeakingForecast() {

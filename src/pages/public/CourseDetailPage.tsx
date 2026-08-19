@@ -12,7 +12,6 @@ import {
   Clock,
   BookOpen,
   ShieldCheck,
-  Sparkles,
   Target,
   Brain,
   Users,
@@ -53,7 +52,7 @@ export default function CourseDetailPage() {
                 course.theme.badgeBorder
               )}
             >
-              <Sparkles className="h-4 w-4" />
+              <Target className="h-4 w-4" />
               <span>{course.target}</span>
             </div>
 

@@ -28,7 +28,6 @@ import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import {
   Plus,
   Trash2,
-  Sparkles,
   Search,
   Globe,
   Layers,
@@ -349,8 +348,8 @@ export const TopicEditorForm: React.FC<TopicEditorFormProps> = ({
                   <SelectValue placeholder="Select Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="New">✨ New Topic</SelectItem>
-                  <SelectItem value="Retained">🔄 Retained (50% từ quý cũ)</SelectItem>
+                  <SelectItem value="New">New Topic (Đề mới)</SelectItem>
+                  <SelectItem value="Retained">Retained (Đề giữ lại từ quý cũ)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

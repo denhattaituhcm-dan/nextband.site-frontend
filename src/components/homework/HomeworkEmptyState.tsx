@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, KeyRound, Sparkles, MessageCircle, ShieldCheck, Layers, GraduationCap } from "lucide-react";
+import { CheckCircle2, KeyRound, MessageCircle, ShieldCheck, Layers, GraduationCap } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -383,7 +383,6 @@ export function HomeworkEmptyState({ onJoinClick, hasClasses, state }: HomeworkE
               {/* PROGRESSIVE METAPHOR ILLUSTRATION: LANDMARK WITH CROWN */}
               <div className="py-3 flex justify-center items-center">
                 <div className="w-14 h-14 rounded-2xl bg-red-100/80 text-[#D12E33] flex items-center justify-center shadow-inner border border-red-200 group-hover:scale-110 transition-transform duration-300 relative">
-                  <Sparkles className="w-4 h-4 text-amber-500 absolute -top-1 -right-1 animate-pulse" />
                   <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" />
                   </svg>

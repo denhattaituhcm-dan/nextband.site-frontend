@@ -22,7 +22,6 @@ import {
 import {
   Search,
   Calendar,
-  Sparkles,
   Layers,
   HelpCircle,
   ArrowLeft,
@@ -194,7 +193,7 @@ export default function SpeakingForecastSeason() {
             Tổng quan bộ đề Speaking {seasonName}
           </h2>
           <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-            Bộ đề <strong>IELTS Speaking Forecast {seasonName}</strong> tổng hợp toàn bộ các chủ đề Part 1, Part 2 và Part 3 đang xuất hiện trong phòng thi thực tế tại IDP và British Council Việt Nam. Khoảng 50% số chủ đề là các đề giữ lại từ quý liền kề trước đó, và 50% là các chủ đề mới xuất hiện (được gắn nhãn <em>✨ Đề mới</em>).
+            Bộ đề <strong>IELTS Speaking Forecast {seasonName}</strong> tổng hợp toàn bộ các chủ đề Part 1, Part 2 và Part 3 đang xuất hiện trong phòng thi thực tế tại IDP và British Council Việt Nam. Khoảng 50% số chủ đề là các đề giữ lại từ quý liền kề trước đó, và 50% là các chủ đề mới xuất hiện (được gắn nhãn <em>Đề mới</em>).
           </p>
           <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
             Mỗi chủ đề đều được Ban Chuyên môn ARIS phân tích dàn ý tư duy phản biện, trích xuất bảng từ vựng học thuật (Collocations &amp; Idioms) và xây dựng 2 tầng bài mẫu tham khảo (Band 6.5 và Band 7.5 ★) giúp học viên nắm chắc cách triển khai câu trả lời tự nhiên, mạch lạc.
@@ -234,8 +233,8 @@ export default function SpeakingForecastSeason() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tất cả loại đề</SelectItem>
-                <SelectItem value="New">✨ Đề mới</SelectItem>
-                <SelectItem value="Retained">🔄 Đề giữ lại</SelectItem>
+                <SelectItem value="New">Đề mới</SelectItem>
+                <SelectItem value="Retained">Đề giữ lại</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -25,7 +25,7 @@ import {
   Loader2,
   RefreshCw,
   GraduationCap,
-  Sparkles,
+  Award,
   ChevronRight,
   FolderOpen,
 } from "lucide-react";
@@ -646,7 +646,7 @@ export default function TeacherWorkspace() {
             <Card className="border border-slate-200/80 shadow-2xs rounded-xl p-4 space-y-3 bg-white">
               <div className="flex items-center justify-between border-b pb-2">
                 <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                  <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                  <Award className="h-3.5 w-3.5 text-blue-600" />
                   Đánh giá Band Score (IELTS 4 Tiêu chí)
                 </span>
                 <div className="text-xs font-extrabold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">

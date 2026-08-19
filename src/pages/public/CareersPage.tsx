@@ -5,7 +5,6 @@ import { PlaceholderCard } from "@/components/public/PlaceholderCard";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/common/SEO";
 import {
-  Sparkles,
   ShieldCheck,
   CheckCircle2,
   ArrowRight,

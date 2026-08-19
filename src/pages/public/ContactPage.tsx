@@ -11,7 +11,7 @@ import {
   Mail,
   Clock,
   Send,
-  Sparkles,
+  MessageSquare,
   CheckCircle2,
   AlertCircle,
   Loader2,
@@ -82,7 +82,7 @@ export default function ContactPage() {
       <section className="relative overflow-hidden pt-14 pb-20 sm:pt-20 sm:pb-28 border-b border-border/80 bg-background">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue-soft text-brand-blue border border-brand-blue/20 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
-            <Sparkles className="h-4 w-4" />
+            <MessageSquare className="h-4 w-4" />
             <span>Kết Nối &amp; Hỗ Trợ</span>
           </div>
 

@@ -9,7 +9,6 @@ import {
   MapPin,
   CheckCircle2,
   Send,
-  Sparkles,
   Clock,
   ShieldCheck,
   Award,
