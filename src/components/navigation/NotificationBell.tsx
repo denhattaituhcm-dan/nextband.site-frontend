@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -16,6 +16,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { notificationsApi, NotificationItem } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 interface NotificationBellProps {
   scope?: "admin" | "teacher" | "student";
@@ -24,6 +27,47 @@ interface NotificationBellProps {
 export function NotificationBell({ scope: _scope }: NotificationBellProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  // 0. Supabase Realtime Push Listener
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel(`user-notifications-${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const newNotif = payload.new as NotificationItem;
+          queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] });
+          queryClient.invalidateQueries({ queryKey: ["notifications-list"] });
+
+          if (newNotif?.title) {
+            toast.info(newNotif.title, {
+              description: newNotif.message,
+              action: newNotif.link
+                ? {
+                    label: "Xem ngay",
+                    onClick: () => navigate(newNotif.link!),
+                  }
+                : undefined,
+              duration: 6000,
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient, navigate]);
 
   // 1. Unread Count Query (N3-D: Authoritative unread count from DB)
   const {

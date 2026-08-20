@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { examsApi } from "@/lib/api";
 import { SectionContainer } from "@/components/public/SectionContainer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { SEO } from "@/components/common/SEO";
 import {
   ShieldCheck,
@@ -19,6 +23,13 @@ import {
   Calendar,
   Laptop,
   Building,
+  Headphones,
+  BookOpen,
+  PenTool,
+  Sparkles,
+  Flame,
+  HelpCircle,
+  Play,
 } from "lucide-react";
 import { submitAssessmentBooking } from "@/lib/assessmentService";
 import { toast } from "sonner";
@@ -26,6 +37,7 @@ import { toast } from "sonner";
 export default function AssessmentPage() {
   const navigate = useNavigate();
 
+  // Booking form state
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -40,7 +52,40 @@ export default function AssessmentPage() {
     testFormat: string;
   } | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Fetch published placement exams
+  const { data: examsData, isLoading: isLoadingExams } = useQuery({
+    queryKey: ["public-assessment-exams"],
+    queryFn: () => examsApi.list({ isPublished: true, limit: 10 }).catch(() => ({ data: [] })),
+  });
+
+  const availableExams = examsData?.data || [];
+  const primaryReadingExam = availableExams.find(
+    (e: any) =>
+      e.title?.toLowerCase().includes("reading") ||
+      (e.sections || []).some((s: any) => s.sectionType === "reading")
+  ) || availableExams[0];
+
+  const primaryListeningExam = availableExams.find(
+    (e: any) =>
+      e.title?.toLowerCase().includes("listening") ||
+      (e.sections || []).some((s: any) => s.sectionType === "listening")
+  ) || (availableExams.length > 1 ? availableExams[1] : availableExams[0]);
+
+  const handleStartExam = (examId?: string) => {
+    if (!examId) {
+      toast.info("Đang kết nối phòng thi khảo thí chuẩn...");
+      // If no specific exam id, pick available or route to first exam
+      if (availableExams.length > 0) {
+        navigate(`/exam/${availableExams[0].id}?isAssessment=true`);
+      } else {
+        navigate(`/assessment/result/demo`);
+      }
+      return;
+    }
+    navigate(`/exam/${examId}?isAssessment=true`);
+  };
+
+  const handleSubmitBooking = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!fullName.trim()) {
@@ -81,51 +126,45 @@ export default function AssessmentPage() {
     }
   };
 
-  const handleResetForm = () => {
-    setFullName("");
-    setPhone("");
-    setEmail("");
-    setSubmittedBooking(null);
-  };
-
   return (
     <div className="flex flex-col">
       <SEO
-        title="Khảo Thí Đánh Giá Năng Lực Đầu Vào — Học Viện ARIS"
-        description="Khảo thí 4 kỹ năng miễn phí, xác định chính xác Rank năng lực theo khung 7 cấp bậc ARIS-7 và nhận báo cáo giải phẫu điểm nghẽn học thuật."
+        title="Khảo Thí Đánh Giá Năng Lực IELTS Chuẩn Quốc Tế — Học Viện ARIS"
+        description="Khảo thí Reading & Listening chuẩn Cambridge, tính Band điểm chính xác 0.0 - 9.0 theo bảng quy đổi chính thức và định vị Rank ARIS-7."
       />
 
       {/* ========================================================================= */}
       {/* 01. HERO HEADER                                                           */}
       {/* ========================================================================= */}
-      <section className="relative overflow-hidden pt-16 pb-20 sm:pt-24 sm:pb-28 border-b border-border/80 bg-background">
+      <section className="relative overflow-hidden pt-16 pb-16 sm:pt-24 sm:pb-20 border-b border-border/80 bg-background">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-red-soft text-brand-red border border-brand-red/20 text-xs sm:text-sm font-black uppercase tracking-wider">
             <FileCheck className="h-4 w-4" />
-            <span>Cổng Khảo Thí Chuẩn Hóa ARIS</span>
+            <span>Cổng Khảo Thí Chuẩn Quốc Tế ARIS</span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight leading-[1.12]">
-            Biết chính xác bạn{" "}
+            Đo lường chính xác{" "}
             <span className="text-brand-blue block sm:inline">
-              đang ở đâu.
+              Band Điểm IELTS Thực Tế.
             </span>
           </h1>
 
           <p className="text-lg sm:text-xl lg:text-2xl text-foreground/85 font-normal leading-relaxed max-w-3xl mx-auto">
-            Bài khảo thí 45 phút giúp bóc tách năng lực thực tế, nhận diện chính xác các điểm nghẽn về ngữ pháp, từ vựng và định vị Rank của bạn theo khung 7 cấp bậc ARIS-7.
+            Làm bài thi thử chuẩn Cambridge trực tiếp trên hạ tầng phòng thi số NextBand. Tính toán chính xác Band điểm theo thang 9.0 và bóc tách điểm nghẽn học thuật chuyên sâu.
           </p>
 
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
             <Button
               size="lg"
               onClick={() => {
-                const el = document.getElementById("booking-section");
+                const el = document.getElementById("online-tests-section");
                 el?.scrollIntoView({ behavior: "smooth" });
               }}
               className="rounded-2xl px-8 h-14 font-extrabold text-base sm:text-lg bg-brand-red hover:bg-brand-red-hover text-white shadow-sm gap-2.5"
             >
-              <span>Đăng ký bài khảo thí ngay</span>
+              <Play className="h-5 w-5 fill-current" />
+              <span>Vào Làm Bài Khảo Thí Online Ngay</span>
               <ArrowRight className="h-5 w-5" />
             </Button>
 
@@ -135,21 +174,182 @@ export default function AssessmentPage() {
               onClick={() => navigate("/assessment/result/demo")}
               className="rounded-2xl px-8 h-14 font-bold text-base sm:text-lg border-2 border-border/80 hover:bg-muted text-foreground"
             >
-              Xem báo cáo kết quả mẫu (Demo)
+              Xem Báo Cáo Năng Lực Mẫu
             </Button>
           </div>
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* 02. REGISTRATION FORM & VALUE SECTION                                     */}
+      {/* 02. ONLINE STANDARD IELTS TESTS SECTION                                   */}
+      {/* ========================================================================= */}
+      <SectionContainer
+        id="online-tests-section"
+        badge="Khảo Thí Trực Tuyến Chuẩn Cambridge"
+        title="Chọn bộ đề khảo thí IELTS để bắt đầu làm bài"
+        description="Toàn bộ đề thi được thiết kế chuẩn cấu trúc phòng thi IELTS quốc tế với đồng hồ bấm giờ, âm thanh Audio bản ngữ và hệ thống tính điểm tự động."
+        background="default"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left">
+          {/* Card 1: IELTS Academic Reading */}
+          <Card className="rounded-3xl border-2 border-border/80 bg-card hover:border-brand-blue/60 hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
+            <div className="p-6 sm:p-7 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="p-3 rounded-2xl bg-brand-blue-soft text-brand-blue">
+                  <BookOpen className="h-6 w-6" />
+                </div>
+                <Badge variant="outline" className="bg-brand-blue/10 text-brand-blue border-brand-blue/20 font-bold text-xs">
+                  Academic Reading
+                </Badge>
+              </div>
+
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black text-foreground">
+                  IELTS Academic Reading Placement
+                </h3>
+                <p className="text-xs sm:text-sm text-foreground/75 mt-1 leading-relaxed">
+                  Trọn bộ 2 đoạn văn học thuật chuẩn Cambridge. Đo lường kỹ năng Skimming, Scanning và xử lý câu hỏi suy luận logic.
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-2 border-t border-border/60 text-xs font-semibold text-muted-foreground">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-primary" /> Thời gian làm bài:</span>
+                  <strong className="text-foreground">40 Phút</strong>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5"><Target className="h-3.5 w-3.5 text-primary" /> Số lượng câu hỏi:</span>
+                  <strong className="text-foreground">26 Câu hỏi</strong>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5"><Award className="h-3.5 w-3.5 text-primary" /> Thang điểm đo lường:</span>
+                  <strong className="text-brand-blue font-bold">Band 3.0 – 9.0</strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 pt-0">
+              <Button
+                onClick={() => handleStartExam(primaryReadingExam?.id)}
+                className="w-full h-12 rounded-xl font-extrabold text-sm bg-brand-blue hover:bg-brand-blue-hover text-white gap-2 shadow-xs"
+              >
+                <span>Bắt đầu thi Reading ngay</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </Card>
+
+          {/* Card 2: IELTS Cambridge Listening */}
+          <Card className="rounded-3xl border-2 border-border/80 bg-card hover:border-brand-red/60 hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
+            <div className="p-6 sm:p-7 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="p-3 rounded-2xl bg-brand-red-soft text-brand-red">
+                  <Headphones className="h-6 w-6" />
+                </div>
+                <Badge variant="outline" className="bg-brand-red/10 text-brand-red border-brand-red/20 font-bold text-xs">
+                  Cambridge Listening
+                </Badge>
+              </div>
+
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black text-foreground">
+                  IELTS Listening Placement Test
+                </h3>
+                <p className="text-xs sm:text-sm text-foreground/75 mt-1 leading-relaxed">
+                  Khảo thí kỹ năng nghe hiểu qua 2 Sections có Audio bản ngữ chuẩn (Hội thoại xã hội &amp; Thuyết trình học thuật).
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-2 border-t border-border/60 text-xs font-semibold text-muted-foreground">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-primary" /> Thời gian làm bài:</span>
+                  <strong className="text-foreground">25 Phút</strong>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5"><Target className="h-3.5 w-3.5 text-primary" /> Số lượng câu hỏi:</span>
+                  <strong className="text-foreground">20 Câu hỏi</strong>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5"><Award className="h-3.5 w-3.5 text-primary" /> Thang điểm đo lường:</span>
+                  <strong className="text-brand-red font-bold">Band 3.0 – 9.0</strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 pt-0">
+              <Button
+                onClick={() => handleStartExam(primaryListeningExam?.id)}
+                className="w-full h-12 rounded-xl font-extrabold text-sm bg-brand-red hover:bg-brand-red-hover text-white gap-2 shadow-xs"
+              >
+                <span>Bắt đầu thi Listening ngay</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </Card>
+
+          {/* Card 3: Full-Skills Assessment */}
+          <Card className="rounded-3xl border-2 border-border/80 bg-card hover:border-brand-cyan/60 hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
+            <div className="p-6 sm:p-7 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="p-3 rounded-2xl bg-brand-cyan/15 text-brand-blue">
+                  <Award className="h-6 w-6" />
+                </div>
+                <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 font-bold text-xs">
+                  Full 4 Kỹ Năng
+                </Badge>
+              </div>
+
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black text-foreground">
+                  IELTS Full-Skills Comprehensive
+                </h3>
+                <p className="text-xs sm:text-sm text-foreground/75 mt-1 leading-relaxed">
+                  Khảo thí toàn diện Listening, Reading và bài viết Writing Task 2 được thẩm định trực tiếp bởi Giảng viên 8.0+.
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-2 border-t border-border/60 text-xs font-semibold text-muted-foreground">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-primary" /> Thời gian làm bài:</span>
+                  <strong className="text-foreground">60 Phút</strong>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5"><Target className="h-3.5 w-3.5 text-primary" /> Kỹ năng thẩm định:</span>
+                  <strong className="text-foreground">L + R + Writing</strong>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5"><Award className="h-3.5 w-3.5 text-primary" /> Đánh giá chuyên môn:</span>
+                  <strong className="text-emerald-600 font-bold">1:1 Line-by-Line</strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 pt-0">
+              <Button
+                onClick={() => {
+                  const el = document.getElementById("booking-section");
+                  el?.scrollIntoView({ behavior: "smooth" });
+                }}
+                variant="outline"
+                className="w-full h-12 rounded-xl font-bold text-sm border-2 border-border/80 hover:bg-muted gap-2"
+              >
+                <span>Đặt lịch test 4 kỹ năng</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </SectionContainer>
+
+      {/* ========================================================================= */}
+      {/* 03. 1:1 FACULTY CONSULTATION & SPEAKING/WRITING TEST                       */}
       {/* ========================================================================= */}
       <SectionContainer
         id="booking-section"
-        badge="Đăng Ký Khảo Thí"
-        title="Đặt lịch làm bài đánh giá năng lực"
-        description="Điền thông tin bên dưới để nhận tài khoản làm bài khảo thí chuẩn Cambridge và nhận báo cáo điểm nghẽn chi tiết."
-        background="default"
+        badge="Khảo Thí 1:1 Với Giảng Viên 8.0+"
+        title="Đặt lịch khảo thí chuyên sâu Speaking &amp; Writing"
+        description="Dành cho học viên cần thẩm định phản xạ Speaking trực tiếp và nhận bài sửa Writing Task 1/2 chi tiết từng câu."
+        background="muted"
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 text-left">
           {/* Left Column: Form */}
@@ -191,7 +391,7 @@ export default function AssessmentPage() {
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={handleResetForm}
+                      onClick={() => setSubmittedBooking(null)}
                       className="rounded-2xl px-6 h-12 font-bold text-sm border-2 border-border/80"
                     >
                       Đăng ký người khác
@@ -203,14 +403,14 @@ export default function AssessmentPage() {
                 <>
                   <div>
                     <h3 className="font-black text-foreground text-2xl">
-                      Thông Tin Người Làm Bài
+                      Thông Tin Người Khảo Thí
                     </h3>
                     <p className="text-sm text-foreground/75 mt-1">
                       Hoàn toàn miễn phí. Kết quả và báo cáo bóc tách lỗi được trả về trong vòng 24 giờ.
                     </p>
                   </div>
 
-                  <form className="space-y-4" onSubmit={handleSubmit}>
+                  <form className="space-y-4" onSubmit={handleSubmitBooking}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="assess-name" className="text-sm font-bold">
@@ -287,7 +487,7 @@ export default function AssessmentPage() {
 
                     {/* Test Format Toggle */}
                     <div className="space-y-2 pt-1">
-                      <Label className="text-sm font-bold">Hình thức làm bài mong muốn</Label>
+                      <Label className="text-sm font-bold">Hình thức khảo thí mong muốn</Label>
                       <div className="grid grid-cols-2 gap-3">
                         <button
                           type="button"
@@ -300,8 +500,8 @@ export default function AssessmentPage() {
                         >
                           <Laptop className="h-5 w-5 shrink-0" />
                           <div className="text-xs">
-                            <div className="font-bold text-sm">Online</div>
-                            <div>Làm trên NextBand LMS</div>
+                            <div className="font-bold text-sm">Online 1:1</div>
+                            <div>Qua Google Meet</div>
                           </div>
                         </button>
 
@@ -336,7 +536,7 @@ export default function AssessmentPage() {
                       ) : (
                         <>
                           <Send className="h-4 w-4" />
-                          <span>Đăng Ký Làm Bài Khảo Thí Ngay</span>
+                          <span>Đăng Ký Khảo Thí 1:1 Ngay</span>
                         </>
                       )}
                     </Button>
@@ -350,7 +550,7 @@ export default function AssessmentPage() {
           <div className="lg:col-span-5 space-y-6">
             <div className="p-8 sm:p-10 rounded-3xl border border-border/80 bg-card space-y-6 shadow-2xs">
               <h3 className="font-black text-foreground text-2xl border-b border-border/60 pb-4">
-                Bạn Nhận Được Gì?
+                Quyền Lợi Khảo Thí Tại ARIS
               </h3>
 
               <div className="space-y-4 text-sm sm:text-base">
@@ -359,9 +559,9 @@ export default function AssessmentPage() {
                     <CheckCircle2 className="h-5 w-5" />
                   </div>
                   <div>
-                    <div className="font-bold text-foreground">Xác định Rank năng lực thực tế</div>
+                    <div className="font-bold text-foreground">Đo lường Band điểm chuẩn xác</div>
                     <div className="text-foreground/75 text-xs sm:text-sm mt-0.5">
-                      Định vị chính xác bạn đang ở Rank nào trong hệ thống ARIS-7 mà không phải đoán mò.
+                      Tính điểm dựa trên bảng quy đổi chính thức của Hội đồng thi Cambridge IELTS.
                     </div>
                   </div>
                 </div>
@@ -373,7 +573,7 @@ export default function AssessmentPage() {
                   <div>
                     <div className="font-bold text-foreground">Giải phẫu điểm nghẽn học thuật</div>
                     <div className="text-foreground/75 text-xs sm:text-sm mt-0.5">
-                      Chỉ rõ bạn đang yếu ở ngữ pháp cấu trúc, vốn từ vựng hay tốc độ phản xạ logic.
+                      Chỉ rõ dạng bài hay bị mất điểm (True/False/NG, Matching Headings, Collocations).
                     </div>
                   </div>
                 </div>
@@ -383,81 +583,21 @@ export default function AssessmentPage() {
                     <Target className="h-5 w-5" />
                   </div>
                   <div>
-                    <div className="font-bold text-foreground">Đề xuất lộ trình chặng học tối ưu</div>
+                    <div className="font-bold text-foreground">Định vị Rank &amp; Khóa học tối ưu</div>
                     <div className="text-foreground/75 text-xs sm:text-sm mt-0.5">
-                      Tư vấn đúng khóa học cần học (từ Starter đến Leader), tránh học lan man tốn kém thời gian.
+                      Gợi ý chính xác chặng học phù hợp trong 5 khóa ARIS, tránh học vượt cấp gây nản chí.
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 text-xs text-muted-foreground leading-relaxed">
-                Hotline hỗ trợ khảo thí trực tiếp:{" "}
+                Hotline hỗ trợ kỹ thuật khảo thí:{" "}
                 <a href="tel:0933319693" className="font-bold text-brand-red underline">
                   0933.319.693
                 </a>
               </div>
             </div>
-          </div>
-        </div>
-      </SectionContainer>
-
-      {/* ========================================================================= */}
-      {/* 03. 4-STEP ASSESSMENT FLOW                                                */}
-      {/* ========================================================================= */}
-      <SectionContainer
-        badge="Quy Trình Khảo Thí"
-        title="4 Bước xác định vị trí và lộ trình học"
-        description="Quy trình khảo thí được thiết kế để đưa ra kết quả trung thực và khách quan nhất trong thời gian ngắn."
-        background="muted"
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-left">
-          <div className="p-7 rounded-3xl bg-card border border-border/80 space-y-3.5 shadow-2xs">
-            <div className="flex items-center gap-2">
-              <span className="font-mono font-black text-xs px-3 py-1 rounded-lg bg-brand-blue-soft text-brand-blue">
-                Bước 01
-              </span>
-            </div>
-            <h3 className="font-black text-foreground text-xl">Làm bài khảo thí</h3>
-            <p className="text-sm text-foreground/75 leading-relaxed">
-              Thực hiện bài kiểm tra trắc nghiệm kết hợp viết đoạn ngắn (45 phút) mô phỏng cấu trúc đề thi chuẩn Cambridge.
-            </p>
-          </div>
-
-          <div className="p-7 rounded-3xl bg-card border border-border/80 space-y-3.5 shadow-2xs">
-            <div className="flex items-center gap-2">
-              <span className="font-mono font-black text-xs px-3 py-1 rounded-lg bg-brand-blue-soft text-brand-blue">
-                Bước 02
-              </span>
-            </div>
-            <h3 className="font-black text-foreground text-xl">Phân tích điểm nghẽn</h3>
-            <p className="text-sm text-foreground/75 leading-relaxed">
-              Hệ thống bóc tách các nhóm lỗi sai ngữ pháp, độ chính xác dùng từ và tốc độ phản xạ xử lý câu hỏi.
-            </p>
-          </div>
-
-          <div className="p-7 rounded-3xl bg-card border border-border/80 space-y-3.5 shadow-2xs">
-            <div className="flex items-center gap-2">
-              <span className="font-mono font-black text-xs px-3 py-1 rounded-lg bg-brand-blue-soft text-brand-blue">
-                Bước 03
-              </span>
-            </div>
-            <h3 className="font-black text-foreground text-xl">Định vị Rank ARIS</h3>
-            <p className="text-sm text-foreground/75 leading-relaxed">
-              Xác định bạn đang thuộc Cấp bậc nào từ Rank 3 đến Rank 9, với tiêu chuẩn năng lực tương ứng.
-            </p>
-          </div>
-
-          <div className="p-7 rounded-3xl bg-card border border-border/80 space-y-3.5 shadow-2xs">
-            <div className="flex items-center gap-2">
-              <span className="font-mono font-black text-xs px-3 py-1 rounded-lg bg-brand-blue-soft text-brand-blue">
-                Bước 04
-              </span>
-            </div>
-            <h3 className="font-black text-foreground text-xl">Đề xuất khóa học</h3>
-            <p className="text-sm text-foreground/75 leading-relaxed">
-              Gợi ý chặng học phù hợp nhất (STARTER → DREAMER → BUILDER → MASTER → LEADER) để bạn tiến bộ nhanh nhất.
-            </p>
           </div>
         </div>
       </SectionContainer>
