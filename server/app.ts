@@ -12,33 +12,53 @@ import authPlugin from "./plugins/auth.js";
 import routes from "./routes/index.js";
 
 export async function buildApp() {
-  const logDir = join(process.cwd(), "logs");
-  if (!existsSync(logDir)) {
-    mkdirSync(logDir, { recursive: true });
-  }
-  const logFile = join(logDir, "app.log");
-  const app = Fastify({
-    logger: {
-      level: env.NODE_ENV === "production" ? "info" : "debug",
+  const isServerless =
+    process.env.VERCEL === "1" ||
+    Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME) ||
+    Boolean(process.env.VERCEL_ENV);
+  const isProduction =
+    env.NODE_ENV === "production" || process.env.NODE_ENV === "production";
+
+  let loggerConfig: any;
+  if (isServerless || isProduction) {
+    loggerConfig = {
+      level: isProduction ? "info" : "debug",
+    };
+  } else {
+    const logDir = join(process.cwd(), "logs");
+    if (!existsSync(logDir)) {
+      try {
+        mkdirSync(logDir, { recursive: true });
+      } catch {
+        // Safe failover for readonly environments
+      }
+    }
+    const logFile = join(logDir, "app.log");
+    loggerConfig = {
+      level: "debug",
       transport: {
         targets: [
-          ...(env.NODE_ENV !== "production"
+          {
+            target: "pino-pretty",
+            options: { colorize: true },
+            level: "debug",
+          },
+          ...(existsSync(logDir)
             ? [
                 {
-                  target: "pino-pretty",
-                  options: { colorize: true },
+                  target: "pino/file",
+                  options: { destination: logFile },
                   level: "debug",
                 },
               ]
             : []),
-          {
-            target: "pino/file",
-            options: { destination: logFile },
-            level: "debug",
-          },
         ],
       },
-    },
+    };
+  }
+
+  const app = Fastify({
+    logger: loggerConfig,
   });
 
   // Observability: Gán X-Request-ID vào mọi Response Header & disable cache cho API
@@ -156,18 +176,27 @@ export async function buildApp() {
     },
   });
 
-  // Ensure upload directory exists
-  const uploadDir = join(process.cwd(), env.UPLOAD_DIR);
+  // Ensure upload directory exists (safely fallback in serverless)
+  const uploadDir = isServerless
+    ? join("/tmp", env.UPLOAD_DIR || "uploads")
+    : join(process.cwd(), env.UPLOAD_DIR || "uploads");
+
   if (!existsSync(uploadDir)) {
-    mkdirSync(uploadDir, { recursive: true });
+    try {
+      mkdirSync(uploadDir, { recursive: true });
+    } catch {
+      // Ignore in readonly filesystem
+    }
   }
 
-  // Serve static files (uploaded files)
-  await app.register(staticPlugin, {
-    root: uploadDir,
-    prefix: "/uploads/",
-    decorateReply: false,
-  });
+  // Serve static files (uploaded files) if directory is accessible
+  if (existsSync(uploadDir)) {
+    await app.register(staticPlugin, {
+      root: uploadDir,
+      prefix: "/uploads/",
+      decorateReply: false,
+    });
+  }
 
   // Plugins
   await app.register(prismaPlugin);
