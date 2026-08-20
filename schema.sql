@@ -193,25 +193,60 @@ CREATE POLICY "Admins only can manage user_roles" ON public.user_roles FOR ALL U
 -- courses
 ALTER TABLE public.courses ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow authenticated full access to courses" ON public.courses;
-CREATE POLICY "Allow authenticated full access to courses" ON public.courses FOR ALL TO authenticated USING (true) WITH CHECK (true);
 DROP POLICY IF EXISTS "Allow anon select courses" ON public.courses;
-CREATE POLICY "Allow anon select courses" ON public.courses FOR SELECT TO anon USING (true);
+DROP POLICY IF EXISTS "courses_select_policy" ON public.courses;
+DROP POLICY IF EXISTS "courses_admin_write_policy" ON public.courses;
+CREATE POLICY "courses_select_policy" ON public.courses FOR SELECT USING (
+  is_published = true 
+  OR has_role(auth.uid(), 'admin'::app_role) 
+  OR has_role(auth.uid(), 'teacher'::app_role)
+  OR EXISTS (SELECT 1 FROM public.enrollments en WHERE en.course_id = courses.id AND en.student_id = auth.uid())
+  OR EXISTS (SELECT 1 FROM public.class_students cs JOIN public.classes c ON cs.class_id = c.id WHERE c.course_id = courses.id AND cs.student_id = auth.uid())
+);
+CREATE POLICY "courses_admin_write_policy" ON public.courses FOR ALL USING (
+  has_role(auth.uid(), 'admin'::app_role)
+) WITH CHECK (
+  has_role(auth.uid(), 'admin'::app_role)
+);
 
 -- classes
 ALTER TABLE public.classes ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow authenticated full access to classes" ON public.classes;
-CREATE POLICY "Allow authenticated full access to classes" ON public.classes FOR ALL TO authenticated USING (true) WITH CHECK (true);
 DROP POLICY IF EXISTS "Allow anon select classes" ON public.classes;
-CREATE POLICY "Allow anon select classes" ON public.classes FOR SELECT TO anon USING (true);
+DROP POLICY IF EXISTS "classes_select_policy" ON public.classes;
+DROP POLICY IF EXISTS "classes_write_policy" ON public.classes;
+CREATE POLICY "classes_select_policy" ON public.classes FOR SELECT USING (
+  has_role(auth.uid(), 'admin'::app_role)
+  OR teacher_id = auth.uid()
+  OR EXISTS (SELECT 1 FROM public.class_students cs WHERE cs.class_id = classes.id AND cs.student_id = auth.uid())
+);
+CREATE POLICY "classes_write_policy" ON public.classes FOR ALL USING (
+  has_role(auth.uid(), 'admin'::app_role)
+  OR (has_role(auth.uid(), 'teacher'::app_role) AND teacher_id = auth.uid())
+) WITH CHECK (
+  has_role(auth.uid(), 'admin'::app_role)
+  OR (has_role(auth.uid(), 'teacher'::app_role) AND teacher_id = auth.uid())
+);
 
 -- enrollments
 ALTER TABLE public.enrollments ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow authenticated full access to enrollments" ON public.enrollments;
-CREATE POLICY "Allow authenticated full access to enrollments" ON public.enrollments FOR ALL TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "Users can view own enrollments or admins/teachers can view all" ON public.enrollments FOR SELECT USING ((auth.uid() = student_id) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'teacher'::app_role));
-CREATE POLICY "Users can enroll themselves or admins can enroll anyone" ON public.enrollments FOR INSERT WITH CHECK ((auth.uid() = student_id) OR has_role(auth.uid(), 'admin'::app_role));
-CREATE POLICY "Users can update own enrollments or admins can update any" ON public.enrollments FOR UPDATE USING ((auth.uid() = student_id) OR has_role(auth.uid(), 'admin'::app_role));
-CREATE POLICY "Users can delete own enrollments or admins can delete any" ON public.enrollments FOR DELETE USING ((auth.uid() = student_id) OR has_role(auth.uid(), 'admin'::app_role));
+DROP POLICY IF EXISTS "Users can view own enrollments or admins/teachers can view all" ON public.enrollments;
+DROP POLICY IF EXISTS "Users can enroll themselves or admins can enroll anyone" ON public.enrollments;
+DROP POLICY IF EXISTS "Users can update own enrollments or admins can update any" ON public.enrollments;
+DROP POLICY IF EXISTS "Users can delete own enrollments or admins can delete any" ON public.enrollments;
+DROP POLICY IF EXISTS "enrollments_select_policy" ON public.enrollments;
+DROP POLICY IF EXISTS "enrollments_admin_write_policy" ON public.enrollments;
+CREATE POLICY "enrollments_select_policy" ON public.enrollments FOR SELECT USING (
+  student_id = auth.uid()
+  OR has_role(auth.uid(), 'admin'::app_role)
+  OR has_role(auth.uid(), 'teacher'::app_role)
+);
+CREATE POLICY "enrollments_admin_write_policy" ON public.enrollments FOR ALL USING (
+  has_role(auth.uid(), 'admin'::app_role)
+) WITH CHECK (
+  has_role(auth.uid(), 'admin'::app_role)
+);
 
 -- exams
 ALTER TABLE public.exams ENABLE ROW LEVEL SECURITY;
@@ -366,6 +401,9 @@ BEGIN
 END;
 $$;
 
+REVOKE EXECUTE ON FUNCTION public.admin_create_user(text, text, text, text, text, text) FROM public, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.admin_create_user(text, text, text, text, text, text) TO service_role, postgres;
+
 CREATE OR REPLACE FUNCTION public.admin_create_user(
   p_email text,
   p_full_name text DEFAULT NULL,
@@ -385,6 +423,11 @@ DECLARE
   v_result json;
   v_encrypted_pw text;
 BEGIN
+  -- Defense-in-depth: Caller check
+  IF (COALESCE(auth.role(), '') <> 'service_role' AND current_user <> 'postgres' AND NOT has_role(auth.uid(), 'admin'::app_role)) THEN
+    RAISE EXCEPTION 'Access denied: caller does not have admin privileges' USING ERRCODE = '42501';
+  END IF;
+
   -- 1. Check if user already exists in auth.users or profiles (Idempotency Check)
   SELECT id INTO v_existing_id FROM auth.users WHERE email = p_email LIMIT 1;
   IF v_existing_id IS NULL THEN
