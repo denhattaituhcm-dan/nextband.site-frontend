@@ -210,8 +210,8 @@ export const authApi = {
     return data;
   },
 
-  loginWithGoogle: async () => {
-    const targetRedirect = window.location.origin;
+  loginWithGoogle: async (redirectTo?: string) => {
+    const targetRedirect = redirectTo || `${window.location.origin}/login`;
     console.log("[AUTH_DIAGNOSTIC] Initiating signInWithOAuth", {
       provider: "google",
       redirectTo: targetRedirect,
@@ -1640,20 +1640,24 @@ export const classStudentsApi = {
       }
     };
 
+    const abortCtrl = new AbortController();
+    const timeoutId = setTimeout(() => abortCtrl.abort(), 4000);
+
     try {
       const res = await fetch(`${API_BASE_URL}/classes/my-classes`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      });
+        signal: abortCtrl.signal,
+      }).finally(() => clearTimeout(timeoutId));
 
       if (res.status === 401) {
         return { status: "unauthenticated" };
       }
 
       if (!res.ok) {
-        // If the backend returned 404 (e.g. older server version routing /classes/my-classes to /classes/:id), fallback to Supabase
+        // If the backend returned error, fallback to Supabase
         const fallback = await querySupabaseDirectly();
         if (fallback.status === "ok") {
           return fallback;

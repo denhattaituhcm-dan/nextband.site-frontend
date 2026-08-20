@@ -56,11 +56,15 @@ export default function Auth() {
   const queryParams = new URLSearchParams(location.search);
   const nextParam = queryParams.get("next");
   const rawFrom = (location.state as { from?: { pathname?: string } })?.from?.pathname;
-  const targetDestination = nextParam || rawFrom || "/app";
+  const savedTarget = sessionStorage.getItem("auth_redirect_target");
+  const targetDestination = nextParam || rawFrom || savedTarget || "/app";
   const studentTarget = targetDestination === "/" ? "/app" : targetDestination;
 
   useEffect(() => {
     if (user) {
+      if (savedTarget) {
+        sessionStorage.removeItem("auth_redirect_target");
+      }
       // Automatic role-based routing:
       // If user has teacher or admin role (logged in via Password), redirect to Teacher Workspace for grading
       if (user.roles?.includes("teacher") || user.roles?.includes("admin")) {
@@ -71,7 +75,7 @@ export default function Auth() {
         navigate(studentTarget, { replace: true });
       }
     }
-  }, [user, navigate, studentTarget]);
+  }, [user, navigate, studentTarget, savedTarget]);
 
   useEffect(() => {
     const hidden = localStorage.getItem("google_login_hint_hidden") === "1";
@@ -266,7 +270,8 @@ export default function Auth() {
                 onClick={async () => {
                   try {
                     setIsLoading(true);
-                    await authApi.loginWithGoogle();
+                    sessionStorage.setItem("auth_redirect_target", studentTarget);
+                    await authApi.loginWithGoogle(`${window.location.origin}/login`);
                   } catch (error: any) {
                     toast({
                       variant: "destructive",

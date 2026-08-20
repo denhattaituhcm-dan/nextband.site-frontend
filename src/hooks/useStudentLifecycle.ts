@@ -109,10 +109,14 @@ export function useStudentLifecycle() {
     // Settled unauthenticated state
     state = "API_ERROR";
     lifecycleError = { httpStatus: 401, message: "Chưa đăng nhập" };
+  } else if (!authLoading && isAuthenticated && !user?.id) {
+    // Authenticated session without valid profile
+    state = "API_ERROR";
+    lifecycleError = { httpStatus: 401, message: "Không tìm thấy hồ sơ người dùng" };
   }
 
   const hasEnrollments = state === "ENROLLED";
-  const isLoading = (authLoading || isLoadingEnrollments) && state === "LOADING";
+  const isLoading = state === "LOADING";
 
   // ─── Pure Context Resolver (No Silent Fallback) ─────────────────────────────
   const resolveClass = useCallback(
