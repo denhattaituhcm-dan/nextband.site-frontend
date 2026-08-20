@@ -58,7 +58,7 @@ export default function CourseDetail() {
   // Map submissions by examId
   const submissionMap = new Map();
   submissions.forEach((sub: any) => {
-    submissionMap.set(sub.exam_id, sub);
+    submissionMap.set(sub.examId, sub);
   });
 
   // Separate exams into Completed, Current, and Upcoming

@@ -121,7 +121,7 @@ export default function CourseExamsList({ courseId }: CourseExamsListProps) {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>bài tập trong khóa học</CardTitle>
         <Button size="sm" asChild>
-          <Link to={`/admin/exams/create?course_id=${courseId}`}>
+          <Link to={`/admin/exams/create?courseId=${courseId}`}>
             <Plus className="mr-2 h-4 w-4" />
             Thêm bài thi
           </Link>

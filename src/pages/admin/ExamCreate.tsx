@@ -3,7 +3,7 @@ import ExamForm from '@/components/admin/ExamForm';
 
 export default function AdminExamCreate() {
   const [searchParams] = useSearchParams();
-  const courseId = searchParams.get('course_id') || undefined;
+  const courseId = searchParams.get('courseId') || undefined;
 
   return (
     <div className="space-y-6">

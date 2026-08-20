@@ -159,15 +159,24 @@ export default function ExamInterface() {
     });
   }, [sections]);
 
+  const explicitSubmissionId = searchParams.get("submissionId");
+
   // Create or fetch existing submission
   const {
     data: submissionData,
     isLoading: submissionLoading,
     error: submissionError,
   } = useQuery({
-    queryKey: ["exam-submission", examId, user?.id],
+    queryKey: ["exam-submission", examId, user?.id, explicitSubmissionId],
     queryFn: async () => {
       if (!user || !examId) return null;
+      if (explicitSubmissionId) {
+        const result = await submissionsApi.getById(explicitSubmissionId);
+        if (result && result.examId && result.examId !== examId) {
+          throw new Error("Bài làm không thuộc bài thi này (Exam ID mismatch)");
+        }
+        return result;
+      }
       const result = await submissionsApi.start(examId);
       return result;
     },
