@@ -1669,18 +1669,15 @@ export const classStudentsApi = {
             id,
             name,
             course_id,
+            teacher_id,
             is_active,
             courses (
               id,
               title
-            ),
-            profiles!classes_teacher_id_fkey (
-              full_name
             )
           )
         `)
-        .eq("student_id", user.id)
-        .eq("status", "ACTIVE");
+        .eq("student_id", user.id);
 
       if (dbErr) {
         console.warn("[CORE-009 FALLBACK] Supabase class_students query notice:", dbErr.message);
@@ -1690,13 +1687,17 @@ export const classStudentsApi = {
         };
       }
 
-      const data: MyClassEnrollment[] = (dbMemberships || []).map((m: any) => ({
+      const activeMemberships = (dbMemberships || []).filter(
+        (m: any) => !m.status || String(m.status).toUpperCase() === "ACTIVE"
+      );
+
+      const data: MyClassEnrollment[] = activeMemberships.map((m: any) => ({
         id: m.id,
         classId: m.class_id,
         className: m.classes?.name || "Lớp học",
         courseId: m.classes?.course_id || "",
         courseTitle: m.classes?.courses?.title || m.classes?.name || "Khóa học",
-        teacherName: m.classes?.profiles?.full_name || null,
+        teacherName: null,
         isActive: m.classes?.is_active ?? true,
         membershipStatus: m.status || "ACTIVE",
         joinedAt: m.created_at || new Date().toISOString(),
