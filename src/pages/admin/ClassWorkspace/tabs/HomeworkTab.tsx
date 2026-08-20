@@ -25,6 +25,10 @@ export const HomeworkTab: React.FC = () => {
     // Calculate submissions for this lesson/homework
     const lessonSubmissions = submissions.filter(
       (s: any) =>
+        s.examId === lesson.exam_id ||
+        s.examId === lesson.id ||
+        s.exam_id === lesson.exam_id ||
+        s.exam_id === lesson.id ||
         s.homework_id === lesson.id ||
         s.lesson_id === lesson.id ||
         s.homework_title?.includes(hwNum)
@@ -33,12 +37,12 @@ export const HomeworkTab: React.FC = () => {
     const pendingSubmissions = lessonSubmissions
       .filter((s: any) => s.grade_status === "pending" || s.status === "submitted" || s.status === "overdue")
       .map((s: any) => {
-        const student = students.find((st: any) => st.id === s.student_id);
+        const student = students.find((st: any) => (st.id || st.studentId) === (s.studentId || s.student_id));
         return {
           id: s.id,
-          studentName: student?.full_name || student?.fullName || student?.email || "Học viên",
-          submittedAt: s.created_at
-            ? new Date(s.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          studentName: student?.fullName || student?.full_name || student?.email || "Học viên",
+          submittedAt: (s.submittedAt || s.createdAt || s.created_at)
+            ? new Date(s.submittedAt || s.createdAt || s.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             : "Chưa xác định",
         };
       });
