@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useStudentLifecycle } from "@/hooks/useStudentLifecycle";
+import { useGatewayHealth } from "@/hooks/useGatewayHealth";
 import { isValidUUID, classifyClassError } from "@/lib/classContext";
 import {
   BookOpen,
@@ -25,6 +26,7 @@ import {
   AlertTriangle,
   RefreshCw,
   Sparkles,
+  WifiOff,
 } from "lucide-react";
 
 export default function StudentLessonViewerPage() {
@@ -33,6 +35,7 @@ export default function StudentLessonViewerPage() {
   const location = useLocation();
   const { user } = useAuth();
   const { state: lifecycleState, resolveClass, retry: retryLifecycle } = useStudentLifecycle();
+  const { isHealthy: isGatewayHealthy, isWarmingUp: isGatewayWarmingUp, checkHealthNow } = useGatewayHealth();
 
   const handleOpenExam = (targetExamId: string) => {
     const returnUrl = location.pathname;
@@ -296,6 +299,32 @@ export default function StudentLessonViewerPage() {
             Về Sảnh Chính
           </Button>
         </div>
+
+        {/* CIRCUIT BREAKER / GATEWAY STATUS BANNER */}
+        {isGatewayWarmingUp && (
+          <div className="bg-warning/10 border border-warning/30 text-warning-foreground px-4 py-3 rounded-2xl flex items-center justify-between gap-3 text-xs shadow-xs animate-in fade-in duration-300">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-warning/20 text-warning flex items-center justify-center shrink-0">
+                <WifiOff className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="font-bold text-foreground">Máy chủ phòng thi đang khởi động (Render cold-start)</p>
+                <p className="text-muted-foreground text-[11px] mt-0.5">
+                  Dịch vụ chấm điểm & phòng thi đang được đánh thức. Bạn vẫn có thể xem danh sách bài học, nhưng bắt đầu làm bài có thể cần đợi vài giây.
+                </p>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => checkHealthNow()}
+              className="h-8 text-xs border-warning/40 hover:bg-warning/20 shrink-0 gap-1.5 font-semibold rounded-xl"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Kiểm tra lại
+            </Button>
+          </div>
+        )}
 
         {/* HERO PRACTICE BANNER FOR THIS CLASS (L1 Hero Layer) */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
