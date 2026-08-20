@@ -1617,6 +1617,8 @@ export const classStudentsApi = {
       return { status: "unauthenticated" };
     }
 
+    // ─── TẦNG 1: Fastify API Gateway (Primary) ───────────────────────────
+    let gatewayFailed = false;
     const abortCtrl = new AbortController();
     const timeoutId = setTimeout(() => abortCtrl.abort(), 6000);
 
@@ -1633,22 +1635,78 @@ export const classStudentsApi = {
         return { status: "unauthenticated" };
       }
 
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
+      if (res.ok) {
+        const body = await res.json();
+        const data: MyClassEnrollment[] = Array.isArray(body?.data) ? body.data : [];
+        return { status: "ok", data };
+      }
+
+      // If gateway returns 5xx, 502, 503, 404, or non-ok status, proceed to Tier 2
+      gatewayFailed = true;
+    } catch {
+      // AbortError (Timeout 6s) or Network fetch failed -> proceed to Tier 2
+      gatewayFailed = true;
+    }
+
+    // ─── TẦNG 2: Supabase Direct Resilience Fallback (INVARIANT CORE-009) ─
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        return { status: "unauthenticated" };
+      }
+
+      const { data: dbMemberships, error: dbErr } = await supabase
+        .from("class_students")
+        .select(`
+          id,
+          class_id,
+          status,
+          created_at,
+          classes (
+            id,
+            name,
+            course_id,
+            is_active,
+            courses (
+              id,
+              title
+            ),
+            profiles!classes_teacher_id_fkey (
+              full_name
+            )
+          )
+        `)
+        .eq("student_id", user.id)
+        .eq("status", "ACTIVE");
+
+      if (dbErr) {
+        console.warn("[CORE-009 FALLBACK] Supabase class_students query notice:", dbErr.message);
         return {
-          status: "api_error",
-          httpStatus: res.status,
-          message: (body as any).message ?? (body as any).error ?? `HTTP ${res.status}`,
+          status: "network_error",
+          message: "Không thể kết nối máy chủ để tải danh sách lớp học",
         };
       }
 
-      const body = await res.json();
-      const data: MyClassEnrollment[] = Array.isArray(body?.data) ? body.data : [];
+      const data: MyClassEnrollment[] = (dbMemberships || []).map((m: any) => ({
+        id: m.id,
+        classId: m.class_id,
+        className: m.classes?.name || "Lớp học",
+        courseId: m.classes?.course_id || "",
+        courseTitle: m.classes?.courses?.title || m.classes?.name || "Khóa học",
+        teacherName: m.classes?.profiles?.full_name || null,
+        isActive: m.classes?.is_active ?? true,
+        membershipStatus: m.status || "ACTIVE",
+        joinedAt: m.created_at || new Date().toISOString(),
+      }));
+
       return { status: "ok", data };
-    } catch (err: any) {
+    } catch (fallbackErr: any) {
       return {
         status: "network_error",
-        message: err?.name === "AbortError" ? "Kết nối tới máy chủ quá thời gian (Timeout)" : err?.message ?? "Network request failed",
+        message: fallbackErr?.message || "Không thể kết nối tới máy chủ",
       };
     }
   },
@@ -2381,6 +2439,21 @@ export const classesApi = {
       // Migrate any class_students or enrollments created with pre-provisioned profile IDs
       for (const oldId of oldIds) {
         if (oldId && oldId !== authUser.id) {
+          // Check for duplicate class_students with same class_id and delete old duplicates first
+          const { data: existingTargetClasses } = await supabase
+            .from("class_students")
+            .select("id, class_id")
+            .eq("student_id", authUser.id);
+
+          const existingClassIds = (existingTargetClasses || []).map((r) => r.class_id);
+          if (existingClassIds.length > 0) {
+            await supabase
+              .from("class_students")
+              .delete()
+              .eq("student_id", oldId)
+              .in("class_id", existingClassIds);
+          }
+
           await supabase
             .from("class_students")
             .update({ student_id: authUser.id })
