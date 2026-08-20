@@ -1,12 +1,13 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { questionsApi, submissionsApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { ArrowLeft, Save, CheckCheck, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, CheckCheck, Loader2, MessageSquare } from "lucide-react";
 import { SubmissionHeader } from "@/components/grading/SubmissionHeader";
 import { AnswerGradingCard } from "@/components/grading/AnswerGradingCard";
 import { useAuth } from "@/hooks/useAuth";
@@ -68,12 +69,25 @@ export default function SubmissionGrade() {
   const [grades, setGrades] = useState<Record<string, GradeUpdate>>({});
   const [maxScores, setMaxScores] = useState<Record<string, number>>({});
 
+  // Teacher Review & Learning Loop state (P1-C)
+  const [overallFeedback, setOverallFeedback] = useState<string>("");
+  const [primaryErrorCategory, setPrimaryErrorCategory] = useState<"CONCEPT" | "STRUCTURE" | "EXPRESSION" | "GRAMMAR">("STRUCTURE");
+  const [revisionRequired, setRevisionRequired] = useState<boolean>(true);
+
   // Fetch submission with related data
   const { data: submission, isLoading } = useQuery({
     queryKey: ["submission-grade", id],
     queryFn: () => submissionsApi.getById(id!),
     enabled: !!id,
   });
+
+  useEffect(() => {
+    if (submission) {
+      if (submission.feedback) setOverallFeedback(submission.feedback);
+      if (submission.primaryErrorCategory) setPrimaryErrorCategory(submission.primaryErrorCategory);
+      if (submission.revisionRequired !== undefined) setRevisionRequired(submission.revisionRequired);
+    }
+  }, [submission]);
 
   const sections = submission?.exam?.sections || [];
   const answers = submission?.answers || [];
@@ -190,7 +204,7 @@ export default function SubmissionGrade() {
         return sum + Number(score);
       }, 0);
 
-      // Call grade API
+      // Call grade API with Lean Learning Loop metadata
       await submissionsApi.grade(
         id!,
         updates.map((u) => ({
@@ -199,6 +213,11 @@ export default function SubmissionGrade() {
           feedback: u.feedback || undefined,
         })),
         finalize ? currentTotalValue : 0,
+        {
+          feedback: overallFeedback || undefined,
+          primaryErrorCategory,
+          revisionRequired,
+        }
       );
 
       return finalize;
@@ -208,10 +227,10 @@ export default function SubmissionGrade() {
       queryClient.invalidateQueries({ queryKey: ["admin-submissions"] });
 
       if (finalize) {
-        toast.success("Đã chấm xong bài thi!");
+        toast.success("Đã hoàn tất chấm và trả bài thành công!");
         navigate("/admin/check-attempt");
       } else {
-        toast.success("Đã lưu điểm!");
+        toast.success("Đã lưu điểm nháp!");
       }
     },
     onError: (err: Error) => {
@@ -335,6 +354,7 @@ export default function SubmissionGrade() {
               </Button>
               <Button
                 size="sm"
+                className="bg-primary hover:bg-primary/90 font-bold"
                 onClick={() => saveMutation.mutate({ finalize: true })}
                 disabled={saveMutation.isPending || !canGrade}
               >
@@ -343,8 +363,99 @@ export default function SubmissionGrade() {
                 ) : (
                   <CheckCheck className="h-4 w-4 mr-1" />
                 )}
-                Hoàn tất chấm
+                Trả bài
               </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Teacher Review & Learning Loop Card (P1-C) */}
+      <Card className="border-amber-200/80 bg-amber-50/40 dark:bg-amber-950/15 dark:border-amber-800/60">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base font-bold flex items-center gap-2 text-amber-950 dark:text-amber-200">
+            <MessageSquare className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            Nhận Xét & Trả Bài (Lean Learning Loop)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Feedback textarea */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-foreground">
+              Nhận xét của giáo viên (Feedback):
+            </label>
+            <Textarea
+              placeholder="Nhập nhận xét tổng quan, chỉ ra điểm cần cải thiện cho học viên..."
+              value={overallFeedback}
+              onChange={(e) => setOverallFeedback(e.target.value)}
+              rows={3}
+              disabled={!canGrade}
+              className="text-sm bg-background"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Primary Error Category */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">
+                Lỗi chính (Primary Error Category):
+              </label>
+              <div className="grid grid-cols-2 gap-1.5">
+                {(["CONCEPT", "STRUCTURE", "EXPRESSION", "GRAMMAR"] as const).map((cat) => (
+                  <Button
+                    key={cat}
+                    type="button"
+                    variant={primaryErrorCategory === cat ? "default" : "outline"}
+                    size="sm"
+                    disabled={!canGrade}
+                    className={`text-xs font-semibold h-8 ${
+                      primaryErrorCategory === cat
+                        ? "bg-amber-600 hover:bg-amber-700 text-white"
+                        : "text-muted-foreground"
+                    }`}
+                    onClick={() => setPrimaryErrorCategory(cat)}
+                  >
+                    {cat}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Revision Required */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">
+                Yêu cầu làm lại (Revision Required):
+              </label>
+              <div className="grid grid-cols-2 gap-1.5">
+                <Button
+                  type="button"
+                  variant={revisionRequired ? "default" : "outline"}
+                  size="sm"
+                  disabled={!canGrade}
+                  className={`text-xs font-semibold h-8 ${
+                    revisionRequired
+                      ? "bg-rose-600 hover:bg-rose-700 text-white"
+                      : "text-muted-foreground"
+                  }`}
+                  onClick={() => setRevisionRequired(true)}
+                >
+                  YES (Cần viết lại)
+                </Button>
+                <Button
+                  type="button"
+                  variant={!revisionRequired ? "default" : "outline"}
+                  size="sm"
+                  disabled={!canGrade}
+                  className={`text-xs font-semibold h-8 ${
+                    !revisionRequired
+                      ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                      : "text-muted-foreground"
+                  }`}
+                  onClick={() => setRevisionRequired(false)}
+                >
+                  NO (Đạt yêu cầu)
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -475,8 +586,14 @@ export default function SubmissionGrade() {
         <Button
           onClick={() => saveMutation.mutate({ finalize: true })}
           disabled={saveMutation.isPending || !canGrade}
+          className="bg-primary hover:bg-primary/90 font-bold"
         >
-          <CheckCheck className="h-4 w-4 mr-1" /> Hoàn tất chấm
+          {saveMutation.isPending ? (
+            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+          ) : (
+            <CheckCheck className="h-4 w-4 mr-1" />
+          )}
+          Trả bài
         </Button>
       </div>
     </div>

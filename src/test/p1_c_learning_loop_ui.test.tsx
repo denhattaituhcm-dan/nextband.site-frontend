@@ -188,3 +188,90 @@ describe("🎯 P1-C: Student UI Learning Loop & Invariant Tests", () => {
     });
   });
 });
+
+describe("🎯 P1-C: Teacher UI Learning Loop & Grading Invariants", () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+      },
+    });
+  });
+
+  it("Teacher Invariant: SubmissionGrade displays Feedback textarea, Error Category buttons, Revision Required toggle, and 'Trả bài' action", async () => {
+    const SubmissionGrade = (await import("../pages/admin/SubmissionGrade")).default;
+    (submissionsApi.getById as any).mockResolvedValue({
+      id: "sub-attempt-1",
+      examId: "exam-essay-1",
+      studentId: "std-test-1",
+      status: "submitted",
+      submittedAt: new Date().toISOString(),
+      student: { id: "std-test-1", fullName: "Nguyen Van A" },
+      exam: {
+        id: "exam-essay-1",
+        title: "IELTS Writing Task 2",
+        sections: [
+          {
+            id: "sec-1",
+            title: "Writing Section",
+            sectionType: "writing",
+            questionGroups: [
+              {
+                id: "grp-1",
+                questions: [
+                  {
+                    id: "q-1",
+                    questionType: "essay",
+                    questionText: "Discuss both views.",
+                    points: 9.0,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      answers: [
+        {
+          id: "ans-1",
+          questionId: "q-1",
+          answerText: "Technology has many benefits.",
+        },
+      ],
+    });
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/admin/submission/sub-attempt-1/grade"]}>
+          <Routes>
+            <Route path="/admin/submission/:id/grade" element={<SubmissionGrade />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(/Nhận Xét & Trả Bài \(Lean Learning Loop\)/i)).toBeInTheDocument();
+    });
+
+    // Check textarea
+    expect(screen.getByPlaceholderText(/Nhập nhận xét tổng quan/i)).toBeInTheDocument();
+
+    // Check error categories
+    expect(screen.getByRole("button", { name: "CONCEPT" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "STRUCTURE" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "EXPRESSION" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "GRAMMAR" })).toBeInTheDocument();
+
+    // Check revision required
+    expect(screen.getByRole("button", { name: /YES \(Cần viết lại\)/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /NO \(Đạt yêu cầu\)/i })).toBeInTheDocument();
+
+    // Check 'Trả bài' buttons
+    const traBaiBtns = screen.getAllByRole("button", { name: /Trả bài/i });
+    expect(traBaiBtns.length).toBeGreaterThanOrEqual(1);
+  });
+});
