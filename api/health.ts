@@ -1,7 +1,20 @@
-export default function handler(req: any, res: any) {
-  return res.status(200).json({
-    status: "ok",
-    timestamp: new Date().toISOString(),
-    version: "1.0.0",
-  });
+export const config = {
+  runtime: "edge",
+};
+
+export default function handler(req: Request) {
+  return new Response(
+    JSON.stringify({
+      status: "ok",
+      timestamp: new Date().toISOString(),
+      version: "1.0.0",
+      runtime: "vercel-edge",
+    }),
+    {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
 }
