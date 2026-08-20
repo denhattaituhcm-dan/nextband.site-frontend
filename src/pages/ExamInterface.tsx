@@ -787,23 +787,48 @@ export default function ExamInterface() {
       (submissionError as any)?.response?.status === 409 ||
       submissionStartErrorMessage.includes("lượt làm bài");
 
+    const isGatewayColdStartOrNetwork =
+      submissionStartErrorMessage.toLowerCase().includes("fetch") ||
+      submissionStartErrorMessage.toLowerCase().includes("network") ||
+      submissionStartErrorMessage.toLowerCase().includes("502") ||
+      submissionStartErrorMessage.toLowerCase().includes("kết nối") ||
+      submissionStartErrorMessage.toLowerCase().includes("máy chủ");
+
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4 text-center">
-        <FileText className="h-16 w-16 text-muted-foreground/50" />
+        {isGatewayColdStartOrNetwork ? (
+          <div className="w-16 h-16 rounded-2xl bg-warning/10 text-warning flex items-center justify-center mx-auto mb-2">
+            <WifiOff className="h-8 w-8" />
+          </div>
+        ) : (
+          <FileText className="h-16 w-16 text-muted-foreground/50" />
+        )}
         <h2 className="text-xl font-semibold">
-          {isAttemptLimitError ? "Đã hết lượt làm bài" : "Không thể bắt đầu bài thi"}
+          {isAttemptLimitError
+            ? "Đã hết lượt làm bài"
+            : isGatewayColdStartOrNetwork
+            ? "Máy chủ phòng thi đang khởi động"
+            : "Không thể bắt đầu bài thi"}
         </h2>
-        <p className="text-muted-foreground max-w-md">
-          {submissionStartErrorMessage ||
-            "Có lỗi xảy ra khi khởi tạo bài thi. Vui lòng thử lại sau."}
+        <p className="text-muted-foreground max-w-md text-sm">
+          {isGatewayColdStartOrNetwork
+            ? "Máy chủ chấm điểm & phòng thi (Fastify API) đang được đánh thức hoặc tạm gián đoạn. Vui lòng bấm 'Thử lại ngay' sau vài giây."
+            : submissionStartErrorMessage ||
+              "Có lỗi xảy ra khi khởi tạo bài thi. Vui lòng thử lại sau."}
         </p>
         <div className="flex items-center gap-3">
+          {isGatewayColdStartOrNetwork && (
+            <Button onClick={() => refetchSubmission()} className="gap-2 font-semibold shadow-xs">
+              <RefreshCw className="h-4 w-4" />
+              Thử lại ngay
+            </Button>
+          )}
           <Button variant="outline" asChild>
             <Link to={exam?.course ? `/course/${exam.course.id}` : "/"}>
               Quay lại khóa học
             </Link>
           </Button>
-          <Button asChild>
+          <Button variant="ghost" asChild>
             <Link to="/my-submissions">Xem bài đã làm</Link>
           </Button>
         </div>

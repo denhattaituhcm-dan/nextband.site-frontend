@@ -35,6 +35,33 @@ export const getAuthToken = async (): Promise<string | null> => {
   }
 };
 
+export const gatewayHealthApi = {
+  checkHealth: async (timeoutMs: number = 5000): Promise<{ isHealthy: boolean; latencyMs?: number; statusText?: string }> => {
+    const start = Date.now();
+    const abortCtrl = new AbortController();
+    const timeoutId = setTimeout(() => abortCtrl.abort(), timeoutMs);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/health`, {
+        signal: abortCtrl.signal,
+      }).finally(() => clearTimeout(timeoutId));
+
+      const latencyMs = Date.now() - start;
+      if (res.ok) {
+        return { isHealthy: true, latencyMs, statusText: "OK" };
+      }
+      return { isHealthy: false, latencyMs, statusText: `HTTP ${res.status}` };
+    } catch (err: any) {
+      clearTimeout(timeoutId);
+      const isTimeout = err?.name === "AbortError";
+      return {
+        isHealthy: false,
+        statusText: isTimeout ? "Timeout" : "Connection Failed",
+      };
+    }
+  },
+};
+
 // Helper to format URLs
 export const formatStorageUrl = (path: string | null | undefined) => {
   if (!path) return "";
