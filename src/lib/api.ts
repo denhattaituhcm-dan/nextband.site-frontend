@@ -7,17 +7,16 @@ export const resolveApiBaseUrl = (): string => {
     (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) ||
     (typeof process !== "undefined" && process.env?.VITE_API_URL);
 
-  if (envUrl && !envUrl.includes("localhost")) {
+  if (envUrl && !envUrl.includes("localhost") && !envUrl.includes("api.nextband.site")) {
     return envUrl;
   }
 
-  // If in browser and on production domain (e.g. nextband.site), always use production API gateway
-  if (typeof window !== "undefined" && window.location.hostname.includes("nextband.site")) {
-    return "https://api.nextband.site/api/v1";
+  // In browser on production / preview domain, use same-origin /api/v1
+  if (typeof window !== "undefined" && !window.location.hostname.includes("localhost")) {
+    return "/api/v1";
   }
 
-  // If explicit localhost env was provided during local dev
-  if (envUrl) {
+  if (envUrl && !envUrl.includes("api.nextband.site")) {
     return envUrl;
   }
 
@@ -1735,19 +1734,13 @@ export const classStudentsApi = {
       return { status: "unauthenticated" };
     }
 
-    // ─── TẦNG 1: Fastify API Gateway (Primary) ───────────────────────────
-    let gatewayFailed = false;
-    const abortCtrl = new AbortController();
-    const timeoutId = setTimeout(() => abortCtrl.abort(), 6000);
-
     try {
       const res = await fetch(`${API_BASE_URL}/classes/my-classes`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        signal: abortCtrl.signal,
-      }).finally(() => clearTimeout(timeoutId));
+      });
 
       if (res.status === 401) {
         return { status: "unauthenticated" };
@@ -1759,73 +1752,16 @@ export const classStudentsApi = {
         return { status: "ok", data };
       }
 
-      // If gateway returns 5xx, 502, 503, 404, or non-ok status, proceed to Tier 2
-      gatewayFailed = true;
-    } catch {
-      // AbortError (Timeout 6s) or Network fetch failed -> proceed to Tier 2
-      gatewayFailed = true;
-    }
-
-    // ─── TẦNG 2: Supabase Direct Resilience Fallback (INVARIANT CORE-009) ─
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        return { status: "unauthenticated" };
-      }
-
-      const { data: dbMemberships, error: dbErr } = await supabase
-        .from("class_students")
-        .select(`
-          id,
-          class_id,
-          status,
-          created_at,
-          classes (
-            id,
-            name,
-            course_id,
-            teacher_id,
-            is_active,
-            courses (
-              id,
-              title
-            )
-          )
-        `)
-        .eq("student_id", user.id);
-
-      if (dbErr) {
-        console.warn("[CORE-009 FALLBACK] Supabase class_students query notice:", dbErr.message);
-        return {
-          status: "network_error",
-          message: "Không thể kết nối máy chủ để tải danh sách lớp học",
-        };
-      }
-
-      const activeMemberships = (dbMemberships || []).filter(
-        (m: any) => !m.status || String(m.status).toUpperCase() === "ACTIVE"
-      );
-
-      const data: MyClassEnrollment[] = activeMemberships.map((m: any) => ({
-        id: m.id,
-        classId: m.class_id,
-        className: m.classes?.name || "Lớp học",
-        courseId: m.classes?.course_id || "",
-        courseTitle: m.classes?.courses?.title || m.classes?.name || "Khóa học",
-        teacherName: null,
-        isActive: m.classes?.is_active ?? true,
-        membershipStatus: m.status || "ACTIVE",
-        joinedAt: m.created_at || new Date().toISOString(),
-      }));
-
-      return { status: "ok", data };
-    } catch (fallbackErr: any) {
+      const errBody = await res.json().catch(() => ({}));
+      return {
+        status: "api_error",
+        httpStatus: res.status,
+        message: errBody?.error || errBody?.message || "Không thể tải danh sách lớp học",
+      };
+    } catch (networkErr: any) {
       return {
         status: "network_error",
-        message: fallbackErr?.message || "Không thể kết nối tới máy chủ",
+        message: networkErr?.message || "Không thể kết nối tới máy chủ",
       };
     }
   },
@@ -3182,111 +3118,22 @@ export const lessonsApi = {
     }
 
     const token = await getAuthToken();
-    try {
-      const response = await fetch(`${API_BASE_URL}/classes/${classId}/lessons`, {
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        if (result?.success && result?.data) {
-          return result.data;
-        }
-      }
-    } catch {
-      // Backend offline or mock test environment -> proceed to Supabase read fallback
-    }
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) throw new Error("Unauthenticated");
-
-    // 1. Fetch class & course info
-    const { data: cls, error: clsErr } = await supabase
-      .from("classes")
-      .select("id, name, course_id, courses(*)")
-      .eq("id", classId)
-      .single();
-
-    if (clsErr || !cls) {
-      throw new Error("Không tìm thấy thông tin lớp học");
-    }
-
-    const courseObj = Array.isArray(cls.courses) ? cls.courses[0] : cls.courses;
-    const courseId = cls.course_id || courseObj?.id;
-    const courseTitle = courseObj?.title || cls.name || "Lớp học";
-    const className = cls.name || courseTitle || "Lớp học";
-
-    // 2. Fetch all exams (homeworks) for this course from Supabase
-    let exams: any[] = [];
-    if (courseId) {
-      const { data: examData } = await supabase
-        .from("exams")
-        .select("id, title, description, week, exam_type, exam_sections(id, section_type, title, instructions, order_index)")
-        .eq("course_id", courseId)
-        .order("week", { ascending: true });
-      exams = examData || [];
-    }
-
-    // 3. Fetch student submissions for these exams
-    const examIds = exams.map((e) => e.id);
-    let submissionsMap: Record<string, any> = {};
-
-    if (examIds.length > 0) {
-      const { data: subs } = await supabase
-        .from("exam_submissions")
-        .select("id, exam_id, status, total_score, submitted_at")
-        .eq("student_id", user.id)
-        .in("exam_id", examIds);
-
-      (subs || []).forEach((s: any) => {
-        submissionsMap[s.exam_id] = s;
-      });
-    }
-
-    // 4. Format lessons array for student lesson viewer
-    const lessons = exams.map((ex: any, idx: number) => {
-      const sub = submissionsMap[ex.id];
-      const isCompleted = sub?.status === "graded" || sub?.status === "submitted";
-      const hwNum = String(idx + 1).padStart(2, "0");
-
-      return {
-        id: ex.id,
-        title: ex.title || `Homework ${hwNum}`,
-        description: ex.description || `Bài tập buổi ${ex.week || idx + 1}`,
-        week: ex.week || idx + 1,
-        status: isCompleted ? "COMPLETED" : "AVAILABLE",
-        submission: sub || null,
-        resources: (ex.exam_sections || []).map((sec: any) => ({
-          id: sec.id,
-          title: sec.title || `Kỹ năng ${sec.section_type?.toUpperCase()}`,
-          type: sec.section_type || "general",
-          detail: sec.instructions || `Luyện tập phần ${sec.section_type}`,
-        })),
-      };
+    const response = await fetch(`${API_BASE_URL}/classes/${classId}/lessons`, {
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
     });
 
-    const completedLessons = lessons.filter((l) => l.status === "COMPLETED").length;
-    const totalLessons = lessons.length;
-    const percentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+    if (response.ok) {
+      const result = await response.json();
+      if (result?.success && result?.data) {
+        return result.data;
+      }
+      return result;
+    }
 
-    return {
-      success: true,
-      data: {
-        classId: cls.id,
-        className,
-        courseTitle,
-        progress: {
-          completedLessons,
-          totalLessons,
-          percentage,
-        },
-        lessons,
-      },
-    };
+    const errData = await response.json().catch(() => ({}));
+    throw new Error(errData?.error || errData?.message || "Không thể tải lộ trình bài học");
   },
 };
 
