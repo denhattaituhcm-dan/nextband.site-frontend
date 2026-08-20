@@ -62,6 +62,97 @@ export const gatewayHealthApi = {
   },
 };
 
+export class GatewayUnavailableError extends Error {
+  isGatewayError = true;
+  httpStatus: number;
+  constructor(
+    message: string = "Máy chủ phòng thi đang khởi động lại (Render cold-start). Vui lòng thử lại sau 30 giây.",
+    status: number = 502
+  ) {
+    super(message);
+    this.name = "GatewayUnavailableError";
+    this.httpStatus = status;
+  }
+}
+
+export interface FetchWithResilienceOptions extends RequestInit {
+  retries?: number;
+  retryDelayMs?: number;
+  timeoutMs?: number;
+}
+
+export async function fetchWithResilience(
+  url: string,
+  options: FetchWithResilienceOptions = {}
+): Promise<Response> {
+  const {
+    retries = 2,
+    retryDelayMs = 800,
+    timeoutMs = 12000,
+    ...fetchOptions
+  } = options;
+
+  let attempt = 0;
+  while (attempt <= retries) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const response = await fetch(url, {
+        ...fetchOptions,
+        signal: controller.signal,
+      }).finally(() => clearTimeout(timer));
+
+      // Gateway / Cloud Cold-start errors: 502 Bad Gateway, 503 Service Unavailable, 504 Gateway Timeout
+      if (response.status === 502 || response.status === 503 || response.status === 504) {
+        if (attempt < retries) {
+          attempt++;
+          await new Promise((resolve) => setTimeout(resolve, retryDelayMs * attempt));
+          continue;
+        }
+        throw new GatewayUnavailableError(
+          "Máy chủ phòng thi đang khởi động lại (Render cold-start). Vui lòng thử lại sau 30 giây.",
+          response.status
+        );
+      }
+
+      return response;
+    } catch (err: any) {
+      clearTimeout(timer);
+      if (err instanceof GatewayUnavailableError) {
+        throw err;
+      }
+
+      const isAbort = err?.name === "AbortError";
+      const isNetwork =
+        err instanceof TypeError ||
+        isAbort ||
+        (err?.message && (
+          err.message.toLowerCase().includes("failed to fetch") ||
+          err.message.toLowerCase().includes("networkerror") ||
+          err.message.toLowerCase().includes("network error")
+        ));
+
+      if (isNetwork && attempt < retries) {
+        attempt++;
+        await new Promise((resolve) => setTimeout(resolve, retryDelayMs * attempt));
+        continue;
+      }
+
+      if (isNetwork) {
+        throw new GatewayUnavailableError(
+          "Không thể kết nối tới máy chủ phòng thi (Render cold-start). Vui lòng thử lại sau 30 giây.",
+          502
+        );
+      }
+
+      throw err;
+    }
+  }
+
+  throw new GatewayUnavailableError();
+}
+
 // Helper to format URLs
 export const formatStorageUrl = (path: string | null | undefined) => {
   if (!path) return "";
@@ -528,7 +619,7 @@ export const examsApi = {
     if (params?.isPublished !== undefined) query.set("isPublished", String(params.isPublished));
     if (params?.isActive !== undefined) query.set("isActive", String(params.isActive));
 
-    const res = await fetch(`${API_BASE_URL}/exams?${query.toString()}`, {
+    const res = await fetchWithResilience(`${API_BASE_URL}/exams?${query.toString()}`, {
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -559,7 +650,7 @@ export const examsApi = {
 
     // 1. Primary Path: Fastify API Gateway
     try {
-      const res = await fetch(`${API_BASE_URL}/exams/${id}`, {
+      const res = await fetchWithResilience(`${API_BASE_URL}/exams/${id}`, {
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -1097,7 +1188,7 @@ export const submissionsApi = {
     if (params?.sortBy) query.set("sortBy", params?.sortBy);
     if (params?.sortOrder) query.set("sortOrder", params?.sortOrder);
 
-    const res = await fetch(`${API_BASE_URL}/submissions?${query.toString()}`, {
+    const res = await fetchWithResilience(`${API_BASE_URL}/submissions?${query.toString()}`, {
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -1119,7 +1210,7 @@ export const submissionsApi = {
 
   getById: async (id: string) => {
     const token = await getAuthToken();
-    const res = await fetch(`${API_BASE_URL}/submissions/${id}`, {
+    const res = await fetchWithResilience(`${API_BASE_URL}/submissions/${id}`, {
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -1157,7 +1248,7 @@ export const submissionsApi = {
       throw new Error("Vui lòng đăng nhập để phúc khảo bài thi.");
     }
 
-    const response = await fetch(`${API_BASE_URL}/submissions/${id}/regrade`, {
+    const response = await fetchWithResilience(`${API_BASE_URL}/submissions/${id}/regrade`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1181,7 +1272,7 @@ export const submissionsApi = {
       throw new Error("Vui lòng đăng nhập để bắt đầu làm bài.");
     }
 
-    const response = await fetch(`${API_BASE_URL}/submissions`, {
+    const response = await fetchWithResilience(`${API_BASE_URL}/submissions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1217,7 +1308,7 @@ export const submissionsApi = {
       throw new Error("Vui lòng đăng nhập để lưu bài làm.");
     }
 
-    const res = await fetch(`${API_BASE_URL}/submissions/${id}`, {
+    const res = await fetchWithResilience(`${API_BASE_URL}/submissions/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -1256,7 +1347,7 @@ export const submissionsApi = {
         ? crypto.randomUUID()
         : `idem_${id}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`);
 
-    const response = await fetch(`${API_BASE_URL}/submissions/${id}/submit`, {
+    const response = await fetchWithResilience(`${API_BASE_URL}/submissions/${id}/submit`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1286,7 +1377,7 @@ export const submissionsApi = {
       throw new Error("Vui lòng đăng nhập để bắt đầu bài sửa.");
     }
 
-    const response = await fetch(`${API_BASE_URL}/submissions/revision`, {
+    const response = await fetchWithResilience(`${API_BASE_URL}/submissions/revision`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1326,7 +1417,7 @@ export const submissionsApi = {
       throw new Error("Vui lòng đăng nhập để chấm bài.");
     }
 
-    const response = await fetch(`${API_BASE_URL}/submissions/${id}/grade`, {
+    const response = await fetchWithResilience(`${API_BASE_URL}/submissions/${id}/grade`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
