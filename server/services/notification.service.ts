@@ -34,14 +34,27 @@ export class NotificationService {
         },
       });
     } catch (err: unknown) {
-      // Prisma P2002: Unique constraint failed -> Idempotent skip
+      // Prisma P2002: Unique constraint failed -> Only skip if it matches idempotency constraint
       if (
         typeof err === 'object' &&
         err !== null &&
         'code' in err &&
         (err as { code: string }).code === 'P2002'
       ) {
-        return;
+        const meta = (err as { meta?: { target?: string[] | string } }).meta;
+        const target = meta?.target;
+        const isIdempotencyCollision =
+          !target ||
+          (Array.isArray(target) &&
+            (target.includes('entity_type') ||
+             target.includes('entityId') ||
+             target.includes('notifications_idempotency_idx'))) ||
+          (typeof target === 'string' &&
+            (target.includes('idempotency') || target.includes('notifications')));
+
+        if (isIdempotencyCollision) {
+          return;
+        }
       }
       throw err;
     }

@@ -57,9 +57,11 @@ function sanitizeQuestionForStudent(q: any, showAnswerKey: boolean) {
 
 export class ExamSubmissionService {
   private repo: SubmissionRepository;
+  private notificationService: NotificationService;
 
   constructor(private prisma: PrismaClient) {
     this.repo = new SubmissionRepository(prisma);
+    this.notificationService = new NotificationService(prisma);
   }
 
   // Use Case: List Submissions with Role-based filtering
@@ -618,6 +620,56 @@ export class ExamSubmissionService {
             responsePayload: JSON.stringify(fullResult),
           },
         });
+      // Notification Trigger: SUBMITTED (Requires teacher manual grading) vs GRADED (Auto-graded result)
+      if ((tx as any).notification) {
+        const examTitle = submission.exam?.title || "IELTS Exam";
+        if (targetStatus === "SUBMITTED") {
+          let teacherId: string | null = null;
+          if (submission.exam?.courseId && (tx as any).classStudent) {
+            const classStudent = await (tx as any).classStudent.findFirst({
+              where: {
+                studentId: user.id,
+                class: { courseId: submission.exam.courseId, isActive: true },
+              },
+              include: { class: true },
+            });
+            teacherId = classStudent?.class?.teacherId || null;
+          }
+
+          if (!teacherId && (tx as any).userRole) {
+            const firstTeacher = await (tx as any).userRole.findFirst({
+              where: { role: "teacher" },
+            });
+            teacherId = firstTeacher?.userId || null;
+          }
+
+          if (teacherId) {
+            await this.notificationService.createNotification(tx, {
+              userId: teacherId,
+              type: "NEW_SUBMISSION",
+              title: "Bài nộp mới cần chấm",
+              message: `Học viên đã nộp bài thi "${examTitle}". Vui lòng chấm điểm và gửi feedback.`,
+              link: `/admin/submissions/${id}`,
+              entityType: "SUBMISSION",
+              entityId: id,
+            });
+          }
+        } else if (targetStatus === "GRADED") {
+          const bandText =
+            gradingSummary.bandScore !== null &&
+            gradingSummary.bandScore !== undefined
+              ? ` Kết quả: Band ${gradingSummary.bandScore}.`
+              : "";
+          await this.notificationService.createNotification(tx, {
+            userId: user.id,
+            type: "SUBMISSION_GRADED",
+            title: "Kết quả bài thi",
+            message: `Bài thi "${examTitle}" của bạn đã được chấm xong.${bandText}`,
+            link: `/results/${id}`,
+            entityType: "SUBMISSION",
+            entityId: id,
+          });
+        }
       }
 
       return fullResult;
@@ -751,7 +803,7 @@ export class ExamSubmissionService {
       throw new AuthorizationError("Chỉ giáo viên hoặc admin mới có quyền chấm bài", 403);
     }
 
-    const submission: any = await this.repo.findById(id);
+    const submission: any = await this.repo.findById(id, { exam: true });
     if (!submission) {
       throw new NotFoundError("Không tìm thấy bài nộp");
     }
@@ -847,6 +899,20 @@ export class ExamSubmissionService {
           newState: { status: "GRADED", totalScore: finalTotalScore },
         });
         await tx.auditOutbox.create({ data: auditEvent });
+      }
+
+      // Notification Trigger: TEACHER_FEEDBACK to the student
+      if ((tx as any).notification && submission.studentId) {
+        const examTitle = submission.exam?.title || "IELTS Exam";
+        await this.notificationService.createNotification(tx, {
+          userId: submission.studentId,
+          type: "TEACHER_FEEDBACK",
+          title: "Giáo viên đã chấm bài thi",
+          message: `Thầy/Cô đã chấm và gửi nhận xét cho bài thi "${examTitle}" của bạn.`,
+          link: `/results/${id}`,
+          entityType: "SUBMISSION",
+          entityId: id,
+        });
       }
 
       return updated;
