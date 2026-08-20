@@ -1,21 +1,15 @@
-let fastifyPromise = null;
+import { buildApp } from "../server/app.js";
 
-async function getFastify() {
-  if (!fastifyPromise) {
-    fastifyPromise = (async () => {
-      const { buildApp } = await import("../server/app.js");
-      const app = await buildApp();
-      await app.ready();
-      return app;
-    })();
-  }
-  return fastifyPromise;
-}
+let fastifyApp = null;
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   try {
-    const app = await getFastify();
-    const response = await app.inject({
+    if (!fastifyApp) {
+      fastifyApp = await buildApp();
+      await fastifyApp.ready();
+    }
+
+    const response = await fastifyApp.inject({
       method: req.method || "GET",
       url: req.url || "/api/v1/health",
       headers: req.headers,
@@ -31,18 +25,13 @@ module.exports = async (req, res) => {
       }
     }
 
-    res.statusCode = response.statusCode;
-    res.end(response.body);
+    res.status(response.statusCode).send(response.body);
   } catch (err) {
-    console.error("Fastify Serverless CJS Error:", err);
-    res.statusCode = 500;
-    res.setHeader("Content-Type", "application/json");
-    res.end(
-      JSON.stringify({
-        statusCode: 500,
-        error: "Internal Server Error",
-        message: err?.message || "Serverless runtime error",
-      })
-    );
+    console.error("Fastify Serverless Handler Error:", err);
+    res.status(500).json({
+      statusCode: 500,
+      error: "Internal Server Error",
+      message: err?.message || "Serverless runtime error",
+    });
   }
-};
+}
