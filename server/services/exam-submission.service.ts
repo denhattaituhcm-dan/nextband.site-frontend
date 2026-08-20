@@ -620,6 +620,8 @@ export class ExamSubmissionService {
             responsePayload: JSON.stringify(fullResult),
           },
         });
+      }
+
       // Notification Trigger: SUBMITTED (Requires teacher manual grading) vs GRADED (Auto-graded result)
       if ((tx as any).notification) {
         const examTitle = submission.exam?.title || "IELTS Exam";
