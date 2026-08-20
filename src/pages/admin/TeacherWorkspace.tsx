@@ -47,6 +47,8 @@ interface WorkbookItem {
   isOverdue: boolean;
   score?: number;
   feedback?: string;
+  primaryErrorCategory?: "CONCEPT" | "STRUCTURE" | "EXPRESSION" | "GRAMMAR" | null;
+  revisionRequired?: boolean;
   submittedAt?: string;
   answerText?: string;
   audioUrl?: string;
@@ -154,7 +156,7 @@ export default function TeacherWorkspace() {
           return {
             id: ex.id,
             submissionId: sub?.id,
-            answerId: firstAnswer?.id || sub?.id,
+            answerId: firstAnswer?.id || undefined,
             lessonNumber: ex.week || Math.ceil((idx + 1) / 2),
             lessonTitle: `Buổi ${ex.week || Math.ceil((idx + 1) / 2)}`,
             orderIndex: idx + 1,
@@ -165,11 +167,13 @@ export default function TeacherWorkspace() {
             score: sub?.totalScore ?? sub?.total_score ?? sub?.bandScore ?? null,
             bandScore: sub?.bandScore ?? sub?.band_score ?? null,
             objectiveScore: sub?.objectiveScore ?? sub?.objective_score ?? null,
-            criteriaScores: sub?.criteriaScores || null,
+            criteriaScores: firstAnswer?.criteriaScores || sub?.criteriaScores || null,
             feedback: firstAnswer?.feedback || sub?.feedback || "",
+            primaryErrorCategory: firstAnswer?.primaryErrorCategory || sub?.primaryErrorCategory || null,
+            revisionRequired: firstAnswer?.revisionRequired ?? sub?.revisionRequired ?? false,
             submittedAt: sub?.submittedAt || sub?.submitted_at,
-            answerText: firstAnswer?.studentAnswer || firstAnswer?.answerText || "",
-            audioUrl: firstAnswer?.audioUrl || firstAnswer?.audio_url || "",
+            answerText: firstAnswer?.answerText || firstAnswer?.studentAnswer || "",
+            audioUrl: firstAnswer?.audioUrl || "",
           };
         });
 
@@ -248,6 +252,7 @@ export default function TeacherWorkspace() {
       status: (hw.status || "unsubmitted") as any,
       isOverdue: false,
       submissionId: hw.submissionId,
+      answerId: hw.answerId,
       submittedAt: hw.submittedAt,
       answerText: hw.answerText,
       audioUrl: hw.audioUrl,
@@ -255,6 +260,8 @@ export default function TeacherWorkspace() {
       bandScore: hw.bandScore,
       criteriaScores: hw.criteriaScores,
       feedback: hw.feedback,
+      primaryErrorCategory: hw.primaryErrorCategory,
+      revisionRequired: hw.revisionRequired,
       score: hw.bandScore != null ? hw.bandScore : hw.objectiveScore,
     }));
   }, [currentStudent]);
@@ -289,17 +296,21 @@ export default function TeacherWorkspace() {
   // Population Form Chấm điểm từ CSDL Thật
   useEffect(() => {
     if (currentHomework) {
-      if (currentHomework.status === "graded" && currentHomework.criteriaScores) {
-        setTaskResponse(String(currentHomework.criteriaScores.taskResponse ?? ""));
-        setCoherence(String(currentHomework.criteriaScores.coherence ?? ""));
-        setLexical(String(currentHomework.criteriaScores.lexical ?? ""));
-        setGrammar(String(currentHomework.criteriaScores.grammar ?? ""));
+      if (currentHomework.criteriaScores) {
+        setTaskResponse(currentHomework.criteriaScores.taskResponse != null ? String(currentHomework.criteriaScores.taskResponse) : "");
+        setCoherence(currentHomework.criteriaScores.coherence != null ? String(currentHomework.criteriaScores.coherence) : "");
+        setLexical(currentHomework.criteriaScores.lexical != null ? String(currentHomework.criteriaScores.lexical) : "");
+        setGrammar(currentHomework.criteriaScores.grammar != null ? String(currentHomework.criteriaScores.grammar) : "");
       } else {
         setTaskResponse("");
         setCoherence("");
         setLexical("");
         setGrammar("");
       }
+      if (currentHomework.primaryErrorCategory) {
+        setPrimaryErrorCategory(currentHomework.primaryErrorCategory);
+      }
+      setRevisionRequired(!!currentHomework.revisionRequired);
       setFeedback(currentHomework.feedback || "");
     } else {
       setTaskResponse("");
@@ -307,6 +318,7 @@ export default function TeacherWorkspace() {
       setLexical("");
       setGrammar("");
       setFeedback("");
+      setRevisionRequired(false);
     }
   }, [currentHomework]);
 
@@ -341,14 +353,28 @@ export default function TeacherWorkspace() {
     setIsSubmitting(true);
     try {
       if (currentHomework && currentStudent && currentHomework.submissionId) {
+        const trNum = parseFloat(taskResponse);
+        const ccNum = parseFloat(coherence);
+        const lrNum = parseFloat(lexical);
+        const grNum = parseFloat(grammar);
+        const criteriaScores = {
+          taskResponse: !isNaN(trNum) ? trNum : null,
+          coherence: !isNaN(ccNum) ? ccNum : null,
+          lexical: !isNaN(lrNum) ? lrNum : null,
+          grammar: !isNaN(grNum) ? grNum : null,
+        };
+
+        const targetAnswerId = currentHomework.answerId || "";
+
         await submissionsApi.grade(
           currentHomework.submissionId,
-          [{ answerId: currentHomework.answerId || currentHomework.submissionId, score: parseFloat(calculatedOverall), feedback }],
-          parseFloat(calculatedOverall),
+          [{ answerId: targetAnswerId, score: parseFloat(calculatedOverall) || 0, feedback }],
+          parseFloat(calculatedOverall) || 0,
           {
             feedback,
-            primaryErrorCategory: revisionRequired ? primaryErrorCategory : undefined,
+            primaryErrorCategory: revisionRequired ? primaryErrorCategory : null,
             revisionRequired,
+            criteriaScores,
           }
         );
 

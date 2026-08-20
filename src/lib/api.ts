@@ -941,6 +941,12 @@ export function normalizeSubmissionData(data: any, examData?: any): any {
     let parsedFeedback = a.feedback || "";
     let ansErrorCategory: string | null = null;
     let ansRevisionRequired = false;
+    let ansCriteriaScores: {
+      taskResponse: number | null;
+      coherence: number | null;
+      lexical: number | null;
+      grammar: number | null;
+    } | null = null;
 
     if (parsedFeedback && typeof parsedFeedback === "string" && parsedFeedback.startsWith("{")) {
       try {
@@ -948,6 +954,14 @@ export function normalizeSubmissionData(data: any, examData?: any): any {
         parsedFeedback = json.text || json.feedback || "";
         ansErrorCategory = json.primaryErrorCategory || null;
         ansRevisionRequired = !!json.revisionRequired;
+        if (json.criteriaScores && typeof json.criteriaScores === "object") {
+          ansCriteriaScores = {
+            taskResponse: json.criteriaScores.taskResponse != null ? Number(json.criteriaScores.taskResponse) : null,
+            coherence: json.criteriaScores.coherence != null ? Number(json.criteriaScores.coherence) : null,
+            lexical: json.criteriaScores.lexical != null ? Number(json.criteriaScores.lexical) : null,
+            grammar: json.criteriaScores.grammar != null ? Number(json.criteriaScores.grammar) : null,
+          };
+        }
         if (!primaryErrorCategory && ansErrorCategory) primaryErrorCategory = ansErrorCategory;
         if (ansRevisionRequired) revisionRequired = true;
         if (!overallFeedback && parsedFeedback) overallFeedback = parsedFeedback;
@@ -968,6 +982,7 @@ export function normalizeSubmissionData(data: any, examData?: any): any {
       feedback: parsedFeedback,
       primaryErrorCategory: ansErrorCategory,
       revisionRequired: ansRevisionRequired,
+      criteriaScores: ansCriteriaScores,
       createdAt: a.created_at || a.createdAt,
       updatedAt: a.updated_at || a.updatedAt,
     };
@@ -1021,6 +1036,7 @@ export function normalizeSubmissionData(data: any, examData?: any): any {
     feedback: overallFeedback,
     primaryErrorCategory,
     revisionRequired,
+    criteriaScores: normalizedAnswers[0]?.criteriaScores || null,
     student: normalizedStudent,
     exam: normalizedExam,
     answers: normalizedAnswers,
@@ -1268,8 +1284,14 @@ export const submissionsApi = {
     totalScore?: number,
     options?: {
       feedback?: string;
-      primaryErrorCategory?: "CONCEPT" | "STRUCTURE" | "EXPRESSION" | "GRAMMAR";
+      primaryErrorCategory?: "CONCEPT" | "STRUCTURE" | "EXPRESSION" | "GRAMMAR" | null;
       revisionRequired?: boolean;
+      criteriaScores?: {
+        taskResponse?: number | null;
+        coherence?: number | null;
+        lexical?: number | null;
+        grammar?: number | null;
+      } | null;
     }
   ) => {
     const token = await getAuthToken();
@@ -1289,6 +1311,7 @@ export const submissionsApi = {
         feedback: options?.feedback,
         primaryErrorCategory: options?.primaryErrorCategory,
         revisionRequired: options?.revisionRequired,
+        criteriaScores: options?.criteriaScores,
       }),
     });
 
