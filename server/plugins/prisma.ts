@@ -13,7 +13,11 @@ const prismaPlugin: FastifyPluginAsync = async (fastify) => {
     log: fastify.log.level === "debug" ? ["query", "error", "warn"] : ["error"],
   });
 
-  await prisma.$connect();
+  try {
+    await prisma.$connect();
+  } catch (dbErr: any) {
+    fastify.log.warn({ err: dbErr }, "Prisma initial connection deferred in serverless runtime");
+  }
 
   fastify.decorate("prisma", prisma);
 
