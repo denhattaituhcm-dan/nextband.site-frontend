@@ -73,8 +73,8 @@ for (const target of targets) {
     platform: "node",
     format: "esm",
     outfile: resolve(rootDir, target.out),
-    external: ["@prisma/client", "bcrypt", "@vercel/node"],
+    external: ["@prisma/client", "@vercel/node"],
   });
 }
 
-console.log("✅ All standalone Serverless API handlers bundled in-memory with zero temp files!");
+console.log("✅ All standalone Serverless API handlers bundled directly with pure JS bcryptjs!");

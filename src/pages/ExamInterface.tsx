@@ -711,6 +711,12 @@ export default function ExamInterface() {
           description: `Bài tập của bạn đã được ghi nhận${resultText}`,
         });
 
+        const isAssessment = searchParams.get("isAssessment") === "true";
+        if (isAssessment) {
+          navigate(`/assessment/result/${submission.id}`);
+          return;
+        }
+
         const exitDestination = resolveExitDestination(
           exam,
           searchParams,

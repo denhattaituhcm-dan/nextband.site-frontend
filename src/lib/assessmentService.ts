@@ -185,9 +185,13 @@ export function buildAssessmentReportFromSubmission(submission: any): Assessment
   const accuracy = Math.round((correctCount / Math.max(1, totalCount)) * 100);
 
   // Determine section type for official band calculation
-  const isReading = (exam.sections || []).some((s: any) => s.sectionType === "reading") ||
+  const hasListening = (exam.sections || []).some((s: any) => s.sectionType === "listening") ||
+    (exam.title || "").toLowerCase().includes("listening");
+  const hasReading = (exam.sections || []).some((s: any) => s.sectionType === "reading") ||
     (exam.title || "").toLowerCase().includes("reading");
-  const sectionType: IeltsSectionType = isReading ? "reading_academic" : "listening";
+  const isMultiSkill = hasListening && hasReading;
+
+  const sectionType: IeltsSectionType = hasReading ? "reading_academic" : "listening";
 
   // Official Band Score (scale to 40 equivalent if needed)
   const normalized40Equivalent = totalCount > 0 ? (correctCount / totalCount) * 40 : 0;
@@ -200,25 +204,31 @@ export function buildAssessmentReportFromSubmission(submission: any): Assessment
 
   if (accuracy >= 75) {
     strengths.push("Nắm vững kỹ năng định vị thông tin (Scanning & Skimming) trong đoạn văn học thuật.");
-    strengths.push("Nhận diện chính xác từ đồng nghĩa (Paraphrasing) giữa câu hỏi và bài đọc.");
-    strengths.push("Tốc độ xử lý câu hỏi nhanh, độ tập trung cao trong suốt thời gian làm bài.");
+    strengths.push("Nhận diện chính xác từ đồng nghĩa (Paraphrasing) giữa câu hỏi và bài đọc/nghe.");
+    strengths.push("Tốc độ xử lý câu hỏi nhanh, phản xạ ngữ pháp và từ vựng tự nhiên.");
   } else if (accuracy >= 50) {
     strengths.push("Làm tốt các câu hỏi tìm chi tiết cụ thể ở mức độ thông tin trực tiếp.");
-    strengths.push("Có vốn từ vựng cơ bản vững vàng, hiểu được ý chính của từng đoạn văn.");
+    strengths.push("Có vốn từ vựng cơ bản vững vàng, hiểu được ý chính của từng đoạn văn/hội thoại.");
     weaknesses.push("Còn lúng túng khi gặp các câu hỏi suy luận logic (Inference / True-False-Not Given).");
-    weaknesses.push("Tốc độ đọc còn chậm ở các đoạn văn có cấu trúc câu phức và nhiều thuật ngữ.");
+    weaknesses.push("Tốc độ đọc/nghe còn chậm ở các đoạn có cấu trúc câu phức và nhiều thuật ngữ.");
   } else {
     strengths.push("Có tinh thần rèn luyện tốt, kiên trì hoàn thành bài khảo thí.");
-    weaknesses.push("Vốn từ vựng học thuật còn hạn chế, gặp khó khăn khi bài đọc đổi từ đồng nghĩa.");
+    weaknesses.push("Vốn từ vựng học thuật còn hạn chế, gặp khó khăn khi bài đổi từ đồng nghĩa.");
     weaknesses.push("Chưa làm chủ ngữ pháp câu phức, dễ bị bẫy ở các câu hỏi phủ định và quan hệ logic.");
-    weaknesses.push("Cần củng cố lại phương pháp đọc hiểu từ gốc trước khi luyện giải đề Cambridge.");
+    weaknesses.push("Cần củng cố lại phương pháp xây nền từ gốc trước khi luyện giải đề Cambridge nâng cao.");
   }
+
+  const displaySectionTitle = isMultiSkill
+    ? "IELTS 4 Kỹ Năng & Ngữ Pháp (Chuẩn Cambridge)"
+    : hasReading
+      ? "IELTS Reading Academic"
+      : "IELTS Cambridge Listening";
 
   const report: AssessmentResultDetail = {
     id: submission?.id || `assess-${Date.now()}`,
     candidateName: submission?.student?.fullName || "Học viên",
     examTitle: exam.title || "Bài Khảo Thí Năng Lực IELTS Chuẩn Hóa",
-    sectionType: isReading ? "IELTS Reading Academic" : "IELTS Listening",
+    sectionType: displaySectionTitle,
     rawScore: correctCount,
     totalQuestions: totalCount,
     accuracyPercent: accuracy,
