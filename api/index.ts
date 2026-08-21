@@ -10,9 +10,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       await fastifyApp.ready();
     }
 
+    // Capture the original requested URL before Vercel internal rewrite
+    const url =
+      (req.headers["x-forwarded-uri"] as string) ||
+      (req.headers["x-matched-path"] as string) ||
+      req.url ||
+      "/api/v1/health";
+
     const response = await fastifyApp.inject({
       method: req.method || "GET",
-      url: req.url || "/api/v1/health",
+      url: url,
       headers: req.headers as Record<string, string>,
       query: req.query as Record<string, string>,
       payload: req.body,
