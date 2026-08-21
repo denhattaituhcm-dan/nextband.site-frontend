@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { submissionsApi } from "@/lib/api";
+import { submissionsApi, assessmentApi } from "@/lib/api";
 import {
   getLocalAssessmentResult,
   buildAssessmentReportFromSubmission,
@@ -38,14 +38,27 @@ export default function AssessmentResultPage() {
 
   const isDemo = !id || id === "demo";
 
-  // Query live submission from API if real ID is passed
+  // Query live assessment result from API if real ID is passed
   const {
     data: submissionData,
     isLoading: isLoadingSubmission,
     isError: isSubmissionError,
   } = useQuery({
     queryKey: ["assessment-submission", id],
-    queryFn: () => (id && id !== "demo" ? submissionsApi.getById(id) : Promise.resolve(null)),
+    queryFn: async () => {
+      if (!id || id === "demo") return null;
+      try {
+        const res = await assessmentApi.getResult(id);
+        return res;
+      } catch {
+        // Fallback to student submission query
+        try {
+          return await submissionsApi.getById(id);
+        } catch {
+          return null;
+        }
+      }
+    },
     enabled: !isDemo && !!id,
     retry: 1,
   });
@@ -84,19 +97,24 @@ export default function AssessmentResultPage() {
       return;
     }
 
-    // 1. Check local storage first
+    // 1. Check direct result from assessment API first
+    if (submissionData) {
+      if (submissionData.rankCode || submissionData.ieltsBandScore != null) {
+        setReport(submissionData as AssessmentResultDetail);
+        return;
+      }
+      const built = buildAssessmentReportFromSubmission(submissionData);
+      setReport(built);
+      return;
+    }
+
+    // 2. Check local storage fallback
     if (id) {
       const local = getLocalAssessmentResult(id);
       if (local) {
         setReport(local);
         return;
       }
-    }
-
-    // 2. Build report from API submission
-    if (submissionData) {
-      const built = buildAssessmentReportFromSubmission(submissionData);
-      setReport(built);
     }
   }, [id, isDemo, submissionData]);
 

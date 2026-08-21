@@ -308,6 +308,7 @@ model Exam {
   isActive            Boolean          @default(true) @map("is_active")
   isLocked            Boolean          @default(false) @map("is_locked")
   isOpen              Boolean          @default(false) @map("is_open")
+  allowGuestAssessment Boolean         @default(false) @map("allow_guest_assessment")
   maxParticipants     Int?             @map("max_participants")
   currentParticipants Int              @default(0) @map("current_participants")
   examType            String           @default("ielts") @map("exam_type")
@@ -316,6 +317,7 @@ model Exam {
 
   sections            ExamSection[]
   submissions         ExamSubmission[]
+  assessmentSessions  AssessmentSession[]
   homeworks           Homework[]
   course              Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
@@ -490,6 +492,29 @@ model ContactLead {
   updatedAt  DateTime   @default(now()) @updatedAt @map("updated_at")
 
   @@map("contact_leads")
+}
+
+model AssessmentSession {
+  id          String    @id @default(uuid())
+  examId      String    @map("exam_id")
+  fullName    String    @map("full_name")
+  phone       String
+  targetBand  String?   @map("target_band")
+  status      String    @default("ACTIVE") // ACTIVE, SUBMITTED, EXPIRED
+  answers     Json?     @default("{}")
+  result      Json?
+  startedAt   DateTime  @default(now()) @map("started_at")
+  submittedAt DateTime? @map("submitted_at")
+  expiresAt   DateTime  @map("expires_at")
+  ipAddress   String?   @map("ip_address")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  exam        Exam      @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  @@index([phone, createdAt])
+  @@index([status, expiresAt])
+  @@map("assessment_sessions")
 }
 
 enum AppRole {

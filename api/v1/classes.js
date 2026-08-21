@@ -113057,6 +113057,724 @@ var leadRoutes = async (fastify) => {
 };
 var lead_routes_default = leadRoutes;
 
+// server/services/assessment.service.ts
+var ipRateLimitMap = /* @__PURE__ */ new Map();
+var phoneRateLimitMap = /* @__PURE__ */ new Map();
+var inMemoryAssessmentSessions = /* @__PURE__ */ new Map();
+function cleanAssessmentQuestion(q) {
+  let selectionMode = "single";
+  let maxSelections = 1;
+  if (q.questionType === "multiple_choice") {
+    if (q.correctAnswer && typeof q.correctAnswer === "string") {
+      const answers = q.correctAnswer.split("|").map((s2) => s2.trim()).filter(Boolean);
+      if (answers.length > 1) {
+        selectionMode = "multiple";
+        maxSelections = answers.length;
+      }
+    }
+  }
+  const cleaned = { ...q };
+  if (q.questionType === "matching" && q.correctAnswer) {
+    try {
+      const config = JSON.parse(q.correctAnswer);
+      delete config.pairs;
+      if (!cleaned.options || typeof cleaned.options !== "object") {
+        cleaned.options = { items: config.items || [], options: config.options || [] };
+      }
+    } catch {
+    }
+  }
+  delete cleaned.correctAnswer;
+  delete cleaned.correct_answer;
+  delete cleaned.audioScript;
+  delete cleaned.audio_script;
+  delete cleaned.acceptedAnswers;
+  delete cleaned.accepted_answers;
+  delete cleaned.answerKey;
+  delete cleaned.answer_key;
+  cleaned.correctAnswer = null;
+  cleaned.audioScript = null;
+  cleaned.selectionMode = selectionMode;
+  cleaned.maxSelections = maxSelections;
+  cleaned.isMultiChoice = selectionMode === "multiple";
+  return cleaned;
+}
+function mapBandToArisRank(band) {
+  if (band < 3.5) {
+    return {
+      rankCode: 3,
+      rankTitle: "Rank 3 \u2014 Kh\u1EDFi N\u1EC1n (Starter)",
+      bandRange: "Band 2.5 \u2013 3.5",
+      recommendedCourse: {
+        slug: "starter",
+        title: "Kh\xF3a STARTER (X\xE2y N\u1EC1n Ph\xE1t \xC2m & C\xE2u \u0110\u01A1n)",
+        targetBand: "M\u1EE5c ti\xEAu: \u0110\u1EA1t chu\u1EA9n 3.5+",
+        level: "Beginner",
+        summary: "D\xE0nh cho ng\u01B0\u1EDDi m\u1EA5t g\u1ED1c ho\u1EB7c b\u1EAFt \u0111\u1EA7u l\u1EA1i t\u1EEB \u0111\u1EA7u. Hu\u1EA5n luy\u1EC7n 44 \xE2m IPA chu\u1EA9n x\xE1c, l\xE0m ch\u1EE7 c\u1EA5u tr\xFAc c\xE2u \u0111\u01A1n v\xE0 800 t\u1EEB v\u1EF1ng c\u1ED1t l\xF5i."
+      }
+    };
+  }
+  if (band <= 4.5) {
+    return {
+      rankCode: 4,
+      rankTitle: "Rank 4 \u2014 T\u1EADp S\u1EF1 (Dreamer)",
+      bandRange: "Band 4.0 \u2013 4.5",
+      recommendedCourse: {
+        slug: "dreamer",
+        title: "Kh\xF3a DREAMER (M\u1EDF R\u1ED9ng T\u1EEB V\u1EF1ng & Ph\u1EA3n X\u1EA1 Nghe)",
+        targetBand: "M\u1EE5c ti\xEAu: \u0110\u1EA1t chu\u1EA9n 4.5 \u2013 5.0",
+        level: "Elementary",
+        summary: "L\xE0m ch\u1EE7 c\u1EA5u tr\xFAc c\xE2u gh\xE9p, m\u1EC7nh \u0111\u1EC1 quan h\u1EC7 v\xE0 ng\u1EEF ph\xE1p th\xF4ng d\u1EE5ng. X\xE2y d\u1EF1ng ph\u1EA3n x\u1EA1 nghe hi\u1EC3u c\xE1c \u0111o\u1EA1n h\u1ED9i tho\u1EA1i th\u1EF1c t\u1EBF."
+      }
+    };
+  }
+  if (band <= 5.5) {
+    return {
+      rankCode: 5,
+      rankTitle: "Rank 5 \u2014 H\u1ECDc S\u0129 (Builder)",
+      bandRange: "Band 5.0 \u2013 5.5",
+      recommendedCourse: {
+        slug: "builder",
+        title: "Kh\xF3a BUILDER (L\xE0m Ch\u1EE7 C\xE2u Ph\u1EE9c & Ng\u1EEF Ph\xE1p H\u1ECDc Thu\u1EADt)",
+        targetBand: "M\u1EE5c ti\xEAu: \u0110\u1EA1t chu\u1EA9n 5.5 \u2013 6.0",
+        level: "Intermediate",
+        summary: "Hu\u1EA5n luy\u1EC7n chuy\xEAn s\xE2u v\u1EC1 c\u1EA5u tr\xFAc c\xE2u ph\u1EE9c nhi\u1EC1u m\u1EC7nh \u0111\u1EC1, c\xE1c th\xEC ho\xE0n th\xE0nh v\xE0 k\u1EF9 thu\u1EADt x\u1EED l\xFD b\xE0i \u0111\u1ECDc Cambridge h\u1ECDc thu\u1EADt."
+      }
+    };
+  }
+  if (band <= 6.5) {
+    return {
+      rankCode: 6,
+      rankTitle: "Rank 6 \u2014 H\u1ECDc S\u01B0 (Master)",
+      bandRange: "Band 6.0 \u2013 6.5",
+      recommendedCourse: {
+        slug: "master",
+        title: "Kh\xF3a MASTER (B\u1EE9t Ph\xE1 Writing Task 2 & Speaking)",
+        targetBand: "M\u1EE5c ti\xEAu: \u0110\u1EA1t chu\u1EA9n 6.5 \u2013 7.0",
+        level: "Upper-Intermediate",
+        summary: "R\xE8n luy\u1EC7n t\u01B0 duy l\u1EADp lu\u1EADn ph\u1EA3n bi\u1EC7n theo ph\u01B0\u01A1ng ph\xE1p The ARIS Way. B\xF3c t\xE1ch v\xE0 ho\xE0n thi\u1EC7n k\u1EF9 n\u0103ng vi\u1EBFt lu\u1EADn Task 2 v\xE0 n\xF3i Part 2-3."
+      }
+    };
+  }
+  return {
+    rankCode: 7,
+    rankTitle: "Rank 7 \u2014 H\u1ECDc Gi\u1EA3 (Leader)",
+    bandRange: "Band 7.0 \u2013 8.0+",
+    recommendedCourse: {
+      slug: "leader",
+      title: "Kh\xF3a LEADER (T\u1ED1i \u01AFu \u0110i\u1EC3m S\u1ED1 & \u0110\u1ED9 Nh\u1EA1y H\u1ECDc Thu\u1EADt)",
+      targetBand: "M\u1EE5c ti\xEAu: B\u1EE9t ph\xE1 7.5 \u2013 8.0+",
+      level: "Advanced",
+      summary: "Hu\u1EA5n luy\u1EC7n c\xF9ng Gi\u1EA3ng vi\xEAn 8.5+. Tinh ch\u1EC9nh \u0111\u1ED9 t\u1EF1 nhi\xEAn c\u1EE7a ng\xF4n ng\u1EEF, collocations cao c\u1EA5p v\xE0 chi\u1EBFn thu\u1EADt ph\xF2ng thi \u0111\u1EC9nh cao."
+    }
+  };
+}
+var AssessmentService = class {
+  constructor(prisma) {
+    this.prisma = prisma;
+  }
+  /**
+   * Rate limiting enforcement
+   */
+  checkRateLimits(ip, phone) {
+    const now = Date.now();
+    if (ip) {
+      const ipRecord = ipRateLimitMap.get(ip);
+      if (ipRecord && ipRecord.resetAt > now) {
+        if (ipRecord.count >= 10) {
+          const err = new Error("Qu\xE1 nhi\u1EC1u y\xEAu c\u1EA7u t\u1EEB \u0111\u1ECBa ch\u1EC9 IP n\xE0y. Vui l\xF2ng th\u1EED l\u1EA1i sau 1 ph\xFAt.");
+          err.statusCode = 429;
+          throw err;
+        }
+        ipRecord.count++;
+      } else {
+        ipRateLimitMap.set(ip, { count: 1, resetAt: now + 6e4 });
+      }
+    }
+    if (phone) {
+      const phoneRecord = phoneRateLimitMap.get(phone);
+      if (phoneRecord && phoneRecord.resetAt > now) {
+        if (phoneRecord.count >= 5) {
+          const err = new Error("S\u1ED1 \u0111i\u1EC7n tho\u1EA1i n\xE0y \u0111\xE3 t\u1EA1o qu\xE1 nhi\u1EC1u l\u01B0\u1EE3t kh\u1EA3o th\xED trong th\u1EDDi gian ng\u1EAFn. Vui l\xF2ng ki\u1EC3m tra l\u1EA1i ho\u1EB7c li\xEAn h\u1EC7 Hotline 0933.319.693.");
+          err.statusCode = 429;
+          throw err;
+        }
+        phoneRecord.count++;
+      } else {
+        phoneRateLimitMap.set(phone, { count: 1, resetAt: now + 6e5 });
+      }
+    }
+  }
+  /**
+   * Resolve appropriate exam for Placement Assessment
+   */
+  async resolveAssessmentExam(assessmentCode, examId) {
+    if (examId) {
+      const exam = await this.prisma.exam.findUnique({
+        where: { id: examId }
+      });
+      if (exam && exam.isPublished && exam.isActive) {
+        return exam;
+      }
+    }
+    const dynamicExam = await this.prisma.exam.findFirst({
+      where: {
+        OR: [
+          { allowGuestAssessment: true },
+          { title: { contains: "ENTRANCE", mode: "insensitive" } },
+          { title: { contains: "PLACEMENT", mode: "insensitive" } },
+          { isOpen: true }
+        ],
+        isPublished: true,
+        isActive: true
+      },
+      orderBy: { createdAt: "desc" }
+    });
+    if (dynamicExam) {
+      return dynamicExam;
+    }
+    const fallbackExam = await this.prisma.exam.findFirst({
+      where: { isPublished: true, isActive: true },
+      orderBy: { createdAt: "desc" }
+    });
+    if (!fallbackExam) {
+      const err = new Error("H\u1EC7 th\u1ED1ng ph\xF2ng thi kh\u1EA3o th\xED \u0111ang b\u1EA3o tr\xEC c\u1EADp nh\u1EADt b\u1ED9 \u0111\u1EC1. Vui l\xF2ng quay l\u1EA1i sau.");
+      err.statusCode = 503;
+      throw err;
+    }
+    return fallbackExam;
+  }
+  /**
+   * Create an Assessment Session
+   */
+  async createAssessmentSession(params) {
+    const cleanName = params.fullName?.trim();
+    const cleanPhone = params.phone?.trim().replace(/\s+/g, "");
+    if (!cleanName || cleanName.length < 2) {
+      const err = new Error("H\u1ECD v\xE0 t\xEAn th\xED sinh ph\u1EA3i c\xF3 \xEDt nh\u1EA5t 2 k\xFD t\u1EF1");
+      err.statusCode = 400;
+      throw err;
+    }
+    if (!cleanPhone || cleanPhone.length < 9) {
+      const err = new Error("S\u1ED1 \u0111i\u1EC7n tho\u1EA1i kh\xF4ng h\u1EE3p l\u1EC7 (t\u1ED1i thi\u1EC3u 9 s\u1ED1)");
+      err.statusCode = 400;
+      throw err;
+    }
+    this.checkRateLimits(params.ipAddress || "", cleanPhone);
+    const exam = await this.resolveAssessmentExam(params.assessmentCode, params.examId);
+    const durationMinutes = Math.max(15, exam.durationMinutes || 45);
+    const now = /* @__PURE__ */ new Date();
+    const expiresAt = new Date(now.getTime() + (durationMinutes + 20) * 60 * 1e3);
+    const sessionId = crypto.randomUUID();
+    const sessionData = {
+      id: sessionId,
+      examId: exam.id,
+      fullName: cleanName,
+      phone: cleanPhone,
+      targetBand: params.targetBand || "Ch\u01B0a x\xE1c \u0111\u1ECBnh",
+      status: "ACTIVE",
+      answers: {},
+      result: null,
+      startedAt: now,
+      expiresAt,
+      submittedAt: null,
+      ipAddress: params.ipAddress || null,
+      createdAt: now,
+      updatedAt: now
+    };
+    try {
+      if (this.prisma.assessmentSession) {
+        await this.prisma.assessmentSession.create({
+          data: {
+            id: sessionData.id,
+            examId: sessionData.examId,
+            fullName: sessionData.fullName,
+            phone: sessionData.phone,
+            targetBand: sessionData.targetBand,
+            status: sessionData.status,
+            answers: sessionData.answers,
+            startedAt: sessionData.startedAt,
+            expiresAt: sessionData.expiresAt,
+            ipAddress: sessionData.ipAddress
+          }
+        });
+      }
+    } catch (dbErr) {
+      console.warn("[AssessmentService] DB Session store notice:", dbErr);
+    }
+    inMemoryAssessmentSessions.set(sessionId, sessionData);
+    try {
+      const goalText = `Thi th\u1EED 4 k\u1EF9 n\u0103ng Online | \u0110\u1EC1: ${exam.title} | M\u1EE5c ti\xEAu: ${sessionData.targetBand}`;
+      await this.prisma.contactLead.create({
+        data: {
+          fullName: cleanName,
+          phone: cleanPhone,
+          goal: goalText,
+          source: "assessment_bubble_entrance_test",
+          notes: `Session ID: ${sessionId} | Exam ID: ${exam.id}`
+        }
+      });
+    } catch (leadErr) {
+      console.warn("[AssessmentService] Contact lead recording notice:", leadErr);
+    }
+    return { session: sessionData, exam };
+  }
+  /**
+   * Find an existing Assessment Session by ID
+   */
+  async getSessionById(sessionId) {
+    if (!sessionId) return null;
+    const mem = inMemoryAssessmentSessions.get(sessionId);
+    if (mem) return mem;
+    try {
+      if (this.prisma.assessmentSession) {
+        const dbSession = await this.prisma.assessmentSession.findUnique({
+          where: { id: sessionId }
+        });
+        if (dbSession) {
+          inMemoryAssessmentSessions.set(sessionId, dbSession);
+          return dbSession;
+        }
+      }
+    } catch (err) {
+      console.warn("[AssessmentService] DB fetch session notice:", err);
+    }
+    return null;
+  }
+  /**
+   * Load clean exam for guest assessment session
+   */
+  async getExamForSession(sessionId, examId) {
+    const session = await this.getSessionById(sessionId);
+    if (!session) {
+      const err = new Error("Phi\xEAn kh\u1EA3o th\xED kh\xF4ng t\u1ED3n t\u1EA1i ho\u1EB7c \u0111\xE3 h\u1EBFt h\u1EA1n");
+      err.statusCode = 404;
+      throw err;
+    }
+    if (session.examId !== examId) {
+      const err = new Error("T\u1EEB ch\u1ED1i truy c\u1EADp: Phi\xEAn kh\u1EA3o th\xED n\xE0y kh\xF4ng thu\u1ED9c v\u1EC1 b\xE0i thi y\xEAu c\u1EA7u");
+      err.statusCode = 403;
+      throw err;
+    }
+    if (new Date(session.expiresAt).getTime() < Date.now()) {
+      session.status = "EXPIRED";
+      const err = new Error("Phi\xEAn kh\u1EA3o th\xED c\u1EE7a b\u1EA1n \u0111\xE3 h\u1EBFt th\u1EDDi gian l\xE0m b\xE0i");
+      err.statusCode = 403;
+      throw err;
+    }
+    const exam = await this.prisma.exam.findUnique({
+      where: { id: examId },
+      include: {
+        course: { select: { id: true, title: true } },
+        sections: {
+          orderBy: { orderIndex: "asc" },
+          include: {
+            questionGroups: {
+              orderBy: { orderIndex: "asc" },
+              include: {
+                questions: { orderBy: { orderIndex: "asc" } }
+              }
+            }
+          }
+        }
+      }
+    });
+    if (!exam || !exam.isPublished || !exam.isActive) {
+      const err = new Error("B\xE0i thi kh\xF4ng kh\u1EA3 d\u1EE5ng ho\u1EB7c \u0111\xE3 b\u1ECB \u1EA9n");
+      err.statusCode = 404;
+      throw err;
+    }
+    const formattedSections = exam.sections.map((section) => ({
+      ...section,
+      audioUrl: toFileUrl(section.audioUrl),
+      audioScript: void 0,
+      questionGroups: section.questionGroups.map((group) => ({
+        ...group,
+        audioUrl: toFileUrl(group.audioUrl),
+        questions: group.questions.map((q) => {
+          const formatted = {
+            ...q,
+            audioUrl: toFileUrl(q.audioUrl)
+          };
+          return cleanAssessmentQuestion(formatted);
+        })
+      }))
+    }));
+    const remainingSeconds = Math.max(0, Math.floor((new Date(session.expiresAt).getTime() - Date.now()) / 1e3));
+    return {
+      ...exam,
+      sections: formattedSections,
+      sessionRemainingSeconds: remainingSeconds,
+      candidate: {
+        fullName: session.fullName,
+        phone: session.phone,
+        targetBand: session.targetBand
+      }
+    };
+  }
+  /**
+   * Autosave answers for active assessment session
+   */
+  async autosaveAnswers(sessionId, answers) {
+    const session = await this.getSessionById(sessionId);
+    if (!session) {
+      const err = new Error("Phi\xEAn kh\u1EA3o th\xED kh\xF4ng t\u1ED3n t\u1EA1i");
+      err.statusCode = 404;
+      throw err;
+    }
+    if (session.status === "SUBMITTED") {
+      const err = new Error("B\xE0i kh\u1EA3o th\xED \u0111\xE3 \u0111\u01B0\u1EE3c n\u1ED9p. Kh\xF4ng th\u1EC3 l\u01B0u th\xEAm thay \u0111\u1ED5i.");
+      err.statusCode = 409;
+      throw err;
+    }
+    if (new Date(session.expiresAt).getTime() < Date.now()) {
+      session.status = "EXPIRED";
+      const err = new Error("Phi\xEAn l\xE0m b\xE0i \u0111\xE3 h\u1EBFt h\u1EA1n");
+      err.statusCode = 403;
+      throw err;
+    }
+    session.answers = answers || {};
+    session.updatedAt = /* @__PURE__ */ new Date();
+    inMemoryAssessmentSessions.set(sessionId, session);
+    try {
+      if (this.prisma.assessmentSession) {
+        await this.prisma.assessmentSession.update({
+          where: { id: sessionId },
+          data: {
+            answers: session.answers,
+            updatedAt: session.updatedAt
+          }
+        });
+      }
+    } catch (dbErr) {
+      console.warn("[AssessmentService] DB Autosave notice:", dbErr);
+    }
+    return { success: true, savedAt: session.updatedAt.toISOString() };
+  }
+  /**
+   * Submit and Grade Assessment Exam
+   */
+  async submitAssessment(sessionId, answersPayload) {
+    const session = await this.getSessionById(sessionId);
+    if (!session) {
+      const err = new Error("Phi\xEAn kh\u1EA3o th\xED kh\xF4ng t\u1ED3n t\u1EA1i");
+      err.statusCode = 404;
+      throw err;
+    }
+    if (session.status === "SUBMITTED") {
+      const err = new Error("B\xE0i kh\u1EA3o th\xED n\xE0y \u0111\xE3 \u0111\u01B0\u1EE3c n\u1ED9p tr\u01B0\u1EDBc \u0111\xF3");
+      err.statusCode = 409;
+      throw err;
+    }
+    if (new Date(session.expiresAt).getTime() < Date.now() - 6e4) {
+      session.status = "EXPIRED";
+      const err = new Error("Phi\xEAn l\xE0m b\xE0i \u0111\xE3 h\u1EBFt h\u1EA1n. Kh\xF4ng th\u1EC3 n\u1ED9p b\xE0i.");
+      err.statusCode = 403;
+      throw err;
+    }
+    const examWithKeys = await this.prisma.exam.findUnique({
+      where: { id: session.examId },
+      include: {
+        sections: {
+          orderBy: { orderIndex: "asc" },
+          include: {
+            questionGroups: {
+              orderBy: { orderIndex: "asc" },
+              include: {
+                questions: { orderBy: { orderIndex: "asc" } }
+              }
+            }
+          }
+        }
+      }
+    });
+    if (!examWithKeys) {
+      const err = new Error("Kh\xF4ng t\xECm th\u1EA5y th\xF4ng tin \u0111\u1EC1 thi \u0111\u1EC3 ch\u1EA5m \u0111i\u1EC3m");
+      err.statusCode = 404;
+      throw err;
+    }
+    let answerEntries = [];
+    if (Array.isArray(answersPayload)) {
+      answerEntries = answersPayload;
+    } else if (answersPayload && typeof answersPayload === "object") {
+      answerEntries = Object.entries(answersPayload).map(([questionId, val]) => ({
+        questionId,
+        answerText: typeof val === "string" ? val : JSON.stringify(val),
+        audioUrl: typeof val === "string" && (val.startsWith("http://") || val.startsWith("https://") || val.startsWith("/uploads/")) ? val : void 0
+      }));
+    }
+    const gradingSummary = canonicalScoringService.evaluateExamAttempt(examWithKeys, answerEntries);
+    const correctCount = gradingSummary.correctAnswers || 0;
+    const totalCount = Math.max(1, gradingSummary.totalQuestions || 40);
+    const accuracy = Math.round(correctCount / totalCount * 100);
+    const normalized40Equivalent = correctCount / totalCount * 40;
+    let bandScore = 3;
+    if (normalized40Equivalent >= 39) bandScore = 9;
+    else if (normalized40Equivalent >= 37) bandScore = 8.5;
+    else if (normalized40Equivalent >= 35) bandScore = 8;
+    else if (normalized40Equivalent >= 32) bandScore = 7.5;
+    else if (normalized40Equivalent >= 30) bandScore = 7;
+    else if (normalized40Equivalent >= 26) bandScore = 6.5;
+    else if (normalized40Equivalent >= 23) bandScore = 6;
+    else if (normalized40Equivalent >= 18) bandScore = 5.5;
+    else if (normalized40Equivalent >= 15) bandScore = 5;
+    else if (normalized40Equivalent >= 12) bandScore = 4.5;
+    else if (normalized40Equivalent >= 9) bandScore = 4;
+    else if (normalized40Equivalent >= 6) bandScore = 3.5;
+    else bandScore = 3;
+    const rankInfo = mapBandToArisRank(bandScore);
+    const strengths = [];
+    const weaknesses = [];
+    if (accuracy >= 75) {
+      strengths.push("N\u1EAFm v\u1EEFng k\u1EF9 n\u0103ng \u0111\u1ECBnh v\u1ECB th\xF4ng tin (Scanning & Skimming) trong \u0111o\u1EA1n v\u0103n h\u1ECDc thu\u1EADt.");
+      strengths.push("Nh\u1EADn di\u1EC7n ch\xEDnh x\xE1c t\u1EEB \u0111\u1ED3ng ngh\u0129a (Paraphrasing) gi\u1EEFa c\xE2u h\u1ECFi v\xE0 b\xE0i \u0111\u1ECDc/nghe.");
+      strengths.push("T\u1ED1c \u0111\u1ED9 x\u1EED l\xFD c\xE2u h\u1ECFi nhanh, ph\u1EA3n x\u1EA1 ng\u1EEF ph\xE1p v\xE0 t\u1EEB v\u1EF1ng t\u1EF1 nhi\xEAn.");
+    } else if (accuracy >= 50) {
+      strengths.push("L\xE0m t\u1ED1t c\xE1c c\xE2u h\u1ECFi t\xECm chi ti\u1EBFt c\u1EE5 th\u1EC3 \u1EDF m\u1EE9c \u0111\u1ED9 th\xF4ng tin tr\u1EF1c ti\u1EBFp.");
+      strengths.push("C\xF3 v\u1ED1n t\u1EEB v\u1EF1ng c\u01A1 b\u1EA3n v\u1EEFng v\xE0ng, hi\u1EC3u \u0111\u01B0\u1EE3c \xFD ch\xEDnh c\u1EE7a t\u1EEBng \u0111o\u1EA1n v\u0103n/h\u1ED9i tho\u1EA1i.");
+      weaknesses.push("C\xF2n l\xFAng t\xFAng khi g\u1EB7p c\xE1c c\xE2u h\u1ECFi suy lu\u1EADn logic (Inference / True-False-Not Given).");
+      weaknesses.push("T\u1ED1c \u0111\u1ED9 \u0111\u1ECDc/nghe c\xF2n ch\u1EADm \u1EDF c\xE1c \u0111o\u1EA1n c\xF3 c\u1EA5u tr\xFAc c\xE2u ph\u1EE9c v\xE0 nhi\u1EC1u thu\u1EADt ng\u1EEF.");
+    } else {
+      strengths.push("C\xF3 tinh th\u1EA7n r\xE8n luy\u1EC7n t\u1ED1t, ki\xEAn tr\xEC ho\xE0n th\xE0nh b\xE0i kh\u1EA3o th\xED.");
+      weaknesses.push("V\u1ED1n t\u1EEB v\u1EF1ng h\u1ECDc thu\u1EADt c\xF2n h\u1EA1n ch\u1EBF, g\u1EB7p kh\xF3 kh\u0103n khi b\xE0i \u0111\u1ED5i t\u1EEB \u0111\u1ED3ng ngh\u0129a.");
+      weaknesses.push("Ch\u01B0a l\xE0m ch\u1EE7 ng\u1EEF ph\xE1p c\xE2u ph\u1EE9c, d\u1EC5 b\u1ECB b\u1EABy \u1EDF c\xE1c c\xE2u h\u1ECFi ph\u1EE7 \u0111\u1ECBnh v\xE0 quan h\u1EC7 logic.");
+      weaknesses.push("C\u1EA7n c\u1EE7ng c\u1ED1 l\u1EA1i ph\u01B0\u01A1ng ph\xE1p x\xE2y n\u1EC1n t\u1EEB g\u1ED1c tr\u01B0\u1EDBc khi luy\u1EC7n gi\u1EA3i \u0111\u1EC1 Cambridge n\xE2ng cao.");
+    }
+    const reportData = {
+      id: sessionId,
+      candidateName: session.fullName,
+      phone: session.phone,
+      examTitle: examWithKeys.title,
+      sectionType: "IELTS 4 K\u1EF9 N\u0103ng & Ng\u1EEF Ph\xE1p (Chu\u1EA9n Cambridge)",
+      rawScore: correctCount,
+      totalQuestions: totalCount,
+      accuracyPercent: accuracy,
+      ieltsBandScore: bandScore,
+      rankCode: rankInfo.rankCode,
+      rankTitle: rankInfo.rankTitle,
+      bandRange: rankInfo.bandRange,
+      strengths,
+      weaknesses,
+      recommendedCourse: rankInfo.recommendedCourse,
+      submittedAt: (/* @__PURE__ */ new Date()).toISOString()
+    };
+    session.status = "SUBMITTED";
+    session.submittedAt = /* @__PURE__ */ new Date();
+    session.result = reportData;
+    session.answers = answersPayload;
+    inMemoryAssessmentSessions.set(sessionId, session);
+    try {
+      if (this.prisma.assessmentSession) {
+        await this.prisma.assessmentSession.update({
+          where: { id: sessionId },
+          data: {
+            status: "SUBMITTED",
+            submittedAt: session.submittedAt,
+            result: reportData,
+            answers: answersPayload
+          }
+        });
+      }
+    } catch (dbErr) {
+      console.warn("[AssessmentService] DB Submit notice:", dbErr);
+    }
+    try {
+      await this.prisma.contactLead.updateMany({
+        where: { notes: { contains: sessionId } },
+        data: {
+          notes: `Session ID: ${sessionId} | Band: ${bandScore} | Rank: ${rankInfo.rankTitle}`
+        }
+      });
+    } catch (leadUpdateErr) {
+      console.warn("[AssessmentService] Contact lead status update notice:", leadUpdateErr);
+    }
+    return reportData;
+  }
+};
+
+// server/routes/assessment.routes.ts
+var assessmentRoutes = async (fastify) => {
+  const assessmentService = new AssessmentService(fastify.prisma);
+  const resolveAssessmentCredential = async (request, reply) => {
+    let token;
+    const authHeader = request.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.slice(7).trim();
+    }
+    if (!token && request.headers["x-assessment-token"]) {
+      token = String(request.headers["x-assessment-token"]).trim();
+    }
+    if (!token && request.cookies?.nb_assessment_token) {
+      token = request.cookies.nb_assessment_token;
+    }
+    if (!token) {
+      reply.status(401).send({
+        error: "Unauthorized",
+        message: "Y\xEAu c\u1EA7u phi\xEAn kh\u1EA3o th\xED h\u1EE3p l\u1EC7 (Thi\u1EBFu token kh\u1EA3o th\xED)"
+      });
+      return null;
+    }
+    try {
+      const decoded = fastify.jwt.verify(token);
+      if (!decoded || decoded.type !== "assessment_guest" || !decoded.sessionId) {
+        reply.status(401).send({
+          error: "Unauthorized",
+          message: "Token kh\u1EA3o th\xED kh\xF4ng h\u1EE3p l\u1EC7 ho\u1EB7c \u0111\xE3 b\u1ECB s\u1EEDa \u0111\u1ED5i"
+        });
+        return null;
+      }
+      return decoded;
+    } catch (err) {
+      reply.status(401).send({
+        error: "Unauthorized",
+        message: "Phi\xEAn kh\u1EA3o th\xED \u0111\xE3 h\u1EBFt h\u1EA1n ho\u1EB7c kh\xF4ng h\u1EE3p l\u1EC7"
+      });
+      return null;
+    }
+  };
+  fastify.post(
+    "/sessions",
+    {
+      config: {
+        rateLimit: {
+          max: 10,
+          timeWindow: "1 minute"
+        }
+      }
+    },
+    async (request, reply) => {
+      try {
+        const ip = request.headers["x-forwarded-for"]?.split(",")[0]?.trim() || request.ip || "";
+        const { session, exam } = await assessmentService.createAssessmentSession({
+          ...request.body,
+          ipAddress: ip
+        });
+        const token = fastify.jwt.sign(
+          {
+            type: "assessment_guest",
+            sessionId: session.id,
+            examId: session.examId
+          },
+          { expiresIn: "3h" }
+        );
+        reply.header(
+          "Set-Cookie",
+          `nb_assessment_token=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=10800${env2.NODE_ENV === "production" ? "; Secure" : ""}`
+        );
+        return reply.status(201).send({
+          success: true,
+          sessionId: session.id,
+          examId: session.examId,
+          examTitle: exam.title,
+          durationMinutes: exam.durationMinutes || 45,
+          token,
+          expiresAt: session.expiresAt,
+          candidate: {
+            fullName: session.fullName,
+            phone: session.phone,
+            targetBand: session.targetBand
+          }
+        });
+      } catch (err) {
+        const statusCode = err.statusCode || 500;
+        return reply.status(statusCode).send({
+          error: err.message || "Kh\xF4ng th\u1EC3 kh\u1EDFi t\u1EA1o phi\xEAn kh\u1EA3o th\xED"
+        });
+      }
+    }
+  );
+  fastify.get("/exams/:id", async (request, reply) => {
+    const cred = await resolveAssessmentCredential(request, reply);
+    if (!cred) return;
+    try {
+      const examData = await assessmentService.getExamForSession(
+        cred.sessionId,
+        request.params.id
+      );
+      return reply.send(examData);
+    } catch (err) {
+      const statusCode = err.statusCode || 500;
+      return reply.status(statusCode).send({
+        error: err.message || "Kh\xF4ng th\u1EC3 t\u1EA3i \u0111\u1EC1 thi kh\u1EA3o th\xED"
+      });
+    }
+  });
+  fastify.put(
+    "/sessions/:id/autosave",
+    async (request, reply) => {
+      const cred = await resolveAssessmentCredential(request, reply);
+      if (!cred) return;
+      if (cred.sessionId !== request.params.id) {
+        return reply.status(403).send({
+          error: "Forbidden",
+          message: "T\u1EEB ch\u1ED1i truy c\u1EADp: Token kh\xF4ng kh\u1EDBp v\u1EDBi phi\xEAn l\xE0m b\xE0i"
+        });
+      }
+      try {
+        const result = await assessmentService.autosaveAnswers(
+          request.params.id,
+          request.body?.answers
+        );
+        return reply.send(result);
+      } catch (err) {
+        const statusCode = err.statusCode || 500;
+        return reply.status(statusCode).send({
+          error: err.message || "Kh\xF4ng th\u1EC3 l\u01B0u b\xE0i l\xE0m"
+        });
+      }
+    }
+  );
+  fastify.post(
+    "/sessions/:id/submit",
+    async (request, reply) => {
+      const cred = await resolveAssessmentCredential(request, reply);
+      if (!cred) return;
+      if (cred.sessionId !== request.params.id) {
+        return reply.status(403).send({
+          error: "Forbidden",
+          message: "T\u1EEB ch\u1ED1i truy c\u1EADp: Token kh\xF4ng kh\u1EDBp v\u1EDBi phi\xEAn l\xE0m b\xE0i"
+        });
+      }
+      try {
+        const report = await assessmentService.submitAssessment(
+          request.params.id,
+          request.body?.answers
+        );
+        return reply.send({
+          success: true,
+          result: report
+        });
+      } catch (err) {
+        const statusCode = err.statusCode || 500;
+        return reply.status(statusCode).send({
+          error: err.message || "Kh\xF4ng th\u1EC3 n\u1ED9p b\xE0i kh\u1EA3o th\xED"
+        });
+      }
+    }
+  );
+  fastify.get("/results/:id", async (request, reply) => {
+    const cred = await resolveAssessmentCredential(request, reply);
+    if (!cred) return;
+    if (cred.sessionId !== request.params.id) {
+      return reply.status(403).send({
+        error: "Forbidden",
+        message: "T\u1EEB ch\u1ED1i truy c\u1EADp: B\u1EA1n kh\xF4ng c\xF3 quy\u1EC1n xem k\u1EBFt qu\u1EA3 c\u1EE7a phi\xEAn kh\u1EA3o th\xED n\xE0y"
+      });
+    }
+    const session = await assessmentService.getSessionById(request.params.id);
+    if (!session) {
+      return reply.status(404).send({ error: "Kh\xF4ng t\xECm th\u1EA5y k\u1EBFt qu\u1EA3 b\xE0i kh\u1EA3o th\xED" });
+    }
+    if (!session.result) {
+      return reply.status(400).send({
+        error: "B\xE0i kh\u1EA3o th\xED n\xE0y ch\u01B0a \u0111\u01B0\u1EE3c n\u1ED9p ho\u1EB7c ch\u01B0a c\xF3 k\u1EBFt qu\u1EA3"
+      });
+    }
+    return reply.send(session.result);
+  });
+};
+var assessment_routes_default = assessmentRoutes;
+
 // server/routes/index.ts
 var routes = async (fastify) => {
   fastify.get("/health", async () => {
@@ -113067,6 +113785,7 @@ var routes = async (fastify) => {
     };
   });
   await fastify.register(auth_routes_default, { prefix: "/auth" });
+  await fastify.register(assessment_routes_default, { prefix: "/assessment" });
   await fastify.register(courses_routes_default, { prefix: "/courses" });
   await fastify.register(exams_routes_default, { prefix: "/exams" });
   await fastify.register(sections_routes_default, { prefix: "/sections" });

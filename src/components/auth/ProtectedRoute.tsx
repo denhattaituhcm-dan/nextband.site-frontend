@@ -27,7 +27,11 @@ export function ProtectedRoute({
     );
   }
 
-  if (!user) {
+  const searchParams = new URLSearchParams(location.search);
+  const isAssessment = searchParams.get("isAssessment") === "true";
+  const isExamRoute = location.pathname.startsWith("/exam/");
+
+  if (!user && !(isExamRoute && isAssessment)) {
     return <Navigate to={redirectTo} state={{ from: location }} replace />;
   }
 

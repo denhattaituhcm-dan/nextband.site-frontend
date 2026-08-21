@@ -3658,6 +3658,152 @@ export const notificationsApi = {
   },
 };
 
+export const getAssessmentToken = (): string | null => {
+  if (typeof window === "undefined") return null;
+  return sessionStorage.getItem("nb_assessment_token") || localStorage.getItem("nb_assessment_token") || null;
+};
+
+export const setAssessmentToken = (token: string) => {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem("nb_assessment_token", token);
+  localStorage.setItem("nb_assessment_token", token);
+};
+
+export const assessmentApi = {
+  createSession: async (payload: {
+    fullName: string;
+    phone: string;
+    targetBand?: string;
+    assessmentCode?: string;
+    examId?: string;
+  }) => {
+    const res = await fetch(`${API_BASE_URL}/assessment/sessions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.token) {
+        setAssessmentToken(data.token);
+      }
+      return data as {
+        success: boolean;
+        sessionId: string;
+        examId: string;
+        examTitle: string;
+        durationMinutes: number;
+        token: string;
+        expiresAt: string;
+        candidate: {
+          fullName: string;
+          phone: string;
+          targetBand: string;
+        };
+      };
+    }
+
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || err.message || "Không thể khởi tạo phiên khảo thí");
+  },
+
+  getExam: async (examId: string, customToken?: string) => {
+    const token = customToken || getAssessmentToken();
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+      headers["x-assessment-token"] = token;
+    }
+
+    const res = await fetch(`${API_BASE_URL}/assessment/exams/${examId}`, {
+      headers,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      return normalizeExamData(data);
+    }
+
+    const err = await res.json().catch(() => ({}));
+    const message =
+      err.message ||
+      err.error ||
+      (res.status === 401
+        ? "Phiên khảo thí không hợp lệ hoặc đã hết hạn"
+        : res.status === 403
+        ? "Từ chối truy cập đề thi khảo thí"
+        : "Không thể tải đề thi");
+    const errorObj = new Error(message);
+    (errorObj as any).httpStatus = res.status;
+    throw errorObj;
+  },
+
+  autosave: async (sessionId: string, answers: any, customToken?: string) => {
+    const token = customToken || getAssessmentToken();
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+      headers["x-assessment-token"] = token;
+    }
+
+    const res = await fetch(`${API_BASE_URL}/assessment/sessions/${sessionId}/autosave`, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify({ answers }),
+    });
+
+    if (res.ok) {
+      return res.json();
+    }
+
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || err.error || "Không thể lưu nháp bài khảo thí");
+  },
+
+  submit: async (sessionId: string, answers: any, customToken?: string) => {
+    const token = customToken || getAssessmentToken();
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+      headers["x-assessment-token"] = token;
+    }
+
+    const res = await fetch(`${API_BASE_URL}/assessment/sessions/${sessionId}/submit`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ answers }),
+    });
+
+    if (res.ok) {
+      return res.json();
+    }
+
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || err.error || "Không thể nộp bài khảo thí");
+  },
+
+  getResult: async (sessionId: string, customToken?: string) => {
+    const token = customToken || getAssessmentToken();
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+      headers["x-assessment-token"] = token;
+    }
+
+    const res = await fetch(`${API_BASE_URL}/assessment/results/${sessionId}`, {
+      headers,
+    });
+
+    if (res.ok) {
+      return res.json();
+    }
+
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || err.error || "Không thể tải kết quả bài khảo thí");
+  },
+};
+
 export interface StudentWorkspaceViewModel {
   state: "NO_ENROLLMENT" | "PENDING_ACTIVATION" | "SUSPENDED_STUDENT" | "ACTIVE_STUDENT";
   student: { id: string; email: string; fullName: string; avatarUrl?: string };

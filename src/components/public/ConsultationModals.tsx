@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { CheckCircle2, AlertCircle, Compass, ShieldCheck, BookOpen, Send, ArrowRight, Play, FileCheck } from "lucide-react";
 import { submitContactLead } from "@/lib/contactService";
+import { assessmentApi } from "@/lib/api";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 // Common Modal Props
@@ -199,8 +200,6 @@ export function RoadmapConsultationModal({ isOpen, onOpenChange }: ModalBaseProp
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
                     <SelectItem value="Chưa xác định">Chưa xác định (Cần định hướng)</SelectItem>
-                    <SelectItem value="3.0">Mục tiêu 3.0</SelectItem>
-                    <SelectItem value="4.0">Mục tiêu 4.0</SelectItem>
                     <SelectItem value="5.0">Mục tiêu 5.0</SelectItem>
                     <SelectItem value="6.0">Mục tiêu 6.0</SelectItem>
                     <SelectItem value="6.5">Mục tiêu 6.5</SelectItem>
@@ -240,20 +239,29 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
   const [loading, setLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const ENTRANCE_TEST_EXAM_ID = "cce291f7-d88b-4976-8ed3-cc21daca7023";
+  const [activeSession, setActiveSession] = useState<{
+    sessionId: string;
+    examId: string;
+    examTitle: string;
+    durationMinutes: number;
+  } | null>(null);
 
   const handleClose = () => {
     onOpenChange(false);
     setTimeout(() => {
       setIsSubmitted(false);
       setErrorMessage(null);
+      setActiveSession(null);
     }, 200);
   };
 
   const handleStartExam = () => {
     handleClose();
-    navigate(`/exam/${ENTRANCE_TEST_EXAM_ID}?isAssessment=true`);
+    if (activeSession) {
+      navigate(`/exam/${activeSession.examId}?isAssessment=true&sessionId=${activeSession.sessionId}`);
+    } else {
+      navigate(`/assessment`);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -267,29 +275,29 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
     setErrorMessage(null);
 
     try {
-      const res = await submitContactLead({
-        leadType: "ASSESSMENT",
+      // 1. Dynamic Assessment Session Initialization (Backend resolves exam & issues session credential)
+      const sessionRes = await assessmentApi.createSession({
+        assessmentCode: "PLACEMENT_TEST",
         fullName: cleanName,
         phone: cleanPhone,
-        goal: `Thi thử IELTS 4 Kỹ Năng Online (Entrance Test) | Mục tiêu: ${targetBand}`,
-        source: "bubble_assessment_test",
-        metadata: {
-          intent: "online_4skills_entrance_test",
-          targetBand,
-          examId: ENTRANCE_TEST_EXAM_ID,
-        },
+        targetBand,
       });
 
-      if (res.success) {
+      if (sessionRes?.sessionId) {
+        setActiveSession({
+          sessionId: sessionRes.sessionId,
+          examId: sessionRes.examId,
+          examTitle: sessionRes.examTitle || "IELTS Entrance Test (4 Skills)",
+          durationMinutes: sessionRes.durationMinutes || 45,
+        });
         setIsSubmitted(true);
       } else {
-        // Even if network lead save had issues, let candidate proceed to exam
         setIsSubmitted(true);
       }
     } catch (err: any) {
-      console.error("Assessment lead submission error:", err);
-      // Allow them to proceed to test anyway
-      setIsSubmitted(true);
+      console.error("Assessment session initialization error:", err);
+      // Resilient fallback: let candidate proceed to assessment portal
+      setErrorMessage(err.message || "Không thể kết nối máy chủ. Vui lòng thử lại hoặc liên hệ Zalo.");
     } finally {
       setLoading(false);
     }
@@ -343,13 +351,10 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
 
               <Button
                 variant="outline"
-                onClick={() => {
-                  handleClose();
-                  navigate("/assessment");
-                }}
+                onClick={handleClose}
                 className="w-full h-10 rounded-xl font-bold text-xs border border-border hover:bg-muted"
               >
-                Xem Toàn Bộ Cổng Khảo Thí
+                Huỷ
               </Button>
             </div>
           </div>
@@ -429,8 +434,6 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
                     <SelectItem value="Chưa xác định">Chưa xác định (Cần định hướng)</SelectItem>
-                    <SelectItem value="3.0">Mục tiêu 3.0</SelectItem>
-                    <SelectItem value="4.0">Mục tiêu 4.0</SelectItem>
                     <SelectItem value="5.0">Mục tiêu 5.0</SelectItem>
                     <SelectItem value="6.0">Mục tiêu 6.0</SelectItem>
                     <SelectItem value="6.5">Mục tiêu 6.5</SelectItem>
@@ -469,7 +472,7 @@ export function TrialClassModal({ isOpen, onOpenChange }: ModalBaseProps) {
   const [phone, setPhone] = useState("");
   const [learningMode, setLearningMode] = useState<"offline" | "online">("offline");
   const [course, setCourse] = useState("STARTER (Mất gốc → 3.0)");
-  const [schedule, setSchedule] = useState("Tối Thứ 2 - 4 - 6 (18:30 - 20:30)");
+  const [schedule, setSchedule] = useState("Tối Thứ 2 - 4 - 6 (Ca 1: 17:30 - 19:30)");
   const [loading, setLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -692,9 +695,12 @@ export function TrialClassModal({ isOpen, onOpenChange }: ModalBaseProps) {
                     <SelectValue placeholder="Chọn ca học" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
-                    <SelectItem value="Tối Thứ 2 - 4 - 6 (18:30 - 20:30)">Tối Thứ 2 - 4 - 6 (18:30 - 20:30)</SelectItem>
-                    <SelectItem value="Tối Thứ 3 - 5 - 7 (18:30 - 20:30)">Tối Thứ 3 - 5 - 7 (18:30 - 20:30)</SelectItem>
-                    <SelectItem value="Sáng / Chiều Cuối tuần (T7 - CN)">Cuối tuần (Thứ 7 - Chủ Nhật)</SelectItem>
+                    <SelectItem value="Tối Thứ 2 - 4 - 6 (Ca 1: 17:30 - 19:30)">Tối Thứ 2 - 4 - 6 (Ca 1: 17:30 - 19:30)</SelectItem>
+                    <SelectItem value="Tối Thứ 2 - 4 - 6 (Ca 2: 19:30 - 21:30)">Tối Thứ 2 - 4 - 6 (Ca 2: 19:30 - 21:30)</SelectItem>
+                    <SelectItem value="Tối Thứ 3 - 5 - 7 (Ca 1: 17:30 - 19:30)">Tối Thứ 3 - 5 - 7 (Ca 1: 17:30 - 19:30)</SelectItem>
+                    <SelectItem value="Tối Thứ 3 - 5 - 7 (Ca 2: 19:30 - 21:30)">Tối Thứ 3 - 5 - 7 (Ca 2: 19:30 - 21:30)</SelectItem>
+                    <SelectItem value="Cuối tuần T7 - CN (Sáng: 09:00 - 11:00)">Cuối tuần T7 - CN (Sáng: 09:00 - 11:00)</SelectItem>
+                    <SelectItem value="Cuối tuần T7 - CN (Chiều: 15:00 - 17:00)">Cuối tuần T7 - CN (Chiều: 15:00 - 17:00)</SelectItem>
                     <SelectItem value="Linh hoạt theo tư vấn">Linh hoạt theo tư vấn của trung tâm</SelectItem>
                   </SelectContent>
                 </Select>

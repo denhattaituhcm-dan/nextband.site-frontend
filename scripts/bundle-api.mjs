@@ -60,6 +60,7 @@ const targets = [
   { out: "api/v1/classes.js", importPath: "../../server/app.js", dir: "api/v1" },
   { out: "api/v1/exams.js", importPath: "../../server/app.js", dir: "api/v1" },
   { out: "api/v1/submissions.js", importPath: "../../server/app.js", dir: "api/v1" },
+  { out: "api/v1/assessment.js", importPath: "../../server/app.js", dir: "api/v1" },
 ];
 
 for (const target of targets) {

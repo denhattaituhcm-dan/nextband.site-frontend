@@ -34,7 +34,7 @@ export function QuickTrialModal({
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [selectedCourse, setSelectedCourse] = useState(initialCourseSlug);
-  const [shiftPreference, setShiftPreference] = useState("Tối 2-4-6 (18:30 - 20:30)");
+  const [shiftPreference, setShiftPreference] = useState("Tối Thứ 2 - 4 - 6 (Ca 1: 17:30 - 19:30)");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -207,9 +207,12 @@ export function QuickTrialModal({
                     <SelectValue placeholder="Chọn ca học" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
-                    <SelectItem value="Tối 2-4-6 (18:30 - 20:30)">Tối Thứ 2 - 4 - 6 (18:30 - 20:30)</SelectItem>
-                    <SelectItem value="Tối 3-5-7 (18:30 - 20:30)">Tối Thứ 3 - 5 - 7 (18:30 - 20:30)</SelectItem>
-                    <SelectItem value="Sáng / Chiều Cuối tuần (T7 - CN)">Sáng / Chiều Cuối tuần (T7 - CN)</SelectItem>
+                    <SelectItem value="Tối Thứ 2 - 4 - 6 (Ca 1: 17:30 - 19:30)">Tối Thứ 2 - 4 - 6 (Ca 1: 17:30 - 19:30)</SelectItem>
+                    <SelectItem value="Tối Thứ 2 - 4 - 6 (Ca 2: 19:30 - 21:30)">Tối Thứ 2 - 4 - 6 (Ca 2: 19:30 - 21:30)</SelectItem>
+                    <SelectItem value="Tối Thứ 3 - 5 - 7 (Ca 1: 17:30 - 19:30)">Tối Thứ 3 - 5 - 7 (Ca 1: 17:30 - 19:30)</SelectItem>
+                    <SelectItem value="Tối Thứ 3 - 5 - 7 (Ca 2: 19:30 - 21:30)">Tối Thứ 3 - 5 - 7 (Ca 2: 19:30 - 21:30)</SelectItem>
+                    <SelectItem value="Cuối tuần T7 - CN (Sáng: 09:00 - 11:00)">Cuối tuần T7 - CN (Sáng: 09:00 - 11:00)</SelectItem>
+                    <SelectItem value="Cuối tuần T7 - CN (Chiều: 15:00 - 17:00)">Cuối tuần T7 - CN (Chiều: 15:00 - 17:00)</SelectItem>
                     <SelectItem value="Linh hoạt theo tư vấn">Linh hoạt theo tư vấn của trung tâm</SelectItem>
                   </SelectContent>
                 </Select>

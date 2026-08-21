@@ -18,6 +18,7 @@ import invitationRoutes from "./invitation.routes.js";
 import lessonRoutes from "./lesson.routes.js";
 import notificationsRoutes from "./notifications.routes.js";
 import leadRoutes from "./lead.routes.js";
+import assessmentRoutes from "./assessment.routes.js";
 
 const routes: FastifyPluginAsync = async (fastify) => {
   // Health check
@@ -31,6 +32,7 @@ const routes: FastifyPluginAsync = async (fastify) => {
 
   // Register all routes with prefixes
   await fastify.register(authRoutes, { prefix: "/auth" });
+  await fastify.register(assessmentRoutes, { prefix: "/assessment" });
   await fastify.register(coursesRoutes, { prefix: "/courses" });
   await fastify.register(examsRoutes, { prefix: "/exams" });
   await fastify.register(sectionsRoutes, { prefix: "/sections" });
