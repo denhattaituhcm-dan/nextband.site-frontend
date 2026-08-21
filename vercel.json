@@ -4,6 +4,18 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/api/v1/health",
+      "destination": "/api/v1/health"
+    },
+    {
+      "source": "/api/health",
+      "destination": "/api/health"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index"
+    },
+    {
       "source": "/((?!api|assets|favicon|Logo).*)",
       "destination": "/index.html"
     }
