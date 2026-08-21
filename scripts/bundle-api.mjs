@@ -63,6 +63,11 @@ await esbuild.build({
   bundle: true,
   platform: "node",
   format: "esm",
+  nodePaths: [
+    resolve(rootDir, "node_modules"),
+    resolve(rootDir, "nextband/node_modules"),
+    resolve(rootDir, "../node_modules"),
+  ],
   banner: {
     js: `import { createRequire as __esbuild_createRequire } from "module";
 import { fileURLToPath as __esbuild_fileURLToPath } from "url";
