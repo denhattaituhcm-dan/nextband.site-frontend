@@ -110491,36 +110491,56 @@ var attendance_routes_default = attendanceRoutes;
 
 // server/routes/site-settings.routes.ts
 var SETTINGS_KEY = "global";
+var strictInt = (min, max) => external_exports.preprocess((val) => {
+  if (typeof val === "string") {
+    const trimmed = val.trim();
+    if (trimmed === "") return void 0;
+    const num = Number(trimmed);
+    return Number.isInteger(num) ? num : val;
+  }
+  return val;
+}, external_exports.number().int().min(min).max(max).optional());
+var strictFloat = (min, max) => external_exports.preprocess((val) => {
+  if (typeof val === "string") {
+    const trimmed = val.trim();
+    if (trimmed === "") return void 0;
+    const num = Number(trimmed);
+    return Number.isFinite(num) ? num : val;
+  }
+  return val;
+}, external_exports.number().min(min).max(max).optional());
 var updateSiteSettingsSchema = external_exports.object({
   id: external_exports.string().optional(),
+  key: external_exports.string().optional(),
+  value: external_exports.record(external_exports.unknown()).optional(),
   siteName: external_exports.string().max(255).optional(),
   logoUrl: external_exports.string().max(5e3).nullable().optional(),
   zaloLink: external_exports.string().max(500).nullable().optional(),
   completedLessonsStat: external_exports.string().max(50).nullable().optional(),
-  authTagline: external_exports.string().max(120).optional(),
-  authFeatureOneTitle: external_exports.string().max(120).optional(),
-  authFeatureOneDescription: external_exports.string().max(160).optional(),
-  authFeatureTwoTitle: external_exports.string().max(120).optional(),
-  authFeatureTwoDescription: external_exports.string().max(160).optional(),
-  highlightPresent: external_exports.string().max(20).optional(),
-  highlightAbsent: external_exports.string().max(20).optional(),
-  highlightInactive: external_exports.string().max(20).optional(),
-  sloganText: external_exports.string().max(100).optional(),
-  sloganFontFamily: external_exports.string().max(191).optional(),
+  authTagline: external_exports.string().max(120).nullable().optional(),
+  authFeatureOneTitle: external_exports.string().max(120).nullable().optional(),
+  authFeatureOneDescription: external_exports.string().max(160).nullable().optional(),
+  authFeatureTwoTitle: external_exports.string().max(120).nullable().optional(),
+  authFeatureTwoDescription: external_exports.string().max(160).nullable().optional(),
+  highlightPresent: external_exports.string().max(20).nullable().optional(),
+  highlightAbsent: external_exports.string().max(20).nullable().optional(),
+  highlightInactive: external_exports.string().max(20).nullable().optional(),
+  sloganText: external_exports.string().max(100).nullable().optional(),
+  sloganFontFamily: external_exports.string().max(191).nullable().optional(),
   sloganFontWeight: external_exports.enum(["light", "regular", "bold"]).optional(),
-  sloganDesktopSize: external_exports.number().int().min(20).max(96).optional(),
-  sloganMobileSize: external_exports.number().int().min(14).max(72).optional(),
-  sloganColor: external_exports.string().max(20).optional(),
+  sloganDesktopSize: strictInt(20, 96),
+  sloganMobileSize: strictInt(14, 72),
+  sloganColor: external_exports.string().max(20).nullable().optional(),
   sloganAlign: external_exports.enum(["left", "center", "right"]).optional(),
-  sloganLineHeight: external_exports.number().min(1).max(2).optional(),
-  heroDescriptionText: external_exports.string().max(300).optional(),
-  heroDescriptionFontFamily: external_exports.string().max(191).optional(),
+  sloganLineHeight: strictFloat(1, 2),
+  heroDescriptionText: external_exports.string().max(300).nullable().optional(),
+  heroDescriptionFontFamily: external_exports.string().max(191).nullable().optional(),
   heroDescriptionFontWeight: external_exports.enum(["light", "regular", "bold"]).optional(),
-  heroDescriptionDesktopSize: external_exports.number().int().min(14).max(56).optional(),
-  heroDescriptionMobileSize: external_exports.number().int().min(12).max(40).optional(),
-  heroDescriptionColor: external_exports.string().max(20).optional(),
+  heroDescriptionDesktopSize: strictInt(14, 56),
+  heroDescriptionMobileSize: strictInt(12, 40),
+  heroDescriptionColor: external_exports.string().max(20).nullable().optional(),
   heroDescriptionAlign: external_exports.enum(["left", "center", "right"]).optional(),
-  heroDescriptionLineHeight: external_exports.number().min(1).max(2.2).optional(),
+  heroDescriptionLineHeight: strictFloat(1, 2.2),
   updatedBy: external_exports.string().optional(),
   updatedAt: external_exports.union([external_exports.string(), external_exports.date()]).optional(),
   createdAt: external_exports.union([external_exports.string(), external_exports.date()]).optional()

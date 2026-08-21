@@ -4,37 +4,61 @@ import { authenticate, requireRoles } from "../middlewares/auth.middleware.js";
 
 const SETTINGS_KEY = "global";
 
+const strictInt = (min: number, max: number) =>
+  z.preprocess((val) => {
+    if (typeof val === "string") {
+      const trimmed = val.trim();
+      if (trimmed === "") return undefined;
+      const num = Number(trimmed);
+      return Number.isInteger(num) ? num : val;
+    }
+    return val;
+  }, z.number().int().min(min).max(max).optional());
+
+const strictFloat = (min: number, max: number) =>
+  z.preprocess((val) => {
+    if (typeof val === "string") {
+      const trimmed = val.trim();
+      if (trimmed === "") return undefined;
+      const num = Number(trimmed);
+      return Number.isFinite(num) ? num : val;
+    }
+    return val;
+  }, z.number().min(min).max(max).optional());
+
 const updateSiteSettingsSchema = z
   .object({
     id: z.string().optional(),
+    key: z.string().optional(),
+    value: z.record(z.unknown()).optional(),
     siteName: z.string().max(255).optional(),
     logoUrl: z.string().max(5000).nullable().optional(),
     zaloLink: z.string().max(500).nullable().optional(),
     completedLessonsStat: z.string().max(50).nullable().optional(),
-    authTagline: z.string().max(120).optional(),
-    authFeatureOneTitle: z.string().max(120).optional(),
-    authFeatureOneDescription: z.string().max(160).optional(),
-    authFeatureTwoTitle: z.string().max(120).optional(),
-    authFeatureTwoDescription: z.string().max(160).optional(),
-    highlightPresent: z.string().max(20).optional(),
-    highlightAbsent: z.string().max(20).optional(),
-    highlightInactive: z.string().max(20).optional(),
-    sloganText: z.string().max(100).optional(),
-    sloganFontFamily: z.string().max(191).optional(),
+    authTagline: z.string().max(120).nullable().optional(),
+    authFeatureOneTitle: z.string().max(120).nullable().optional(),
+    authFeatureOneDescription: z.string().max(160).nullable().optional(),
+    authFeatureTwoTitle: z.string().max(120).nullable().optional(),
+    authFeatureTwoDescription: z.string().max(160).nullable().optional(),
+    highlightPresent: z.string().max(20).nullable().optional(),
+    highlightAbsent: z.string().max(20).nullable().optional(),
+    highlightInactive: z.string().max(20).nullable().optional(),
+    sloganText: z.string().max(100).nullable().optional(),
+    sloganFontFamily: z.string().max(191).nullable().optional(),
     sloganFontWeight: z.enum(["light", "regular", "bold"]).optional(),
-    sloganDesktopSize: z.number().int().min(20).max(96).optional(),
-    sloganMobileSize: z.number().int().min(14).max(72).optional(),
-    sloganColor: z.string().max(20).optional(),
+    sloganDesktopSize: strictInt(20, 96),
+    sloganMobileSize: strictInt(14, 72),
+    sloganColor: z.string().max(20).nullable().optional(),
     sloganAlign: z.enum(["left", "center", "right"]).optional(),
-    sloganLineHeight: z.number().min(1).max(2).optional(),
-    heroDescriptionText: z.string().max(300).optional(),
-    heroDescriptionFontFamily: z.string().max(191).optional(),
+    sloganLineHeight: strictFloat(1, 2),
+    heroDescriptionText: z.string().max(300).nullable().optional(),
+    heroDescriptionFontFamily: z.string().max(191).nullable().optional(),
     heroDescriptionFontWeight: z.enum(["light", "regular", "bold"]).optional(),
-    heroDescriptionDesktopSize: z.number().int().min(14).max(56).optional(),
-    heroDescriptionMobileSize: z.number().int().min(12).max(40).optional(),
-    heroDescriptionColor: z.string().max(20).optional(),
+    heroDescriptionDesktopSize: strictInt(14, 56),
+    heroDescriptionMobileSize: strictInt(12, 40),
+    heroDescriptionColor: z.string().max(20).nullable().optional(),
     heroDescriptionAlign: z.enum(["left", "center", "right"]).optional(),
-    heroDescriptionLineHeight: z.number().min(1).max(2.2).optional(),
+    heroDescriptionLineHeight: strictFloat(1, 2.2),
     updatedBy: z.string().optional(),
     updatedAt: z.union([z.string(), z.date()]).optional(),
     createdAt: z.union([z.string(), z.date()]).optional(),

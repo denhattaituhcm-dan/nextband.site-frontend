@@ -2972,7 +2972,15 @@ export const siteSettingsApi = {
       let errorMessage = "Không thể lưu cài đặt hệ thống";
       try {
         const errorData = await res.json();
-        errorMessage = errorData?.error || errorData?.message || errorMessage;
+        if (errorData?.error) {
+          errorMessage = errorData.error;
+        } else if (errorData?.message) {
+          errorMessage = errorData.message;
+        } else if (Array.isArray(errorData?.details)) {
+          errorMessage = errorData.details
+            .map((d: any) => `${d.path?.join(".") || "Dữ liệu"}: ${d.message}`)
+            .join("; ");
+        }
       } catch {}
       throw new Error(errorMessage);
     }

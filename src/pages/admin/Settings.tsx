@@ -38,6 +38,7 @@ export default function AdminSettings() {
       const normalized = normalizeSiteSettings(saved);
       setData(normalized);
       queryClient.setQueryData(["site-settings"], saved);
+      queryClient.invalidateQueries({ queryKey: ["site-settings"] });
       toast({ title: "Đã lưu cài đặt hệ thống" });
     },
     onError: (error: any) => {

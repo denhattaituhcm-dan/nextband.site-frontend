@@ -1,78 +1,3 @@
-import esbuild from "esbuild";
-import { writeFileSync, mkdirSync, unlinkSync, existsSync } from "fs";
-
-mkdirSync("api/v1", { recursive: true });
-
-const createTemplate = (importPath) => `
-import { buildApp } from "${importPath}";
-
-let fastifyApp = null;
-
-export default async function handler(req, res) {
-  try {
-    if (!fastifyApp) {
-      fastifyApp = await buildApp();
-      await fastifyApp.ready();
-    }
-
-    const response = await fastifyApp.inject({
-      method: req.method || "GET",
-      url: req.url,
-      headers: req.headers,
-      query: req.query,
-      payload: req.body,
-    });
-
-    if (response.headers) {
-      for (const [key, value] of Object.entries(response.headers)) {
-        if (value !== undefined) {
-          res.setHeader(key, value);
-        }
-      }
-    }
-
-    res.statusCode = response.statusCode;
-    res.end(response.body);
-  } catch (err) {
-    console.error("Fastify Serverless Handler Error:", err);
-    res.statusCode = 500;
-    res.setHeader("Content-Type", "application/json");
-    res.end(
-      JSON.stringify({
-        statusCode: 500,
-        error: "Internal Server Error",
-        message: err?.message || "Serverless runtime error",
-        stack: err?.stack,
-      })
-    );
-  }
-}
-`;
-
-const targets = [
-  { temp: "api/_temp_index.ts", out: "api/index.js", importPath: "../server/app.js" },
-  { temp: "api/v1/_temp_courses.ts", out: "api/v1/courses.js", importPath: "../../server/app.js" },
-  { temp: "api/v1/_temp_classes.ts", out: "api/v1/classes.js", importPath: "../../server/app.js" },
-  { temp: "api/v1/_temp_exams.ts", out: "api/v1/exams.js", importPath: "../../server/app.js" },
-  { temp: "api/v1/_temp_submissions.ts", out: "api/v1/submissions.js", importPath: "../../server/app.js" },
-];
-
-for (const target of targets) {
-  writeFileSync(target.temp, createTemplate(target.importPath));
-  await esbuild.build({
-    entryPoints: [target.temp],
-    bundle: true,
-    platform: "node",
-    format: "esm",
-    outfile: target.out,
-    external: ["@prisma/client", "bcrypt", "@vercel/node"],
-  });
-  if (existsSync(target.temp)) {
-    unlinkSync(target.temp);
-  }
-}
-
-const leadsSource = `
 const supabaseUrl =
   process.env.SUPABASE_URL ||
   process.env.VITE_SUPABASE_URL ||
@@ -111,11 +36,11 @@ export default async function handler(req, res) {
   if (req.method === "GET") {
     try {
       const response = await fetch(
-        \`\${supabaseUrl}/rest/v1/contact_leads?select=*&order=created_at.desc&limit=50\`,
+        `${supabaseUrl}/rest/v1/contact_leads?select=*&order=created_at.desc&limit=50`,
         {
           headers: {
             apikey: supabaseKey,
-            Authorization: \`Bearer \${supabaseKey}\`,
+            Authorization: `Bearer ${supabaseKey}`,
             "Content-Type": "application/json",
           },
         }
@@ -146,7 +71,7 @@ export default async function handler(req, res) {
       body = body || {};
 
       const fullName = (body.fullName || body.name || "").trim();
-      const phone = (body.phone || "").trim().replace(/\\s+/g, "");
+      const phone = (body.phone || "").trim().replace(/\s+/g, "");
       const email = (body.email || "").trim();
       const leadType = body.leadType || "CONTACT";
       const course = (body.course || "").trim();
@@ -164,22 +89,22 @@ export default async function handler(req, res) {
 
       let formattedGoal = message;
       if (leadType === "QUICK_TRIAL") {
-        formattedGoal = \`[Học Thử 02 Buổi] Khóa: \${course || "N/A"} | Ca học: \${preferredSchedule || "Linh hoạt"}\`;
-        if (message) formattedGoal += \` | Ghi chú: \${message}\`;
+        formattedGoal = `[Học Thử 02 Buổi] Khóa: ${course || "N/A"} | Ca học: ${preferredSchedule || "Linh hoạt"}`;
+        if (message) formattedGoal += ` | Ghi chú: ${message}`;
       } else if (leadType === "ASSESSMENT") {
-        formattedGoal = \`[Khảo Thí] Trình độ: \${metadata.currentLevel || "N/A"} -> Mục tiêu: \${metadata.targetBand || "N/A"} (\${metadata.testFormat || "online"})\`;
-        if (metadata.preferredDate) formattedGoal += \` | Ngày hẹn: \${metadata.preferredDate}\`;
-        if (message) formattedGoal += \` | Lời nhắn: \${message}\`;
+        formattedGoal = `[Khảo Thí] Trình độ: ${metadata.currentLevel || "N/A"} -> Mục tiêu: ${metadata.targetBand || "N/A"} (${metadata.testFormat || "online"})`;
+        if (metadata.preferredDate) formattedGoal += ` | Ngày hẹn: ${metadata.preferredDate}`;
+        if (message) formattedGoal += ` | Lời nhắn: ${message}`;
       }
 
-      const sourceTag = body.source || \`web_\${leadType.toLowerCase()}\`;
+      const sourceTag = body.source || `web_${leadType.toLowerCase()}`;
       const now = new Date().toISOString();
 
-      const dbResponse = await fetch(\`\${supabaseUrl}/rest/v1/contact_leads\`, {
+      const dbResponse = await fetch(`${supabaseUrl}/rest/v1/contact_leads`, {
         method: "POST",
         headers: {
           apikey: supabaseKey,
-          Authorization: \`Bearer \${supabaseKey}\`,
+          Authorization: `Bearer ${supabaseKey}`,
           "Content-Type": "application/json",
           Prefer: "return=representation",
         },
@@ -204,7 +129,7 @@ export default async function handler(req, res) {
 
       const insertedRows = await dbResponse.json();
       const dbLead = Array.isArray(insertedRows) ? insertedRows[0] : insertedRows;
-      const leadId = dbLead?.id || \`lead-\${Date.now()}\`;
+      const leadId = dbLead?.id || `lead-${Date.now()}`;
       const createdAt = dbLead?.created_at || now;
 
       // Google Apps Script Dispatch (Async / Non-blocking)
@@ -238,17 +163,17 @@ export default async function handler(req, res) {
           .then(async (response) => {
             if (!response.ok) {
               const errText = await response.text().catch(() => "");
-              console.warn(\`[Leads API] ⚠️ Google Apps Script Webhook returned HTTP \${response.status}: \${errText}\`);
+              console.warn(`[Leads API] ⚠️ Google Apps Script Webhook returned HTTP ${response.status}: ${errText}`);
             } else {
-              console.log(\`[Leads API] ✅ Successfully dispatched lead [\${leadId}] to Google Apps Script Webhook\`);
+              console.log(`[Leads API] ✅ Successfully dispatched lead [${leadId}] to Google Apps Script Webhook`);
             }
           })
           .catch((err) => {
-            console.error(\`[Leads API] ❌ Failed to dispatch lead [\${leadId}] to Google Apps Script Webhook:\`, err?.message || err);
+            console.error(`[Leads API] ❌ Failed to dispatch lead [${leadId}] to Google Apps Script Webhook:`, err?.message || err);
           });
       } else {
         console.info(
-          \`[Leads API] Notice: GOOGLE_APPS_SCRIPT_WEBHOOK_URL not configured. Lead [\${leadId}] saved safely in Supabase.\`
+          `[Leads API] Notice: GOOGLE_APPS_SCRIPT_WEBHOOK_URL not configured. Lead [${leadId}] saved safely in Supabase.`
         );
       }
 
@@ -273,9 +198,3 @@ export default async function handler(req, res) {
 
   return sendJson(405, { success: false, error: "Method Not Allowed" });
 }
-`;
-
-writeFileSync("api/v1/leads.js", leadsSource.trim());
-writeFileSync("api/leads.js", leadsSource.trim());
-
-console.log("✅ All standalone Serverless API handlers bundled directly with zero external relative dependencies!");
