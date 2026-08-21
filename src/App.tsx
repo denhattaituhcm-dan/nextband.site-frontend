@@ -71,6 +71,7 @@ const NewsDetailPage = lazyWithRetry(() => import("@/pages/public/NewsDetailPage
 const ContactPage = lazyWithRetry(() => import("@/pages/public/ContactPage"));
 const AssessmentPage = lazyWithRetry(() => import("@/pages/public/AssessmentPage"));
 const AssessmentResultPage = lazyWithRetry(() => import("@/pages/public/AssessmentResultPage"));
+const PlacementExamInterface = lazyWithRetry(() => import("@/features/assessment/pages/PlacementExamInterface"));
 const TermsPage = lazyWithRetry(() => import("@/pages/public/TermsPage"));
 const PrivacyPage = lazyWithRetry(() => import("@/pages/public/PrivacyPage"));
 const SpeakingForecastHubPage = lazyWithRetry(() => import("@/pages/public/speaking-forecast/SpeakingForecastHub"));
@@ -245,6 +246,12 @@ const App = () => (
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
               </Route>
+
+              {/* ============================================================ */}
+              {/* 1.1 CLEAN-ROOM ASSESSMENT EXAM INTERFACE (Public Focus Mode) */}
+              {/* ============================================================ */}
+              <Route path="/assessment/take/:sessionId" element={<PlacementExamInterface />} />
+              <Route path="/assessment/take" element={<Navigate to="/assessment" replace />} />
 
               {/* ============================================================ */}
               {/* 2. AUTH WORLD (Auth Pages)                                  */}

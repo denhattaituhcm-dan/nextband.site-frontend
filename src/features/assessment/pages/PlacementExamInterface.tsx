@@ -1,0 +1,266 @@
+import React, { useState, useMemo, useCallback } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { SEO } from "@/components/common/SEO";
+import { useAssessmentSession } from "../hooks/useAssessmentSession";
+import { useAssessmentTimer } from "../hooks/useAssessmentTimer";
+import { AssessmentHeader } from "../components/AssessmentHeader";
+import { SkillTabs } from "../components/SkillTabs";
+import { QuestionPalette } from "../components/QuestionPalette";
+import { ListeningPanel } from "../components/ListeningPanel";
+import { ReadingPanel } from "../components/ReadingPanel";
+import { GrammarPanel } from "../components/GrammarPanel";
+import { WritingPanel } from "../components/WritingPanel";
+import { SpeakingPanel } from "../components/SpeakingPanel";
+import { AssessmentSubmitDialog } from "../components/AssessmentSubmitDialog";
+import { AssessmentSkill, AssessmentQuestion } from "../domain/assessment.types";
+import { Button } from "@/components/ui/button";
+import { Loader2, AlertCircle, RefreshCw, ArrowLeft, FileQuestion } from "lucide-react";
+import { assessmentApi } from "@/lib/api";
+import { toast } from "sonner";
+
+export default function PlacementExamInterface() {
+  const { sessionId } = useParams<{ sessionId: string }>();
+  const navigate = useNavigate();
+
+  const [activeSkill, setActiveSkill] = useState<AssessmentSkill>("listening");
+  const [currentQuestionId, setCurrentQuestionId] = useState<string | undefined>();
+  const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const {
+    session,
+    testPayload,
+    answers,
+    setAnswer,
+    clearLocalDraft,
+    isLoading,
+    error,
+    saveStatus,
+  } = useAssessmentSession(sessionId);
+
+  const handleTimeUp = useCallback(async () => {
+    toast.error("Hết thời gian làm bài! Hệ thống đang tự động nộp bài cho bạn.");
+    handleFinalSubmit();
+  }, [sessionId, answers]);
+
+  const { formattedTime, isUrgent } = useAssessmentTimer(
+    session?.remainingSeconds || 2700,
+    handleTimeUp,
+  );
+
+  // Skill Question Completion Statistics
+  const skillCounts = useMemo(() => {
+    const counts: Record<AssessmentSkill, { answered: number; total: number }> = {
+      listening: { answered: 0, total: 0 },
+      reading: { answered: 0, total: 0 },
+      grammar: { answered: 0, total: 0 },
+      writing: { answered: 0, total: 1 },
+      speaking: { answered: 0, total: 1 },
+    };
+
+    if (testPayload) {
+      counts.listening.total = testPayload.skills.listening.questions.length;
+      counts.listening.answered = testPayload.skills.listening.questions.filter(
+        (q) => answers[q.id] != null && String(answers[q.id]).trim() !== "",
+      ).length;
+
+      counts.reading.total = testPayload.skills.reading.questions.length;
+      counts.reading.answered = testPayload.skills.reading.questions.filter(
+        (q) => answers[q.id] != null && String(answers[q.id]).trim() !== "",
+      ).length;
+
+      counts.grammar.total = testPayload.skills.grammar.questions.length;
+      counts.grammar.answered = testPayload.skills.grammar.questions.filter(
+        (q) => answers[q.id] != null && String(answers[q.id]).trim() !== "",
+      ).length;
+
+      counts.writing.answered =
+        answers["writing_response"] && String(answers["writing_response"]).trim().length >= 30 ? 1 : 0;
+      counts.speaking.answered =
+        answers["speaking_audio_url"] || answers["speaking_completed"] ? 1 : 0;
+    }
+
+    return counts;
+  }, [testPayload, answers]);
+
+  const handleSelectQuestion = (questionId: string) => {
+    setCurrentQuestionId(questionId);
+    const element = document.getElementById(`question-${questionId}`);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
+
+  const handleFinalSubmit = async () => {
+    if (!sessionId) return;
+    setIsSubmitting(true);
+
+    try {
+      const res = await assessmentApi.submit(sessionId, answers);
+      clearLocalDraft();
+      toast.success("Nộp bài khảo thí thành công! Đang chuyển đến Báo cáo năng lực ARIS-7.");
+      navigate(`/assessment/result/${sessionId}`);
+    } catch (err: any) {
+      toast.error(err.message || "Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.");
+    } finally {
+      setIsSubmitting(false);
+      setIsSubmitDialogOpen(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-background">
+        <Loader2 className="w-9 h-9 animate-spin text-brand-blue" />
+        <p className="text-sm text-muted-foreground font-medium">Đang thiết lập phòng thi khảo thí chẩn đoán...</p>
+      </div>
+    );
+  }
+
+  if (error || !testPayload || !session) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4 text-center bg-background">
+        <div className="w-16 h-16 rounded-3xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto shadow-xs">
+          <AlertCircle className="w-8 h-8" />
+        </div>
+        <div className="space-y-1.5 max-w-md">
+          <h3 className="text-xl font-extrabold text-foreground">Không Thể Truy Cập Phòng Thi</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+            {error || "Phiên khảo thí không hợp lệ hoặc đã hết hạn làm bài."}
+          </p>
+        </div>
+        <div className="flex items-center gap-3 pt-2">
+          <Button asChild className="rounded-xl font-bold text-xs bg-brand-red hover:bg-brand-red-hover text-white shadow-md">
+            <Link to="/assessment">Đăng ký phiên mới</Link>
+          </Button>
+          <Button asChild variant="outline" className="rounded-xl font-bold text-xs">
+            <Link to="/">Quay về trang chủ</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Active Questions for Palette
+  const currentSkillQuestions =
+    activeSkill === "listening"
+      ? testPayload.skills.listening.questions
+      : activeSkill === "reading"
+      ? testPayload.skills.reading.questions
+      : activeSkill === "grammar"
+      ? testPayload.skills.grammar.questions
+      : [];
+
+  return (
+    <div className="min-h-screen bg-muted/20 flex flex-col">
+      <SEO
+        title={`Phòng Khảo Thí ARIS — ${session.candidateName}`}
+        description="Làm bài khảo thí chẩn đoán 4 kỹ năng Listening, Reading, Grammar, Writing, Speaking để định vị Rank ARIS-7."
+      />
+
+      {/* Focus Mode Header */}
+      <AssessmentHeader
+        candidateName={session.candidateName}
+        targetBand={session.targetBand}
+        formattedTime={formattedTime}
+        isUrgent={isUrgent}
+        saveStatus={saveStatus}
+        onOpenSubmitDialog={() => setIsSubmitDialogOpen(true)}
+        isSubmitting={isSubmitting}
+      />
+
+      {/* Main Assessment Body */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+        {/* Skill Tabs */}
+        <SkillTabs
+          activeSkill={activeSkill}
+          onSelectSkill={(skill) => {
+            setActiveSkill(skill);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          skillCounts={skillCounts}
+        />
+
+        {/* Content Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Main Question Panel */}
+          <div className={currentSkillQuestions.length > 0 ? "lg:col-span-9 space-y-6" : "lg:col-span-12 space-y-6"}>
+            {activeSkill === "listening" && (
+              <ListeningPanel
+                title={testPayload.skills.listening.title}
+                audioUrl={testPayload.skills.listening.audioUrl}
+                questions={testPayload.skills.listening.questions}
+                answers={answers}
+                onAnswerChange={setAnswer}
+              />
+            )}
+
+            {activeSkill === "reading" && (
+              <ReadingPanel
+                title={testPayload.skills.reading.title}
+                passage={testPayload.skills.reading.passage}
+                questions={testPayload.skills.reading.questions}
+                answers={answers}
+                onAnswerChange={setAnswer}
+              />
+            )}
+
+            {activeSkill === "grammar" && (
+              <GrammarPanel
+                title={testPayload.skills.grammar.title}
+                questions={testPayload.skills.grammar.questions}
+                answers={answers}
+                onAnswerChange={setAnswer}
+              />
+            )}
+
+            {activeSkill === "writing" && (
+              <WritingPanel
+                title={testPayload.skills.writing.title}
+                prompt={testPayload.skills.writing.prompt}
+                guidelines={testPayload.skills.writing.guidelines}
+                minWords={testPayload.skills.writing.minWords}
+                value={answers["writing_response"] || ""}
+                onChange={(val) => setAnswer("writing_response", val)}
+              />
+            )}
+
+            {activeSkill === "speaking" && (
+              <SpeakingPanel
+                title={testPayload.skills.speaking.title}
+                part1Questions={testPayload.skills.speaking.part1Questions}
+                part2Topic={testPayload.skills.speaking.part2Topic}
+                part2Cues={testPayload.skills.speaking.part2Cues}
+                onAudioRecorded={(audioUrl) => {
+                  setAnswer("speaking_audio_url", audioUrl);
+                  setAnswer("speaking_completed", true);
+                }}
+              />
+            )}
+          </div>
+
+          {/* Right Sidebar: Question Palette (for Objective Skills) */}
+          {currentSkillQuestions.length > 0 && (
+            <div className="lg:col-span-3 lg:sticky lg:top-24 space-y-4">
+              <QuestionPalette
+                questions={currentSkillQuestions}
+                answers={answers}
+                currentQuestionId={currentQuestionId}
+                onSelectQuestion={handleSelectQuestion}
+              />
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* Confirmation Dialog */}
+      <AssessmentSubmitDialog
+        isOpen={isSubmitDialogOpen}
+        onOpenChange={setIsSubmitDialogOpen}
+        skillCounts={skillCounts}
+        isSubmitting={isSubmitting}
+        onConfirmSubmit={handleFinalSubmit}
+      />
+    </div>
+  );
+}

@@ -1,23 +1,34 @@
 import { PrismaClient } from "@prisma/client";
-import { canonicalScoringService } from "./scoring/CanonicalScoringService.js";
-import { toFileUrl } from "../utils/file.js";
+import { canonicalPlacementTestPayload, SanitizedPlacementTestPayload } from "../data/placement-test/questions.js";
+import { authoritativePlacementAnswerKeys, AuthoritativeAnswerKey } from "../data/placement-test/answerKeys.js";
 
 // Rate limiting in-memory trackers
 const ipRateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const phoneRateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
-// Fallback in-memory session cache for resilience
-const inMemoryAssessmentSessions = new Map<string, any>();
+// In-memory session cache for speed & resilience
+const inMemoryAssessmentSessions = new Map<string, AssessmentSessionRecord>();
 
-export interface AssessmentSessionDTO {
+export interface AssessmentSessionRecord {
   id: string;
-  examId: string;
-  fullName: string;
+  candidateName: string;
   phone: string;
-  targetBand?: string | null;
+  targetBand: string;
   status: "ACTIVE" | "SUBMITTED" | "EXPIRED";
-  answers?: any;
-  result?: any;
+  answers: Record<string, any>;
+  objectiveScore?: {
+    rawCorrect: number;
+    totalQuestions: number;
+    accuracyPercent: number;
+    listeningCorrect: number;
+    listeningTotal: number;
+    readingCorrect: number;
+    readingTotal: number;
+    grammarCorrect: number;
+    grammarTotal: number;
+  } | null;
+  subjectiveStatus: "NONE" | "PENDING_REVIEW" | "REVIEWED";
+  result?: DiagnosticReport | null;
   startedAt: Date;
   expiresAt: Date;
   submittedAt?: Date | null;
@@ -26,117 +37,132 @@ export interface AssessmentSessionDTO {
   updatedAt: Date;
 }
 
-export function cleanAssessmentQuestion(q: any) {
-  let selectionMode: "single" | "multiple" = "single";
-  let maxSelections = 1;
-
-  if (q.questionType === "multiple_choice") {
-    if (q.correctAnswer && typeof q.correctAnswer === "string") {
-      const answers = q.correctAnswer.split("|").map((s: string) => s.trim()).filter(Boolean);
-      if (answers.length > 1) {
-        selectionMode = "multiple";
-        maxSelections = answers.length;
-      }
-    }
-  }
-
-  const cleaned = { ...q };
-  if (q.questionType === "matching" && q.correctAnswer) {
-    try {
-      const config = JSON.parse(q.correctAnswer);
-      delete config.pairs;
-      if (!cleaned.options || typeof cleaned.options !== "object") {
-        cleaned.options = { items: config.items || [], options: config.options || [] };
-      }
-    } catch {}
-  }
-
-  // 100% Secret stripping
-  delete cleaned.correctAnswer;
-  delete cleaned.correct_answer;
-  delete cleaned.audioScript;
-  delete cleaned.audio_script;
-  delete cleaned.acceptedAnswers;
-  delete cleaned.accepted_answers;
-  delete cleaned.answerKey;
-  delete cleaned.answer_key;
-
-  cleaned.correctAnswer = null;
-  cleaned.audioScript = null;
-  cleaned.selectionMode = selectionMode;
-  cleaned.maxSelections = maxSelections;
-  cleaned.isMultiChoice = selectionMode === "multiple";
-
-  return cleaned;
+export interface DiagnosticReport {
+  sessionId: string;
+  candidateName: string;
+  phone: string;
+  targetBand: string;
+  arisLevel: {
+    levelNumber: number;
+    levelTitle: string;
+    estimatedIeltsRange: string;
+    description: string;
+    recommendedCourse: {
+      slug: string;
+      title: string;
+      targetBand: string;
+      level: string;
+      summary: string;
+    };
+  };
+  objectiveBreakdown: {
+    rawScore: number;
+    totalQuestions: number;
+    accuracyPercent: number;
+    listening: { correct: number; total: number; scorePercent: number; feedback: string };
+    reading: { correct: number; total: number; scorePercent: number; feedback: string };
+    grammar: { correct: number; total: number; scorePercent: number; feedback: string };
+  };
+  subjectiveEvaluation: {
+    status: "NONE" | "PENDING_REVIEW" | "REVIEWED";
+    hasWritingSubmission: boolean;
+    hasSpeakingRecording: boolean;
+    note: string;
+  };
+  strengths: string[];
+  weaknesses: string[];
+  submittedAt: string;
 }
 
-export function mapBandToArisRank(band: number) {
-  if (band < 3.5) {
+export function mapRawScoreToArisLevel(correctCount: number, totalQuestions: number = 35) {
+  const percentage = Math.round((correctCount / Math.max(1, totalQuestions)) * 100);
+
+  if (percentage < 25) {
     return {
-      rankCode: 3,
-      rankTitle: "Rank 3 — Khởi Nền (Starter)",
-      bandRange: "Band 2.5 – 3.5",
+      levelNumber: 1,
+      levelTitle: "Cấp 1 — Khởi Nền (Starter)",
+      estimatedIeltsRange: "Band 2.5 – 3.5",
+      description: "Thí sinh có vốn từ vựng ban đầu, cần củng cố lại phương pháp xây nền ngữ âm IPA và cấu trúc câu đơn hoàn chỉnh trước khi luyện đề.",
       recommendedCourse: {
         slug: "starter",
-        title: "Khóa STARTER (Xây Nền Phát Âm & Câu Đơn)",
-        targetBand: "Mục tiêu: Đạt chuẩn 3.5+",
+        title: "Khóa STARTER (Xây Nền 44 Âm IPA & Câu Đơn)",
+        targetBand: "Mục tiêu: Bứt phá chuẩn 3.5+",
         level: "Beginner",
-        summary: "Dành cho người mất gốc hoặc bắt đầu lại từ đầu. Huấn luyện 44 âm IPA chuẩn xác, làm chủ cấu trúc câu đơn và 800 từ vựng cốt lõi.",
+        summary: "Huấn luyện chuẩn xác 44 âm IPA, làm chủ cấu trúc câu đơn và 800 từ vựng cốt lõi theo phương pháp The ARIS Way.",
       },
     };
   }
-  if (band <= 4.5) {
+  if (percentage < 45) {
     return {
-      rankCode: 4,
-      rankTitle: "Rank 4 — Tập Sự (Dreamer)",
-      bandRange: "Band 4.0 – 4.5",
+      levelNumber: 2,
+      levelTitle: "Cấp 2 — Tập Sự (Dreamer)",
+      estimatedIeltsRange: "Band 3.5 – 4.5",
+      description: "Đã có phản xạ nghe và hiểu các hội thoại quen thuộc. Cần mở rộng câu ghép, mệnh đề quan hệ và củng cố ngữ pháp trung cấp.",
       recommendedCourse: {
         slug: "dreamer",
         title: "Khóa DREAMER (Mở Rộng Từ Vựng & Phản Xạ Nghe)",
         targetBand: "Mục tiêu: Đạt chuẩn 4.5 – 5.0",
         level: "Elementary",
-        summary: "Làm chủ cấu trúc câu ghép, mệnh đề quan hệ và ngữ pháp thông dụng. Xây dựng phản xạ nghe hiểu các đoạn hội thoại thực tế.",
+        summary: "Làm chủ các thì hoàn thành, mệnh đề quan hệ và xây dựng phản xạ nghe - nói qua các ngữ cảnh thực tế.",
       },
     };
   }
-  if (band <= 5.5) {
+  if (percentage < 65) {
     return {
-      rankCode: 5,
-      rankTitle: "Rank 5 — Học Sĩ (Builder)",
-      bandRange: "Band 5.0 – 5.5",
+      levelNumber: 3,
+      levelTitle: "Cấp 3 — Học Sĩ (Builder)",
+      estimatedIeltsRange: "Band 5.0 – 5.5",
+      description: "Nền tảng từ vựng và ngữ pháp khá vững. Cần chuyên sâu rèn luyện câu phức nhiều mệnh đề, các dạng bài suy luận logic IELTS và collocations học thuật.",
       recommendedCourse: {
         slug: "builder",
-        title: "Khóa BUILDER (Làm Chủ Câu Phức & Ngữ Pháp Học Thuật)",
+        title: "Khóa BUILDER (Làm Chủ Câu Phức & Đọc Hiểu Học Thuật)",
         targetBand: "Mục tiêu: Đạt chuẩn 5.5 – 6.0",
         level: "Intermediate",
-        summary: "Huấn luyện chuyên sâu về cấu trúc câu phức nhiều mệnh đề, các thì hoàn thành và kỹ thuật xử lý bài đọc Cambridge học thuật.",
+        summary: "Huấn luyện kỹ thuật Scanning, Skimming chuyên sâu và bóc tách các bài đọc học thuật Cambridge nâng cao.",
       },
     };
   }
-  if (band <= 6.5) {
+  if (percentage < 82) {
     return {
-      rankCode: 6,
-      rankTitle: "Rank 6 — Học Sư (Master)",
-      bandRange: "Band 6.0 – 6.5",
+      levelNumber: 4,
+      levelTitle: "Cấp 4 — Học Sư (Master)",
+      estimatedIeltsRange: "Band 6.0 – 6.5",
+      description: "Kỹ năng xử lý bài đọc và bài nghe rất tốt. Cần rèn luyện tư duy lập luận phản biện, bứt phá bài viết Task 2 và nói chuyên sâu Part 2-3.",
       recommendedCourse: {
         slug: "master",
         title: "Khóa MASTER (Bứt Phá Writing Task 2 & Speaking)",
         targetBand: "Mục tiêu: Đạt chuẩn 6.5 – 7.0",
         level: "Upper-Intermediate",
-        summary: "Rèn luyện tư duy lập luận phản biện theo phương pháp The ARIS Way. Bóc tách và hoàn thiện kỹ năng viết luận Task 2 và nói Part 2-3.",
+        summary: "Rèn luyện tư duy phản biện theo phương pháp The ARIS Way, tối ưu hóa điểm Lexical Resource và Coherence.",
+      },
+    };
+  }
+  if (percentage < 92) {
+    return {
+      levelNumber: 5,
+      levelTitle: "Cấp 5 — Học Bá (Achiever)",
+      estimatedIeltsRange: "Band 7.0 – 7.5",
+      description: "Trình độ tiếng Anh học thuật xuất sắc. Phản xạ tự nhiên và độ chính xác ngữ pháp cao. Đề xuất luyện chiến thuật tối ưu hóa điểm số tuyệt đối.",
+      recommendedCourse: {
+        slug: "leader",
+        title: "Khóa LEADER (Tối Ưu Điểm Số & Độ Nhạy Học Thuật)",
+        targetBand: "Mục tiêu: Bứt phá 7.5 – 8.0+",
+        level: "Advanced",
+        summary: "Huấn luyện chuyên sâu cùng Giảng viên 8.5+ IELTS, tinh chỉnh collocations cao cấp và chiến thuật phòng thi đỉnh cao.",
       },
     };
   }
   return {
-    rankCode: 7,
-    rankTitle: "Rank 7 — Học Giả (Leader)",
-    bandRange: "Band 7.0 – 8.0+",
+    levelNumber: 6,
+    levelTitle: "Cấp 6 — Học Tôn (Scholar)",
+    estimatedIeltsRange: "Band 8.0 – 8.5+",
+    description: "Khả năng ngôn ngữ và độ chính xác ở mức chuyên gia. Xử lý các câu hỏi bẫy và từ vựng học thuật phức tạp một cách thuần thục.",
     recommendedCourse: {
       slug: "leader",
-      title: "Khóa LEADER (Tối Ưu Điểm Số & Độ Nhạy Học Thuật)",
-      targetBand: "Mục tiêu: Bứt phá 7.5 – 8.0+",
-      level: "Advanced",
-      summary: "Huấn luyện cùng Giảng viên 8.5+. Tinh chỉnh độ tự nhiên của ngôn ngữ, collocations cao cấp và chiến thuật phòng thi đỉnh cao.",
+      title: "Khóa LEADER (Chuyên Đề Cao Cấp 8.0+)",
+      targetBand: "Mục tiêu: Duy trì & Tối ưu 8.5+",
+      level: "Advanced / Master",
+      summary: "Huấn luyện 1-1 chuyên đề nâng cao về học thuật và ứng dụng xuất sắc.",
     },
   };
 }
@@ -145,36 +171,34 @@ export class AssessmentService {
   constructor(private prisma: PrismaClient) {}
 
   /**
-   * Rate limiting enforcement
+   * Rate limiting check
    */
   private checkRateLimits(ip: string, phone: string) {
     const now = Date.now();
 
-    // 1. IP Rate limit: max 10 requests per 1 minute
     if (ip) {
-      const ipRecord = ipRateLimitMap.get(ip);
-      if (ipRecord && ipRecord.resetAt > now) {
-        if (ipRecord.count >= 10) {
-          const err = new Error("Quá nhiều yêu cầu từ địa chỉ IP này. Vui lòng thử lại sau 1 phút.");
+      const ipRec = ipRateLimitMap.get(ip);
+      if (ipRec && ipRec.resetAt > now) {
+        if (ipRec.count >= 15) {
+          const err = new Error("Quá nhiều yêu cầu từ IP này. Vui lòng thử lại sau 1 phút.");
           (err as any).statusCode = 429;
           throw err;
         }
-        ipRecord.count++;
+        ipRec.count++;
       } else {
         ipRateLimitMap.set(ip, { count: 1, resetAt: now + 60000 });
       }
     }
 
-    // 2. Phone Rate limit: max 5 active assessment sessions per 10 minutes
     if (phone) {
-      const phoneRecord = phoneRateLimitMap.get(phone);
-      if (phoneRecord && phoneRecord.resetAt > now) {
-        if (phoneRecord.count >= 5) {
-          const err = new Error("Số điện thoại này đã tạo quá nhiều lượt khảo thí trong thời gian ngắn. Vui lòng kiểm tra lại hoặc liên hệ Hotline 0933.319.693.");
+      const phoneRec = phoneRateLimitMap.get(phone);
+      if (phoneRec && phoneRec.resetAt > now) {
+        if (phoneRec.count >= 5) {
+          const err = new Error("Số điện thoại này đã tạo quá nhiều lượt khảo thí. Vui lòng thử lại sau 10 phút.");
           (err as any).statusCode = 429;
           throw err;
         }
-        phoneRecord.count++;
+        phoneRec.count++;
       } else {
         phoneRateLimitMap.set(phone, { count: 1, resetAt: now + 600000 });
       }
@@ -182,63 +206,14 @@ export class AssessmentService {
   }
 
   /**
-   * Resolve appropriate exam for Placement Assessment
-   */
-  public async resolveAssessmentExam(assessmentCode?: string, examId?: string) {
-    if (examId) {
-      const exam = await this.prisma.exam.findUnique({
-        where: { id: examId },
-      });
-      if (exam && exam.isPublished && exam.isActive) {
-        return exam;
-      }
-    }
-
-    // Dynamic resolution: Find default placement test in database
-    const dynamicExam = await this.prisma.exam.findFirst({
-      where: {
-        OR: [
-          { allowGuestAssessment: true },
-          { title: { contains: "ENTRANCE", mode: "insensitive" } },
-          { title: { contains: "PLACEMENT", mode: "insensitive" } },
-          { isOpen: true },
-        ],
-        isPublished: true,
-        isActive: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
-
-    if (dynamicExam) {
-      return dynamicExam;
-    }
-
-    // Fallback: any published active exam
-    const fallbackExam = await this.prisma.exam.findFirst({
-      where: { isPublished: true, isActive: true },
-      orderBy: { createdAt: "desc" },
-    });
-
-    if (!fallbackExam) {
-      const err = new Error("Hệ thống phòng thi khảo thí đang bảo trì cập nhật bộ đề. Vui lòng quay lại sau.");
-      (err as any).statusCode = 503;
-      throw err;
-    }
-
-    return fallbackExam;
-  }
-
-  /**
-   * Create an Assessment Session
+   * 1. Create a dedicated Assessment Session
    */
   public async createAssessmentSession(params: {
     fullName: string;
     phone: string;
     targetBand?: string;
-    assessmentCode?: string;
-    examId?: string;
     ipAddress?: string;
-  }): Promise<{ session: AssessmentSessionDTO; exam: any }> {
+  }): Promise<AssessmentSessionRecord> {
     const cleanName = params.fullName?.trim();
     const cleanPhone = params.phone?.trim().replace(/\s+/g, "");
 
@@ -248,29 +223,29 @@ export class AssessmentService {
       throw err;
     }
 
-    if (!cleanPhone || cleanPhone.length < 9) {
-      const err = new Error("Số điện thoại không hợp lệ (tối thiểu 9 số)");
+    const digitsOnly = cleanPhone.replace(/\D/g, "");
+    if (!digitsOnly || digitsOnly.length < 9) {
+      const err = new Error("Số điện thoại không hợp lệ (tối thiểu 9 chữ số)");
       (err as any).statusCode = 400;
       throw err;
     }
 
     this.checkRateLimits(params.ipAddress || "", cleanPhone);
 
-    const exam = await this.resolveAssessmentExam(params.assessmentCode, params.examId);
-    const durationMinutes = Math.max(15, exam.durationMinutes || 45);
     const now = new Date();
-    // Expiration: Duration + 20 minutes buffer
-    const expiresAt = new Date(now.getTime() + (durationMinutes + 20) * 60 * 1000);
+    // 45 minutes duration + 15 minutes buffer
+    const expiresAt = new Date(now.getTime() + 60 * 60 * 1000);
     const sessionId = crypto.randomUUID();
 
-    const sessionData: AssessmentSessionDTO = {
+    const session: AssessmentSessionRecord = {
       id: sessionId,
-      examId: exam.id,
-      fullName: cleanName,
+      candidateName: cleanName,
       phone: cleanPhone,
       targetBand: params.targetBand || "Chưa xác định",
       status: "ACTIVE",
       answers: {},
+      objectiveScore: null,
+      subjectiveStatus: "NONE",
       result: null,
       startedAt: now,
       expiresAt,
@@ -280,164 +255,145 @@ export class AssessmentService {
       updatedAt: now,
     };
 
-    // Store in PostgreSQL if Prisma assessmentSession model is available
+    // Store in PostgreSQL AssessmentSession if table exists
     try {
       if ((this.prisma as any).assessmentSession) {
         await (this.prisma as any).assessmentSession.create({
           data: {
-            id: sessionData.id,
-            examId: sessionData.examId,
-            fullName: sessionData.fullName,
-            phone: sessionData.phone,
-            targetBand: sessionData.targetBand,
-            status: sessionData.status,
-            answers: sessionData.answers,
-            startedAt: sessionData.startedAt,
-            expiresAt: sessionData.expiresAt,
-            ipAddress: sessionData.ipAddress,
+            id: session.id,
+            fullName: session.candidateName,
+            phone: session.phone,
+            targetBand: session.targetBand,
+            status: session.status,
+            answers: session.answers,
+            startedAt: session.startedAt,
+            expiresAt: session.expiresAt,
+            ipAddress: session.ipAddress,
           },
         });
       }
     } catch (dbErr) {
-      console.warn("[AssessmentService] DB Session store notice:", dbErr);
+      console.warn("[AssessmentService] DB Session create notice:", dbErr);
     }
 
-    // Always keep in-memory cache for fast lookups & resilience
-    inMemoryAssessmentSessions.set(sessionId, sessionData);
+    // Fast-lookup memory store
+    inMemoryAssessmentSessions.set(sessionId, session);
 
-    // Save lead to ContactLead table for Admissions Team
+    // Record Lead to CRM for Admissions Team
     try {
-      const goalText = `Thi thử 4 kỹ năng Online | Đề: ${exam.title} | Mục tiêu: ${sessionData.targetBand}`;
       await this.prisma.contactLead.create({
         data: {
           fullName: cleanName,
           phone: cleanPhone,
-          goal: goalText,
-          source: "assessment_bubble_entrance_test",
-          notes: `Session ID: ${sessionId} | Exam ID: ${exam.id}`,
+          goal: `Khảo thí chẩn đoán ARIS | Mục tiêu: ${session.targetBand}`,
+          source: "aris_diagnostic_test",
+          notes: `Session: ${sessionId}`,
         },
       });
     } catch (leadErr) {
-      console.warn("[AssessmentService] Contact lead recording notice:", leadErr);
+      console.warn("[AssessmentService] Lead create notice:", leadErr);
     }
 
-    return { session: sessionData, exam };
+    return session;
   }
 
   /**
-   * Find an existing Assessment Session by ID
+   * 2. Find existing session by ID
    */
-  public async getSessionById(sessionId: string): Promise<AssessmentSessionDTO | null> {
+  public async getSessionById(sessionId: string): Promise<AssessmentSessionRecord | null> {
     if (!sessionId) return null;
 
-    // 1. Check in-memory cache
     const mem = inMemoryAssessmentSessions.get(sessionId);
     if (mem) return mem;
 
-    // 2. Check DB
     try {
       if ((this.prisma as any).assessmentSession) {
-        const dbSession = await (this.prisma as any).assessmentSession.findUnique({
+        const db = await (this.prisma as any).assessmentSession.findUnique({
           where: { id: sessionId },
         });
-        if (dbSession) {
-          inMemoryAssessmentSessions.set(sessionId, dbSession);
-          return dbSession;
+        if (db) {
+          const rec: AssessmentSessionRecord = {
+            id: db.id,
+            candidateName: db.fullName || db.candidateName,
+            phone: db.phone,
+            targetBand: db.targetBand || "Chưa xác định",
+            status: db.status,
+            answers: db.answers || {},
+            objectiveScore: (db.result as any)?.objectiveBreakdown || null,
+            subjectiveStatus: (db.result as any)?.subjectiveEvaluation?.status || "NONE",
+            result: db.result as any,
+            startedAt: db.startedAt || db.createdAt,
+            expiresAt: db.expiresAt,
+            submittedAt: db.submittedAt,
+            ipAddress: db.ipAddress,
+            createdAt: db.createdAt,
+            updatedAt: db.updatedAt,
+          };
+          inMemoryAssessmentSessions.set(sessionId, rec);
+          return rec;
         }
       }
     } catch (err) {
-      console.warn("[AssessmentService] DB fetch session notice:", err);
+      console.warn("[AssessmentService] Fetch session error:", err);
     }
 
     return null;
   }
 
   /**
-   * Load clean exam for guest assessment session
+   * 3. Get Sanitized Test Payload (ZERO answer keys in client response)
    */
-  public async getExamForSession(sessionId: string, examId: string) {
+  public async getTestPayloadForSession(sessionId: string): Promise<{
+    session: {
+      id: string;
+      candidateName: string;
+      phone: string;
+      targetBand: string;
+      status: string;
+      remainingSeconds: number;
+      answers: Record<string, any>;
+    };
+    test: SanitizedPlacementTestPayload;
+  }> {
     const session = await this.getSessionById(sessionId);
     if (!session) {
-      const err = new Error("Phiên khảo thí không tồn tại hoặc đã hết hạn");
+      const err = new Error("Phiên khảo thí không tồn tại hoặc đã bị hủy");
       (err as any).statusCode = 404;
       throw err;
     }
 
-    // Security Check: Session is locked to exact examId
-    if (session.examId !== examId) {
-      const err = new Error("Từ chối truy cập: Phiên khảo thí này không thuộc về bài thi yêu cầu");
-      (err as any).statusCode = 403;
+    if (session.status === "SUBMITTED") {
+      const err = new Error("Bài khảo thí này đã được nộp. Bạn có thể xem lại kết quả.");
+      (err as any).statusCode = 409;
       throw err;
     }
 
-    // Check expiration
-    if (new Date(session.expiresAt).getTime() < Date.now()) {
+    const remainingSec = Math.max(0, Math.floor((new Date(session.expiresAt).getTime() - Date.now()) / 1000));
+    if (remainingSec <= 0) {
       session.status = "EXPIRED";
-      const err = new Error("Phiên khảo thí của bạn đã hết thời gian làm bài");
+      const err = new Error("Phiên làm bài đã hết hạn");
       (err as any).statusCode = 403;
       throw err;
     }
-
-    const exam = await this.prisma.exam.findUnique({
-      where: { id: examId },
-      include: {
-        course: { select: { id: true, title: true } },
-        sections: {
-          orderBy: { orderIndex: "asc" },
-          include: {
-            questionGroups: {
-              orderBy: { orderIndex: "asc" },
-              include: {
-                questions: { orderBy: { orderIndex: "asc" } },
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!exam || !exam.isPublished || !exam.isActive) {
-      const err = new Error("Bài thi không khả dụng hoặc đã bị ẩn");
-      (err as any).statusCode = 404;
-      throw err;
-    }
-
-    // Sanitize 100% of secret fields
-    const formattedSections = exam.sections.map((section) => ({
-      ...section,
-      audioUrl: toFileUrl(section.audioUrl),
-      audioScript: undefined,
-      questionGroups: section.questionGroups.map((group) => ({
-        ...group,
-        audioUrl: toFileUrl(group.audioUrl),
-        questions: group.questions.map((q) => {
-          const formatted = {
-            ...q,
-            audioUrl: toFileUrl(q.audioUrl),
-          };
-          return cleanAssessmentQuestion(formatted);
-        }),
-      })),
-    }));
-
-    const remainingSeconds = Math.max(0, Math.floor((new Date(session.expiresAt).getTime() - Date.now()) / 1000));
 
     return {
-      ...exam,
-      sections: formattedSections,
-      sessionRemainingSeconds: remainingSeconds,
-      candidate: {
-        fullName: session.fullName,
+      session: {
+        id: session.id,
+        candidateName: session.candidateName,
         phone: session.phone,
         targetBand: session.targetBand,
+        status: session.status,
+        remainingSeconds: remainingSec,
+        answers: session.answers || {},
       },
+      test: canonicalPlacementTestPayload,
     };
   }
 
   /**
-   * Autosave answers for active assessment session
+   * 4. Debounced autosave
    */
-  public async autosaveAnswers(sessionId: string, answers: any) {
+  public async autosaveAnswers(sessionId: string, answers: Record<string, any>) {
     const session = await this.getSessionById(sessionId);
     if (!session) {
       const err = new Error("Phiên khảo thí không tồn tại");
@@ -446,7 +402,7 @@ export class AssessmentService {
     }
 
     if (session.status === "SUBMITTED") {
-      const err = new Error("Bài khảo thí đã được nộp. Không thể lưu thêm thay đổi.");
+      const err = new Error("Bài thi đã được nộp. Không thể lưu thêm thay đổi.");
       (err as any).statusCode = 409;
       throw err;
     }
@@ -458,7 +414,7 @@ export class AssessmentService {
       throw err;
     }
 
-    session.answers = answers || {};
+    session.answers = { ...session.answers, ...answers };
     session.updatedAt = new Date();
     inMemoryAssessmentSessions.set(sessionId, session);
 
@@ -480,9 +436,9 @@ export class AssessmentService {
   }
 
   /**
-   * Submit and Grade Assessment Exam
+   * 5. Submit and Grade Objective Sections + Enqueue Subjective Review
    */
-  public async submitAssessment(sessionId: string, answersPayload: any) {
+  public async submitAssessment(sessionId: string, answersPayload: Record<string, any>): Promise<DiagnosticReport> {
     const session = await this.getSessionById(sessionId);
     if (!session) {
       const err = new Error("Phiên khảo thí không tồn tại");
@@ -490,123 +446,169 @@ export class AssessmentService {
       throw err;
     }
 
-    // Negative Case 5: Reject double-submission
     if (session.status === "SUBMITTED") {
       const err = new Error("Bài khảo thí này đã được nộp trước đó");
       (err as any).statusCode = 409;
       throw err;
     }
 
-    // Negative Case 6: Reject submission after expiration
-    if (new Date(session.expiresAt).getTime() < Date.now() - 60000) { // 1 min grace
+    // 1-minute grace period for network latency
+    if (new Date(session.expiresAt).getTime() < Date.now() - 60000) {
       session.status = "EXPIRED";
       const err = new Error("Phiên làm bài đã hết hạn. Không thể nộp bài.");
       (err as any).statusCode = 403;
       throw err;
     }
 
-    // Load full exam with answer keys for canonical grading
-    const examWithKeys = await this.prisma.exam.findUnique({
-      where: { id: session.examId },
-      include: {
-        sections: {
-          orderBy: { orderIndex: "asc" },
-          include: {
-            questionGroups: {
-              orderBy: { orderIndex: "asc" },
-              include: {
-                questions: { orderBy: { orderIndex: "asc" } },
-              },
-            },
-          },
-        },
-      },
+    const answers = { ...(session.answers || {}), ...(answersPayload || {}) };
+
+    // Objective Scoring (Listening 10, Reading 10, Grammar 15) against Secret Answer Keys
+    let listeningCorrect = 0;
+    let listeningTotal = 0;
+    let readingCorrect = 0;
+    let readingTotal = 0;
+    let grammarCorrect = 0;
+    let grammarTotal = 0;
+
+    const normalizeText = (s: any) =>
+      String(s || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "")
+        .replace(/\s+/g, " ");
+
+    Object.entries(authoritativePlacementAnswerKeys).forEach(([qId, key]) => {
+      if (key.skill === "listening") listeningTotal++;
+      else if (key.skill === "reading") readingTotal++;
+      else if (key.skill === "grammar") grammarTotal++;
+
+      const studentAns = answers[qId];
+      if (!studentAns) return;
+
+      const normStudent = normalizeText(studentAns);
+      const normCorrect = normalizeText(key.correctAnswer);
+
+      let isMatch = normStudent === normCorrect;
+      if (!isMatch && key.acceptedAnswers && key.acceptedAnswers.length > 0) {
+        isMatch = key.acceptedAnswers.some((acc) => normalizeText(acc) === normStudent);
+      }
+
+      if (isMatch) {
+        if (key.skill === "listening") listeningCorrect++;
+        else if (key.skill === "reading") readingCorrect++;
+        else if (key.skill === "grammar") grammarCorrect++;
+      }
     });
 
-    if (!examWithKeys) {
-      const err = new Error("Không tìm thấy thông tin đề thi để chấm điểm");
-      (err as any).statusCode = 404;
-      throw err;
-    }
+    const totalQuestions = listeningTotal + readingTotal + grammarTotal;
+    const rawCorrect = listeningCorrect + readingCorrect + grammarCorrect;
+    const accuracyPercent = Math.round((rawCorrect / Math.max(1, totalQuestions)) * 100);
 
-    // Format student answers array
-    let answerEntries: Array<{ questionId: string; answerText?: any; audioUrl?: string | null }> = [];
-    if (Array.isArray(answersPayload)) {
-      answerEntries = answersPayload;
-    } else if (answersPayload && typeof answersPayload === "object") {
-      answerEntries = Object.entries(answersPayload).map(([questionId, val]) => ({
-        questionId,
-        answerText: typeof val === "string" ? val : JSON.stringify(val),
-        audioUrl: typeof val === "string" && (val.startsWith("http://") || val.startsWith("https://") || val.startsWith("/uploads/")) ? val : undefined,
-      }));
-    }
+    const listeningPct = Math.round((listeningCorrect / Math.max(1, listeningTotal)) * 100);
+    const readingPct = Math.round((readingCorrect / Math.max(1, readingTotal)) * 100);
+    const grammarPct = Math.round((grammarCorrect / Math.max(1, grammarTotal)) * 100);
 
-    // Evaluate canonical scores
-    const gradingSummary = canonicalScoringService.evaluateExamAttempt(examWithKeys, answerEntries);
-    const correctCount = gradingSummary.correctAnswers || 0;
-    const totalCount = Math.max(1, gradingSummary.totalQuestions || 40);
-    const accuracy = Math.round((correctCount / totalCount) * 100);
+    // Map to ARIS Diagnostic Level & Estimated IELTS Range
+    const arisInfo = mapRawScoreToArisLevel(rawCorrect, totalQuestions);
 
-    // Calculate official Band score
-    const normalized40Equivalent = (correctCount / totalCount) * 40;
-    let bandScore = 3.0;
-    if (normalized40Equivalent >= 39) bandScore = 9.0;
-    else if (normalized40Equivalent >= 37) bandScore = 8.5;
-    else if (normalized40Equivalent >= 35) bandScore = 8.0;
-    else if (normalized40Equivalent >= 32) bandScore = 7.5;
-    else if (normalized40Equivalent >= 30) bandScore = 7.0;
-    else if (normalized40Equivalent >= 26) bandScore = 6.5;
-    else if (normalized40Equivalent >= 23) bandScore = 6.0;
-    else if (normalized40Equivalent >= 18) bandScore = 5.5;
-    else if (normalized40Equivalent >= 15) bandScore = 5.0;
-    else if (normalized40Equivalent >= 12) bandScore = 4.5;
-    else if (normalized40Equivalent >= 9) bandScore = 4.0;
-    else if (normalized40Equivalent >= 6) bandScore = 3.5;
-    else bandScore = 3.0;
-
-    const rankInfo = mapBandToArisRank(bandScore);
+    // Subjective check (Writing & Speaking)
+    const hasWriting = typeof answers["writing_response"] === "string" && answers["writing_response"].trim().length >= 30;
+    const hasSpeaking = !!answers["speaking_audio_url"] || !!answers["speaking_completed"];
+    const subjectiveStatus = (hasWriting || hasSpeaking) ? "PENDING_REVIEW" : "NONE";
 
     const strengths: string[] = [];
     const weaknesses: string[] = [];
-    if (accuracy >= 75) {
-      strengths.push("Nắm vững kỹ năng định vị thông tin (Scanning & Skimming) trong đoạn văn học thuật.");
-      strengths.push("Nhận diện chính xác từ đồng nghĩa (Paraphrasing) giữa câu hỏi và bài đọc/nghe.");
-      strengths.push("Tốc độ xử lý câu hỏi nhanh, phản xạ ngữ pháp và từ vựng tự nhiên.");
-    } else if (accuracy >= 50) {
-      strengths.push("Làm tốt các câu hỏi tìm chi tiết cụ thể ở mức độ thông tin trực tiếp.");
-      strengths.push("Có vốn từ vựng cơ bản vững vàng, hiểu được ý chính của từng đoạn văn/hội thoại.");
-      weaknesses.push("Còn lúng túng khi gặp các câu hỏi suy luận logic (Inference / True-False-Not Given).");
-      weaknesses.push("Tốc độ đọc/nghe còn chậm ở các đoạn có cấu trúc câu phức và nhiều thuật ngữ.");
-    } else {
-      strengths.push("Có tinh thần rèn luyện tốt, kiên trì hoàn thành bài khảo thí.");
-      weaknesses.push("Vốn từ vựng học thuật còn hạn chế, gặp khó khăn khi bài đổi từ đồng nghĩa.");
-      weaknesses.push("Chưa làm chủ ngữ pháp câu phức, dễ bị bẫy ở các câu hỏi phủ định và quan hệ logic.");
-      weaknesses.push("Cần củng cố lại phương pháp xây nền từ gốc trước khi luyện giải đề Cambridge nâng cao.");
+
+    if (readingPct >= 70) {
+      strengths.push("Khả năng quét và định vị thông tin học thuật (Scanning & Skimming) rất nhanh và chính xác.");
+    } else if (readingPct < 40) {
+      weaknesses.push("Tốc độ đọc còn chậm và dễ bị bẫy ở các câu hỏi suy luận logic True/False/Not Given.");
     }
 
-    const reportData = {
-      id: sessionId,
-      candidateName: session.fullName,
+    if (listeningPct >= 70) {
+      strengths.push("Phản xạ nghe hiểu tốt, bắt kịp tốc độ các đoạn hội thoại và độc thoại học thuật.");
+    } else if (listeningPct < 40) {
+      weaknesses.push("Còn gặp khó khăn khi nghe các từ nối âm và thông tin số liệu/địa chỉ trong bài nghe.");
+    }
+
+    if (grammarPct >= 70) {
+      strengths.push("Nắm vững cấu trúc câu phức, đảo ngữ và các collocations học thuật thông dụng.");
+    } else if (grammarPct < 50) {
+      weaknesses.push("Cần củng cố thêm các thì hoàn thành, mệnh đề quan hệ và trật tự từ trong câu phức.");
+    }
+
+    if (strengths.length === 0) {
+      strengths.push("Có thái độ học tập nghiêm túc, hoàn thành trọn vẹn toàn bộ bài khảo thí.");
+    }
+    if (weaknesses.length === 0) {
+      weaknesses.push("Tiếp tục duy trì luyện tập các đề đọc hiểu độ khó cao để tối ưu tốc độ làm bài.");
+    }
+
+    const report: DiagnosticReport = {
+      sessionId,
+      candidateName: session.candidateName,
       phone: session.phone,
-      examTitle: examWithKeys.title,
-      sectionType: "IELTS 4 Kỹ Năng & Ngữ Pháp (Chuẩn Cambridge)",
-      rawScore: correctCount,
-      totalQuestions: totalCount,
-      accuracyPercent: accuracy,
-      ieltsBandScore: bandScore,
-      rankCode: rankInfo.rankCode,
-      rankTitle: rankInfo.rankTitle,
-      bandRange: rankInfo.bandRange,
+      targetBand: session.targetBand,
+      arisLevel: {
+        levelNumber: arisInfo.levelNumber,
+        levelTitle: arisInfo.levelTitle,
+        estimatedIeltsRange: arisInfo.estimatedIeltsRange,
+        description: arisInfo.description,
+        recommendedCourse: arisInfo.recommendedCourse,
+      },
+      objectiveBreakdown: {
+        rawScore: rawCorrect,
+        totalQuestions,
+        accuracyPercent,
+        listening: {
+          correct: listeningCorrect,
+          total: listeningTotal,
+          scorePercent: listeningPct,
+          feedback: listeningPct >= 70 ? "Nghe hiểu tốt các ngữ cảnh thông dụng & học thuật." : "Cần rèn luyện thêm kỹ thuật bắt từ khóa (Keywords tracking).",
+        },
+        reading: {
+          correct: readingCorrect,
+          total: readingTotal,
+          scorePercent: readingPct,
+          feedback: readingPct >= 70 ? "Đọc hiểu nhanh, nhận diện chính xác từ đồng nghĩa." : "Cần củng cố kỹ năng đọc lướt và phân tích ngữ cảnh.",
+        },
+        grammar: {
+          correct: grammarCorrect,
+          total: grammarTotal,
+          scorePercent: grammarPct,
+          feedback: grammarPct >= 70 ? "Làm chủ cấu trúc câu học thuật và collocations nâng cao." : "Cần củng cố ngữ pháp câu phức và mở rộng vốn từ vựng.",
+        },
+      },
+      subjectiveEvaluation: {
+        status: subjectiveStatus,
+        hasWritingSubmission: hasWriting,
+        hasSpeakingRecording: hasSpeaking,
+        note: hasWriting || hasSpeaking
+          ? "Bài Viết và Nói của bạn đã được lưu an toàn và chuyển đến Giảng viên/AI chấm chuyên sâu."
+          : "Thí sinh không gửi phần làm bài Viết/Nói tự luận.",
+      },
       strengths,
       weaknesses,
-      recommendedCourse: rankInfo.recommendedCourse,
       submittedAt: new Date().toISOString(),
     };
 
     session.status = "SUBMITTED";
     session.submittedAt = new Date();
-    session.result = reportData;
-    session.answers = answersPayload;
+    session.answers = answers;
+    session.objectiveScore = {
+      rawCorrect,
+      totalQuestions,
+      accuracyPercent,
+      listeningCorrect,
+      listeningTotal,
+      readingCorrect,
+      readingTotal,
+      grammarCorrect,
+      grammarTotal,
+    };
+    session.subjectiveStatus = subjectiveStatus;
+    session.result = report;
+
     inMemoryAssessmentSessions.set(sessionId, session);
 
     try {
@@ -616,27 +618,27 @@ export class AssessmentService {
           data: {
             status: "SUBMITTED",
             submittedAt: session.submittedAt,
-            result: reportData,
-            answers: answersPayload,
+            answers: session.answers,
+            result: report,
           },
         });
       }
     } catch (dbErr) {
-      console.warn("[AssessmentService] DB Submit notice:", dbErr);
+      console.warn("[AssessmentService] DB Submit update notice:", dbErr);
     }
 
-    // Update Contact Lead if exists
+    // Update Contact Lead
     try {
       await this.prisma.contactLead.updateMany({
         where: { notes: { contains: sessionId } },
         data: {
-          notes: `Session ID: ${sessionId} | Band: ${bandScore} | Rank: ${rankInfo.rankTitle}`,
+          notes: `Session: ${sessionId} | ${arisInfo.levelTitle} (${arisInfo.estimatedIeltsRange}) | Điểm: ${rawCorrect}/${totalQuestions}`,
         },
       });
     } catch (leadUpdateErr) {
-      console.warn("[AssessmentService] Contact lead status update notice:", leadUpdateErr);
+      console.warn("[AssessmentService] Lead update notice:", leadUpdateErr);
     }
 
-    return reportData;
+    return report;
   }
 }

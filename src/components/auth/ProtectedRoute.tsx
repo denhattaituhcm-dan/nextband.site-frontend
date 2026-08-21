@@ -16,15 +16,6 @@ export function ProtectedRoute({
   const { user, roles, isLoading } = useAuth();
   const location = useLocation();
 
-  const searchParams = new URLSearchParams(location.search);
-  const isAssessment = searchParams.get("isAssessment") === "true";
-  const isExamRoute = location.pathname.startsWith("/exam/");
-
-  // Assessment Guest Mode: Allow immediate rendering without waiting for Supabase user auth
-  if (isExamRoute && isAssessment) {
-    return <>{children}</>;
-  }
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">

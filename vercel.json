@@ -3,6 +3,9 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "functions": {
+    "api/**/*.cjs": {
+      "includeFiles": "node_modules/.prisma/client/**"
+    },
     "api/**/*.js": {
       "includeFiles": "node_modules/.prisma/client/**"
     }
@@ -10,15 +13,15 @@
   "rewrites": [
     {
       "source": "/api/v1/health",
-      "destination": "/api/v1/health"
+      "destination": "/api/v1/health.js"
     },
     {
       "source": "/api/health",
-      "destination": "/api/health"
+      "destination": "/api/health.js"
     },
     {
       "source": "/api/(.*)",
-      "destination": "/api/index"
+      "destination": "/api/index.cjs"
     },
     {
       "source": "/((?!api|assets|favicon|Logo).*)",

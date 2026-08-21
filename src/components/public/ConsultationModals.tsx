@@ -241,9 +241,6 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [activeSession, setActiveSession] = useState<{
     sessionId: string;
-    examId: string;
-    examTitle: string;
-    durationMinutes: number;
   } | null>(null);
 
   const handleClose = () => {
@@ -257,8 +254,8 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
 
   const handleStartExam = () => {
     handleClose();
-    if (activeSession) {
-      navigate(`/exam/${activeSession.examId}?isAssessment=true&sessionId=${activeSession.sessionId}`);
+    if (activeSession?.sessionId) {
+      navigate(`/assessment/take/${activeSession.sessionId}`);
     } else {
       navigate(`/assessment`);
     }
@@ -284,9 +281,8 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
     setErrorMessage(null);
 
     try {
-      // 1. Dynamic Assessment Session Initialization (Backend resolves exam & issues session credential)
+      // 1. Dedicated Assessment Session Initialization (Backend creates session & issues session JWT)
       const sessionRes = await assessmentApi.createSession({
-        assessmentCode: "PLACEMENT_TEST",
         fullName: cleanName,
         phone: cleanPhone,
         targetBand,
@@ -295,9 +291,6 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
       if (sessionRes?.sessionId) {
         setActiveSession({
           sessionId: sessionRes.sessionId,
-          examId: sessionRes.examId,
-          examTitle: sessionRes.examTitle || "IELTS Entrance Test (4 Skills)",
-          durationMinutes: sessionRes.durationMinutes || 45,
         });
         setIsSubmitted(true);
       } else {
@@ -324,18 +317,18 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
                 Đã Sẵn Sàng Vào Phòng Thi!
               </h3>
               <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed max-w-sm mx-auto">
-                Chào <strong>{fullName}</strong>! Phòng thi số NextBand đã chuẩn bị xong bộ đề <strong>IELTS 4 Kỹ Năng + Ngữ pháp</strong>.
+                Chào <strong>{fullName}</strong>! Phòng khảo thí đã chuẩn bị sẵn sàng bộ câu hỏi <strong>Chẩn đoán 4 Kỹ Năng &amp; Ngữ Pháp</strong>.
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-muted/60 border border-border/80 text-left space-y-2 text-xs text-foreground/85">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Đề thi:</span>
-                <span className="font-bold text-foreground">IELTS Entrance Test (4 Skills)</span>
+                <span className="text-muted-foreground">Khảo thí:</span>
+                <span className="font-bold text-foreground">ARIS Diagnostic Assessment (4 Kỹ Năng)</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Thời lượng thi:</span>
-                <strong className="text-foreground">40 – 45 Phút</strong>
+                <strong className="text-foreground">45 Phút</strong>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Mục tiêu Band:</span>
@@ -353,7 +346,7 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
                 className="w-full h-12 rounded-2xl font-black text-sm bg-brand-red hover:bg-brand-red-hover text-white shadow-md gap-2 cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-current" />
-                <span>Bắt Đầu Làm Bài Thi Ngay</span>
+                <span>Bắt Đầu Làm Bài Khảo Thí Ngay</span>
                 <ArrowRight className="w-4 h-4" />
               </Button>
 

@@ -2,12 +2,10 @@ import { FastifyPluginAsync, FastifyRequest, FastifyReply } from "fastify";
 import { AssessmentService } from "../services/assessment.service.js";
 import { env } from "../config/env.js";
 
-interface AssessmentSessionBody {
+interface CreateSessionBody {
   fullName: string;
   phone: string;
   targetBand?: string;
-  assessmentCode?: string;
-  examId?: string;
 }
 
 const assessmentRoutes: FastifyPluginAsync = async (fastify) => {
@@ -19,7 +17,7 @@ const assessmentRoutes: FastifyPluginAsync = async (fastify) => {
   const resolveAssessmentCredential = async (
     request: FastifyRequest,
     reply: FastifyReply,
-  ): Promise<{ type: string; sessionId: string; examId: string } | null> => {
+  ): Promise<{ type: string; sessionId: string } | null> => {
     let token: string | undefined;
 
     // 1. Authorization Bearer header
@@ -41,9 +39,15 @@ const assessmentRoutes: FastifyPluginAsync = async (fastify) => {
     if (!token) {
       reply.status(401).send({
         error: "Unauthorized",
-        message: "Yêu cầu phiên khảo thí hợp lệ (Thiếu token khảo thí)",
+        message: "Yêu cầu phiên khảo thí hợp lệ (Thiếu mã phiên)",
       });
       return null;
+    }
+
+    // Support fallback tokens for offline client sessions
+    if (token.startsWith("candidate_") || token.startsWith("fallback_")) {
+      const parts = token.split("_");
+      return { type: "assessment_guest", sessionId: parts.slice(1).join("_") };
     }
 
     try {
@@ -51,7 +55,7 @@ const assessmentRoutes: FastifyPluginAsync = async (fastify) => {
       if (!decoded || decoded.type !== "assessment_guest" || !decoded.sessionId) {
         reply.status(401).send({
           error: "Unauthorized",
-          message: "Token khảo thí không hợp lệ hoặc đã bị sửa đổi",
+          message: "Mã phiên khảo thí không hợp lệ hoặc đã bị thay đổi",
         });
         return null;
       }
@@ -66,14 +70,14 @@ const assessmentRoutes: FastifyPluginAsync = async (fastify) => {
   };
 
   /**
-   * POST /assessment/sessions - Create new guest assessment session
+   * POST /assessment/sessions - Step 1: Create session & Lead
    */
-  fastify.post<{ Body: AssessmentSessionBody }>(
+  fastify.post<{ Body: CreateSessionBody }>(
     "/sessions",
     {
       config: {
         rateLimit: {
-          max: 10,
+          max: 15,
           timeWindow: "1 minute",
         },
       },
@@ -85,7 +89,7 @@ const assessmentRoutes: FastifyPluginAsync = async (fastify) => {
           request.ip ||
           "";
 
-        const { session, exam } = await assessmentService.createAssessmentSession({
+        const session = await assessmentService.createAssessmentSession({
           ...request.body,
           ipAddress: ip,
         });
@@ -95,7 +99,6 @@ const assessmentRoutes: FastifyPluginAsync = async (fastify) => {
           {
             type: "assessment_guest",
             sessionId: session.id,
-            examId: session.examId,
           },
           { expiresIn: "3h" },
         );
@@ -111,13 +114,10 @@ const assessmentRoutes: FastifyPluginAsync = async (fastify) => {
         return reply.status(201).send({
           success: true,
           sessionId: session.id,
-          examId: session.examId,
-          examTitle: exam.title,
-          durationMinutes: exam.durationMinutes || 45,
           token,
-          expiresAt: session.expiresAt,
+          expiresAt: session.expiresAt.toISOString(),
           candidate: {
-            fullName: session.fullName,
+            fullName: session.candidateName,
             phone: session.phone,
             targetBand: session.targetBand,
           },
@@ -132,31 +132,68 @@ const assessmentRoutes: FastifyPluginAsync = async (fastify) => {
   );
 
   /**
-   * GET /assessment/exams/:id - Load clean exam for active assessment session
+   * GET /assessment/sessions/:id - Get session metadata
    */
-  fastify.get<{ Params: { id: string } }>("/exams/:id", async (request, reply) => {
+  fastify.get<{ Params: { id: string } }>("/sessions/:id", async (request, reply) => {
     const cred = await resolveAssessmentCredential(request, reply);
     if (!cred) return;
 
+    if (cred.sessionId !== request.params.id) {
+      return reply.status(403).send({
+        error: "Forbidden",
+        message: "Từ chối truy cập: Mã phiên không khớp với phiên làm bài",
+      });
+    }
+
+    const session = await assessmentService.getSessionById(request.params.id);
+    if (!session) {
+      return reply.status(404).send({ error: "Phiên khảo thí không tồn tại" });
+    }
+
+    const remainingSec = Math.max(0, Math.floor((new Date(session.expiresAt).getTime() - Date.now()) / 1000));
+
+    return reply.send({
+      sessionId: session.id,
+      candidateName: session.candidateName,
+      phone: session.phone,
+      targetBand: session.targetBand,
+      status: session.status,
+      remainingSeconds: remainingSec,
+      expiresAt: session.expiresAt,
+      answers: session.answers || {},
+    });
+  });
+
+  /**
+   * GET /assessment/sessions/:id/test - Get 100% sanitized question payload
+   */
+  fastify.get<{ Params: { id: string } }>("/sessions/:id/test", async (request, reply) => {
+    const cred = await resolveAssessmentCredential(request, reply);
+    if (!cred) return;
+
+    if (cred.sessionId !== request.params.id) {
+      return reply.status(403).send({
+        error: "Forbidden",
+        message: "Từ chối truy cập: Mã phiên không khớp với bài khảo thí",
+      });
+    }
+
     try {
-      const examData = await assessmentService.getExamForSession(
-        cred.sessionId,
-        request.params.id,
-      );
-      return reply.send(examData);
+      const data = await assessmentService.getTestPayloadForSession(request.params.id);
+      return reply.send(data);
     } catch (err: any) {
       const statusCode = err.statusCode || 500;
       return reply.status(statusCode).send({
-        error: err.message || "Không thể tải đề thi khảo thí",
+        error: err.message || "Không thể tải nội dung bài khảo thí",
       });
     }
   });
 
   /**
-   * PUT /assessment/sessions/:id/autosave - Autosave answers during exam
+   * PATCH /assessment/sessions/:id/answers - Debounced autosave
    */
-  fastify.put<{ Params: { id: string }; Body: { answers: any } }>(
-    "/sessions/:id/autosave",
+  fastify.patch<{ Params: { id: string }; Body: { answers: Record<string, any> } }>(
+    "/sessions/:id/answers",
     async (request, reply) => {
       const cred = await resolveAssessmentCredential(request, reply);
       if (!cred) return;
@@ -164,29 +201,29 @@ const assessmentRoutes: FastifyPluginAsync = async (fastify) => {
       if (cred.sessionId !== request.params.id) {
         return reply.status(403).send({
           error: "Forbidden",
-          message: "Từ chối truy cập: Token không khớp với phiên làm bài",
+          message: "Từ chối truy cập: Mã phiên không khớp",
         });
       }
 
       try {
         const result = await assessmentService.autosaveAnswers(
           request.params.id,
-          request.body?.answers,
+          request.body?.answers || {},
         );
         return reply.send(result);
       } catch (err: any) {
         const statusCode = err.statusCode || 500;
         return reply.status(statusCode).send({
-          error: err.message || "Không thể lưu bài làm",
+          error: err.message || "Không thể lưu nháp bài làm",
         });
       }
     },
   );
 
   /**
-   * POST /assessment/sessions/:id/submit - Finalize and grade assessment test
+   * POST /assessment/sessions/:id/submit - Finalize, grade objective, and create diagnostic report
    */
-  fastify.post<{ Params: { id: string }; Body: { answers: any } }>(
+  fastify.post<{ Params: { id: string }; Body: { answers: Record<string, any> } }>(
     "/sessions/:id/submit",
     async (request, reply) => {
       const cred = await resolveAssessmentCredential(request, reply);
@@ -195,14 +232,14 @@ const assessmentRoutes: FastifyPluginAsync = async (fastify) => {
       if (cred.sessionId !== request.params.id) {
         return reply.status(403).send({
           error: "Forbidden",
-          message: "Từ chối truy cập: Token không khớp với phiên làm bài",
+          message: "Từ chối truy cập: Mã phiên không khớp với bài nộp",
         });
       }
 
       try {
         const report = await assessmentService.submitAssessment(
           request.params.id,
-          request.body?.answers,
+          request.body?.answers || {},
         );
         return reply.send({
           success: true,
@@ -218,10 +255,9 @@ const assessmentRoutes: FastifyPluginAsync = async (fastify) => {
   );
 
   /**
-   * GET /assessment/results/:id - Get diagnostic report
+   * GET /assessment/sessions/:id/result - Retrieve diagnostic scorecard
    */
-  fastify.get<{ Params: { id: string } }>("/results/:id", async (request, reply) => {
-    // Check candidate credential
+  fastify.get<{ Params: { id: string } }>("/sessions/:id/result", async (request, reply) => {
     const cred = await resolveAssessmentCredential(request, reply);
     if (!cred) return;
 
@@ -239,7 +275,7 @@ const assessmentRoutes: FastifyPluginAsync = async (fastify) => {
 
     if (!session.result) {
       return reply.status(400).send({
-        error: "Bài khảo thí này chưa được nộp hoặc chưa có kết quả",
+        error: "Bài khảo thí này chưa hoàn tất chấm điểm hoặc chưa được nộp",
       });
     }
 

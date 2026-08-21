@@ -118,13 +118,27 @@ export default function AssessmentResultPage() {
     }
   }, [id, isDemo, submissionData]);
 
-  const activeReport = report;
+  const activeReport = report as any;
+
+  const arisLevelTitle =
+    activeReport?.arisLevel?.levelTitle || activeReport?.rankTitle || "Cấp 3 — Học Sĩ (Builder)";
+  const arisEstimatedBand =
+    activeReport?.arisLevel?.estimatedIeltsRange || activeReport?.bandRange || "Band 5.0 – 5.5";
+  const rawScore =
+    activeReport?.objectiveBreakdown?.rawScore ?? activeReport?.rawScore ?? 0;
+  const totalQuestions =
+    activeReport?.objectiveBreakdown?.totalQuestions ?? activeReport?.totalQuestions ?? 35;
+  const accuracyPercent =
+    activeReport?.objectiveBreakdown?.accuracyPercent ?? activeReport?.accuracyPercent ?? 0;
+  const recommendedCourse =
+    activeReport?.arisLevel?.recommendedCourse || activeReport?.recommendedCourse;
+  const subjectiveEvaluation = activeReport?.subjectiveEvaluation;
 
   return (
     <div className="flex flex-col">
       <SEO
-        title={`Báo Cáo Đánh Giá Năng Lực IELTS — ${activeReport?.rankTitle || "ARIS Academic"}`}
-        description="Báo cáo phân tích trình độ chuẩn Cambridge, định vị Band điểm chính xác và đề xuất lộ trình đào tạo theo khung 7 cấp bậc ARIS-7."
+        title={`Báo Cáo Chẩn Đoán Năng Lực ARIS — ${arisLevelTitle}`}
+        description="Báo cáo phân tích trình độ IELTS-style, chẩn đoán điểm mạnh điểm yếu và đề xuất lộ trình đào tạo theo khung phân hạng ARIS."
       />
 
       {/* ========================================================================= */}
@@ -150,7 +164,7 @@ export default function AssessmentResultPage() {
             ) : (
               <Badge variant="outline" className="bg-success/15 text-success border-success/30 font-mono font-bold text-xs px-3 py-1 flex items-center gap-1.5">
                 <CheckCircle2 className="h-3.5 w-3.5" />
-                Kết quả khảo thí chính thức
+                Kết quả khảo thí chẩn đoán
               </Badge>
             )}
             <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-brand-blue-soft text-brand-blue border border-brand-blue/20">
@@ -159,13 +173,13 @@ export default function AssessmentResultPage() {
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight leading-[1.15]">
-            Báo Cáo Đánh Giá Năng Lực IELTS Cá Nhân
+            Báo Cáo Chẩn Đoán Trình Độ &amp; Định Hướng Lộ Trình
           </h1>
 
           <p className="text-base sm:text-lg text-foreground/85 font-normal leading-relaxed">
             {isDemo
-              ? "Dưới đây là bản mô phỏng cấu trúc báo cáo khảo thí chuẩn hóa của ARIS. Sau khi hoàn thành bài làm thực tế, hệ thống sẽ tự động bóc tách dữ liệu theo kết quả của bạn."
-              : `Báo cáo phân tích tự động dựa trên bài làm ${activeReport?.examTitle || "khảo thí"} hoàn thành lúc ${new Date(activeReport?.submittedAt || "").toLocaleString("vi-VN")}.`}
+              ? "Dưới đây là bản mô phỏng cấu trúc báo cáo khảo thí chẩn đoán của ARIS. Sau khi hoàn thành bài làm thực tế, hệ thống sẽ tự động bóc tách dữ liệu theo kết quả của bạn."
+              : `Báo cáo phân tích tự động cho thí sinh ${activeReport?.candidateName || "Khảo thí"} hoàn thành lúc ${new Date(activeReport?.submittedAt || "").toLocaleString("vi-VN")}.`}
           </p>
         </div>
       </section>
@@ -174,9 +188,9 @@ export default function AssessmentResultPage() {
       {/* 02. DETAILED RESULT BREAKDOWN                                             */}
       {/* ========================================================================= */}
       <SectionContainer
-        badge="Kết Quả Đánh Giá Năng Lực"
-        title="Định vị Band điểm &amp; Đề xuất lộ trình"
-        description="Điểm số được quy đổi theo bảng điểm chuẩn Cambridge IELTS và đối chiếu với Khung 7 cấp bậc ARIS-7."
+        badge="Chẩn Đoán Năng Lực"
+        title="Định vị Cấp độ ARIS &amp; Đề xuất lộ trình"
+        description="Điểm số phần trắc nghiệm được chấm tự động và đối chiếu với Khung phân hạng ARIS Diagnostic Scale."
         background="muted"
       >
         {isLoadingSubmission && !activeReport ? (
@@ -185,7 +199,7 @@ export default function AssessmentResultPage() {
               <RotateCw className="h-8 w-8 animate-spin" />
             </div>
             <p className="text-sm font-semibold text-muted-foreground">
-              Đang phân tích bài làm và tính toán Band điểm...
+              Đang phân tích bài làm và thiết lập báo cáo...
             </p>
           </div>
         ) : (
@@ -195,16 +209,16 @@ export default function AssessmentResultPage() {
               <div className="flex flex-wrap gap-4 items-center justify-between border-b border-border/60 pb-6">
                 <div className="space-y-1">
                   <span className="text-xs font-mono uppercase tracking-widest text-brand-blue font-extrabold">
-                    Xếp Hạng Năng Lực Hiện Tại
+                    Cấp Độ Chẩn Đoán ARIS
                   </span>
                   <h3 className="text-2xl sm:text-3xl font-black text-foreground">
-                    {activeReport?.rankTitle || "Rank 5 — Học Sĩ"}
+                    {arisLevelTitle}
                   </h3>
                 </div>
 
                 <div className="p-3.5 px-6 rounded-2xl bg-brand-blue text-white font-extrabold text-base flex items-center gap-2.5 shadow-xs">
                   <Award className="h-6 w-6 text-brand-cyan" />
-                  <span>IELTS Band {activeReport?.ieltsBandScore ? activeReport.ieltsBandScore.toFixed(1) : "5.0"}</span>
+                  <span>Dự báo: {arisEstimatedBand}</span>
                 </div>
               </div>
 
@@ -212,10 +226,10 @@ export default function AssessmentResultPage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
                 <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-1">
                   <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">
-                    Số câu đúng
+                    Điểm Trắc Nghiệm
                   </span>
                   <div className="text-2xl font-black text-emerald-600">
-                    {activeReport?.rawScore || 0} / {activeReport?.totalQuestions || 0}
+                    {rawScore} / {totalQuestions}
                   </div>
                 </div>
 
@@ -224,28 +238,55 @@ export default function AssessmentResultPage() {
                     Độ chính xác
                   </span>
                   <div className="text-2xl font-black text-brand-blue">
-                    {activeReport?.accuracyPercent || 0}%
+                    {accuracyPercent}%
                   </div>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-1">
                   <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">
-                    Khoảng Band
+                    Khoảng IELTS Dự Báo
                   </span>
-                  <div className="text-2xl font-black text-brand-red">
-                    {activeReport?.bandRange || "4.5 – 5.0"}
+                  <div className="text-xl font-black text-brand-red truncate mt-0.5">
+                    {arisEstimatedBand}
                   </div>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-1">
                   <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">
-                    Khảo thí
+                    Trạng thái Tự luận
                   </span>
-                  <div className="text-sm font-bold text-foreground truncate mt-1">
-                    {activeReport?.sectionType || "Reading"}
+                  <div className="text-xs font-bold text-amber-600 dark:text-amber-400 mt-1.5 flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>{subjectiveEvaluation?.status === "PENDING_REVIEW" ? "Đang chấm AI/GV" : "Hoàn tất"}</span>
                   </div>
                 </div>
               </div>
+
+              {/* Skill Breakdown (Listening, Reading, Grammar) */}
+              {activeReport?.objectiveBreakdown && (
+                <div className="p-5 rounded-2xl bg-muted/40 border border-border/80 space-y-3">
+                  <h4 className="font-extrabold text-xs text-foreground uppercase tracking-wider">
+                    Bóc Tách Từng Kỹ Năng Thành Phần
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div className="p-3 rounded-xl bg-card border border-border space-y-1">
+                      <span className="font-bold text-brand-blue">Listening:</span>{" "}
+                      <strong className="text-foreground">{activeReport.objectiveBreakdown.listening?.correct}/{activeReport.objectiveBreakdown.listening?.total} câu</strong>
+                      <p className="text-[11px] text-muted-foreground">{activeReport.objectiveBreakdown.listening?.feedback}</p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-card border border-border space-y-1">
+                      <span className="font-bold text-brand-blue">Reading:</span>{" "}
+                      <strong className="text-foreground">{activeReport.objectiveBreakdown.reading?.correct}/{activeReport.objectiveBreakdown.reading?.total} câu</strong>
+                      <p className="text-[11px] text-muted-foreground">{activeReport.objectiveBreakdown.reading?.feedback}</p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-card border border-border space-y-1">
+                      <span className="font-bold text-brand-blue">Grammar & Vocab:</span>{" "}
+                      <strong className="text-foreground">{activeReport.objectiveBreakdown.grammar?.correct}/{activeReport.objectiveBreakdown.grammar?.total} câu</strong>
+                      <p className="text-[11px] text-muted-foreground">{activeReport.objectiveBreakdown.grammar?.feedback}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Strengths and Weaknesses */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-border/60">
@@ -255,7 +296,7 @@ export default function AssessmentResultPage() {
                     <span>Điểm mạnh đã xác nhận</span>
                   </h4>
                   <ul className="space-y-2 text-xs sm:text-sm text-foreground/80 leading-relaxed pl-1">
-                    {(activeReport?.strengths || []).map((s, idx) => (
+                    {(activeReport?.strengths || []).map((s: string, idx: number) => (
                       <li key={idx} className="flex items-start gap-2">
                         <span className="text-emerald-600 font-bold">•</span>
                         <span>{s}</span>
@@ -270,7 +311,7 @@ export default function AssessmentResultPage() {
                     <span>Điểm nghẽn cần tháo gỡ</span>
                   </h4>
                   <ul className="space-y-2 text-xs sm:text-sm text-foreground/80 leading-relaxed pl-1">
-                    {(activeReport?.weaknesses || []).map((w, idx) => (
+                    {(activeReport?.weaknesses || []).map((w: string, idx: number) => (
                       <li key={idx} className="flex items-start gap-2">
                         <span className="text-brand-red font-bold">•</span>
                         <span>{w}</span>

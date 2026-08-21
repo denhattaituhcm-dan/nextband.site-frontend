@@ -133,8 +133,6 @@ export default function ExamInterface() {
   const syncEngineRef = useRef<ExamSyncEngine | null>(null);
   const tabLeaseManagerRef = useRef<TabLeaseManager | null>(null);
   const isSubmissionCompletedRef = useRef<boolean>(false);
-  const isAssessment = searchParams.get("isAssessment") === "true";
-  const assessmentSessionId = searchParams.get("sessionId") || "";
 
   const questionRefs = useRef<Map<string, HTMLElement>>(new Map());
 
@@ -144,13 +142,8 @@ export default function ExamInterface() {
     error: examError,
     refetch: refetchExam,
   } = useQuery({
-    queryKey: ["exam", examId, isAssessment, assessmentSessionId],
-    queryFn: () => {
-      if (isAssessment) {
-        return assessmentApi.getExam(examId!);
-      }
-      return examsApi.getById(examId!);
-    },
+    queryKey: ["exam", examId],
+    queryFn: () => examsApi.getById(examId!),
     enabled: !!examId,
   });
 
@@ -168,7 +161,7 @@ export default function ExamInterface() {
 
   const explicitSubmissionId = searchParams.get("submissionId");
 
-  // Create or fetch existing submission (LMS Student Mode only)
+  // Create or fetch existing submission (LMS Student Mode)
   const {
     data: submissionData,
     isLoading: submissionLoading,
@@ -187,7 +180,7 @@ export default function ExamInterface() {
       const result = await submissionsApi.start(examId);
       return result;
     },
-    enabled: !isAssessment && !!examId && !!user && !!exam,
+    enabled: !!examId && !!user && !!exam,
     retry: false,
   });
 
@@ -239,15 +232,7 @@ export default function ExamInterface() {
 
   // Trusted Clock Timer Calculation
   useEffect(() => {
-    if (!exam) return;
-
-    if (isAssessment) {
-      const remainingSec = (exam as any).sessionRemainingSeconds ?? ((exam.durationMinutes || 45) * 60);
-      setInitialTimeLeft(remainingSec);
-      return;
-    }
-
-    if (!submission) return;
+    if (!exam || !submission) return;
 
     const durationMinutes = exam.durationMinutes || 60;
     const startedAt = submission.startedAt
@@ -257,7 +242,7 @@ export default function ExamInterface() {
     const trustedRemaining = getTrustedRemainingSeconds(expiresAt);
 
     setInitialTimeLeft(trustedRemaining);
-  }, [exam, submission?.startedAt, submission?.durationMinutes, isAssessment]);
+  }, [exam, submission?.startedAt, submission?.durationMinutes]);
 
   useEffect(() => {
     autoSubmitTriggeredRef.current = false;
@@ -611,25 +596,8 @@ export default function ExamInterface() {
           }
         }, 1500);
       }
-
-      // 3. Debounced Assessment Guest Autosave (1500ms)
-      if (isAssessment && assessmentSessionId) {
-        setSaveStatus("saving");
-        if (autosaveTimerRef.current) {
-          clearTimeout(autosaveTimerRef.current);
-        }
-        autosaveTimerRef.current = setTimeout(async () => {
-          try {
-            await assessmentApi.autosave(assessmentSessionId, answersRef.current);
-            setSaveStatus("saved");
-          } catch (err) {
-            console.warn("[Assessment Autosave Notice]", err);
-            setSaveStatus("error");
-          }
-        }, 1500);
-      }
     },
-    [submission?.id, sections, user?.id, examId, hasTabLease, isAssessment, assessmentSessionId],
+    [submission?.id, sections, user?.id, examId, hasTabLease],
   );
 
   const handleQuestionClick = useCallback((questionId: string) => {
@@ -696,57 +664,6 @@ export default function ExamInterface() {
       clearTimeout(autosaveTimerRef.current);
     }
 
-    // 2. Assessment Guest Mode Submission
-    if (isAssessment && assessmentSessionId) {
-      setIsSubmitting(true);
-      try {
-        const validQuestionIds = new Set(
-          sections?.flatMap(
-            (s: any) =>
-              (s.questionGroups || s.question_groups)?.flatMap((g: any) =>
-                (g.questions || []).map((q: any) => q.id),
-              ) || [],
-          ) || [],
-        );
-
-        const answerEntries = Object.entries(answers)
-          .filter(([questionId]) => validQuestionIds.has(questionId))
-          .map(([questionId, answerVal]) => {
-            const isAudio =
-              typeof answerVal === "string" &&
-              (answerVal.startsWith("http://") ||
-                answerVal.startsWith("https://") ||
-                answerVal.startsWith("/uploads/"));
-            return {
-              questionId,
-              answerText: typeof answerVal === "string" ? answerVal : JSON.stringify(answerVal),
-              audioUrl: isAudio ? answerVal : undefined,
-            };
-          });
-
-        await assessmentApi.submit(assessmentSessionId, answerEntries);
-        isSubmissionCompletedRef.current = true;
-
-        toast({
-          title: "Nộp bài khảo thí thành công",
-          description: "Hệ thống đã tính điểm và thiết lập báo cáo năng lực cho bạn.",
-        });
-
-        navigate(`/assessment/result/${assessmentSessionId}`);
-        return;
-      } catch (submitErr: any) {
-        toast({
-          title: "Lỗi nộp bài",
-          description: submitErr.message || "Có lỗi xảy ra khi nộp bài khảo thí. Vui lòng thử lại.",
-          variant: "destructive",
-        });
-        return;
-      } finally {
-        setIsSubmitting(false);
-        setShowReviewDialog(false);
-      }
-    }
-
     if (!user || !examId || !submission || !syncEngineRef.current) return;
 
     setIsSubmitting(true);
@@ -793,12 +710,6 @@ export default function ExamInterface() {
           title: "Nộp bài thành công",
           description: `Bài tập của bạn đã được ghi nhận${resultText}`,
         });
-
-        const isAssessment = searchParams.get("isAssessment") === "true";
-        if (isAssessment) {
-          navigate(`/assessment/result/${submission.id}`);
-          return;
-        }
 
         const exitDestination = resolveExitDestination(
           exam,
@@ -863,7 +774,7 @@ export default function ExamInterface() {
     handleSubmit();
   }, [handleSubmit, toast]);
 
-  if (examLoading || (!isAssessment && submissionLoading)) {
+  if (examLoading || submissionLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -871,7 +782,7 @@ export default function ExamInterface() {
     );
   }
 
-  if (!isAssessment && submissionError) {
+  if (submissionError) {
     const isAttemptLimitError =
       (submissionError as any)?.response?.status === 409 ||
       submissionStartErrorMessage.includes("lượt làm bài");
