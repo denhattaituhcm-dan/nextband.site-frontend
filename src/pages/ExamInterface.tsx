@@ -234,12 +234,18 @@ export default function ExamInterface() {
   useEffect(() => {
     if (!exam || !submission) return;
 
-    const durationMinutes = exam.durationMinutes || 60;
+    const durationMinutes = Math.max(60, exam.durationMinutes || 60);
     const startedAt = submission.startedAt
       ? new Date(submission.startedAt).getTime()
       : Date.now();
     const expiresAt = calculateExpiresAt(startedAt, durationMinutes);
-    const trustedRemaining = getTrustedRemainingSeconds(expiresAt);
+    let trustedRemaining = getTrustedRemainingSeconds(expiresAt);
+
+    // If remaining time is expired or near zero when entering/resuming,
+    // grant full 60 minutes (3600s) default window for practice
+    if (!trustedRemaining || trustedRemaining <= 120) {
+      trustedRemaining = durationMinutes * 60;
+    }
 
     setInitialTimeLeft(trustedRemaining);
   }, [exam, submission?.startedAt, submission?.durationMinutes]);

@@ -52,8 +52,8 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
 
       if (search) {
         where.OR = [
-          { email: { contains: search } },
-          { fullName: { contains: search } },
+          { email: { contains: search, mode: "insensitive" } },
+          { fullName: { contains: search, mode: "insensitive" } },
         ];
       }
 
@@ -63,12 +63,22 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
         };
       }
 
+      const sortFieldMap: Record<string, string> = {
+        newest: "createdAt",
+        createdAt: "createdAt",
+        updatedAt: "updatedAt",
+        name: "fullName",
+        fullName: "fullName",
+        email: "email",
+      };
+      const orderField = (sortBy && sortFieldMap[sortBy]) ? sortFieldMap[sortBy] : "createdAt";
+
       const [data, total] = await Promise.all([
         fastify.prisma.user.findMany({
           where,
           skip,
           take: limit,
-          orderBy: { [sortBy]: sortOrder },
+          orderBy: { [orderField]: sortOrder },
           select: {
             id: true,
             email: true,

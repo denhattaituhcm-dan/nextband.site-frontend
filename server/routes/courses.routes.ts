@@ -49,7 +49,7 @@ const coursesRoutes: FastifyPluginAsync = async (fastify) => {
 
     const { page, limit, search, sortBy = "createdAt", sortOrder } = query.data;
     const skip = (page - 1) * limit;
-    const { level } = request.query as any;
+    const { level, isActive, isPublished } = request.query as any;
 
     const where: any = {};
     const currentUser = (request as any).user;
@@ -60,42 +60,60 @@ const coursesRoutes: FastifyPluginAsync = async (fastify) => {
       where.isPublished = true;
       where.isActive = true;
     } else {
-      const hasAdminOrTeacherRole = currentUser.roles?.some((r: string) =>
+      const hasAdminOrTeacherRole = currentUser?.roles?.some((r: string) =>
         ["admin", "teacher"].includes(r),
       );
 
       if (!hasAdminOrTeacherRole) {
         // Student: show published active courses or courses student is enrolled in
         where.OR = [
-          { enrollments: { some: { studentId: currentUser.id } } },
+          { enrollments: { some: { studentId: currentUser?.id } } },
           { isPublished: true, isActive: true },
         ];
       } else {
-        // Admin/Teacher: hide soft-deleted courses by default
-        where.isActive = true;
+        // Admin/Teacher: hide soft-deleted courses by default, or respect query filters
+        if (isActive !== undefined) {
+          where.isActive = isActive === "true" || isActive === true;
+        } else {
+          where.isActive = true;
+        }
+        if (isPublished !== undefined) {
+          where.isPublished = isPublished === "true" || isPublished === true;
+        }
       }
     }
 
     if (search) {
-      where.title = { contains: search };
+      where.title = { contains: search, mode: "insensitive" };
     }
 
     if (level && level !== "all") {
       where.level = level;
     }
 
+    const sortFieldMap: Record<string, string> = {
+      newest: "createdAt",
+      createdAt: "createdAt",
+      updatedAt: "updatedAt",
+      name: "title",
+      title: "title",
+      level: "level",
+      price: "price",
+    };
+    const orderField = (sortBy && sortFieldMap[sortBy]) ? sortFieldMap[sortBy] : "createdAt";
+
     const [data, total] = await Promise.all([
       fastify.prisma.course.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { [sortBy]: sortOrder },
+        orderBy: { [orderField]: sortOrder },
         include: {
           creator: {
             select: { id: true, fullName: true, avatarUrl: true },
           },
           _count: {
-            select: { exams: true, enrollments: true },
+            select: { exams: true, enrollments: true, lessons: true, classes: true },
           },
         },
       }),

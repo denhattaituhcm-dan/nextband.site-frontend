@@ -110,15 +110,29 @@ const examsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     if (search) {
-      where.title = { contains: search };
+      where.title = { contains: search, mode: "insensitive" };
     }
+
+    const sortFieldMap: Record<string, string> = {
+      newest: "createdAt",
+      createdAt: "createdAt",
+      updatedAt: "updatedAt",
+      name: "title",
+      title: "title",
+      duration: "durationMinutes",
+      durationMinutes: "durationMinutes",
+      type: "examType",
+      examType: "examType",
+      week: "week",
+    };
+    const orderField = (sortBy && sortFieldMap[sortBy]) ? sortFieldMap[sortBy] : "createdAt";
 
     const [data, total] = await Promise.all([
       fastify.prisma.exam.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { [sortBy]: sortOrder },
+        orderBy: { [orderField]: sortOrder },
         include: {
           course: {
             select: { id: true, title: true },
