@@ -104310,8 +104310,11 @@ function requireRoles(...roles) {
 }
 
 // server/plugins/auth.ts
-var jwksUrl = env.SUPABASE_JWKS_URL || `${env.SUPABASE_URL.replace(/\/$/, "")}/auth/v1/.well-known/jwks.json`;
-var supabaseJWKS = createRemoteJWKSet(new URL(jwksUrl));
+var getJwksUrl = () => {
+  const base = env.SUPABASE_URL || "https://gzpdlqxjggyxlkeatvvf.supabase.co";
+  return env.SUPABASE_JWKS_URL || `${base.replace(/\/$/, "")}/auth/v1/.well-known/jwks.json`;
+};
+var supabaseJWKS = createRemoteJWKSet(new URL(getJwksUrl()));
 var authPlugin = async (fastify) => {
   await fastify.register(import_jwt.default, {
     secret: env.JWT_SECRET,

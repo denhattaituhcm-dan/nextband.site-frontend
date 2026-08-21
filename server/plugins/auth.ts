@@ -27,8 +27,12 @@ declare module "fastify" {
   }
 }
 
-const jwksUrl = env.SUPABASE_JWKS_URL || `${env.SUPABASE_URL.replace(/\/$/, "")}/auth/v1/.well-known/jwks.json`;
-export const supabaseJWKS = createRemoteJWKSet(new URL(jwksUrl));
+const getJwksUrl = () => {
+  const base = env.SUPABASE_URL || "https://gzpdlqxjggyxlkeatvvf.supabase.co";
+  return env.SUPABASE_JWKS_URL || `${base.replace(/\/$/, "")}/auth/v1/.well-known/jwks.json`;
+};
+
+export const supabaseJWKS = createRemoteJWKSet(new URL(getJwksUrl()));
 
 const authPlugin: FastifyPluginAsync = async (fastify) => {
   await fastify.register(jwt, {
