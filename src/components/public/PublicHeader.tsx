@@ -21,9 +21,9 @@ interface NavItem {
 }
 
 const PUBLIC_NAV_ITEMS: NavItem[] = [
-  { label: "Giới thiệu", href: "/about" },
   { label: "Hệ thống học thuật", href: "/academic-system" },
   { label: "Khóa học", href: "/courses" },
+  { label: "Tiến bộ", href: "/results" },
   { label: "Speaking Forecast", href: "/ielts-speaking-forecast" },
   { label: "Giảng viên", href: "/teachers" },
 ];

@@ -35,10 +35,10 @@ export function PublicFooter() {
             </div>
           </div>
 
-          {/* Group 1: ARIS */}
+          {/* Group 1: Về ARIS */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">
-              ARIS
+              Về ARIS
             </h4>
             <ul className="space-y-2 text-xs font-medium">
               <li>
@@ -46,7 +46,7 @@ export function PublicFooter() {
                   to="/about"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Giới thiệu học viện
+                  Bản sắc &amp; Tuyên ngôn học thuật
                 </Link>
               </li>
               <li>
@@ -54,23 +54,23 @@ export function PublicFooter() {
                   to="/academic-system"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Hệ thống học thuật
+                  Hệ thống chuẩn ARIS-7
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/academic-system#the-aris-way"
+                  to="/teachers"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Phương pháp The ARIS Way
+                  Đội ngũ giảng viên
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/results"
+                  to="/contact"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Bảng vàng thành tích
+                  Liên hệ chuyên môn
                 </Link>
               </li>
             </ul>

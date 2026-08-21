@@ -3,7 +3,6 @@ import {
   LayoutDashboard,
   BookOpen,
   Users,
-  FileText,
   Settings,
   GraduationCap,
   ChevronLeft,
@@ -99,11 +98,6 @@ const adminItems = [
     title: "Cài đặt",
     url: "/admin/settings",
     icon: Settings,
-  },
-  {
-    title: "Logs",
-    url: "/admin/logs",
-    icon: FileText,
   },
 ];
 

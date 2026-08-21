@@ -59,7 +59,7 @@ export default function AdminCourses() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  const { data, isLoading, isError, error, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
     queryKey: [
       "admin-courses",
       debouncedSearch,
@@ -74,6 +74,9 @@ export default function AdminCourses() {
         search: debouncedSearch || undefined,
         sortBy: sortOption,
       }),
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    placeholderData: (previousData) => previousData,
   });
 
   const togglePublishMutation = useMutation({
@@ -248,13 +251,13 @@ export default function AdminCourses() {
 
                   {/* CLASSES (ACTIVE / TOTAL) - ALIGNED RIGHT */}
                   <TableCell className="text-right text-xs">
-                    <span className="font-bold text-primary">{course.activeClassesCount || 2}</span>
-                    <span className="text-muted-foreground"> / {course.totalClassesCount || 4} lớp</span>
+                    <span className="font-bold text-primary">{course.activeClassesCount ?? 0}</span>
+                    <span className="text-muted-foreground"> / {course.totalClassesCount ?? 0} lớp</span>
                   </TableCell>
 
                   {/* STUDENTS - ALIGNED RIGHT */}
                   <TableCell className="text-right text-xs font-semibold text-foreground">
-                    {course.studentsCount || 26} HV
+                    {course.studentsCount ?? 0} HV
                   </TableCell>
 
                   {/* STATUS */}
@@ -335,10 +338,10 @@ export default function AdminCourses() {
           onOpenChange={(open) => !open && setDeleteCourse(null)}
           title="Xóa chương trình đào tạo"
           description={`Bạn có chắc chắn muốn xóa vĩnh viễn khóa học "${deleteCourse.title}"?`}
-          onConfirm={(password) =>
-            deleteMutation.mutate({ id: deleteCourse.id, password })
+          onConfirm={(payload) =>
+            deleteMutation.mutate({ id: deleteCourse.id, password: payload?.password || "" })
           }
-          isLoading={deleteMutation.isPending}
+          loading={deleteMutation.isPending}
         />
       )}
     </div>

@@ -32,6 +32,7 @@ export default function CourseDetail() {
     queryKey: ["course", slug],
     queryFn: () => coursesApi.getById(slug!),
     enabled: !!slug,
+    staleTime: 60 * 1000,
   });
 
   // 2. Fetch Exams in Course
@@ -43,6 +44,7 @@ export default function CourseDetail() {
         limit: 100,
       }),
     enabled: !!course?.id || !!slug,
+    staleTime: 60 * 1000,
   });
 
   // 3. Fetch Submissions for Progress & Status
@@ -50,6 +52,7 @@ export default function CourseDetail() {
     queryKey: ["my-submissions-course", user?.id],
     queryFn: () => submissionsApi.list({ limit: 100, studentId: user?.id }),
     enabled: !!user?.id,
+    staleTime: 30 * 1000,
   });
 
   const exams = examsData?.data || [];

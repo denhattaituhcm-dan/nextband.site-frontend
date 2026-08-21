@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { AuthorizationService } from "../../server/services/authorization.service";
+import { AuthorizationService } from "../../../server/services/authorization.service";
 
 describe("5 Confirmed Defects Remediation Regression Suite", () => {
   let mockPrisma: any;

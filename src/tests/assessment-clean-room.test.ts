@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { canonicalPlacementTestPayload } from "../../server/data/placement-test/questions.js";
-import { authoritativePlacementAnswerKeys } from "../../server/data/placement-test/answerKeys.js";
+import { canonicalPlacementTestPayload } from "../../../server/data/placement-test/questions.js";
+import { authoritativePlacementAnswerKeys } from "../../../server/data/placement-test/answerKeys.js";
 import {
   AssessmentService,
   mapRawScoreToArisLevel,
-} from "../../server/services/assessment.service.js";
+} from "../../../server/services/assessment.service.js";
 import { getArisDiagnosticLevel } from "../features/assessment/domain/diagnostic.rules";
 
 // Mock minimal Prisma client for testing

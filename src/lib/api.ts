@@ -456,7 +456,10 @@ export const coursesApi = {
       try {
         let query = supabase
           .from("courses")
-          .select("*, exams(*)", { count: "exact" });
+          .select(
+            "id, title, description, thumbnail_url, level, price, is_published, is_active, is_locked, slug, created_at, updated_at, exams(id), classes(id), enrollments(id)",
+            { count: "exact" }
+          );
 
         if (params?.search) {
           query = query.ilike("title", `%${params.search}%`);
@@ -501,9 +504,9 @@ export const coursesApi = {
           createdAt: c.created_at || c.createdAt,
           band: c.level === "beginner" ? "3.0 - 4.0" : c.level === "intermediate" ? "5.0 - 5.5" : "6.0 - 6.5+",
           lessonsCount: c.exams && Array.isArray(c.exams) ? c.exams.length : 0,
-          activeClassesCount: 2,
-          totalClassesCount: 4,
-          studentsCount: 26,
+          activeClassesCount: c.classes && Array.isArray(c.classes) ? c.classes.length : 0,
+          totalClassesCount: c.classes && Array.isArray(c.classes) ? c.classes.length : 0,
+          studentsCount: c.enrollments && Array.isArray(c.enrollments) ? c.enrollments.length : 0,
           ...c,
         }));
 
@@ -557,9 +560,9 @@ export const coursesApi = {
           createdAt: c.createdAt || c.created_at,
           band: c.level === "beginner" ? "3.0 - 4.0" : c.level === "intermediate" ? "5.0 - 5.5" : "6.0 - 6.5+",
           lessonsCount: c._count?.exams ?? (c.exams && Array.isArray(c.exams) ? c.exams.length : 0),
-          activeClassesCount: c._count?.classes ?? 2,
-          totalClassesCount: c._count?.classes ?? 4,
-          studentsCount: c._count?.enrollments ?? 26,
+          activeClassesCount: c._count?.classes ?? 0,
+          totalClassesCount: c._count?.classes ?? 0,
+          studentsCount: c._count?.enrollments ?? 0,
           ...c,
         }));
 
@@ -581,7 +584,7 @@ export const coursesApi = {
     const fetchFromSupabase = async () => {
       const { data, error } = await supabase
         .from("courses")
-        .select("*, exams(*)")
+        .select("*, exams(id, title, description, week, duration_minutes, is_published, is_active, created_at, updated_at)")
         .or(`id.eq.${id},slug.eq.${id}`)
         .maybeSingle();
 
@@ -991,14 +994,40 @@ export const examsApi = {
 // =============================================
 export const sectionsApi = {
   getById: async (id: string) => {
-    const { data, error } = await supabase
-      .from("exam_sections")
-      .select("*, question_groups(*, questions(*))")
-      .eq("id", id)
-      .single();
+    if (!isValidUUID(id)) {
+      const err = new Error("Mã phần thi không hợp lệ.");
+      (err as any).httpStatus = 400;
+      throw err;
+    }
 
-    if (error) throw error;
-    return normalizeSectionData(data);
+    const token = await getAuthToken();
+
+    const res = await fetchWithResilience(`${API_BASE_URL}/sections/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      return normalizeSectionData(data);
+    }
+
+    const errData = await res.json().catch(() => ({}));
+    const message =
+      errData.error ||
+      errData.message ||
+      (res.status === 401
+        ? "Phiên đăng nhập đã hết hạn"
+        : res.status === 403
+        ? "Bạn không có quyền truy cập phần thi này"
+        : res.status === 404
+        ? "Không tìm thấy phần thi"
+        : "Không thể tải thông tin phần thi");
+    const err = new Error(message);
+    (err as any).httpStatus = res.status;
+    throw err;
   },
 
   create: async (section: {
@@ -1007,19 +1036,23 @@ export const sectionsApi = {
     title: string;
     instructions?: string;
   }) => {
-    const { data, error } = await supabase
-      .from("exam_sections")
-      .insert({
-        exam_id: section.examId,
-        section_type: section.sectionType as any,
-        title: section.title,
-        instructions: section.instructions,
-      })
-      .select()
-      .single();
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/sections`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(section),
+    });
 
-    if (error) throw error;
-    return data;
+    if (res.ok) {
+      const data = await res.json();
+      return normalizeSectionData(data);
+    }
+
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Không thể tạo phần thi thủ công");
   },
 
   update: async (
@@ -1035,34 +1068,38 @@ export const sectionsApi = {
       sectionType: string;
     }>
   ) => {
-    const updatePayload: Record<string, any> = {};
-    if (section.title !== undefined) updatePayload.title = section.title;
-    if (section.instructions !== undefined) updatePayload.instructions = section.instructions;
-    if (section.content !== undefined) updatePayload.content = section.content;
-    if (section.audioUrl !== undefined) updatePayload.audio_url = section.audioUrl;
-    if (section.audioScript !== undefined) updatePayload.audio_script = section.audioScript;
-    if (section.durationMinutes !== undefined) updatePayload.duration_minutes = section.durationMinutes;
-    if (section.orderIndex !== undefined) updatePayload.order_index = section.orderIndex;
-    if (section.sectionType !== undefined) updatePayload.section_type = section.sectionType;
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/sections/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(section),
+    });
 
-    const { data, error } = await supabase
-      .from("exam_sections")
-      .update(updatePayload)
-      .eq("id", id)
-      .select()
-      .single();
+    if (res.ok) {
+      const data = await res.json();
+      return normalizeSectionData(data);
+    }
 
-    if (error) throw error;
-    return data;
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Không thể cập nhật Section");
   },
 
   delete: async (id: string) => {
-    const { error } = await supabase
-      .from("exam_sections")
-      .delete()
-      .eq("id", id);
-    if (error) throw error;
-    return { success: true };
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/sections/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+
+    if (res.ok) return { success: true };
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Không thể xóa Section");
   },
 };
 
@@ -1097,49 +1134,50 @@ export const questionsApi = {
     audioUrl?: string;
     orderIndex?: number;
   }) => {
-    const { data, error } = await supabase
-      .from("question_groups")
-      .insert({
-        section_id: group.sectionId,
-        title: group.title,
-        instructions: group.instructions,
-        passage: group.passage,
-        audio_url: group.audioUrl,
-        order_index: group.orderIndex ?? 0,
-      })
-      .select()
-      .single();
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/questions/groups`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(group),
+    });
 
-    if (error) throw error;
-    return data;
+    if (res.ok) return await res.json();
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Không thể thêm nhóm câu hỏi");
   },
 
   updateGroup: async (id: string, group: UpdateQuestionGroupPayload) => {
-    const updatePayload: Record<string, any> = {};
-    if (group.title !== undefined) updatePayload.title = group.title;
-    if (group.instructions !== undefined) updatePayload.instructions = group.instructions;
-    if (group.passage !== undefined) updatePayload.passage = group.passage;
-    if (group.audioUrl !== undefined) updatePayload.audio_url = group.audioUrl;
-    if (group.orderIndex !== undefined) updatePayload.order_index = group.orderIndex;
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/questions/groups/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(group),
+    });
 
-    const { data, error } = await supabase
-      .from("question_groups")
-      .update(updatePayload)
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    if (res.ok) return await res.json();
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Không thể cập nhật nhóm câu hỏi");
   },
 
   deleteGroup: async (id: string) => {
-    const { error } = await supabase
-      .from("question_groups")
-      .delete()
-      .eq("id", id);
-    if (error) throw error;
-    return { success: true };
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/questions/groups/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+
+    if (res.ok) return { success: true };
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Không thể xóa nhóm câu hỏi");
   },
 
   create: async (question: {
@@ -1152,44 +1190,35 @@ export const questionsApi = {
     points?: number;
     orderIndex?: number;
   }) => {
-    const { data, error } = await supabase
-      .from("questions")
-      .insert({
-        group_id: question.groupId,
-        question_type: question.questionType as any,
-        question_text: question.questionText,
-        options: question.options,
-        correct_answer: question.correctAnswer,
-        audio_url: question.audioUrl,
-        points: question.points ?? 1.0,
-        order_index: question.orderIndex ?? 0,
-      })
-      .select()
-      .single();
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/questions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(question),
+    });
 
-    if (error) throw error;
-    return data;
+    if (res.ok) return await res.json();
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Không thể thêm câu hỏi");
   },
 
   update: async (id: string, question: UpdateQuestionPayload) => {
-    const updatePayload: Record<string, any> = {};
-    if (question.questionType !== undefined) updatePayload.question_type = question.questionType;
-    if (question.questionText !== undefined) updatePayload.question_text = question.questionText;
-    if (question.options !== undefined) updatePayload.options = question.options;
-    if (question.correctAnswer !== undefined) updatePayload.correct_answer = question.correctAnswer;
-    if (question.audioUrl !== undefined) updatePayload.audio_url = question.audioUrl;
-    if (question.points !== undefined) updatePayload.points = question.points;
-    if (question.orderIndex !== undefined) updatePayload.order_index = question.orderIndex;
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/questions/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(question),
+    });
 
-    const { data, error } = await supabase
-      .from("questions")
-      .update(updatePayload)
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    if (res.ok) return await res.json();
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Không thể cập nhật câu hỏi");
   },
 
   delete: async (id: string) => {
@@ -1207,23 +1236,19 @@ export const questionsApi = {
   },
 
   bulkCreate: async (groupId: string, questions: any[]) => {
-    const records = questions.map((q, idx) => ({
-      group_id: groupId,
-      question_type: q.questionType || "multiple_choice",
-      question_text: q.questionText,
-      options: q.options,
-      correct_answer: q.correctAnswer,
-      points: q.points || 1.0,
-      order_index: q.orderIndex ?? idx,
-    }));
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/questions/bulk`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ groupId, questions }),
+    });
 
-    const { data, error } = await supabase
-      .from("questions")
-      .insert(records)
-      .select();
-
-    if (error) throw error;
-    return data;
+    if (res.ok) return await res.json();
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Có lỗi xảy ra khi tạo câu hỏi hàng loạt");
   },
 };
 
@@ -2175,14 +2200,6 @@ export const statsApi = {
   getMonthlyAttendance: async (params?: { month?: string; classId?: string }) => {
     return { totalPresent: 0, totalAbsent: 0, attendanceRate: 1.0 };
   },
-};
-
-// =============================================
-// LOGS API (Deprecated)
-// =============================================
-export const logsApi = {
-  getLogs: async () => "Log Viewer is disabled in serverless deployment.",
-  getLastLogs: async () => "Log Viewer is disabled in serverless deployment.",
 };
 
 // =============================================
@@ -3912,7 +3929,7 @@ export const assessmentApi = {
     }
 
     // Resilient local test bank fallback
-    const { canonicalPlacementTestPayload } = await import("../../server/data/placement-test/questions");
+    const { canonicalPlacementTestPayload } = await import("../../../server/data/placement-test/questions");
     return {
       session: {
         sessionId,

@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   AssessmentService,
   mapRawScoreToArisLevel,
-} from "../../server/services/assessment.service";
-import { canonicalPlacementTestPayload } from "../../server/data/placement-test/questions";
+} from "../../../server/services/assessment.service";
+import { canonicalPlacementTestPayload } from "../../../server/data/placement-test/questions";
 
 describe("Guest Assessment Security & Business Invariants", () => {
   let mockPrisma: any;

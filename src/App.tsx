@@ -106,7 +106,6 @@ const AdminTeachers = lazyWithRetry(() => import("@/pages/admin/Teachers"));
 const AdminAdmins = lazyWithRetry(() => import("@/pages/admin/Admins"));
 const AdminCheckAttempt = lazyWithRetry(() => import("@/pages/admin/CheckAttempt"));
 const AdminSubmissionGrade = lazyWithRetry(() => import("@/pages/admin/SubmissionGrade"));
-const AdminLogViewer = lazyWithRetry(() => import("@/pages/admin/LogViewer"));
 const AdminClasses = lazyWithRetry(() => import("@/pages/admin/Classes"));
 const AdminClassEdit = lazyWithRetry(() => import("@/pages/admin/ClassWorkspace"));
 const AdminSettings = lazyWithRetry(() => import("@/pages/admin/Settings"));
@@ -231,6 +230,7 @@ const App = () => (
                 <Route path="/courses/:slug" element={<CourseDetailPage />} />
                 <Route path="/teachers" element={<TeachersPage />} />
                 <Route path="/results" element={<ResultsPage />} />
+                <Route path="/progress" element={<ResultsPage />} />
                 <Route path="/careers" element={<CareersPage />} />
                 <Route path="/careers/:jobSlug" element={<JobDetailPage />} />
                 <Route path="/news" element={<NewsPage />} />
@@ -421,14 +421,6 @@ const App = () => (
                 <Route
                   path="/admin/submissions/:id"
                   element={<AdminSubmissionGrade />}
-                />
-                <Route
-                  path="/admin/logs"
-                  element={
-                    <ProtectedRoute requiredRoles={["admin"]}>
-                      <AdminLogViewer />
-                    </ProtectedRoute>
-                  }
                 />
                 <Route
                   path="/admin/classes"
