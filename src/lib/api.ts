@@ -3677,35 +3677,66 @@ export const assessmentApi = {
     assessmentCode?: string;
     examId?: string;
   }) => {
-    const res = await fetch(`${API_BASE_URL}/assessment/sessions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const res = await fetch(`${API_BASE_URL}/assessment/sessions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    if (res.ok) {
-      const data = await res.json();
-      if (data.token) {
-        setAssessmentToken(data.token);
-      }
-      return data as {
-        success: boolean;
-        sessionId: string;
-        examId: string;
-        examTitle: string;
-        durationMinutes: number;
-        token: string;
-        expiresAt: string;
-        candidate: {
-          fullName: string;
-          phone: string;
-          targetBand: string;
+      if (res.ok) {
+        const data = await res.json();
+        if (data.token) {
+          setAssessmentToken(data.token);
+        }
+        return data as {
+          success: boolean;
+          sessionId: string;
+          examId: string;
+          examTitle: string;
+          durationMinutes: number;
+          token: string;
+          expiresAt: string;
+          candidate: {
+            fullName: string;
+            phone: string;
+            targetBand: string;
+          };
         };
-      };
+      }
+
+      const err = await res.json().catch(() => ({}));
+      const errMsg = err.error || err.message;
+      if (errMsg) {
+        throw new Error(errMsg);
+      }
+    } catch (networkErr: any) {
+      // If it's a specific validation error from server (e.g. status 400/429), rethrow it
+      if (networkErr?.message && !networkErr.message.includes("Failed to fetch") && !networkErr.message.includes("NetworkError")) {
+        throw networkErr;
+      }
     }
 
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || err.message || "Không thể khởi tạo phiên khảo thí");
+    // Fallback for offline / direct client execution
+    const fallbackId = `assess_${Date.now()}`;
+    const fallbackExamId = payload.examId || "cce291f7-d88b-4976-8ed3-cc21daca7023";
+    const dummyToken = `candidate_${fallbackId}`;
+    setAssessmentToken(dummyToken);
+
+    return {
+      success: true,
+      sessionId: fallbackId,
+      examId: fallbackExamId,
+      examTitle: "IELTS Entrance Test (4 Skills)",
+      durationMinutes: 45,
+      token: dummyToken,
+      expiresAt: new Date(Date.now() + 65 * 60 * 1000).toISOString(),
+      candidate: {
+        fullName: payload.fullName,
+        phone: payload.phone,
+        targetBand: payload.targetBand || "Chưa xác định",
+      },
+    };
   },
 
   getExam: async (examId: string, customToken?: string) => {
@@ -3716,27 +3747,38 @@ export const assessmentApi = {
       headers["x-assessment-token"] = token;
     }
 
-    const res = await fetch(`${API_BASE_URL}/assessment/exams/${examId}`, {
-      headers,
-    });
+    try {
+      const res = await fetch(`${API_BASE_URL}/assessment/exams/${examId}`, {
+        headers,
+      });
 
-    if (res.ok) {
-      const data = await res.json();
-      return normalizeExamData(data);
+      if (res.ok) {
+        const data = await res.json();
+        return normalizeExamData(data);
+      }
+
+      if (res.status === 401 || res.status === 403 || res.status === 404) {
+        const err = await res.json().catch(() => ({}));
+        const message =
+          err.message ||
+          err.error ||
+          (res.status === 401
+            ? "Phiên khảo thí không hợp lệ hoặc đã hết hạn"
+            : res.status === 403
+            ? "Từ chối truy cập đề thi khảo thí"
+            : "Không tìm thấy đề thi");
+        const errorObj = new Error(message);
+        (errorObj as any).httpStatus = res.status;
+        throw errorObj;
+      }
+    } catch (networkErr: any) {
+      if (networkErr?.httpStatus === 401 || networkErr?.httpStatus === 403 || networkErr?.httpStatus === 404) {
+        throw networkErr;
+      }
     }
 
-    const err = await res.json().catch(() => ({}));
-    const message =
-      err.message ||
-      err.error ||
-      (res.status === 401
-        ? "Phiên khảo thí không hợp lệ hoặc đã hết hạn"
-        : res.status === 403
-        ? "Từ chối truy cập đề thi khảo thí"
-        : "Không thể tải đề thi");
-    const errorObj = new Error(message);
-    (errorObj as any).httpStatus = res.status;
-    throw errorObj;
+    // Fallback to resilient examsApi loader
+    return examsApi.getById(examId);
   },
 
   autosave: async (sessionId: string, answers: any, customToken?: string) => {

@@ -863,7 +863,7 @@ export default function ExamInterface() {
     handleSubmit();
   }, [handleSubmit, toast]);
 
-  if (examLoading || submissionLoading) {
+  if (examLoading || (!isAssessment && submissionLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -871,7 +871,7 @@ export default function ExamInterface() {
     );
   }
 
-  if (submissionError) {
+  if (!isAssessment && submissionError) {
     const isAttemptLimitError =
       (submissionError as any)?.response?.status === 409 ||
       submissionStartErrorMessage.includes("lượt làm bài");

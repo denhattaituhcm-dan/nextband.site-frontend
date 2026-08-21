@@ -269,7 +269,16 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
     const cleanName = fullName.trim();
     const cleanPhone = phone.trim().replace(/\s+/g, "");
 
-    if (!cleanName || !cleanPhone) return;
+    if (!cleanName || cleanName.length < 2) {
+      setErrorMessage("Vui lòng nhập họ và tên hợp lệ (tối thiểu 2 ký tự)");
+      return;
+    }
+
+    const digitsOnly = cleanPhone.replace(/\D/g, "");
+    if (!digitsOnly || digitsOnly.length < 9) {
+      setErrorMessage("Vui lòng nhập số điện thoại hợp lệ (tối thiểu 9 chữ số)");
+      return;
+    }
 
     setLoading(true);
     setErrorMessage(null);
@@ -295,9 +304,8 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
         setIsSubmitted(true);
       }
     } catch (err: any) {
-      console.error("Assessment session initialization error:", err);
-      // Resilient fallback: let candidate proceed to assessment portal
-      setErrorMessage(err.message || "Không thể kết nối máy chủ. Vui lòng thử lại hoặc liên hệ Zalo.");
+      console.warn("Assessment session initialization notice:", err);
+      setErrorMessage(err.message || "Không thể khởi tạo phiên khảo thí. Vui lòng kiểm tra lại thông tin.");
     } finally {
       setLoading(false);
     }
