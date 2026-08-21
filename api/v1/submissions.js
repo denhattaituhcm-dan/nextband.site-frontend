@@ -16744,20 +16744,20 @@ var require_compile = __commonJS({
     var util_1 = require_util();
     var validate_1 = require_validate();
     var SchemaEnv = class {
-      constructor(env2) {
+      constructor(env3) {
         var _a;
         this.refs = {};
         this.dynamicAnchors = {};
         let schema;
-        if (typeof env2.schema == "object")
-          schema = env2.schema;
-        this.schema = env2.schema;
-        this.schemaId = env2.schemaId;
-        this.root = env2.root || this;
-        this.baseId = (_a = env2.baseId) !== null && _a !== void 0 ? _a : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env2.schemaId || "$id"]);
-        this.schemaPath = env2.schemaPath;
-        this.localRefs = env2.localRefs;
-        this.meta = env2.meta;
+        if (typeof env3.schema == "object")
+          schema = env3.schema;
+        this.schema = env3.schema;
+        this.schemaId = env3.schemaId;
+        this.root = env3.root || this;
+        this.baseId = (_a = env3.baseId) !== null && _a !== void 0 ? _a : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env3.schemaId || "$id"]);
+        this.schemaPath = env3.schemaPath;
+        this.localRefs = env3.localRefs;
+        this.meta = env3.meta;
         this.$async = schema === null || schema === void 0 ? void 0 : schema.$async;
         this.refs = {};
       }
@@ -16941,15 +16941,15 @@ var require_compile = __commonJS({
           baseId = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schId);
         }
       }
-      let env2;
+      let env3;
       if (typeof schema != "boolean" && schema.$ref && !(0, util_1.schemaHasRulesButRef)(schema, this.RULES)) {
         const $ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schema.$ref);
-        env2 = resolveSchema.call(this, root, $ref);
+        env3 = resolveSchema.call(this, root, $ref);
       }
       const { schemaId } = this.opts;
-      env2 = env2 || new SchemaEnv({ schema, schemaId, root, baseId });
-      if (env2.schema !== env2.root.schema)
-        return env2;
+      env3 = env3 || new SchemaEnv({ schema, schemaId, root, baseId });
+      if (env3.schema !== env3.root.schema)
+        return env3;
       return void 0;
     }
   }
@@ -18463,8 +18463,8 @@ var require_ref = __commonJS({
       schemaType: "string",
       code(cxt) {
         const { gen, schema: $ref, it } = cxt;
-        const { baseId, schemaEnv: env2, validateName, opts, self: self2 } = it;
-        const { root } = env2;
+        const { baseId, schemaEnv: env3, validateName, opts, self: self2 } = it;
+        const { root } = env3;
         if (($ref === "#" || $ref === "#/") && baseId === root.baseId)
           return callRootRef();
         const schOrEnv = compile_1.resolveRef.call(self2, root, baseId, $ref);
@@ -18474,8 +18474,8 @@ var require_ref = __commonJS({
           return callValidate(schOrEnv);
         return inlineRefSchema(schOrEnv);
         function callRootRef() {
-          if (env2 === root)
-            return callRef(cxt, validateName, env2, env2.$async);
+          if (env3 === root)
+            return callRef(cxt, validateName, env3, env3.$async);
           const rootName = gen.scopeValue("root", { ref: root });
           return callRef(cxt, (0, codegen_1._)`${rootName}.validate`, root, root.$async);
         }
@@ -18505,14 +18505,14 @@ var require_ref = __commonJS({
     exports.getValidate = getValidate;
     function callRef(cxt, v, sch, $async) {
       const { gen, it } = cxt;
-      const { allErrors, schemaEnv: env2, opts } = it;
+      const { allErrors, schemaEnv: env3, opts } = it;
       const passCxt = opts.passContext ? names_1.default.this : codegen_1.nil;
       if ($async)
         callAsyncRef();
       else
         callSyncRef();
       function callAsyncRef() {
-        if (!env2.$async)
+        if (!env3.$async)
           throw new Error("async schema referenced by sync schema");
         const valid = gen.let("valid");
         gen.try(() => {
@@ -26958,20 +26958,20 @@ var require_compile2 = __commonJS({
     var util_1 = require_util2();
     var validate_1 = require_validate2();
     var SchemaEnv = class {
-      constructor(env2) {
+      constructor(env3) {
         var _a;
         this.refs = {};
         this.dynamicAnchors = {};
         let schema;
-        if (typeof env2.schema == "object")
-          schema = env2.schema;
-        this.schema = env2.schema;
-        this.schemaId = env2.schemaId;
-        this.root = env2.root || this;
-        this.baseId = (_a = env2.baseId) !== null && _a !== void 0 ? _a : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env2.schemaId || "$id"]);
-        this.schemaPath = env2.schemaPath;
-        this.localRefs = env2.localRefs;
-        this.meta = env2.meta;
+        if (typeof env3.schema == "object")
+          schema = env3.schema;
+        this.schema = env3.schema;
+        this.schemaId = env3.schemaId;
+        this.root = env3.root || this;
+        this.baseId = (_a = env3.baseId) !== null && _a !== void 0 ? _a : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env3.schemaId || "$id"]);
+        this.schemaPath = env3.schemaPath;
+        this.localRefs = env3.localRefs;
+        this.meta = env3.meta;
         this.$async = schema === null || schema === void 0 ? void 0 : schema.$async;
         this.refs = {};
       }
@@ -27155,15 +27155,15 @@ var require_compile2 = __commonJS({
           baseId = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schId);
         }
       }
-      let env2;
+      let env3;
       if (typeof schema != "boolean" && schema.$ref && !(0, util_1.schemaHasRulesButRef)(schema, this.RULES)) {
         const $ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schema.$ref);
-        env2 = resolveSchema.call(this, root, $ref);
+        env3 = resolveSchema.call(this, root, $ref);
       }
       const { schemaId } = this.opts;
-      env2 = env2 || new SchemaEnv({ schema, schemaId, root, baseId });
-      if (env2.schema !== env2.root.schema)
-        return env2;
+      env3 = env3 || new SchemaEnv({ schema, schemaId, root, baseId });
+      if (env3.schema !== env3.root.schema)
+        return env3;
       return void 0;
     }
   }
@@ -28677,8 +28677,8 @@ var require_ref2 = __commonJS({
       schemaType: "string",
       code(cxt) {
         const { gen, schema: $ref, it } = cxt;
-        const { baseId, schemaEnv: env2, validateName, opts, self: self2 } = it;
-        const { root } = env2;
+        const { baseId, schemaEnv: env3, validateName, opts, self: self2 } = it;
+        const { root } = env3;
         if (($ref === "#" || $ref === "#/") && baseId === root.baseId)
           return callRootRef();
         const schOrEnv = compile_1.resolveRef.call(self2, root, baseId, $ref);
@@ -28688,8 +28688,8 @@ var require_ref2 = __commonJS({
           return callValidate(schOrEnv);
         return inlineRefSchema(schOrEnv);
         function callRootRef() {
-          if (env2 === root)
-            return callRef(cxt, validateName, env2, env2.$async);
+          if (env3 === root)
+            return callRef(cxt, validateName, env3, env3.$async);
           const rootName = gen.scopeValue("root", { ref: root });
           return callRef(cxt, (0, codegen_1._)`${rootName}.validate`, root, root.$async);
         }
@@ -28719,14 +28719,14 @@ var require_ref2 = __commonJS({
     exports.getValidate = getValidate;
     function callRef(cxt, v, sch, $async) {
       const { gen, it } = cxt;
-      const { allErrors, schemaEnv: env2, opts } = it;
+      const { allErrors, schemaEnv: env3, opts } = it;
       const passCxt = opts.passContext ? names_1.default.this : codegen_1.nil;
       if ($async)
         callAsyncRef();
       else
         callSyncRef();
       function callAsyncRef() {
-        if (!env2.$async)
+        if (!env3.$async)
           throw new Error("async schema referenced by sync schema");
         const valid = gen.let("valid");
         gen.try(() => {
@@ -35368,20 +35368,20 @@ var require_compile3 = __commonJS({
     var util_1 = require_util3();
     var validate_1 = require_validate3();
     var SchemaEnv = class {
-      constructor(env2) {
+      constructor(env3) {
         var _a;
         this.refs = {};
         this.dynamicAnchors = {};
         let schema;
-        if (typeof env2.schema == "object")
-          schema = env2.schema;
-        this.schema = env2.schema;
-        this.schemaId = env2.schemaId;
-        this.root = env2.root || this;
-        this.baseId = (_a = env2.baseId) !== null && _a !== void 0 ? _a : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env2.schemaId || "$id"]);
-        this.schemaPath = env2.schemaPath;
-        this.localRefs = env2.localRefs;
-        this.meta = env2.meta;
+        if (typeof env3.schema == "object")
+          schema = env3.schema;
+        this.schema = env3.schema;
+        this.schemaId = env3.schemaId;
+        this.root = env3.root || this;
+        this.baseId = (_a = env3.baseId) !== null && _a !== void 0 ? _a : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env3.schemaId || "$id"]);
+        this.schemaPath = env3.schemaPath;
+        this.localRefs = env3.localRefs;
+        this.meta = env3.meta;
         this.$async = schema === null || schema === void 0 ? void 0 : schema.$async;
         this.refs = {};
       }
@@ -35565,15 +35565,15 @@ var require_compile3 = __commonJS({
           baseId = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schId);
         }
       }
-      let env2;
+      let env3;
       if (typeof schema != "boolean" && schema.$ref && !(0, util_1.schemaHasRulesButRef)(schema, this.RULES)) {
         const $ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schema.$ref);
-        env2 = resolveSchema.call(this, root, $ref);
+        env3 = resolveSchema.call(this, root, $ref);
       }
       const { schemaId } = this.opts;
-      env2 = env2 || new SchemaEnv({ schema, schemaId, root, baseId });
-      if (env2.schema !== env2.root.schema)
-        return env2;
+      env3 = env3 || new SchemaEnv({ schema, schemaId, root, baseId });
+      if (env3.schema !== env3.root.schema)
+        return env3;
       return void 0;
     }
   }
@@ -37087,8 +37087,8 @@ var require_ref4 = __commonJS({
       schemaType: "string",
       code(cxt) {
         const { gen, schema: $ref, it } = cxt;
-        const { baseId, schemaEnv: env2, validateName, opts, self: self2 } = it;
-        const { root } = env2;
+        const { baseId, schemaEnv: env3, validateName, opts, self: self2 } = it;
+        const { root } = env3;
         if (($ref === "#" || $ref === "#/") && baseId === root.baseId)
           return callRootRef();
         const schOrEnv = compile_1.resolveRef.call(self2, root, baseId, $ref);
@@ -37098,8 +37098,8 @@ var require_ref4 = __commonJS({
           return callValidate(schOrEnv);
         return inlineRefSchema(schOrEnv);
         function callRootRef() {
-          if (env2 === root)
-            return callRef(cxt, validateName, env2, env2.$async);
+          if (env3 === root)
+            return callRef(cxt, validateName, env3, env3.$async);
           const rootName = gen.scopeValue("root", { ref: root });
           return callRef(cxt, (0, codegen_1._)`${rootName}.validate`, root, root.$async);
         }
@@ -37129,14 +37129,14 @@ var require_ref4 = __commonJS({
     exports.getValidate = getValidate;
     function callRef(cxt, v, sch, $async) {
       const { gen, it } = cxt;
-      const { allErrors, schemaEnv: env2, opts } = it;
+      const { allErrors, schemaEnv: env3, opts } = it;
       const passCxt = opts.passContext ? names_1.default.this : codegen_1.nil;
       if ($async)
         callAsyncRef();
       else
         callSyncRef();
       function callAsyncRef() {
-        if (!env2.$async)
+        if (!env3.$async)
           throw new Error("async schema referenced by sync schema");
         const valid = gen.let("valid");
         gen.try(() => {
@@ -69496,7 +69496,7 @@ var require_ms = __commonJS({
 // node_modules/debug/src/common.js
 var require_common2 = __commonJS({
   "node_modules/debug/src/common.js"(exports, module) {
-    function setup(env2) {
+    function setup(env3) {
       createDebug.debug = createDebug;
       createDebug.default = createDebug;
       createDebug.coerce = coerce2;
@@ -69505,8 +69505,8 @@ var require_common2 = __commonJS({
       createDebug.enabled = enabled;
       createDebug.humanize = require_ms();
       createDebug.destroy = destroy;
-      Object.keys(env2).forEach((key) => {
-        createDebug[key] = env2[key];
+      Object.keys(env3).forEach((key) => {
+        createDebug[key] = env3[key];
       });
       createDebug.names = [];
       createDebug.skips = [];
@@ -69860,20 +69860,20 @@ var require_supports_color = __commonJS({
     var os = __require("os");
     var tty = __require("tty");
     var hasFlag = require_has_flag();
-    var { env: env2 } = process;
+    var { env: env3 } = process;
     var forceColor;
     if (hasFlag("no-color") || hasFlag("no-colors") || hasFlag("color=false") || hasFlag("color=never")) {
       forceColor = 0;
     } else if (hasFlag("color") || hasFlag("colors") || hasFlag("color=true") || hasFlag("color=always")) {
       forceColor = 1;
     }
-    if ("FORCE_COLOR" in env2) {
-      if (env2.FORCE_COLOR === "true") {
+    if ("FORCE_COLOR" in env3) {
+      if (env3.FORCE_COLOR === "true") {
         forceColor = 1;
-      } else if (env2.FORCE_COLOR === "false") {
+      } else if (env3.FORCE_COLOR === "false") {
         forceColor = 0;
       } else {
-        forceColor = env2.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env2.FORCE_COLOR, 10), 3);
+        forceColor = env3.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env3.FORCE_COLOR, 10), 3);
       }
     }
     function translateLevel(level) {
@@ -69901,7 +69901,7 @@ var require_supports_color = __commonJS({
         return 0;
       }
       const min = forceColor || 0;
-      if (env2.TERM === "dumb") {
+      if (env3.TERM === "dumb") {
         return min;
       }
       if (process.platform === "win32") {
@@ -69911,34 +69911,34 @@ var require_supports_color = __commonJS({
         }
         return 1;
       }
-      if ("CI" in env2) {
-        if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "GITHUB_ACTIONS", "BUILDKITE"].some((sign) => sign in env2) || env2.CI_NAME === "codeship") {
+      if ("CI" in env3) {
+        if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "GITHUB_ACTIONS", "BUILDKITE"].some((sign) => sign in env3) || env3.CI_NAME === "codeship") {
           return 1;
         }
         return min;
       }
-      if ("TEAMCITY_VERSION" in env2) {
-        return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env2.TEAMCITY_VERSION) ? 1 : 0;
+      if ("TEAMCITY_VERSION" in env3) {
+        return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env3.TEAMCITY_VERSION) ? 1 : 0;
       }
-      if (env2.COLORTERM === "truecolor") {
+      if (env3.COLORTERM === "truecolor") {
         return 3;
       }
-      if ("TERM_PROGRAM" in env2) {
-        const version = parseInt((env2.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
-        switch (env2.TERM_PROGRAM) {
+      if ("TERM_PROGRAM" in env3) {
+        const version = parseInt((env3.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
+        switch (env3.TERM_PROGRAM) {
           case "iTerm.app":
             return version >= 3 ? 3 : 2;
           case "Apple_Terminal":
             return 2;
         }
       }
-      if (/-256(color)?$/i.test(env2.TERM)) {
+      if (/-256(color)?$/i.test(env3.TERM)) {
         return 2;
       }
-      if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env2.TERM)) {
+      if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env3.TERM)) {
         return 1;
       }
-      if ("COLORTERM" in env2) {
+      if ("COLORTERM" in env3) {
         return 1;
       }
       return min;
@@ -80849,8 +80849,8 @@ var require_loginticket = __commonJS({
        * @param {TokenPayload} pay Payload of the jwt
        * @constructor
        */
-      constructor(env2, pay) {
-        this.envelope = env2;
+      constructor(env3, pay) {
+        this.envelope = env3;
         this.payload = pay;
       }
       getEnvelope() {
@@ -81735,25 +81735,25 @@ var require_envDetect = __commonJS({
       return envPromise;
     }
     async function getEnvMemoized() {
-      let env2 = GCPEnv.NONE;
+      let env3 = GCPEnv.NONE;
       if (isAppEngine()) {
-        env2 = GCPEnv.APP_ENGINE;
+        env3 = GCPEnv.APP_ENGINE;
       } else if (isCloudFunction()) {
-        env2 = GCPEnv.CLOUD_FUNCTIONS;
+        env3 = GCPEnv.CLOUD_FUNCTIONS;
       } else if (await isComputeEngine()) {
         if (await isKubernetesEngine()) {
-          env2 = GCPEnv.KUBERNETES_ENGINE;
+          env3 = GCPEnv.KUBERNETES_ENGINE;
         } else if (isCloudRun()) {
-          env2 = GCPEnv.CLOUD_RUN;
+          env3 = GCPEnv.CLOUD_RUN;
         } else if (isCloudRunJob()) {
-          env2 = GCPEnv.CLOUD_RUN_JOBS;
+          env3 = GCPEnv.CLOUD_RUN_JOBS;
         } else {
-          env2 = GCPEnv.COMPUTE_ENGINE;
+          env3 = GCPEnv.COMPUTE_ENGINE;
         }
       } else {
-        env2 = GCPEnv.NONE;
+        env3 = GCPEnv.NONE;
       }
-      return env2;
+      return env3;
     }
     function isAppEngine() {
       return !!(process.env.GAE_SERVICE || process.env.GAE_MODULE_NAME);
@@ -103138,13 +103138,15 @@ try {
     NOTIFICATION_EMAIL_TO: "arisieltsdeeplearning@gmail.com"
   };
 }
-var env = envData;
+var env2 = envData;
 
 // server/plugins/prisma.ts
 var import_fastify_plugin = __toESM(require_plugin2(), 1);
 import { PrismaClient } from "@prisma/client";
 var prismaPlugin = async (fastify) => {
+  const dbUrl = process.env.DATABASE_URL || env.DATABASE_URL;
   const prisma = new PrismaClient({
+    datasources: dbUrl ? { db: { url: dbUrl } } : void 0,
     log: fastify.log.level === "debug" ? ["query", "error", "warn"] : ["error"]
   });
   try {
@@ -104190,7 +104192,7 @@ async function verifyAndResolveUser(request) {
   let email = "";
   let fallbackRoles = [];
   try {
-    const expectedIssuer = `${env.SUPABASE_URL.replace(/\/$/, "")}/auth/v1`;
+    const expectedIssuer = `${env2.SUPABASE_URL.replace(/\/$/, "")}/auth/v1`;
     const { payload } = await jwtVerify(token, supabaseJWKS, {
       issuer: expectedIssuer,
       algorithms: ["ES256", "RS256"]
@@ -104311,15 +104313,15 @@ function requireRoles(...roles) {
 
 // server/plugins/auth.ts
 var getJwksUrl = () => {
-  const base = env.SUPABASE_URL || "https://gzpdlqxjggyxlkeatvvf.supabase.co";
-  return env.SUPABASE_JWKS_URL || `${base.replace(/\/$/, "")}/auth/v1/.well-known/jwks.json`;
+  const base = env2.SUPABASE_URL || "https://gzpdlqxjggyxlkeatvvf.supabase.co";
+  return env2.SUPABASE_JWKS_URL || `${base.replace(/\/$/, "")}/auth/v1/.well-known/jwks.json`;
 };
 var supabaseJWKS = createRemoteJWKSet(new URL(getJwksUrl()));
 var authPlugin = async (fastify) => {
   await fastify.register(import_jwt.default, {
-    secret: env.JWT_SECRET,
+    secret: env2.JWT_SECRET,
     sign: {
-      expiresIn: env.JWT_EXPIRES_IN
+      expiresIn: env2.JWT_EXPIRES_IN
     }
   });
   fastify.decorate("authenticate", authenticate);
@@ -104367,8 +104369,8 @@ function handleValidation(validation, request, reply) {
 
 // server/utils/file.ts
 function getBaseUrl() {
-  if (env.APP_URL) return env.APP_URL;
-  const port = env.PORT ?? "3000";
+  if (env2.APP_URL) return env2.APP_URL;
+  const port = env2.PORT ?? "3000";
   return `http://localhost:${port}`;
 }
 function toFileUrl(path) {
@@ -110774,7 +110776,7 @@ var ALLOWED_AUDIO_TYPES = [
 ];
 var ALLOWED_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_AUDIO_TYPES];
 function getUploadDir(subDir) {
-  const baseDir = join(process.cwd(), env.UPLOAD_DIR);
+  const baseDir = join(process.cwd(), env2.UPLOAD_DIR);
   const targetDir = subDir ? join(baseDir, subDir) : baseDir;
   if (!existsSync(targetDir)) {
     mkdirSync(targetDir, { recursive: true });
@@ -110908,7 +110910,7 @@ var uploadsRoutes = async (fastify) => {
         return reply.status(400).send({ error: "URL t\u1EC7p kh\xF4ng \u0111\xFAng \u0111\u1ECBnh d\u1EA1ng /uploads/(images|audio)/..." });
       }
       const [, subDir, rawFileName] = match;
-      const baseUploadDir = join(process.cwd(), env.UPLOAD_DIR);
+      const baseUploadDir = join(process.cwd(), env2.UPLOAD_DIR);
       const authService = new AuthorizationService(fastify.prisma);
       let filePath;
       try {
@@ -112674,24 +112676,24 @@ var LeadNotificationService = class {
     this.initTransporter();
   }
   initTransporter() {
-    if (env.SMTP_HOST) {
-      const port = env.SMTP_PORT ? parseInt(env.SMTP_PORT, 10) : 587;
-      const isSecure = env.SMTP_SECURE === "true" || port === 465;
+    if (env2.SMTP_HOST) {
+      const port = env2.SMTP_PORT ? parseInt(env2.SMTP_PORT, 10) : 587;
+      const isSecure = env2.SMTP_SECURE === "true" || port === 465;
       this.transporter = import_nodemailer.default.createTransport({
-        host: env.SMTP_HOST,
+        host: env2.SMTP_HOST,
         port,
         secure: isSecure,
-        auth: env.SMTP_USER && env.SMTP_PASS ? {
-          user: env.SMTP_USER,
-          pass: env.SMTP_PASS
+        auth: env2.SMTP_USER && env2.SMTP_PASS ? {
+          user: env2.SMTP_USER,
+          pass: env2.SMTP_PASS
         } : void 0
       });
-    } else if (env.SMTP_USER && env.SMTP_PASS) {
+    } else if (env2.SMTP_USER && env2.SMTP_PASS) {
       this.transporter = import_nodemailer.default.createTransport({
         service: "gmail",
         auth: {
-          user: env.SMTP_USER,
-          pass: env.SMTP_PASS
+          user: env2.SMTP_USER,
+          pass: env2.SMTP_PASS
         }
       });
     }
@@ -112700,7 +112702,7 @@ var LeadNotificationService = class {
    * Send notification to staff via Email
    */
   async notifyNewLead(lead) {
-    const recipient = env.NOTIFICATION_EMAIL_TO || "arisieltsdeeplearning@gmail.com";
+    const recipient = env2.NOTIFICATION_EMAIL_TO || "arisieltsdeeplearning@gmail.com";
     const formattedDate = new Intl.DateTimeFormat("vi-VN", {
       dateStyle: "full",
       timeStyle: "medium",
@@ -112776,7 +112778,7 @@ Vui l\xF2ng g\u1ECDi \u0111i\u1EC7n t\u01B0 v\u1EA5n cho h\u1ECDc vi\xEAn s\u1ED
     `.trim();
     if (this.transporter) {
       try {
-        const fromAddress = env.SMTP_FROM || `"ARIS IELTS System" <${env.SMTP_USER || "no-reply@nextband.site"}>`;
+        const fromAddress = env2.SMTP_FROM || `"ARIS IELTS System" <${env2.SMTP_USER || "no-reply@nextband.site"}>`;
         await this.transporter.sendMail({
           from: fromAddress,
           to: recipient,
@@ -112794,7 +112796,7 @@ Vui l\xF2ng g\u1ECDi \u0111i\u1EC7n t\u01B0 v\u1EA5n cho h\u1ECDc vi\xEAn s\u1ED
 >>> LEAD ID: ${lead.id} | NAME: ${lead.fullName} | PHONE: ${lead.phone} | GOAL: ${lead.goal || "N/A"}`
       );
     }
-    if (env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID) {
+    if (env2.TELEGRAM_BOT_TOKEN && env2.TELEGRAM_CHAT_ID) {
       try {
         const telegramMessage = `\u{1F514} *[LEAD M\u1EDAI] Y\xCAU C\u1EA6U T\u01AF V\u1EA4N L\u1ED8 TR\xCCNH*
 
@@ -112805,11 +112807,11 @@ Vui l\xF2ng g\u1ECDi \u0111i\u1EC7n t\u01B0 v\u1EA5n cho h\u1ECDc vi\xEAn s\u1ED
 \u{1F310} *Ngu\u1ED3n:* ${lead.source || "contact_page"}
 \u23F0 *Th\u1EDDi gian:* ${formattedDate}
 \u{1F194} *M\xE3 Lead:* \`${lead.id}\``;
-        await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        await fetch(`https://api.telegram.org/bot${env2.TELEGRAM_BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            chat_id: env.TELEGRAM_CHAT_ID,
+            chat_id: env2.TELEGRAM_CHAT_ID,
             text: telegramMessage,
             parse_mode: "Markdown"
           })
@@ -113088,7 +113090,7 @@ var routes_default = routes;
 // server/app.ts
 async function buildApp() {
   const isServerless = process.env.VERCEL === "1" || Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME) || Boolean(process.env.VERCEL_ENV);
-  const isProduction = env.NODE_ENV === "production" || process.env.NODE_ENV === "production";
+  const isProduction = env2.NODE_ENV === "production" || process.env.NODE_ENV === "production";
   let loggerConfig;
   if (isServerless || isProduction) {
     loggerConfig = {
@@ -113143,18 +113145,18 @@ async function buildApp() {
     "https://nextband.site",
     "https://www.nextband.site"
   ]);
-  if (env.FRONTEND_URL) {
-    env.FRONTEND_URL.split(",").map((s2) => s2.trim()).filter(Boolean).forEach((u) => exactAllowedOrigins.add(u));
+  if (env2.FRONTEND_URL) {
+    env2.FRONTEND_URL.split(",").map((s2) => s2.trim()).filter(Boolean).forEach((u) => exactAllowedOrigins.add(u));
   }
-  if (env.PREVIEW_ALLOWED_ORIGINS) {
-    env.PREVIEW_ALLOWED_ORIGINS.split(",").map((s2) => s2.trim()).filter(Boolean).forEach((u) => exactAllowedOrigins.add(u));
+  if (env2.PREVIEW_ALLOWED_ORIGINS) {
+    env2.PREVIEW_ALLOWED_ORIGINS.split(",").map((s2) => s2.trim()).filter(Boolean).forEach((u) => exactAllowedOrigins.add(u));
   }
   await app.register(import_cors.default, {
     origin: (origin, cb) => {
       if (!origin) {
         return cb(null, true);
       }
-      const isProduction2 = process.env.NODE_ENV === "production" || env.NODE_ENV === "production";
+      const isProduction2 = process.env.NODE_ENV === "production" || env2.NODE_ENV === "production";
       if (!isProduction2) {
         return cb(null, true);
       }
@@ -113189,8 +113191,8 @@ async function buildApp() {
     max: 200,
     timeWindow: "1 minute",
     keyGenerator: (request) => {
-      if (env.TRUST_PROXY_IPS) {
-        const trustedList = env.TRUST_PROXY_IPS.split(",").map((s2) => s2.trim());
+      if (env2.TRUST_PROXY_IPS) {
+        const trustedList = env2.TRUST_PROXY_IPS.split(",").map((s2) => s2.trim());
         const remoteSocketIp = request.raw.socket.remoteAddress || "";
         if (trustedList.includes(remoteSocketIp)) {
           const xForwardedFor = request.headers["x-forwarded-for"];
@@ -113213,11 +113215,11 @@ async function buildApp() {
   });
   await app.register(import_multipart.default, {
     limits: {
-      fileSize: parseInt(env.MAX_FILE_SIZE)
+      fileSize: parseInt(env2.MAX_FILE_SIZE)
       // 50MB default
     }
   });
-  const uploadDir = isServerless ? join3("/tmp", env.UPLOAD_DIR || "uploads") : join3(process.cwd(), env.UPLOAD_DIR || "uploads");
+  const uploadDir = isServerless ? join3("/tmp", env2.UPLOAD_DIR || "uploads") : join3(process.cwd(), env2.UPLOAD_DIR || "uploads");
   if (!existsSync3(uploadDir)) {
     try {
       mkdirSync2(uploadDir, { recursive: true });
@@ -113242,7 +113244,7 @@ async function buildApp() {
   });
   await app.register(routes_default, { prefix: "/api/v1" });
   app.setErrorHandler((error, request, reply) => {
-    const isProduction2 = process.env.NODE_ENV === "production" || env.NODE_ENV === "production";
+    const isProduction2 = process.env.NODE_ENV === "production" || env2.NODE_ENV === "production";
     const statusCode = error.statusCode || 500;
     app.log.error({
       requestId: request.id,

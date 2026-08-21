@@ -198,13 +198,13 @@ export function RoadmapConsultationModal({ isOpen, onOpenChange }: ModalBaseProp
                     <SelectValue placeholder="Chọn mục tiêu" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
-                    <SelectItem value="Chưa xác định">Chưa xác định (Cần tư vấn)</SelectItem>
-                    <SelectItem value="5.5+">Mục tiêu 5.5+</SelectItem>
-                    <SelectItem value="6.0+">Mục tiêu 6.0+</SelectItem>
-                    <SelectItem value="6.5+">Mục tiêu 6.5+</SelectItem>
+                    <SelectItem value="Chưa xác định">Chưa xác định (Cần định hướng)</SelectItem>
+                    <SelectItem value="3.0">Mục tiêu 3.0</SelectItem>
+                    <SelectItem value="4.0">Mục tiêu 4.0</SelectItem>
+                    <SelectItem value="5.0">Mục tiêu 5.0</SelectItem>
+                    <SelectItem value="6.0">Mục tiêu 6.0</SelectItem>
+                    <SelectItem value="6.5">Mục tiêu 6.5</SelectItem>
                     <SelectItem value="7.0+">Mục tiêu 7.0+</SelectItem>
-                    <SelectItem value="7.5+">Mục tiêu 7.5+</SelectItem>
-                    <SelectItem value="8.0+">Mục tiêu 8.0+</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -236,7 +236,7 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [targetBand, setTargetBand] = useState("6.0+");
+  const [targetBand, setTargetBand] = useState("Chưa xác định");
   const [loading, setLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -428,13 +428,13 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
                     <SelectValue placeholder="Chọn mục tiêu" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
-                    <SelectItem value="Chưa xác định">Chưa xác định (Cần định vị Rank)</SelectItem>
-                    <SelectItem value="5.5+">Mục tiêu 5.5+ (Khóa Builder)</SelectItem>
-                    <SelectItem value="6.0+">Mục tiêu 6.0+ (Khóa Master)</SelectItem>
-                    <SelectItem value="6.5+">Mục tiêu 6.5+ (Khóa Leader)</SelectItem>
+                    <SelectItem value="Chưa xác định">Chưa xác định (Cần định hướng)</SelectItem>
+                    <SelectItem value="3.0">Mục tiêu 3.0</SelectItem>
+                    <SelectItem value="4.0">Mục tiêu 4.0</SelectItem>
+                    <SelectItem value="5.0">Mục tiêu 5.0</SelectItem>
+                    <SelectItem value="6.0">Mục tiêu 6.0</SelectItem>
+                    <SelectItem value="6.5">Mục tiêu 6.5</SelectItem>
                     <SelectItem value="7.0+">Mục tiêu 7.0+</SelectItem>
-                    <SelectItem value="7.5+">Mục tiêu 7.5+</SelectItem>
-                    <SelectItem value="8.0+">Mục tiêu 8.0+</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
