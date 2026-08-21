@@ -79,63 +79,16 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
     },
   );
 
-  // POST /auth/login
-  fastify.post<{ Body: LoginInput }>(
+  // POST /auth/login - DECOMMISSIONED (Supabase Auth is canonical)
+  fastify.post(
     "/login",
-    {
-      config: {
-        rateLimit: {
-          max: 5,
-          timeWindow: "1 minute",
-        },
-      },
+    async (_request, reply) => {
+      return reply.status(410).send({
+        error: "GONE",
+        message: "Endpoint /auth/login đã ngừng hoạt động. Vui lòng đăng nhập qua Supabase Auth.",
+      });
     },
-    async (request, reply) => {
-    const data = handleValidation(
-      loginSchema.safeParse(request.body),
-      request,
-      reply,
-    );
-    if (!data) return;
-
-    const { email } = data;
-
-    // Find user
-    const user = await fastify.prisma.user.findFirst({
-      where: { email },
-      include: { roles: true },
-    });
-
-    if (!user) {
-      return reply
-        .status(401)
-        .send({ error: "Email hoặc mật khẩu không đúng" });
-    }
-
-    if (!user.isActive) {
-      return reply.status(403).send({ error: "Tài khoản đã bị hủy kích hoạt" });
-    }
-
-    // Generate token
-    const token = fastify.jwt.sign({
-      id: user.userId,
-      email: user.email || "",
-      roles: (user as any).roles?.map((r: any) => r.role) || ["student"],
-    });
-
-    return {
-      token,
-      user: {
-        id: user.userId,
-        email: user.email,
-        fullName: user.fullName,
-        avatarUrl: toFileUrl(user.avatarUrl),
-        phone: user.phone,
-        gender: user.gender,
-        roles: (user as any).roles?.map((r: any) => r.role) || ["student"],
-      },
-    };
-  });
+  );
 
   // POST /auth/login/google
   fastify.post<{ Body: GoogleLoginInput }>(

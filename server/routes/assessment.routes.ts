@@ -44,12 +44,6 @@ const assessmentRoutes: FastifyPluginAsync = async (fastify) => {
       return null;
     }
 
-    // Support fallback tokens for offline client sessions
-    if (token.startsWith("candidate_") || token.startsWith("fallback_")) {
-      const parts = token.split("_");
-      return { type: "assessment_guest", sessionId: parts.slice(1).join("_") };
-    }
-
     try {
       const decoded: any = fastify.jwt.verify(token);
       if (!decoded || decoded.type !== "assessment_guest" || !decoded.sessionId) {

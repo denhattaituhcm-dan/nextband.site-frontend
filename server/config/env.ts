@@ -1,6 +1,10 @@
 import { z } from "zod";
 import "dotenv/config";
 
+if (!process.env.DATABASE_URL || process.env.DATABASE_URL.includes("db.gzpdlqxjggyxlkeatvvf.supabase.co")) {
+  process.env.DATABASE_URL = "postgresql://postgres.gzpdlqxjggyxlkeatvvf:anhxtanhmat1@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=10&pool_timeout=20";
+}
+
 const WEAK_SECRETS = new Set([
   "secret",
   "jwt_secret",
@@ -29,6 +33,7 @@ const envSchema = z
     TRUST_PROXY_IPS: z.string().optional(), // Comma-separated list of trusted proxy IPs/CIDRs
     SUPABASE_URL: z.string().default("https://gzpdlqxjggyxlkeatvvf.supabase.co"),
     SUPABASE_JWKS_URL: z.string().optional(),
+    SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
     NOTIFICATION_EMAIL_TO: z.string().default("arisieltsdeeplearning@gmail.com"),
     SMTP_HOST: z.string().optional(),
     SMTP_PORT: z.string().optional(),

@@ -230,6 +230,20 @@ const examsRoutes: FastifyPluginAsync = async (fastify) => {
       if (!data) return;
       const { isLocked: _ignoredIsLocked, ...safeData } = data as any;
 
+      const authService = new AuthorizationService(fastify.prisma);
+      try {
+        await authService.requireCourseAuthoringAccess(
+          data.courseId,
+          request.user.id,
+          request.user.roles,
+        );
+      } catch (err: any) {
+        if (err.statusCode) {
+          return reply.status(err.statusCode).send({ error: err.message });
+        }
+        throw err;
+      }
+
       const exam = await fastify.prisma.exam.create({
         data: safeData,
       });

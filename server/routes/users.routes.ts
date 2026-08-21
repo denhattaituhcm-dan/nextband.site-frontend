@@ -1,4 +1,6 @@
 import { FastifyPluginAsync } from "fastify";
+import { createClient } from "@supabase/supabase-js";
+import { env } from "../config/env.js";
 import { paginationSchema } from "../schemas/common.schema.js";
 import { authenticate, requireRoles } from "../middlewares/auth.middleware.js";
 import { hashPassword } from "../utils/password.js";
@@ -351,16 +353,43 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
         return reply.status(409).send({ error: "Email đã tồn tại trong hệ thống" });
       }
 
-      const finalPassword = password || Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
-      const hashedPassword = await hashPassword(finalPassword);
+      const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!serviceRoleKey) {
+        return reply.status(500).send({
+          error: "SUPABASE_SERVICE_ROLE_KEY_REQUIRED",
+          message: "Hệ thống chưa cấu hình SUPABASE_SERVICE_ROLE_KEY cho chức năng quản trị viên tạo người dùng.",
+        });
+      }
 
+      const finalPassword = password || Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+
+      const supabaseAdmin = createClient(env.SUPABASE_URL, serviceRoleKey, {
+        auth: { autoRefreshToken: false, persistSession: false },
+      });
+
+      const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+        email: email.trim().toLowerCase(),
+        password: finalPassword,
+        email_confirm: true,
+        user_metadata: { full_name: fullName },
+      });
+
+      if (authError || !authData.user) {
+        if (authError?.message?.toLowerCase().includes("already") || authError?.status === 422) {
+          return reply.status(409).send({ error: "Email đã tồn tại trong hệ thống xác thực" });
+        }
+        return reply.status(400).send({ error: authError?.message || "Không thể tạo tài khoản xác thực" });
+      }
+
+      const supabaseUserId = authData.user.id;
       let createdUserId: string | null = null;
+
       try {
         // 2. Atomic Transaction: Create user profile and role mapping together
         const user = await fastify.prisma.$transaction(async (tx) => {
           const newUser = await tx.user.create({
             data: {
-              userId: crypto.randomUUID(),
+              userId: supabaseUserId,
               email: email.trim().toLowerCase(),
               fullName,
               gender,
@@ -386,7 +415,14 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
           createdAt: user.createdAt,
         });
       } catch (err: any) {
-        // 3. Compensation Cleanup Safety: Rollback any partially created user state
+        // 3. Compensation Cleanup Safety: Rollback Supabase user and local DB state
+        if (supabaseUserId) {
+          try {
+            await supabaseAdmin.auth.admin.deleteUser(supabaseUserId);
+          } catch (cleanupErr) {
+            request.log.error(cleanupErr, "Compensation cleanup error deleting Supabase auth user");
+          }
+        }
         if (createdUserId) {
           try {
             await fastify.prisma.user.delete({ where: { id: createdUserId } });

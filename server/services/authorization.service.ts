@@ -142,6 +142,37 @@ export class AuthorizationService {
   }
 
   /**
+   * Authoring IDOR Protection: Xác thực quyền tạo Đề thi trong Khóa học (Admin hoặc Giáo viên phụ trách Khóa học).
+   */
+  async requireCourseAuthoringAccess(
+    courseId: string,
+    userId: string,
+    userRoles: string[] = [],
+  ) {
+    if (userRoles.includes("admin")) return true;
+    if (!userRoles.includes("teacher")) {
+      throw new AuthorizationError("Chỉ giáo viên hoặc admin có quyền tạo đề thi", 403);
+    }
+
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+      select: { teacherId: true, isActive: true },
+    });
+
+    if (!course) {
+      throw new NotFoundError("Khóa học không tồn tại.");
+    }
+
+    if (!course.teacherId || course.teacherId !== userId) {
+      throw new AuthorizationError(
+        "Từ chối quyền: Bạn không phụ trách khóa học này.",
+        403,
+      );
+    }
+    return course;
+  }
+
+  /**
    * Authoring IDOR Protection: Xác thực quyền soạn thảo Đề thi (Admin hoặc Giáo viên phụ trách Khóa học).
    */
   async requireExamAuthoringAccess(
@@ -163,7 +194,7 @@ export class AuthorizationService {
       throw new NotFoundError("Bài thi không tồn tại.");
     }
 
-    if (exam.course?.teacherId && exam.course.teacherId !== userId) {
+    if (!exam.course?.teacherId || exam.course.teacherId !== userId) {
       throw new AuthorizationError(
         "Từ chối quyền: Bạn không phụ trách khóa học chứa đề thi này.",
         403,

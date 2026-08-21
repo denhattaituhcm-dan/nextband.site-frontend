@@ -88,7 +88,7 @@ const enrollmentsRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.status(404).send({ error: "Không tìm thấy khóa học" });
     }
 
-    if (!course.isPublished) {
+    if (!course.isPublished || !course.isActive) {
       return reply
         .status(400)
         .send({ error: "Khóa học không khả dụng để đăng ký" });
