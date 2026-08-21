@@ -111,9 +111,7 @@ const AdminClasses = lazyWithRetry(() => import("@/pages/admin/Classes"));
 const AdminClassEdit = lazyWithRetry(() => import("@/pages/admin/ClassWorkspace"));
 const AdminSettings = lazyWithRetry(() => import("@/pages/admin/Settings"));
 const TeacherWorkspace = lazyWithRetry(() => import("@/pages/admin/TeacherWorkspace"));
-const AdminContentQADashboard = lazyWithRetry(() =>
-  import("@/pages/admin/AdminContentQADashboard").then((m) => ({ default: m.AdminContentQADashboard }))
-);
+const AdminContentQADashboard = lazyWithRetry(() => import("@/pages/admin/AdminContentQADashboard"));
 const AdminEvidence = lazyWithRetry(() => import("@/pages/admin/Evidence"));
 const ClassAttendancePage = lazyWithRetry(() => import("@/pages/admin/ClassAttendancePage"));
 const AdminSpeakingForecast = lazyWithRetry(() => import("@/pages/admin/SpeakingForecast"));
