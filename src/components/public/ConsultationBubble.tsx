@@ -74,21 +74,21 @@ export function ConsultationBubble() {
 
   const supportOptions: SupportOption[] = [
     {
+      id: "assessment",
+      icon: <ShieldCheck className="w-4 h-4 text-brand-red" />,
+      title: "Thi thử IELTS 4 Kỹ Năng (40 phút)",
+      subtitle: "Đo lường 4 kỹ năng & định vị Rank ARIS-7",
+    },
+    {
       id: "roadmap",
-      icon: <Compass className="w-4 h-4 text-brand-red" />,
-      title: "Tư vấn lộ trình IELTS",
+      icon: <Compass className="w-4 h-4 text-brand-blue" />,
+      title: "Tư vấn lộ trình học IELTS",
       subtitle: "Được tư vấn level và khóa học phù hợp",
     },
     {
-      id: "assessment",
-      icon: <ShieldCheck className="w-4 h-4 text-brand-red" />,
-      title: "Đăng ký Khảo Hạch IELTS",
-      subtitle: "Xác định trình độ và hướng học phù hợp",
-    },
-    {
       id: "trial",
-      icon: <BookOpen className="w-4 h-4 text-brand-red" />,
-      title: "Đăng ký học thử",
+      icon: <BookOpen className="w-4 h-4 text-emerald-600" />,
+      title: "Đăng ký học thử miễn phí",
       subtitle: "Trải nghiệm lớp học trước khi quyết định",
     },
   ];

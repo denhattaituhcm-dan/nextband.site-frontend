@@ -287,57 +287,53 @@ export default function AssessmentPage() {
             </div>
           </Card>
 
-          {/* Card 3: Full-Skills Assessment */}
-          <Card className="rounded-3xl border-2 border-border/80 bg-card hover:border-brand-cyan/60 hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
-            <div className="p-6 sm:p-7 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="p-3 rounded-2xl bg-brand-cyan/15 text-brand-blue">
-                  <Award className="h-6 w-6" />
+            {/* Card 3: Full-Skills Assessment */}
+            <Card className="rounded-3xl border-2 border-border/80 bg-card hover:border-brand-cyan/60 hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
+              <div className="p-6 sm:p-7 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="p-3 rounded-2xl bg-brand-cyan/15 text-brand-blue">
+                    <Award className="h-6 w-6" />
+                  </div>
+                  <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 font-bold text-xs">
+                    Full 4 Kỹ Năng + Grammar
+                  </Badge>
                 </div>
-                <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 font-bold text-xs">
-                  Full 4 Kỹ Năng
-                </Badge>
+
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-black text-foreground">
+                    IELTS Entrance Test (4 Skills)
+                  </h3>
+                  <p className="text-xs sm:text-sm text-foreground/75 mt-1 leading-relaxed">
+                    Khảo thí toàn diện Listening, Reading, Writing, Speaking và Grammar trên phòng thi số NextBand.
+                  </p>
+                </div>
+
+                <div className="space-y-2 pt-2 border-t border-border/60 text-xs font-semibold text-muted-foreground">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-primary" /> Thời gian làm bài:</span>
+                    <strong className="text-foreground">45 Phút</strong>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5"><Target className="h-3.5 w-3.5 text-primary" /> Kỹ năng khảo thí:</span>
+                    <strong className="text-foreground">L + R + W + S + Grammar</strong>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5"><Award className="h-3.5 w-3.5 text-primary" /> Định vị cấp bậc:</span>
+                    <strong className="text-emerald-600 font-bold">Khung ARIS-7</strong>
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <h3 className="text-xl sm:text-2xl font-black text-foreground">
-                  IELTS Full-Skills Comprehensive
-                </h3>
-                <p className="text-xs sm:text-sm text-foreground/75 mt-1 leading-relaxed">
-                  Khảo thí toàn diện Listening, Reading và bài viết Writing Task 2 được thẩm định trực tiếp bởi Giảng viên 8.0+.
-                </p>
+              <div className="p-6 pt-0">
+                <Button
+                  onClick={() => handleStartExam("cce291f7-d88b-4976-8ed3-cc21daca7023")}
+                  className="w-full h-12 rounded-xl font-extrabold text-sm bg-emerald-600 hover:bg-emerald-700 text-white gap-2 shadow-xs"
+                >
+                  <span>Bắt đầu thi 4 kỹ năng ngay</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
               </div>
-
-              <div className="space-y-2 pt-2 border-t border-border/60 text-xs font-semibold text-muted-foreground">
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-primary" /> Thời gian làm bài:</span>
-                  <strong className="text-foreground">60 Phút</strong>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5"><Target className="h-3.5 w-3.5 text-primary" /> Kỹ năng thẩm định:</span>
-                  <strong className="text-foreground">L + R + Writing</strong>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5"><Award className="h-3.5 w-3.5 text-primary" /> Đánh giá chuyên môn:</span>
-                  <strong className="text-emerald-600 font-bold">1:1 Line-by-Line</strong>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 pt-0">
-              <Button
-                onClick={() => {
-                  const el = document.getElementById("booking-section");
-                  el?.scrollIntoView({ behavior: "smooth" });
-                }}
-                variant="outline"
-                className="w-full h-12 rounded-xl font-bold text-sm border-2 border-border/80 hover:bg-muted gap-2"
-              >
-                <span>Đặt lịch test 4 kỹ năng</span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </Card>
+            </Card>
         </div>
       </SectionContainer>
 

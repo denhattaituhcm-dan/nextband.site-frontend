@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CheckCircle2, AlertCircle, Compass, ShieldCheck, BookOpen, Send } from "lucide-react";
+import { CheckCircle2, AlertCircle, Compass, ShieldCheck, BookOpen, Send, ArrowRight, Play, FileCheck } from "lucide-react";
 import { submitContactLead } from "@/lib/contactService";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
@@ -226,19 +227,21 @@ export function RoadmapConsultationModal({ isOpen, onOpenChange }: ModalBaseProp
 }
 
 // -------------------------------------------------------------
-// 2. MODAL: ĐĂNG KÝ KHẢO HẠCH IELTS
+// 2. MODAL: THI THỬ IELTS 4 KỸ NĂNG (ENTRANCE TEST)
 // -------------------------------------------------------------
 export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseProps) {
+  const navigate = useNavigate();
   const { settings } = useSiteSettings();
   const zaloUrl = settings?.zaloLink || "https://zalo.me";
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [targetBand, setTargetBand] = useState("Chưa xác định");
-  const [currentLevel, setCurrentLevel] = useState("Chưa biết / Không rõ");
+  const [targetBand, setTargetBand] = useState("6.0+");
   const [loading, setLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const ENTRANCE_TEST_EXAM_ID = "cce291f7-d88b-4976-8ed3-cc21daca7023";
 
   const handleClose = () => {
     onOpenChange(false);
@@ -246,6 +249,11 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
       setIsSubmitted(false);
       setErrorMessage(null);
     }, 200);
+  };
+
+  const handleStartExam = () => {
+    handleClose();
+    navigate(`/exam/${ENTRANCE_TEST_EXAM_ID}?isAssessment=true`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -263,23 +271,25 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
         leadType: "ASSESSMENT",
         fullName: cleanName,
         phone: cleanPhone,
-        goal: `Đăng ký Khảo Hạch IELTS | Hiện tại: ${currentLevel} -> Mục tiêu: ${targetBand}`,
-        source: "bubble_assessment_registration",
+        goal: `Thi thử IELTS 4 Kỹ Năng Online (Entrance Test) | Mục tiêu: ${targetBand}`,
+        source: "bubble_assessment_test",
         metadata: {
-          intent: "assessment_registration",
-          currentLevel,
+          intent: "online_4skills_entrance_test",
           targetBand,
+          examId: ENTRANCE_TEST_EXAM_ID,
         },
       });
 
       if (res.success) {
         setIsSubmitted(true);
       } else {
-        setErrorMessage("Không thể gửi thông tin. Bạn có thể nhắn trực tiếp qua Zalo với chúng tôi.");
+        // Even if network lead save had issues, let candidate proceed to exam
+        setIsSubmitted(true);
       }
     } catch (err: any) {
-      console.error("Assessment registration lead error:", err);
-      setErrorMessage("Không thể kết nối máy chủ. Vui lòng liên hệ trực tiếp qua Zalo.");
+      console.error("Assessment lead submission error:", err);
+      // Allow them to proceed to test anyway
+      setIsSubmitted(true);
     } finally {
       setLoading(false);
     }
@@ -287,57 +297,74 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-[440px] p-6 sm:p-7 rounded-3xl bg-background border border-border">
+      <DialogContent className="sm:max-w-[460px] p-6 sm:p-7 rounded-3xl bg-background border border-border">
         {isSubmitted ? (
-          <div className="text-center py-4 space-y-4">
-            <div className="w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-8 h-8" />
+          <div className="text-center py-3 space-y-4">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
+              <CheckCircle2 className="w-9 h-9" />
             </div>
             <div className="space-y-1.5">
-              <h3 className="text-xl font-bold text-foreground">
-                Đã Nhận Đăng Ký Khảo Hạch
+              <h3 className="text-xl sm:text-2xl font-black text-foreground">
+                Đã Sẵn Sàng Vào Phòng Thi!
               </h3>
               <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed max-w-sm mx-auto">
-                Cảm ơn <strong>{fullName}</strong>. ARIS sẽ liên hệ qua Zalo/SĐT{" "}
-                <strong>{phone}</strong> để xác nhận và sắp xếp lịch khảo hạch phù hợp.
-              </p>
-              <p className="text-[11px] text-muted-foreground pt-1">
-                Thời gian dự kiến phản hồi: trong giờ làm việc.
+                Chào <strong>{fullName}</strong>! Phòng thi số NextBand đã chuẩn bị xong bộ đề <strong>IELTS 4 Kỹ Năng + Ngữ pháp</strong>.
               </p>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-muted/60 border border-border/80 text-left space-y-1.5 text-xs text-foreground/80">
+            <div className="p-4 rounded-2xl bg-muted/60 border border-border/80 text-left space-y-2 text-xs text-foreground/85">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Trình độ hiện tại:</span>
-                <span className="font-semibold text-foreground">{currentLevel}</span>
+                <span className="text-muted-foreground">Đề thi:</span>
+                <span className="font-bold text-foreground">IELTS Entrance Test (4 Skills)</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Mục tiêu hướng tới:</span>
-                <span className="font-semibold text-brand-red">{targetBand}</span>
+                <span className="text-muted-foreground">Thời lượng thi:</span>
+                <strong className="text-foreground">40 – 45 Phút</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Mục tiêu Band:</span>
+                <strong className="text-brand-red">{targetBand}</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">SĐT / Zalo nhận kết quả:</span>
+                <strong className="text-brand-blue">{phone}</strong>
               </div>
             </div>
 
-            <div className="pt-2">
+            <div className="pt-2 space-y-2">
               <Button
-                onClick={handleClose}
-                className="w-full h-10 rounded-xl font-bold bg-primary text-primary-foreground"
+                onClick={handleStartExam}
+                className="w-full h-12 rounded-2xl font-black text-sm bg-brand-red hover:bg-brand-red-hover text-white shadow-md gap-2 cursor-pointer"
               >
-                Hoàn tất
+                <Play className="w-4 h-4 fill-current" />
+                <span>Bắt Đầu Làm Bài Thi Ngay</span>
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => {
+                  handleClose();
+                  navigate("/assessment");
+                }}
+                className="w-full h-10 rounded-xl font-bold text-xs border border-border hover:bg-muted"
+              >
+                Xem Toàn Bộ Cổng Khảo Thí
               </Button>
             </div>
           </div>
         ) : (
           <>
             <DialogHeader className="space-y-1.5 text-left">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-red/10 text-brand-red border border-brand-red/20 text-[11px] font-bold w-fit">
-                <ShieldCheck className="w-3 h-3" />
-                <span>Định vị Cảnh giới Học thuật</span>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-red-soft text-brand-red border border-brand-red/20 text-[11px] font-extrabold uppercase tracking-wide w-fit">
+                <FileCheck className="w-3.5 h-3.5" />
+                <span>Khảo Thí Chuẩn Cambridge</span>
               </div>
               <DialogTitle className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
-                ĐĂNG KÝ KHẢO HẠCH IELTS
+                THI THỬ IELTS 4 KỸ NĂNG
               </DialogTitle>
               <DialogDescription className="text-xs text-foreground/75 leading-relaxed">
-                Xác định trình độ hiện tại và nhận định hướng lộ trình học phù hợp tại ARIS IELTS.
+                Bài test 40 phút gồm <strong>Listening, Reading, Writing, Speaking &amp; Grammar</strong>. Tính điểm tự động và định vị Rank ARIS-7.
               </DialogDescription>
             </DialogHeader>
 
@@ -363,7 +390,7 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
               {/* Họ và tên */}
               <div className="space-y-1 text-left">
                 <Label htmlFor="assessment-name" className="text-xs font-bold text-foreground">
-                  Họ và tên <span className="text-brand-red">*</span>
+                  Họ và tên thí sinh <span className="text-brand-red">*</span>
                 </Label>
                 <Input
                   id="assessment-name"
@@ -378,7 +405,7 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
               {/* Số điện thoại / Zalo */}
               <div className="space-y-1 text-left">
                 <Label htmlFor="assessment-phone" className="text-xs font-bold text-foreground">
-                  Số điện thoại / Zalo <span className="text-brand-red">*</span>
+                  Số điện thoại / Zalo (Nhận báo cáo điểm) <span className="text-brand-red">*</span>
                 </Label>
                 <Input
                   id="assessment-phone"
@@ -394,40 +421,20 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
               {/* Mục tiêu IELTS */}
               <div className="space-y-1 text-left">
                 <Label htmlFor="assessment-target" className="text-xs font-bold text-foreground">
-                  Mục tiêu IELTS
+                  Mục tiêu Band điểm
                 </Label>
                 <Select value={targetBand} onValueChange={setTargetBand}>
                   <SelectTrigger id="assessment-target" className="h-10 rounded-xl border-border bg-card text-foreground text-sm">
                     <SelectValue placeholder="Chọn mục tiêu" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
-                    <SelectItem value="Chưa xác định">Chưa xác định (Cần định hướng)</SelectItem>
-                    <SelectItem value="5.5+">Mục tiêu 5.5+</SelectItem>
-                    <SelectItem value="6.0+">Mục tiêu 6.0+</SelectItem>
-                    <SelectItem value="6.5+">Mục tiêu 6.5+</SelectItem>
+                    <SelectItem value="Chưa xác định">Chưa xác định (Cần định vị Rank)</SelectItem>
+                    <SelectItem value="5.5+">Mục tiêu 5.5+ (Khóa Builder)</SelectItem>
+                    <SelectItem value="6.0+">Mục tiêu 6.0+ (Khóa Master)</SelectItem>
+                    <SelectItem value="6.5+">Mục tiêu 6.5+ (Khóa Leader)</SelectItem>
                     <SelectItem value="7.0+">Mục tiêu 7.0+</SelectItem>
                     <SelectItem value="7.5+">Mục tiêu 7.5+</SelectItem>
                     <SelectItem value="8.0+">Mục tiêu 8.0+</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Trình độ hiện tại */}
-              <div className="space-y-1 text-left">
-                <Label htmlFor="assessment-level" className="text-xs font-bold text-foreground">
-                  Trình độ hiện tại
-                </Label>
-                <Select value={currentLevel} onValueChange={setCurrentLevel}>
-                  <SelectTrigger id="assessment-level" className="h-10 rounded-xl border-border bg-card text-foreground text-sm">
-                    <SelectValue placeholder="Chọn trình độ hiện tại" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl">
-                    <SelectItem value="Chưa biết / Không rõ">Chưa biết / Không rõ (Khảo hạch để biết)</SelectItem>
-                    <SelectItem value="Mất gốc / rất yếu">Mất gốc / nền tảng rất yếu</SelectItem>
-                    <SelectItem value="Khoảng 3.0 – 4.0">Khoảng 3.0 – 4.0 (Biết cơ bản)</SelectItem>
-                    <SelectItem value="Khoảng 4.5 – 5.5">Khoảng 4.5 – 5.5 (Đã có ngữ pháp vững)</SelectItem>
-                    <SelectItem value="6.0+">Từ 6.0+ trở lên (Luyện nâng band)</SelectItem>
-                    <SelectItem value="Đã từng thi IELTS">Đã từng thi IELTS thật</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -436,9 +443,11 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-11 rounded-xl font-bold text-sm bg-brand-red hover:bg-brand-red-hover text-white shadow-xs transition-all"
+                  className="w-full h-12 rounded-2xl font-black text-sm bg-brand-red hover:bg-brand-red-hover text-white shadow-sm transition-all gap-2 cursor-pointer"
                 >
-                  {loading ? "Đang xử lý..." : "Đăng ký Khảo Hạch"}
+                  <Play className="w-4 h-4 fill-current" />
+                  <span>{loading ? "Đang kết nối phòng thi..." : "Vào Làm Bài Test 4 Kỹ Năng"}</span>
+                  <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>
             </form>
