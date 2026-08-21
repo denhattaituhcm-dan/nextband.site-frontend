@@ -37,9 +37,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// node_modules/reusify/reusify.js
+// nextband/node_modules/reusify/reusify.js
 var require_reusify = __commonJS({
-  "node_modules/reusify/reusify.js"(exports, module) {
+  "nextband/node_modules/reusify/reusify.js"(exports, module) {
     "use strict";
     function reusify(Constructor) {
       var head = new Constructor();
@@ -68,9 +68,9 @@ var require_reusify = __commonJS({
   }
 });
 
-// node_modules/fastq/queue.js
+// nextband/node_modules/fastq/queue.js
 var require_queue = __commonJS({
-  "node_modules/fastq/queue.js"(exports, module) {
+  "nextband/node_modules/fastq/queue.js"(exports, module) {
     "use strict";
     var reusify = require_reusify();
     function fastqueue(context, worker, _concurrency) {
@@ -327,9 +327,9 @@ var require_queue = __commonJS({
   }
 });
 
-// node_modules/@fastify/error/index.js
+// nextband/node_modules/@fastify/error/index.js
 var require_error = __commonJS({
-  "node_modules/@fastify/error/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/error/index.js"(exports, module) {
     "use strict";
     var { format } = __require("node:util");
     function toString() {
@@ -372,9 +372,9 @@ var require_error = __commonJS({
   }
 });
 
-// node_modules/avvio/lib/errors.js
+// nextband/node_modules/avvio/lib/errors.js
 var require_errors = __commonJS({
-  "node_modules/avvio/lib/errors.js"(exports, module) {
+  "nextband/node_modules/avvio/lib/errors.js"(exports, module) {
     "use strict";
     var { createError } = require_error();
     module.exports = {
@@ -414,9 +414,9 @@ var require_errors = __commonJS({
   }
 });
 
-// node_modules/avvio/lib/symbols.js
+// nextband/node_modules/avvio/lib/symbols.js
 var require_symbols = __commonJS({
-  "node_modules/avvio/lib/symbols.js"(exports, module) {
+  "nextband/node_modules/avvio/lib/symbols.js"(exports, module) {
     "use strict";
     var kAvvio = Symbol("avvio.Boot");
     var kIsOnCloseHandler = Symbol("isOnCloseHandler");
@@ -441,9 +441,9 @@ var require_symbols = __commonJS({
   }
 });
 
-// node_modules/avvio/lib/time-tree.js
+// nextband/node_modules/avvio/lib/time-tree.js
 var require_time_tree = __commonJS({
-  "node_modules/avvio/lib/time-tree.js"(exports, module) {
+  "nextband/node_modules/avvio/lib/time-tree.js"(exports, module) {
     "use strict";
     var {
       kUntrackNode,
@@ -594,9 +594,9 @@ var require_time_tree = __commonJS({
   }
 });
 
-// node_modules/avvio/lib/debug.js
+// nextband/node_modules/avvio/lib/debug.js
 var require_debug = __commonJS({
-  "node_modules/avvio/lib/debug.js"(exports, module) {
+  "nextband/node_modules/avvio/lib/debug.js"(exports, module) {
     "use strict";
     var { debuglog } = __require("node:util");
     var debug = debuglog("avvio");
@@ -606,9 +606,9 @@ var require_debug = __commonJS({
   }
 });
 
-// node_modules/avvio/lib/create-promise.js
+// nextband/node_modules/avvio/lib/create-promise.js
 var require_create_promise = __commonJS({
-  "node_modules/avvio/lib/create-promise.js"(exports, module) {
+  "nextband/node_modules/avvio/lib/create-promise.js"(exports, module) {
     "use strict";
     function createPromise() {
       const obj = {
@@ -628,9 +628,9 @@ var require_create_promise = __commonJS({
   }
 });
 
-// node_modules/avvio/lib/get-plugin-name.js
+// nextband/node_modules/avvio/lib/get-plugin-name.js
 var require_get_plugin_name = __commonJS({
-  "node_modules/avvio/lib/get-plugin-name.js"(exports, module) {
+  "nextband/node_modules/avvio/lib/get-plugin-name.js"(exports, module) {
     "use strict";
     var { kPluginMeta } = require_symbols();
     function getPluginName(plugin, options) {
@@ -652,9 +652,9 @@ var require_get_plugin_name = __commonJS({
   }
 });
 
-// node_modules/avvio/lib/is-promise-like.js
+// nextband/node_modules/avvio/lib/is-promise-like.js
 var require_is_promise_like = __commonJS({
-  "node_modules/avvio/lib/is-promise-like.js"(exports, module) {
+  "nextband/node_modules/avvio/lib/is-promise-like.js"(exports, module) {
     "use strict";
     function isPromiseLike(maybePromiseLike) {
       return maybePromiseLike !== null && typeof maybePromiseLike === "object" && typeof maybePromiseLike.then === "function";
@@ -665,9 +665,9 @@ var require_is_promise_like = __commonJS({
   }
 });
 
-// node_modules/avvio/lib/plugin.js
+// nextband/node_modules/avvio/lib/plugin.js
 var require_plugin = __commonJS({
-  "node_modules/avvio/lib/plugin.js"(exports, module) {
+  "nextband/node_modules/avvio/lib/plugin.js"(exports, module) {
     "use strict";
     var { EventEmitter } = __require("node:events");
     var { inherits } = __require("node:util");
@@ -833,9 +833,9 @@ var require_plugin = __commonJS({
   }
 });
 
-// node_modules/avvio/lib/validate-plugin.js
+// nextband/node_modules/avvio/lib/validate-plugin.js
 var require_validate_plugin = __commonJS({
-  "node_modules/avvio/lib/validate-plugin.js"(exports, module) {
+  "nextband/node_modules/avvio/lib/validate-plugin.js"(exports, module) {
     "use strict";
     var { AVV_ERR_PLUGIN_NOT_VALID } = require_errors();
     function validatePlugin(maybePlugin) {
@@ -855,9 +855,9 @@ var require_validate_plugin = __commonJS({
   }
 });
 
-// node_modules/avvio/lib/is-bundled-or-typescript-plugin.js
+// nextband/node_modules/avvio/lib/is-bundled-or-typescript-plugin.js
 var require_is_bundled_or_typescript_plugin = __commonJS({
-  "node_modules/avvio/lib/is-bundled-or-typescript-plugin.js"(exports, module) {
+  "nextband/node_modules/avvio/lib/is-bundled-or-typescript-plugin.js"(exports, module) {
     "use strict";
     function isBundledOrTypescriptPlugin(maybeBundledOrTypescriptPlugin) {
       return maybeBundledOrTypescriptPlugin !== null && typeof maybeBundledOrTypescriptPlugin === "object" && typeof maybeBundledOrTypescriptPlugin.default === "function";
@@ -868,9 +868,9 @@ var require_is_bundled_or_typescript_plugin = __commonJS({
   }
 });
 
-// node_modules/avvio/lib/thenify.js
+// nextband/node_modules/avvio/lib/thenify.js
 var require_thenify = __commonJS({
-  "node_modules/avvio/lib/thenify.js"(exports, module) {
+  "nextband/node_modules/avvio/lib/thenify.js"(exports, module) {
     "use strict";
     var { debug } = require_debug();
     var { kThenifyDoNotWrap } = require_symbols();
@@ -898,9 +898,9 @@ var require_thenify = __commonJS({
   }
 });
 
-// node_modules/avvio/lib/execute-with-thenable.js
+// nextband/node_modules/avvio/lib/execute-with-thenable.js
 var require_execute_with_thenable = __commonJS({
-  "node_modules/avvio/lib/execute-with-thenable.js"(exports, module) {
+  "nextband/node_modules/avvio/lib/execute-with-thenable.js"(exports, module) {
     "use strict";
     var { isPromiseLike } = require_is_promise_like();
     var { kAvvio } = require_symbols();
@@ -918,9 +918,9 @@ var require_execute_with_thenable = __commonJS({
   }
 });
 
-// node_modules/avvio/boot.js
+// nextband/node_modules/avvio/boot.js
 var require_boot = __commonJS({
-  "node_modules/avvio/boot.js"(exports, module) {
+  "nextband/node_modules/avvio/boot.js"(exports, module) {
     "use strict";
     var fastq = require_queue();
     var EE = __require("node:events").EventEmitter;
@@ -1406,9 +1406,9 @@ var require_boot = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/symbols.js
+// nextband/node_modules/fastify/lib/symbols.js
 var require_symbols2 = __commonJS({
-  "node_modules/fastify/lib/symbols.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/symbols.js"(exports, module) {
     "use strict";
     var keys = {
       kAvvioBoot: Symbol("fastify.avvioBoot"),
@@ -1475,9 +1475,9 @@ var require_symbols2 = __commonJS({
   }
 });
 
-// node_modules/process-warning/index.js
+// nextband/node_modules/process-warning/index.js
 var require_process_warning = __commonJS({
-  "node_modules/process-warning/index.js"(exports, module) {
+  "nextband/node_modules/process-warning/index.js"(exports, module) {
     "use strict";
     var { format } = __require("node:util");
     function createDeprecation(params) {
@@ -1533,9 +1533,9 @@ var require_process_warning = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/warnings.js
+// nextband/node_modules/fastify/lib/warnings.js
 var require_warnings = __commonJS({
-  "node_modules/fastify/lib/warnings.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/warnings.js"(exports, module) {
     "use strict";
     var { createDeprecation, createWarning } = require_process_warning();
     var FSTDEP005 = createDeprecation({
@@ -1647,9 +1647,9 @@ var require_warnings = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/errors.js
+// nextband/node_modules/fastify/lib/errors.js
 var require_errors2 = __commonJS({
-  "node_modules/fastify/lib/errors.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/errors.js"(exports, module) {
     "use strict";
     var createError = require_error();
     var codes = {
@@ -2108,9 +2108,9 @@ var require_errors2 = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/hooks.js
+// nextband/node_modules/fastify/lib/hooks.js
 var require_hooks = __commonJS({
-  "node_modules/fastify/lib/hooks.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/hooks.js"(exports, module) {
     "use strict";
     var applicationHooks = [
       "onRoute",
@@ -2467,9 +2467,9 @@ var require_hooks = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/server.js
+// nextband/node_modules/fastify/lib/server.js
 var require_server = __commonJS({
-  "node_modules/fastify/lib/server.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/server.js"(exports, module) {
     "use strict";
     var http3 = __require("node:http");
     var https2 = __require("node:https");
@@ -2799,9 +2799,9 @@ var require_server = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/validation.js
+// nextband/node_modules/fastify/lib/validation.js
 var require_validation = __commonJS({
-  "node_modules/fastify/lib/validation.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/validation.js"(exports, module) {
     "use strict";
     var {
       kSchemaHeaders: headersSchema,
@@ -3032,9 +3032,9 @@ var require_validation = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/wrapThenable.js
+// nextband/node_modules/fastify/lib/wrapThenable.js
 var require_wrapThenable = __commonJS({
-  "node_modules/fastify/lib/wrapThenable.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/wrapThenable.js"(exports, module) {
     "use strict";
     var {
       kReplyIsError,
@@ -3070,9 +3070,9 @@ var require_wrapThenable = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/handleRequest.js
+// nextband/node_modules/fastify/lib/handleRequest.js
 var require_handleRequest = __commonJS({
-  "node_modules/fastify/lib/handleRequest.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/handleRequest.js"(exports, module) {
     "use strict";
     var { validate: validateSchema } = require_validation();
     var { preValidationHookRunner, preHandlerHookRunner } = require_hooks();
@@ -3197,9 +3197,9 @@ var require_handleRequest = __commonJS({
   }
 });
 
-// node_modules/abstract-logging/index.js
+// nextband/node_modules/abstract-logging/index.js
 var require_abstract_logging = __commonJS({
-  "node_modules/abstract-logging/index.js"(exports, module) {
+  "nextband/node_modules/abstract-logging/index.js"(exports, module) {
     "use strict";
     function noop2() {
     }
@@ -3219,9 +3219,9 @@ var require_abstract_logging = __commonJS({
   }
 });
 
-// node_modules/pino-std-serializers/lib/err-helpers.js
+// nextband/node_modules/pino-std-serializers/lib/err-helpers.js
 var require_err_helpers = __commonJS({
-  "node_modules/pino-std-serializers/lib/err-helpers.js"(exports, module) {
+  "nextband/node_modules/pino-std-serializers/lib/err-helpers.js"(exports, module) {
     "use strict";
     var isErrorLike = (err) => {
       return err && typeof err.message === "string";
@@ -3276,9 +3276,9 @@ var require_err_helpers = __commonJS({
   }
 });
 
-// node_modules/pino-std-serializers/lib/err-proto.js
+// nextband/node_modules/pino-std-serializers/lib/err-proto.js
 var require_err_proto = __commonJS({
-  "node_modules/pino-std-serializers/lib/err-proto.js"(exports, module) {
+  "nextband/node_modules/pino-std-serializers/lib/err-proto.js"(exports, module) {
     "use strict";
     var seen = Symbol("circular-ref-tag");
     var rawSymbol = Symbol("pino-raw-err-ref");
@@ -3327,9 +3327,9 @@ var require_err_proto = __commonJS({
   }
 });
 
-// node_modules/pino-std-serializers/lib/err.js
+// nextband/node_modules/pino-std-serializers/lib/err.js
 var require_err = __commonJS({
-  "node_modules/pino-std-serializers/lib/err.js"(exports, module) {
+  "nextband/node_modules/pino-std-serializers/lib/err.js"(exports, module) {
     "use strict";
     module.exports = errSerializer;
     var { messageWithCauses, stackWithCauses, isErrorLike } = require_err_helpers();
@@ -3367,9 +3367,9 @@ var require_err = __commonJS({
   }
 });
 
-// node_modules/pino-std-serializers/lib/err-with-cause.js
+// nextband/node_modules/pino-std-serializers/lib/err-with-cause.js
 var require_err_with_cause = __commonJS({
-  "node_modules/pino-std-serializers/lib/err-with-cause.js"(exports, module) {
+  "nextband/node_modules/pino-std-serializers/lib/err-with-cause.js"(exports, module) {
     "use strict";
     module.exports = errWithCauseSerializer;
     var { isErrorLike } = require_err_helpers();
@@ -3410,9 +3410,9 @@ var require_err_with_cause = __commonJS({
   }
 });
 
-// node_modules/pino-std-serializers/lib/req.js
+// nextband/node_modules/pino-std-serializers/lib/req.js
 var require_req = __commonJS({
-  "node_modules/pino-std-serializers/lib/req.js"(exports, module) {
+  "nextband/node_modules/pino-std-serializers/lib/req.js"(exports, module) {
     "use strict";
     module.exports = {
       mapHttpRequest,
@@ -3505,9 +3505,9 @@ var require_req = __commonJS({
   }
 });
 
-// node_modules/pino-std-serializers/lib/res.js
+// nextband/node_modules/pino-std-serializers/lib/res.js
 var require_res = __commonJS({
-  "node_modules/pino-std-serializers/lib/res.js"(exports, module) {
+  "nextband/node_modules/pino-std-serializers/lib/res.js"(exports, module) {
     "use strict";
     module.exports = {
       mapHttpResponse,
@@ -3554,9 +3554,9 @@ var require_res = __commonJS({
   }
 });
 
-// node_modules/pino-std-serializers/index.js
+// nextband/node_modules/pino-std-serializers/index.js
 var require_pino_std_serializers = __commonJS({
-  "node_modules/pino-std-serializers/index.js"(exports, module) {
+  "nextband/node_modules/pino-std-serializers/index.js"(exports, module) {
     "use strict";
     var errSerializer = require_err();
     var errWithCauseSerializer = require_err_with_cause();
@@ -3591,9 +3591,9 @@ var require_pino_std_serializers = __commonJS({
   }
 });
 
-// node_modules/pino/lib/caller.js
+// nextband/node_modules/pino/lib/caller.js
 var require_caller = __commonJS({
-  "node_modules/pino/lib/caller.js"(exports, module) {
+  "nextband/node_modules/pino/lib/caller.js"(exports, module) {
     "use strict";
     function noOpPrepareStackTrace(_, stack) {
       return stack;
@@ -3619,9 +3619,9 @@ var require_caller = __commonJS({
   }
 });
 
-// node_modules/@pinojs/redact/index.js
+// nextband/node_modules/@pinojs/redact/index.js
 var require_redact = __commonJS({
-  "node_modules/@pinojs/redact/index.js"(exports, module) {
+  "nextband/node_modules/@pinojs/redact/index.js"(exports, module) {
     "use strict";
     function deepClone(obj) {
       if (obj === null || typeof obj !== "object") {
@@ -4052,9 +4052,9 @@ var require_redact = __commonJS({
   }
 });
 
-// node_modules/pino/lib/symbols.js
+// nextband/node_modules/pino/lib/symbols.js
 var require_symbols3 = __commonJS({
-  "node_modules/pino/lib/symbols.js"(exports, module) {
+  "nextband/node_modules/pino/lib/symbols.js"(exports, module) {
     "use strict";
     var setLevelSym = Symbol("pino.setLevel");
     var getLevelSym = Symbol("pino.getLevel");
@@ -4123,9 +4123,9 @@ var require_symbols3 = __commonJS({
   }
 });
 
-// node_modules/pino/lib/redaction.js
+// nextband/node_modules/pino/lib/redaction.js
 var require_redaction = __commonJS({
-  "node_modules/pino/lib/redaction.js"(exports, module) {
+  "nextband/node_modules/pino/lib/redaction.js"(exports, module) {
     "use strict";
     var Redact = require_redact();
     var { redactFmtSym, wildcardFirstSym } = require_symbols3();
@@ -4205,9 +4205,9 @@ var require_redaction = __commonJS({
   }
 });
 
-// node_modules/pino/lib/time.js
+// nextband/node_modules/pino/lib/time.js
 var require_time = __commonJS({
-  "node_modules/pino/lib/time.js"(exports, module) {
+  "nextband/node_modules/pino/lib/time.js"(exports, module) {
     "use strict";
     var nullTime = () => "";
     var epochTime = () => `,"time":${Date.now()}`;
@@ -4236,9 +4236,9 @@ var require_time = __commonJS({
   }
 });
 
-// node_modules/quick-format-unescaped/index.js
+// nextband/node_modules/quick-format-unescaped/index.js
 var require_quick_format_unescaped = __commonJS({
-  "node_modules/quick-format-unescaped/index.js"(exports, module) {
+  "nextband/node_modules/quick-format-unescaped/index.js"(exports, module) {
     "use strict";
     function tryStringify(o) {
       try {
@@ -4352,9 +4352,9 @@ var require_quick_format_unescaped = __commonJS({
   }
 });
 
-// node_modules/atomic-sleep/index.js
+// nextband/node_modules/atomic-sleep/index.js
 var require_atomic_sleep = __commonJS({
-  "node_modules/atomic-sleep/index.js"(exports, module) {
+  "nextband/node_modules/atomic-sleep/index.js"(exports, module) {
     "use strict";
     if (typeof SharedArrayBuffer !== "undefined" && typeof Atomics !== "undefined") {
       let sleep = function(ms) {
@@ -4387,9 +4387,9 @@ var require_atomic_sleep = __commonJS({
   }
 });
 
-// node_modules/sonic-boom/index.js
+// nextband/node_modules/sonic-boom/index.js
 var require_sonic_boom = __commonJS({
-  "node_modules/sonic-boom/index.js"(exports, module) {
+  "nextband/node_modules/sonic-boom/index.js"(exports, module) {
     "use strict";
     var fs2 = __require("fs");
     var EventEmitter = __require("events");
@@ -4974,9 +4974,9 @@ var require_sonic_boom = __commonJS({
   }
 });
 
-// node_modules/on-exit-leak-free/index.js
+// nextband/node_modules/on-exit-leak-free/index.js
 var require_on_exit_leak_free = __commonJS({
-  "node_modules/on-exit-leak-free/index.js"(exports, module) {
+  "nextband/node_modules/on-exit-leak-free/index.js"(exports, module) {
     "use strict";
     var refs = {
       exit: [],
@@ -5068,9 +5068,9 @@ var require_on_exit_leak_free = __commonJS({
   }
 });
 
-// node_modules/thread-stream/package.json
+// nextband/node_modules/thread-stream/package.json
 var require_package = __commonJS({
-  "node_modules/thread-stream/package.json"(exports, module) {
+  "nextband/node_modules/thread-stream/package.json"(exports, module) {
     module.exports = {
       name: "thread-stream",
       version: "3.2.0",
@@ -5131,9 +5131,9 @@ var require_package = __commonJS({
   }
 });
 
-// node_modules/thread-stream/lib/wait.js
+// nextband/node_modules/thread-stream/lib/wait.js
 var require_wait = __commonJS({
-  "node_modules/thread-stream/lib/wait.js"(exports, module) {
+  "nextband/node_modules/thread-stream/lib/wait.js"(exports, module) {
     "use strict";
     var MAX_TIMEOUT = 1e3;
     function wait(state, index, expected, timeout, done) {
@@ -5189,9 +5189,9 @@ var require_wait = __commonJS({
   }
 });
 
-// node_modules/thread-stream/lib/indexes.js
+// nextband/node_modules/thread-stream/lib/indexes.js
 var require_indexes = __commonJS({
-  "node_modules/thread-stream/lib/indexes.js"(exports, module) {
+  "nextband/node_modules/thread-stream/lib/indexes.js"(exports, module) {
     "use strict";
     var SEQ_INDEX = 2;
     var WRITE_INDEX = 4;
@@ -5204,9 +5204,9 @@ var require_indexes = __commonJS({
   }
 });
 
-// node_modules/thread-stream/index.js
+// nextband/node_modules/thread-stream/index.js
 var require_thread_stream = __commonJS({
-  "node_modules/thread-stream/index.js"(exports, module) {
+  "nextband/node_modules/thread-stream/index.js"(exports, module) {
     "use strict";
     var { version } = require_package();
     var { EventEmitter } = __require("events");
@@ -5651,9 +5651,9 @@ var require_thread_stream = __commonJS({
   }
 });
 
-// node_modules/pino/lib/transport.js
+// nextband/node_modules/pino/lib/transport.js
 var require_transport = __commonJS({
-  "node_modules/pino/lib/transport.js"(exports, module) {
+  "nextband/node_modules/pino/lib/transport.js"(exports, module) {
     "use strict";
     var { createRequire } = __require("module");
     var getCallers = require_caller();
@@ -5782,9 +5782,9 @@ var require_transport = __commonJS({
   }
 });
 
-// node_modules/pino/lib/tools.js
+// nextband/node_modules/pino/lib/tools.js
 var require_tools = __commonJS({
-  "node_modules/pino/lib/tools.js"(exports, module) {
+  "nextband/node_modules/pino/lib/tools.js"(exports, module) {
     "use strict";
     var diagChan = __require("node:diagnostics_channel");
     var format = require_quick_format_unescaped();
@@ -6117,9 +6117,9 @@ var require_tools = __commonJS({
   }
 });
 
-// node_modules/pino/lib/constants.js
+// nextband/node_modules/pino/lib/constants.js
 var require_constants = __commonJS({
-  "node_modules/pino/lib/constants.js"(exports, module) {
+  "nextband/node_modules/pino/lib/constants.js"(exports, module) {
     var DEFAULT_LEVELS = {
       trace: 10,
       debug: 20,
@@ -6139,9 +6139,9 @@ var require_constants = __commonJS({
   }
 });
 
-// node_modules/pino/lib/levels.js
+// nextband/node_modules/pino/lib/levels.js
 var require_levels = __commonJS({
-  "node_modules/pino/lib/levels.js"(exports, module) {
+  "nextband/node_modules/pino/lib/levels.js"(exports, module) {
     "use strict";
     var {
       lsCacheSym,
@@ -6332,17 +6332,17 @@ var require_levels = __commonJS({
   }
 });
 
-// node_modules/pino/lib/meta.js
+// nextband/node_modules/pino/lib/meta.js
 var require_meta = __commonJS({
-  "node_modules/pino/lib/meta.js"(exports, module) {
+  "nextband/node_modules/pino/lib/meta.js"(exports, module) {
     "use strict";
     module.exports = { version: "9.14.0" };
   }
 });
 
-// node_modules/pino/lib/proto.js
+// nextband/node_modules/pino/lib/proto.js
 var require_proto = __commonJS({
-  "node_modules/pino/lib/proto.js"(exports, module) {
+  "nextband/node_modules/pino/lib/proto.js"(exports, module) {
     "use strict";
     var { EventEmitter } = __require("node:events");
     var {
@@ -6571,9 +6571,9 @@ var require_proto = __commonJS({
   }
 });
 
-// node_modules/safe-stable-stringify/index.js
+// nextband/node_modules/safe-stable-stringify/index.js
 var require_safe_stable_stringify = __commonJS({
-  "node_modules/safe-stable-stringify/index.js"(exports, module) {
+  "nextband/node_modules/safe-stable-stringify/index.js"(exports, module) {
     "use strict";
     var { hasOwnProperty } = Object.prototype;
     var stringify = configure();
@@ -7163,9 +7163,9 @@ ${originalIndentation}`;
   }
 });
 
-// node_modules/pino/lib/multistream.js
+// nextband/node_modules/pino/lib/multistream.js
 var require_multistream = __commonJS({
-  "node_modules/pino/lib/multistream.js"(exports, module) {
+  "nextband/node_modules/pino/lib/multistream.js"(exports, module) {
     "use strict";
     var metadata = Symbol.for("pino.metadata");
     var { DEFAULT_LEVELS } = require_constants();
@@ -7331,9 +7331,9 @@ var require_multistream = __commonJS({
   }
 });
 
-// node_modules/pino/pino.js
+// nextband/node_modules/pino/pino.js
 var require_pino = __commonJS({
-  "node_modules/pino/pino.js"(exports, module) {
+  "nextband/node_modules/pino/pino.js"(exports, module) {
     "use strict";
     var os = __require("node:os");
     var stdSerializers = require_pino_std_serializers();
@@ -7541,9 +7541,9 @@ var require_pino = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/logger.js
+// nextband/node_modules/fastify/lib/logger.js
 var require_logger = __commonJS({
-  "node_modules/fastify/lib/logger.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/logger.js"(exports, module) {
     "use strict";
     var nullLogger = require_abstract_logging();
     var pino = require_pino();
@@ -7662,9 +7662,9 @@ var require_logger = __commonJS({
   }
 });
 
-// node_modules/rfdc/index.js
+// nextband/node_modules/rfdc/index.js
 var require_rfdc = __commonJS({
-  "node_modules/rfdc/index.js"(exports, module) {
+  "nextband/node_modules/rfdc/index.js"(exports, module) {
     "use strict";
     module.exports = rfdc;
     function copyBuffer(cur) {
@@ -7851,9 +7851,9 @@ var require_rfdc = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/schemas.js
+// nextband/node_modules/fastify/lib/schemas.js
 var require_schemas = __commonJS({
-  "node_modules/fastify/lib/schemas.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/schemas.js"(exports, module) {
     "use strict";
     var fastClone = require_rfdc()({ circles: false, proto: true });
     var { kSchemaVisited, kSchemaResponse } = require_symbols2();
@@ -8029,9 +8029,9 @@ var require_schemas = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/lib/serializer.js
+// nextband/node_modules/fast-json-stringify/lib/serializer.js
 var require_serializer = __commonJS({
-  "node_modules/fast-json-stringify/lib/serializer.js"(exports, module) {
+  "nextband/node_modules/fast-json-stringify/lib/serializer.js"(exports, module) {
     "use strict";
     var STR_ESCAPE = /[\u0000-\u001f\u0022\u005c\ud800-\udfff]/;
     module.exports = class Serializer {
@@ -8145,9 +8145,9 @@ var require_serializer = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/error-serializer.js
+// nextband/node_modules/fastify/lib/error-serializer.js
 var require_error_serializer = __commonJS({
-  "node_modules/fastify/lib/error-serializer.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/error-serializer.js"(exports, module) {
     "use strict";
     var Serializer = require_serializer();
     var serializerState = { "mode": "standalone" };
@@ -8239,9 +8239,9 @@ var require_error_serializer = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/error-handler.js
+// nextband/node_modules/fastify/lib/error-handler.js
 var require_error_handler = __commonJS({
-  "node_modules/fastify/lib/error-handler.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/error-handler.js"(exports, module) {
     "use strict";
     var statusCodes = __require("node:http").STATUS_CODES;
     var wrapThenable = require_wrapThenable();
@@ -8392,9 +8392,9 @@ var require_error_handler = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/reply.js
+// nextband/node_modules/fastify/lib/reply.js
 var require_reply = __commonJS({
-  "node_modules/fastify/lib/reply.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/reply.js"(exports, module) {
     "use strict";
     var eos = __require("node:stream").finished;
     var Readable = __require("node:stream").Readable;
@@ -9148,9 +9148,9 @@ var require_reply = __commonJS({
   }
 });
 
-// node_modules/forwarded/index.js
+// nextband/node_modules/forwarded/index.js
 var require_forwarded = __commonJS({
-  "node_modules/forwarded/index.js"(exports, module) {
+  "nextband/node_modules/forwarded/index.js"(exports, module) {
     "use strict";
     module.exports = forwarded;
     function forwarded(req) {
@@ -9195,9 +9195,9 @@ var require_forwarded = __commonJS({
   }
 });
 
-// node_modules/ipaddr.js/lib/ipaddr.js
+// nextband/node_modules/ipaddr.js/lib/ipaddr.js
 var require_ipaddr = __commonJS({
-  "node_modules/ipaddr.js/lib/ipaddr.js"(exports, module) {
+  "nextband/node_modules/ipaddr.js/lib/ipaddr.js"(exports, module) {
     (function() {
       var expandIPv6, ipaddr, ipv4Part, ipv4Regexes, ipv6Part, ipv6Regexes, matchCIDR, root, zoneIndex;
       ipaddr = {};
@@ -9817,9 +9817,9 @@ var require_ipaddr = __commonJS({
   }
 });
 
-// node_modules/proxy-addr/index.js
+// nextband/node_modules/proxy-addr/index.js
 var require_proxy_addr = __commonJS({
-  "node_modules/proxy-addr/index.js"(exports, module) {
+  "nextband/node_modules/proxy-addr/index.js"(exports, module) {
     "use strict";
     module.exports = proxyaddr;
     module.exports.all = alladdrs;
@@ -9976,9 +9976,9 @@ var require_proxy_addr = __commonJS({
   }
 });
 
-// node_modules/semver/internal/constants.js
+// nextband/node_modules/semver/internal/constants.js
 var require_constants2 = __commonJS({
-  "node_modules/semver/internal/constants.js"(exports, module) {
+  "nextband/node_modules/semver/internal/constants.js"(exports, module) {
     "use strict";
     var SEMVER_SPEC_VERSION = "2.0.0";
     var MAX_LENGTH = 256;
@@ -10008,9 +10008,9 @@ var require_constants2 = __commonJS({
   }
 });
 
-// node_modules/semver/internal/debug.js
+// nextband/node_modules/semver/internal/debug.js
 var require_debug2 = __commonJS({
-  "node_modules/semver/internal/debug.js"(exports, module) {
+  "nextband/node_modules/semver/internal/debug.js"(exports, module) {
     "use strict";
     var debug = typeof process === "object" && process.env && process.env.NODE_DEBUG && /\bsemver\b/i.test(process.env.NODE_DEBUG) ? (...args) => console.error("SEMVER", ...args) : () => {
     };
@@ -10018,9 +10018,9 @@ var require_debug2 = __commonJS({
   }
 });
 
-// node_modules/semver/internal/re.js
+// nextband/node_modules/semver/internal/re.js
 var require_re = __commonJS({
-  "node_modules/semver/internal/re.js"(exports, module) {
+  "nextband/node_modules/semver/internal/re.js"(exports, module) {
     "use strict";
     var {
       MAX_SAFE_COMPONENT_LENGTH,
@@ -10106,9 +10106,9 @@ var require_re = __commonJS({
   }
 });
 
-// node_modules/semver/internal/parse-options.js
+// nextband/node_modules/semver/internal/parse-options.js
 var require_parse_options = __commonJS({
-  "node_modules/semver/internal/parse-options.js"(exports, module) {
+  "nextband/node_modules/semver/internal/parse-options.js"(exports, module) {
     "use strict";
     var looseOption = Object.freeze({ loose: true });
     var emptyOpts = Object.freeze({});
@@ -10125,9 +10125,9 @@ var require_parse_options = __commonJS({
   }
 });
 
-// node_modules/semver/internal/identifiers.js
+// nextband/node_modules/semver/internal/identifiers.js
 var require_identifiers = __commonJS({
-  "node_modules/semver/internal/identifiers.js"(exports, module) {
+  "nextband/node_modules/semver/internal/identifiers.js"(exports, module) {
     "use strict";
     var numeric = /^[0-9]+$/;
     var compareIdentifiers = (a, b) => {
@@ -10147,9 +10147,9 @@ var require_identifiers = __commonJS({
   }
 });
 
-// node_modules/semver/classes/semver.js
+// nextband/node_modules/semver/classes/semver.js
 var require_semver = __commonJS({
-  "node_modules/semver/classes/semver.js"(exports, module) {
+  "nextband/node_modules/semver/classes/semver.js"(exports, module) {
     "use strict";
     var debug = require_debug2();
     var { MAX_LENGTH, MAX_SAFE_INTEGER } = require_constants2();
@@ -10404,9 +10404,9 @@ var require_semver = __commonJS({
   }
 });
 
-// node_modules/semver/functions/parse.js
+// nextband/node_modules/semver/functions/parse.js
 var require_parse = __commonJS({
-  "node_modules/semver/functions/parse.js"(exports, module) {
+  "nextband/node_modules/semver/functions/parse.js"(exports, module) {
     "use strict";
     var SemVer = require_semver();
     var parse = (version, options, throwErrors = false) => {
@@ -10426,9 +10426,9 @@ var require_parse = __commonJS({
   }
 });
 
-// node_modules/semver/functions/valid.js
+// nextband/node_modules/semver/functions/valid.js
 var require_valid = __commonJS({
-  "node_modules/semver/functions/valid.js"(exports, module) {
+  "nextband/node_modules/semver/functions/valid.js"(exports, module) {
     "use strict";
     var parse = require_parse();
     var valid = (version, options) => {
@@ -10439,9 +10439,9 @@ var require_valid = __commonJS({
   }
 });
 
-// node_modules/semver/functions/clean.js
+// nextband/node_modules/semver/functions/clean.js
 var require_clean = __commonJS({
-  "node_modules/semver/functions/clean.js"(exports, module) {
+  "nextband/node_modules/semver/functions/clean.js"(exports, module) {
     "use strict";
     var parse = require_parse();
     var clean = (version, options) => {
@@ -10452,9 +10452,9 @@ var require_clean = __commonJS({
   }
 });
 
-// node_modules/semver/functions/inc.js
+// nextband/node_modules/semver/functions/inc.js
 var require_inc = __commonJS({
-  "node_modules/semver/functions/inc.js"(exports, module) {
+  "nextband/node_modules/semver/functions/inc.js"(exports, module) {
     "use strict";
     var SemVer = require_semver();
     var inc = (version, release, options, identifier, identifierBase) => {
@@ -10476,9 +10476,9 @@ var require_inc = __commonJS({
   }
 });
 
-// node_modules/semver/functions/diff.js
+// nextband/node_modules/semver/functions/diff.js
 var require_diff = __commonJS({
-  "node_modules/semver/functions/diff.js"(exports, module) {
+  "nextband/node_modules/semver/functions/diff.js"(exports, module) {
     "use strict";
     var parse = require_parse();
     var diff = (version1, version2) => {
@@ -10520,9 +10520,9 @@ var require_diff = __commonJS({
   }
 });
 
-// node_modules/semver/functions/major.js
+// nextband/node_modules/semver/functions/major.js
 var require_major = __commonJS({
-  "node_modules/semver/functions/major.js"(exports, module) {
+  "nextband/node_modules/semver/functions/major.js"(exports, module) {
     "use strict";
     var SemVer = require_semver();
     var major = (a, loose) => new SemVer(a, loose).major;
@@ -10530,9 +10530,9 @@ var require_major = __commonJS({
   }
 });
 
-// node_modules/semver/functions/minor.js
+// nextband/node_modules/semver/functions/minor.js
 var require_minor = __commonJS({
-  "node_modules/semver/functions/minor.js"(exports, module) {
+  "nextband/node_modules/semver/functions/minor.js"(exports, module) {
     "use strict";
     var SemVer = require_semver();
     var minor = (a, loose) => new SemVer(a, loose).minor;
@@ -10540,9 +10540,9 @@ var require_minor = __commonJS({
   }
 });
 
-// node_modules/semver/functions/patch.js
+// nextband/node_modules/semver/functions/patch.js
 var require_patch = __commonJS({
-  "node_modules/semver/functions/patch.js"(exports, module) {
+  "nextband/node_modules/semver/functions/patch.js"(exports, module) {
     "use strict";
     var SemVer = require_semver();
     var patch = (a, loose) => new SemVer(a, loose).patch;
@@ -10550,9 +10550,9 @@ var require_patch = __commonJS({
   }
 });
 
-// node_modules/semver/functions/prerelease.js
+// nextband/node_modules/semver/functions/prerelease.js
 var require_prerelease = __commonJS({
-  "node_modules/semver/functions/prerelease.js"(exports, module) {
+  "nextband/node_modules/semver/functions/prerelease.js"(exports, module) {
     "use strict";
     var parse = require_parse();
     var prerelease = (version, options) => {
@@ -10563,9 +10563,9 @@ var require_prerelease = __commonJS({
   }
 });
 
-// node_modules/semver/functions/compare.js
+// nextband/node_modules/semver/functions/compare.js
 var require_compare = __commonJS({
-  "node_modules/semver/functions/compare.js"(exports, module) {
+  "nextband/node_modules/semver/functions/compare.js"(exports, module) {
     "use strict";
     var SemVer = require_semver();
     var compare2 = (a, b, loose) => new SemVer(a, loose).compare(new SemVer(b, loose));
@@ -10573,9 +10573,9 @@ var require_compare = __commonJS({
   }
 });
 
-// node_modules/semver/functions/rcompare.js
+// nextband/node_modules/semver/functions/rcompare.js
 var require_rcompare = __commonJS({
-  "node_modules/semver/functions/rcompare.js"(exports, module) {
+  "nextband/node_modules/semver/functions/rcompare.js"(exports, module) {
     "use strict";
     var compare2 = require_compare();
     var rcompare = (a, b, loose) => compare2(b, a, loose);
@@ -10583,9 +10583,9 @@ var require_rcompare = __commonJS({
   }
 });
 
-// node_modules/semver/functions/compare-loose.js
+// nextband/node_modules/semver/functions/compare-loose.js
 var require_compare_loose = __commonJS({
-  "node_modules/semver/functions/compare-loose.js"(exports, module) {
+  "nextband/node_modules/semver/functions/compare-loose.js"(exports, module) {
     "use strict";
     var compare2 = require_compare();
     var compareLoose = (a, b) => compare2(a, b, true);
@@ -10593,9 +10593,9 @@ var require_compare_loose = __commonJS({
   }
 });
 
-// node_modules/semver/functions/compare-build.js
+// nextband/node_modules/semver/functions/compare-build.js
 var require_compare_build = __commonJS({
-  "node_modules/semver/functions/compare-build.js"(exports, module) {
+  "nextband/node_modules/semver/functions/compare-build.js"(exports, module) {
     "use strict";
     var SemVer = require_semver();
     var compareBuild = (a, b, loose) => {
@@ -10607,9 +10607,9 @@ var require_compare_build = __commonJS({
   }
 });
 
-// node_modules/semver/functions/sort.js
+// nextband/node_modules/semver/functions/sort.js
 var require_sort = __commonJS({
-  "node_modules/semver/functions/sort.js"(exports, module) {
+  "nextband/node_modules/semver/functions/sort.js"(exports, module) {
     "use strict";
     var compareBuild = require_compare_build();
     var sort = (list, loose) => list.sort((a, b) => compareBuild(a, b, loose));
@@ -10617,9 +10617,9 @@ var require_sort = __commonJS({
   }
 });
 
-// node_modules/semver/functions/rsort.js
+// nextband/node_modules/semver/functions/rsort.js
 var require_rsort = __commonJS({
-  "node_modules/semver/functions/rsort.js"(exports, module) {
+  "nextband/node_modules/semver/functions/rsort.js"(exports, module) {
     "use strict";
     var compareBuild = require_compare_build();
     var rsort = (list, loose) => list.sort((a, b) => compareBuild(b, a, loose));
@@ -10627,9 +10627,9 @@ var require_rsort = __commonJS({
   }
 });
 
-// node_modules/semver/functions/gt.js
+// nextband/node_modules/semver/functions/gt.js
 var require_gt = __commonJS({
-  "node_modules/semver/functions/gt.js"(exports, module) {
+  "nextband/node_modules/semver/functions/gt.js"(exports, module) {
     "use strict";
     var compare2 = require_compare();
     var gt = (a, b, loose) => compare2(a, b, loose) > 0;
@@ -10637,9 +10637,9 @@ var require_gt = __commonJS({
   }
 });
 
-// node_modules/semver/functions/lt.js
+// nextband/node_modules/semver/functions/lt.js
 var require_lt = __commonJS({
-  "node_modules/semver/functions/lt.js"(exports, module) {
+  "nextband/node_modules/semver/functions/lt.js"(exports, module) {
     "use strict";
     var compare2 = require_compare();
     var lt = (a, b, loose) => compare2(a, b, loose) < 0;
@@ -10647,9 +10647,9 @@ var require_lt = __commonJS({
   }
 });
 
-// node_modules/semver/functions/eq.js
+// nextband/node_modules/semver/functions/eq.js
 var require_eq = __commonJS({
-  "node_modules/semver/functions/eq.js"(exports, module) {
+  "nextband/node_modules/semver/functions/eq.js"(exports, module) {
     "use strict";
     var compare2 = require_compare();
     var eq = (a, b, loose) => compare2(a, b, loose) === 0;
@@ -10657,9 +10657,9 @@ var require_eq = __commonJS({
   }
 });
 
-// node_modules/semver/functions/neq.js
+// nextband/node_modules/semver/functions/neq.js
 var require_neq = __commonJS({
-  "node_modules/semver/functions/neq.js"(exports, module) {
+  "nextband/node_modules/semver/functions/neq.js"(exports, module) {
     "use strict";
     var compare2 = require_compare();
     var neq = (a, b, loose) => compare2(a, b, loose) !== 0;
@@ -10667,9 +10667,9 @@ var require_neq = __commonJS({
   }
 });
 
-// node_modules/semver/functions/gte.js
+// nextband/node_modules/semver/functions/gte.js
 var require_gte = __commonJS({
-  "node_modules/semver/functions/gte.js"(exports, module) {
+  "nextband/node_modules/semver/functions/gte.js"(exports, module) {
     "use strict";
     var compare2 = require_compare();
     var gte = (a, b, loose) => compare2(a, b, loose) >= 0;
@@ -10677,9 +10677,9 @@ var require_gte = __commonJS({
   }
 });
 
-// node_modules/semver/functions/lte.js
+// nextband/node_modules/semver/functions/lte.js
 var require_lte = __commonJS({
-  "node_modules/semver/functions/lte.js"(exports, module) {
+  "nextband/node_modules/semver/functions/lte.js"(exports, module) {
     "use strict";
     var compare2 = require_compare();
     var lte = (a, b, loose) => compare2(a, b, loose) <= 0;
@@ -10687,9 +10687,9 @@ var require_lte = __commonJS({
   }
 });
 
-// node_modules/semver/functions/cmp.js
+// nextband/node_modules/semver/functions/cmp.js
 var require_cmp = __commonJS({
-  "node_modules/semver/functions/cmp.js"(exports, module) {
+  "nextband/node_modules/semver/functions/cmp.js"(exports, module) {
     "use strict";
     var eq = require_eq();
     var neq = require_neq();
@@ -10737,9 +10737,9 @@ var require_cmp = __commonJS({
   }
 });
 
-// node_modules/semver/functions/coerce.js
+// nextband/node_modules/semver/functions/coerce.js
 var require_coerce = __commonJS({
-  "node_modules/semver/functions/coerce.js"(exports, module) {
+  "nextband/node_modules/semver/functions/coerce.js"(exports, module) {
     "use strict";
     var SemVer = require_semver();
     var parse = require_parse();
@@ -10783,9 +10783,9 @@ var require_coerce = __commonJS({
   }
 });
 
-// node_modules/semver/internal/lrucache.js
+// nextband/node_modules/semver/internal/lrucache.js
 var require_lrucache = __commonJS({
-  "node_modules/semver/internal/lrucache.js"(exports, module) {
+  "nextband/node_modules/semver/internal/lrucache.js"(exports, module) {
     "use strict";
     var LRUCache = class {
       constructor() {
@@ -10821,9 +10821,9 @@ var require_lrucache = __commonJS({
   }
 });
 
-// node_modules/semver/classes/range.js
+// nextband/node_modules/semver/classes/range.js
 var require_range = __commonJS({
-  "node_modules/semver/classes/range.js"(exports, module) {
+  "nextband/node_modules/semver/classes/range.js"(exports, module) {
     "use strict";
     var SPACE_CHARACTERS = /\s+/g;
     var Range = class _Range {
@@ -11197,9 +11197,9 @@ var require_range = __commonJS({
   }
 });
 
-// node_modules/semver/classes/comparator.js
+// nextband/node_modules/semver/classes/comparator.js
 var require_comparator = __commonJS({
-  "node_modules/semver/classes/comparator.js"(exports, module) {
+  "nextband/node_modules/semver/classes/comparator.js"(exports, module) {
     "use strict";
     var ANY = Symbol("SemVer ANY");
     var Comparator = class _Comparator {
@@ -11310,9 +11310,9 @@ var require_comparator = __commonJS({
   }
 });
 
-// node_modules/semver/functions/satisfies.js
+// nextband/node_modules/semver/functions/satisfies.js
 var require_satisfies = __commonJS({
-  "node_modules/semver/functions/satisfies.js"(exports, module) {
+  "nextband/node_modules/semver/functions/satisfies.js"(exports, module) {
     "use strict";
     var Range = require_range();
     var satisfies = (version, range, options) => {
@@ -11327,9 +11327,9 @@ var require_satisfies = __commonJS({
   }
 });
 
-// node_modules/semver/ranges/to-comparators.js
+// nextband/node_modules/semver/ranges/to-comparators.js
 var require_to_comparators = __commonJS({
-  "node_modules/semver/ranges/to-comparators.js"(exports, module) {
+  "nextband/node_modules/semver/ranges/to-comparators.js"(exports, module) {
     "use strict";
     var Range = require_range();
     var toComparators = (range, options) => new Range(range, options).set.map((comp) => comp.map((c) => c.value).join(" ").trim().split(" "));
@@ -11337,9 +11337,9 @@ var require_to_comparators = __commonJS({
   }
 });
 
-// node_modules/semver/ranges/max-satisfying.js
+// nextband/node_modules/semver/ranges/max-satisfying.js
 var require_max_satisfying = __commonJS({
-  "node_modules/semver/ranges/max-satisfying.js"(exports, module) {
+  "nextband/node_modules/semver/ranges/max-satisfying.js"(exports, module) {
     "use strict";
     var SemVer = require_semver();
     var Range = require_range();
@@ -11366,9 +11366,9 @@ var require_max_satisfying = __commonJS({
   }
 });
 
-// node_modules/semver/ranges/min-satisfying.js
+// nextband/node_modules/semver/ranges/min-satisfying.js
 var require_min_satisfying = __commonJS({
-  "node_modules/semver/ranges/min-satisfying.js"(exports, module) {
+  "nextband/node_modules/semver/ranges/min-satisfying.js"(exports, module) {
     "use strict";
     var SemVer = require_semver();
     var Range = require_range();
@@ -11395,9 +11395,9 @@ var require_min_satisfying = __commonJS({
   }
 });
 
-// node_modules/semver/ranges/min-version.js
+// nextband/node_modules/semver/ranges/min-version.js
 var require_min_version = __commonJS({
-  "node_modules/semver/ranges/min-version.js"(exports, module) {
+  "nextband/node_modules/semver/ranges/min-version.js"(exports, module) {
     "use strict";
     var SemVer = require_semver();
     var Range = require_range();
@@ -11452,9 +11452,9 @@ var require_min_version = __commonJS({
   }
 });
 
-// node_modules/semver/ranges/valid.js
+// nextband/node_modules/semver/ranges/valid.js
 var require_valid2 = __commonJS({
-  "node_modules/semver/ranges/valid.js"(exports, module) {
+  "nextband/node_modules/semver/ranges/valid.js"(exports, module) {
     "use strict";
     var Range = require_range();
     var validRange = (range, options) => {
@@ -11468,9 +11468,9 @@ var require_valid2 = __commonJS({
   }
 });
 
-// node_modules/semver/ranges/outside.js
+// nextband/node_modules/semver/ranges/outside.js
 var require_outside = __commonJS({
-  "node_modules/semver/ranges/outside.js"(exports, module) {
+  "nextband/node_modules/semver/ranges/outside.js"(exports, module) {
     "use strict";
     var SemVer = require_semver();
     var Comparator = require_comparator();
@@ -11537,9 +11537,9 @@ var require_outside = __commonJS({
   }
 });
 
-// node_modules/semver/ranges/gtr.js
+// nextband/node_modules/semver/ranges/gtr.js
 var require_gtr = __commonJS({
-  "node_modules/semver/ranges/gtr.js"(exports, module) {
+  "nextband/node_modules/semver/ranges/gtr.js"(exports, module) {
     "use strict";
     var outside = require_outside();
     var gtr = (version, range, options) => outside(version, range, ">", options);
@@ -11547,9 +11547,9 @@ var require_gtr = __commonJS({
   }
 });
 
-// node_modules/semver/ranges/ltr.js
+// nextband/node_modules/semver/ranges/ltr.js
 var require_ltr = __commonJS({
-  "node_modules/semver/ranges/ltr.js"(exports, module) {
+  "nextband/node_modules/semver/ranges/ltr.js"(exports, module) {
     "use strict";
     var outside = require_outside();
     var ltr = (version, range, options) => outside(version, range, "<", options);
@@ -11557,9 +11557,9 @@ var require_ltr = __commonJS({
   }
 });
 
-// node_modules/semver/ranges/intersects.js
+// nextband/node_modules/semver/ranges/intersects.js
 var require_intersects = __commonJS({
-  "node_modules/semver/ranges/intersects.js"(exports, module) {
+  "nextband/node_modules/semver/ranges/intersects.js"(exports, module) {
     "use strict";
     var Range = require_range();
     var intersects = (r1, r2, options) => {
@@ -11571,9 +11571,9 @@ var require_intersects = __commonJS({
   }
 });
 
-// node_modules/semver/ranges/simplify.js
+// nextband/node_modules/semver/ranges/simplify.js
 var require_simplify = __commonJS({
-  "node_modules/semver/ranges/simplify.js"(exports, module) {
+  "nextband/node_modules/semver/ranges/simplify.js"(exports, module) {
     "use strict";
     var satisfies = require_satisfies();
     var compare2 = require_compare();
@@ -11621,9 +11621,9 @@ var require_simplify = __commonJS({
   }
 });
 
-// node_modules/semver/ranges/subset.js
+// nextband/node_modules/semver/ranges/subset.js
 var require_subset = __commonJS({
-  "node_modules/semver/ranges/subset.js"(exports, module) {
+  "nextband/node_modules/semver/ranges/subset.js"(exports, module) {
     "use strict";
     var Range = require_range();
     var Comparator = require_comparator();
@@ -11783,9 +11783,9 @@ var require_subset = __commonJS({
   }
 });
 
-// node_modules/semver/index.js
+// nextband/node_modules/semver/index.js
 var require_semver2 = __commonJS({
-  "node_modules/semver/index.js"(exports, module) {
+  "nextband/node_modules/semver/index.js"(exports, module) {
     "use strict";
     var internalRe = require_re();
     var constants = require_constants2();
@@ -11878,9 +11878,9 @@ var require_semver2 = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/request.js
+// nextband/node_modules/fastify/lib/request.js
 var require_request = __commonJS({
-  "node_modules/fastify/lib/request.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/request.js"(exports, module) {
     "use strict";
     var proxyAddr = require_proxy_addr();
     var semver = require_semver2();
@@ -12200,9 +12200,9 @@ var require_request = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/context.js
+// nextband/node_modules/fastify/lib/context.js
 var require_context = __commonJS({
-  "node_modules/fastify/lib/context.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/context.js"(exports, module) {
     "use strict";
     var {
       kFourOhFourContext,
@@ -12307,9 +12307,9 @@ var require_context = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/httpMethods.js
+// nextband/node_modules/fastify/lib/httpMethods.js
 var require_httpMethods = __commonJS({
-  "node_modules/fastify/lib/httpMethods.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/httpMethods.js"(exports, module) {
     "use strict";
     module.exports = {
       supportedMethods: [
@@ -12336,9 +12336,9 @@ var require_httpMethods = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/decorate.js
+// nextband/node_modules/fastify/lib/decorate.js
 var require_decorate = __commonJS({
-  "node_modules/fastify/lib/decorate.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/decorate.js"(exports, module) {
     "use strict";
     var {
       kReply,
@@ -12457,9 +12457,9 @@ var require_decorate = __commonJS({
   }
 });
 
-// node_modules/toad-cache/dist/toad-cache.cjs
+// nextband/node_modules/toad-cache/dist/toad-cache.cjs
 var require_toad_cache = __commonJS({
-  "node_modules/toad-cache/dist/toad-cache.cjs"(exports) {
+  "nextband/node_modules/toad-cache/dist/toad-cache.cjs"(exports) {
     "use strict";
     function validateCacheParams(max, ttlInMsecs) {
       if (typeof max !== "number" || !Number.isInteger(max) || max < 0) {
@@ -13120,9 +13120,9 @@ var require_toad_cache = __commonJS({
   }
 });
 
-// node_modules/fast-content-type-parse/index.js
+// nextband/node_modules/fast-content-type-parse/index.js
 var require_fast_content_type_parse = __commonJS({
-  "node_modules/fast-content-type-parse/index.js"(exports, module) {
+  "nextband/node_modules/fast-content-type-parse/index.js"(exports, module) {
     "use strict";
     var NullObject = function NullObject2() {
     };
@@ -13216,9 +13216,9 @@ var require_fast_content_type_parse = __commonJS({
   }
 });
 
-// node_modules/secure-json-parse/index.js
+// nextband/node_modules/secure-json-parse/index.js
 var require_secure_json_parse = __commonJS({
-  "node_modules/secure-json-parse/index.js"(exports, module) {
+  "nextband/node_modules/secure-json-parse/index.js"(exports, module) {
     "use strict";
     var hasBuffer = typeof Buffer !== "undefined";
     var suspectProtoRx = /"(?:_|\\u005[Ff])(?:_|\\u005[Ff])(?:p|\\u0070)(?:r|\\u0072)(?:o|\\u006[Ff])(?:t|\\u0074)(?:o|\\u006[Ff])(?:_|\\u005[Ff])(?:_|\\u005[Ff])"\s*:/;
@@ -13320,9 +13320,9 @@ var require_secure_json_parse = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/contentTypeParser.js
+// nextband/node_modules/fastify/lib/contentTypeParser.js
 var require_contentTypeParser = __commonJS({
-  "node_modules/fastify/lib/contentTypeParser.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/contentTypeParser.js"(exports, module) {
     "use strict";
     var { AsyncResource } = __require("node:async_hooks");
     var { FifoMap: Fifo } = require_toad_cache();
@@ -13670,9 +13670,9 @@ var require_contentTypeParser = __commonJS({
   }
 });
 
-// node_modules/fast-deep-equal/index.js
+// nextband/node_modules/fast-deep-equal/index.js
 var require_fast_deep_equal = __commonJS({
-  "node_modules/fast-deep-equal/index.js"(exports, module) {
+  "nextband/node_modules/fast-deep-equal/index.js"(exports, module) {
     "use strict";
     module.exports = function equal(a, b) {
       if (a === b) return true;
@@ -13705,9 +13705,9 @@ var require_fast_deep_equal = __commonJS({
   }
 });
 
-// node_modules/json-schema-ref-resolver/index.js
+// nextband/node_modules/json-schema-ref-resolver/index.js
 var require_json_schema_ref_resolver = __commonJS({
-  "node_modules/json-schema-ref-resolver/index.js"(exports, module) {
+  "nextband/node_modules/json-schema-ref-resolver/index.js"(exports, module) {
     "use strict";
     var deepEqual = require_fast_deep_equal();
     var jsonSchemaRefSymbol = Symbol.for("json-schema-ref");
@@ -13939,9 +13939,9 @@ var require_json_schema_ref_resolver = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/codegen/code.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/codegen/code.js
 var require_code = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/codegen/code.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/codegen/code.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.regexpCode = exports.getEsmExportName = exports.getProperty = exports.safeStringify = exports.stringify = exports.strConcat = exports.addCodeArg = exports.str = exports._ = exports.nil = exports._Code = exports.Name = exports.IDENTIFIER = exports._CodeOrName = void 0;
@@ -14093,9 +14093,9 @@ var require_code = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/codegen/scope.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/codegen/scope.js
 var require_scope = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/codegen/scope.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/codegen/scope.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ValueScope = exports.ValueScopeName = exports.Scope = exports.varKinds = exports.UsedValueState = void 0;
@@ -14238,9 +14238,9 @@ var require_scope = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/codegen/index.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/codegen/index.js
 var require_codegen = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/codegen/index.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/codegen/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.or = exports.and = exports.not = exports.CodeGen = exports.operators = exports.varKinds = exports.ValueScopeName = exports.ValueScope = exports.Scope = exports.Name = exports.regexpCode = exports.stringify = exports.getProperty = exports.nil = exports.strConcat = exports.str = exports._ = void 0;
@@ -14958,9 +14958,9 @@ var require_codegen = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/util.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/util.js
 var require_util = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/util.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/util.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.checkStrictMode = exports.getErrorPath = exports.Type = exports.useFunc = exports.setEvaluated = exports.evaluatedPropsToName = exports.mergeEvaluated = exports.eachItem = exports.unescapeJsonPointer = exports.escapeJsonPointer = exports.escapeFragment = exports.unescapeFragment = exports.schemaRefOrVal = exports.schemaHasRulesButRef = exports.schemaHasRules = exports.checkUnknownRules = exports.alwaysValidSchema = exports.toHash = void 0;
@@ -15125,9 +15125,9 @@ var require_util = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/names.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/names.js
 var require_names = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/names.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/names.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -15164,9 +15164,9 @@ var require_names = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/errors.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/errors.js
 var require_errors3 = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/errors.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/errors.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.extendErrors = exports.resetErrorsCount = exports.reportExtraError = exports.reportError = exports.keyword$DataError = exports.keywordError = void 0;
@@ -15286,9 +15286,9 @@ var require_errors3 = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/boolSchema.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/boolSchema.js
 var require_boolSchema = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/boolSchema.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/boolSchema.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.boolOrEmptySchema = exports.topBoolOrEmptySchema = void 0;
@@ -15337,9 +15337,9 @@ var require_boolSchema = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/rules.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/rules.js
 var require_rules = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/rules.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/rules.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getRules = exports.isJSONType = void 0;
@@ -15368,9 +15368,9 @@ var require_rules = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/applicability.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/applicability.js
 var require_applicability = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/applicability.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/applicability.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.shouldUseRule = exports.shouldUseGroup = exports.schemaHasRulesForType = void 0;
@@ -15391,9 +15391,9 @@ var require_applicability = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/dataType.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/dataType.js
 var require_dataType = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/dataType.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/dataType.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.reportTypeError = exports.checkDataTypes = exports.checkDataType = exports.coerceAndCheckDataType = exports.getJSONTypes = exports.getSchemaTypes = exports.DataType = void 0;
@@ -15575,9 +15575,9 @@ var require_dataType = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/defaults.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/defaults.js
 var require_defaults = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/defaults.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/defaults.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.assignDefaults = void 0;
@@ -15612,9 +15612,9 @@ var require_defaults = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/code.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/code.js
 var require_code2 = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/code.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/code.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateUnion = exports.validateArray = exports.usePattern = exports.callValidateCode = exports.schemaProperties = exports.allSchemaProperties = exports.noPropertyInData = exports.propertyInData = exports.isOwnProperty = exports.hasPropFunc = exports.reportMissingProp = exports.checkMissingProp = exports.checkReportMissingProp = void 0;
@@ -15745,9 +15745,9 @@ var require_code2 = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/keyword.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/keyword.js
 var require_keyword = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/keyword.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/keyword.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateKeywordUsage = exports.validSchemaType = exports.funcKeywordCode = exports.macroKeywordCode = void 0;
@@ -15863,9 +15863,9 @@ var require_keyword = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/subschema.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/subschema.js
 var require_subschema = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/subschema.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/subschema.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.extendSubschemaMode = exports.extendSubschemaData = exports.getSubschema = void 0;
@@ -15946,9 +15946,9 @@ var require_subschema = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/json-schema-traverse/index.js
+// nextband/node_modules/fast-json-stringify/node_modules/json-schema-traverse/index.js
 var require_json_schema_traverse = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/json-schema-traverse/index.js"(exports, module) {
+  "nextband/node_modules/fast-json-stringify/node_modules/json-schema-traverse/index.js"(exports, module) {
     "use strict";
     var traverse = module.exports = function(schema, opts, cb) {
       if (typeof opts == "function") {
@@ -16034,9 +16034,9 @@ var require_json_schema_traverse = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/resolve.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/resolve.js
 var require_resolve = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/resolve.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/resolve.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getSchemaRefs = exports.resolveUrl = exports.normalizeId = exports._getFullPath = exports.getFullPath = exports.inlineRef = void 0;
@@ -16190,9 +16190,9 @@ var require_resolve = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/index.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/index.js
 var require_validate = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/index.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/validate/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getData = exports.KeywordCxt = exports.validateFunctionCode = void 0;
@@ -16698,9 +16698,9 @@ var require_validate = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/validation_error.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/validation_error.js
 var require_validation_error = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/validation_error.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/validation_error.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ValidationError = class extends Error {
@@ -16714,9 +16714,9 @@ var require_validation_error = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/ref_error.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/ref_error.js
 var require_ref_error = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/ref_error.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/ref_error.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var resolve_1 = require_resolve();
@@ -16731,9 +16731,9 @@ var require_ref_error = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/compile/index.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/index.js
 var require_compile = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/compile/index.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/compile/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveSchema = exports.getCompilingSchema = exports.resolveRef = exports.compileSchema = exports.SchemaEnv = void 0;
@@ -16744,20 +16744,20 @@ var require_compile = __commonJS({
     var util_1 = require_util();
     var validate_1 = require_validate();
     var SchemaEnv = class {
-      constructor(env3) {
+      constructor(env2) {
         var _a;
         this.refs = {};
         this.dynamicAnchors = {};
         let schema;
-        if (typeof env3.schema == "object")
-          schema = env3.schema;
-        this.schema = env3.schema;
-        this.schemaId = env3.schemaId;
-        this.root = env3.root || this;
-        this.baseId = (_a = env3.baseId) !== null && _a !== void 0 ? _a : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env3.schemaId || "$id"]);
-        this.schemaPath = env3.schemaPath;
-        this.localRefs = env3.localRefs;
-        this.meta = env3.meta;
+        if (typeof env2.schema == "object")
+          schema = env2.schema;
+        this.schema = env2.schema;
+        this.schemaId = env2.schemaId;
+        this.root = env2.root || this;
+        this.baseId = (_a = env2.baseId) !== null && _a !== void 0 ? _a : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env2.schemaId || "$id"]);
+        this.schemaPath = env2.schemaPath;
+        this.localRefs = env2.localRefs;
+        this.meta = env2.meta;
         this.$async = schema === null || schema === void 0 ? void 0 : schema.$async;
         this.refs = {};
       }
@@ -16941,23 +16941,23 @@ var require_compile = __commonJS({
           baseId = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schId);
         }
       }
-      let env3;
+      let env2;
       if (typeof schema != "boolean" && schema.$ref && !(0, util_1.schemaHasRulesButRef)(schema, this.RULES)) {
         const $ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schema.$ref);
-        env3 = resolveSchema.call(this, root, $ref);
+        env2 = resolveSchema.call(this, root, $ref);
       }
       const { schemaId } = this.opts;
-      env3 = env3 || new SchemaEnv({ schema, schemaId, root, baseId });
-      if (env3.schema !== env3.root.schema)
-        return env3;
+      env2 = env2 || new SchemaEnv({ schema, schemaId, root, baseId });
+      if (env2.schema !== env2.root.schema)
+        return env2;
       return void 0;
     }
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/refs/data.json
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/refs/data.json
 var require_data = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/refs/data.json"(exports, module) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/refs/data.json"(exports, module) {
     module.exports = {
       $id: "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#",
       description: "Meta-schema for $data reference (JSON AnySchema extension proposal)",
@@ -16974,9 +16974,9 @@ var require_data = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/node_modules/fast-uri/lib/utils.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/node_modules/fast-uri/lib/utils.js
 var require_utils = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/node_modules/fast-uri/lib/utils.js"(exports, module) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/node_modules/fast-uri/lib/utils.js"(exports, module) {
     "use strict";
     var isUUID = RegExp.prototype.test.bind(/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iu);
     var isIPv4 = RegExp.prototype.test.bind(/^(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)$/u);
@@ -17287,9 +17287,9 @@ var require_utils = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/node_modules/fast-uri/lib/schemes.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/node_modules/fast-uri/lib/schemes.js
 var require_schemes = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/node_modules/fast-uri/lib/schemes.js"(exports, module) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/node_modules/fast-uri/lib/schemes.js"(exports, module) {
     "use strict";
     var { isUUID } = require_utils();
     var URN_REG = /([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-.:;=@]|%[\da-f]{2})+)/iu;
@@ -17497,9 +17497,9 @@ var require_schemes = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/node_modules/fast-uri/index.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/node_modules/fast-uri/index.js
 var require_fast_uri = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/node_modules/fast-uri/index.js"(exports, module) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/node_modules/fast-uri/index.js"(exports, module) {
     "use strict";
     var { normalizeIPv6, removeDotSegments, recomposeAuthority, normalizePercentEncoding, normalizePathEncoding, escapePreservingEscapes, reescapeHostDelimiters, isIPv4, nonSimpleDomain } = require_utils();
     var { SCHEMES, getSchemeHandler } = require_schemes();
@@ -17809,9 +17809,9 @@ var require_fast_uri = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/uri.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/uri.js
 var require_uri = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/uri.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/uri.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var uri = require_fast_uri();
@@ -17820,9 +17820,9 @@ var require_uri = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/core.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/core.js
 var require_core = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/core.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/core.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = void 0;
@@ -18431,9 +18431,9 @@ var require_core = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/core/id.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/core/id.js
 var require_id = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/core/id.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/core/id.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var def = {
@@ -18446,9 +18446,9 @@ var require_id = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/core/ref.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/core/ref.js
 var require_ref = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/core/ref.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/core/ref.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.callRef = exports.getValidate = void 0;
@@ -18463,8 +18463,8 @@ var require_ref = __commonJS({
       schemaType: "string",
       code(cxt) {
         const { gen, schema: $ref, it } = cxt;
-        const { baseId, schemaEnv: env3, validateName, opts, self: self2 } = it;
-        const { root } = env3;
+        const { baseId, schemaEnv: env2, validateName, opts, self: self2 } = it;
+        const { root } = env2;
         if (($ref === "#" || $ref === "#/") && baseId === root.baseId)
           return callRootRef();
         const schOrEnv = compile_1.resolveRef.call(self2, root, baseId, $ref);
@@ -18474,8 +18474,8 @@ var require_ref = __commonJS({
           return callValidate(schOrEnv);
         return inlineRefSchema(schOrEnv);
         function callRootRef() {
-          if (env3 === root)
-            return callRef(cxt, validateName, env3, env3.$async);
+          if (env2 === root)
+            return callRef(cxt, validateName, env2, env2.$async);
           const rootName = gen.scopeValue("root", { ref: root });
           return callRef(cxt, (0, codegen_1._)`${rootName}.validate`, root, root.$async);
         }
@@ -18505,14 +18505,14 @@ var require_ref = __commonJS({
     exports.getValidate = getValidate;
     function callRef(cxt, v, sch, $async) {
       const { gen, it } = cxt;
-      const { allErrors, schemaEnv: env3, opts } = it;
+      const { allErrors, schemaEnv: env2, opts } = it;
       const passCxt = opts.passContext ? names_1.default.this : codegen_1.nil;
       if ($async)
         callAsyncRef();
       else
         callSyncRef();
       function callAsyncRef() {
-        if (!env3.$async)
+        if (!env2.$async)
           throw new Error("async schema referenced by sync schema");
         const valid = gen.let("valid");
         gen.try(() => {
@@ -18568,9 +18568,9 @@ var require_ref = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/core/index.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/core/index.js
 var require_core2 = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/core/index.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/core/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var id_1 = require_id();
@@ -18589,9 +18589,9 @@ var require_core2 = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitNumber.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitNumber.js
 var require_limitNumber = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitNumber.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitNumber.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -18621,9 +18621,9 @@ var require_limitNumber = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/multipleOf.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/multipleOf.js
 var require_multipleOf = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/multipleOf.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/multipleOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -18649,9 +18649,9 @@ var require_multipleOf = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/ucs2length.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/ucs2length.js
 var require_ucs2length = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function ucs2length(str) {
@@ -18675,9 +18675,9 @@ var require_ucs2length = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitLength.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitLength.js
 var require_limitLength = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitLength.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitLength.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -18707,9 +18707,9 @@ var require_limitLength = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/pattern.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/pattern.js
 var require_pattern = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/pattern.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/pattern.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -18744,9 +18744,9 @@ var require_pattern = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitProperties.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitProperties.js
 var require_limitProperties = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitProperties.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -18773,9 +18773,9 @@ var require_limitProperties = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/required.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/required.js
 var require_required = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/required.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/required.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -18855,9 +18855,9 @@ var require_required = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitItems.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitItems.js
 var require_limitItems = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitItems.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/limitItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -18884,9 +18884,9 @@ var require_limitItems = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/equal.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/equal.js
 var require_equal = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/equal.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/runtime/equal.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var equal = require_fast_deep_equal();
@@ -18895,9 +18895,9 @@ var require_equal = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js
 var require_uniqueItems = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var dataType_1 = require_dataType();
@@ -18962,9 +18962,9 @@ var require_uniqueItems = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/const.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/const.js
 var require_const = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/const.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/const.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -18991,9 +18991,9 @@ var require_const = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/enum.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/enum.js
 var require_enum = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/enum.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/enum.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -19040,9 +19040,9 @@ var require_enum = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/index.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/index.js
 var require_validation2 = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/index.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/validation/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var limitNumber_1 = require_limitNumber();
@@ -19078,9 +19078,9 @@ var require_validation2 = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js
 var require_additionalItems = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateAdditionalItems = void 0;
@@ -19131,9 +19131,9 @@ var require_additionalItems = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/items.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/items.js
 var require_items = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/items.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/items.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateTuple = void 0;
@@ -19188,9 +19188,9 @@ var require_items = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js
 var require_prefixItems = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var items_1 = require_items();
@@ -19205,9 +19205,9 @@ var require_prefixItems = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/items2020.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/items2020.js
 var require_items2020 = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/items2020.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/items2020.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -19240,9 +19240,9 @@ var require_items2020 = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/contains.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/contains.js
 var require_contains = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/contains.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/contains.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -19334,9 +19334,9 @@ var require_contains = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/dependencies.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/dependencies.js
 var require_dependencies = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/dependencies.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/dependencies.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateSchemaDeps = exports.validatePropertyDeps = exports.error = void 0;
@@ -19428,9 +19428,9 @@ var require_dependencies = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js
 var require_propertyNames = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -19471,9 +19471,9 @@ var require_propertyNames = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js
 var require_additionalProperties = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -19577,9 +19577,9 @@ var require_additionalProperties = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/properties.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/properties.js
 var require_properties = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/properties.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/properties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var validate_1 = require_validate();
@@ -19635,9 +19635,9 @@ var require_properties = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js
 var require_patternProperties = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -19709,9 +19709,9 @@ var require_patternProperties = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/not.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/not.js
 var require_not = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/not.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/not.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util();
@@ -19740,9 +19740,9 @@ var require_not = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/anyOf.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/anyOf.js
 var require_anyOf = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/anyOf.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/anyOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -19757,9 +19757,9 @@ var require_anyOf = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/oneOf.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/oneOf.js
 var require_oneOf = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/oneOf.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/oneOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -19815,9 +19815,9 @@ var require_oneOf = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/allOf.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/allOf.js
 var require_allOf = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/allOf.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/allOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util();
@@ -19842,9 +19842,9 @@ var require_allOf = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/if.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/if.js
 var require_if = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/if.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/if.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -19911,9 +19911,9 @@ var require_if = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/thenElse.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/thenElse.js
 var require_thenElse = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/thenElse.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/thenElse.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util();
@@ -19929,9 +19929,9 @@ var require_thenElse = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/index.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/index.js
 var require_applicator = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/index.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/applicator/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var additionalItems_1 = require_additionalItems();
@@ -19977,9 +19977,9 @@ var require_applicator = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/format/format.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/format/format.js
 var require_format = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/format/format.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/format/format.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -20067,9 +20067,9 @@ var require_format = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/format/index.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/format/index.js
 var require_format2 = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/format/index.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/format/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var format_1 = require_format();
@@ -20078,9 +20078,9 @@ var require_format2 = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/metadata.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/metadata.js
 var require_metadata = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/metadata.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/metadata.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.contentVocabulary = exports.metadataVocabulary = void 0;
@@ -20101,9 +20101,9 @@ var require_metadata = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/draft7.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/draft7.js
 var require_draft7 = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/draft7.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/draft7.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var core_1 = require_core2();
@@ -20123,9 +20123,9 @@ var require_draft7 = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/discriminator/types.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/discriminator/types.js
 var require_types = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/discriminator/types.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/discriminator/types.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DiscrError = void 0;
@@ -20137,9 +20137,9 @@ var require_types = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/discriminator/index.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/discriminator/index.js
 var require_discriminator = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/discriminator/index.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/vocabularies/discriminator/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -20242,9 +20242,9 @@ var require_discriminator = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/refs/json-schema-draft-07.json
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/refs/json-schema-draft-07.json
 var require_json_schema_draft_07 = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/refs/json-schema-draft-07.json"(exports, module) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/refs/json-schema-draft-07.json"(exports, module) {
     module.exports = {
       $schema: "http://json-schema.org/draft-07/schema#",
       $id: "http://json-schema.org/draft-07/schema#",
@@ -20399,9 +20399,9 @@ var require_json_schema_draft_07 = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv/dist/ajv.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/ajv.js
 var require_ajv = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv/dist/ajv.js"(exports, module) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv/dist/ajv.js"(exports, module) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.MissingRefError = exports.ValidationError = exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = exports.Ajv = void 0;
@@ -20469,9 +20469,9 @@ var require_ajv = __commonJS({
   }
 });
 
-// node_modules/fast-uri/lib/scopedChars.js
+// nextband/node_modules/fast-uri/lib/scopedChars.js
 var require_scopedChars = __commonJS({
-  "node_modules/fast-uri/lib/scopedChars.js"(exports, module) {
+  "nextband/node_modules/fast-uri/lib/scopedChars.js"(exports, module) {
     "use strict";
     var HEX = {
       0: 0,
@@ -20503,9 +20503,9 @@ var require_scopedChars = __commonJS({
   }
 });
 
-// node_modules/fast-uri/lib/utils.js
+// nextband/node_modules/fast-uri/lib/utils.js
 var require_utils2 = __commonJS({
-  "node_modules/fast-uri/lib/utils.js"(exports, module) {
+  "nextband/node_modules/fast-uri/lib/utils.js"(exports, module) {
     "use strict";
     var { HEX } = require_scopedChars();
     function normalizeIPv4(host) {
@@ -20789,9 +20789,9 @@ var require_utils2 = __commonJS({
   }
 });
 
-// node_modules/fast-uri/lib/schemes.js
+// nextband/node_modules/fast-uri/lib/schemes.js
 var require_schemes2 = __commonJS({
-  "node_modules/fast-uri/lib/schemes.js"(exports, module) {
+  "nextband/node_modules/fast-uri/lib/schemes.js"(exports, module) {
     "use strict";
     var UUID_REG = /^[\da-f]{8}\b-[\da-f]{4}\b-[\da-f]{4}\b-[\da-f]{4}\b-[\da-f]{12}$/iu;
     var URN_REG = /([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-.:;=@]|%[\da-f]{2})+)/iu;
@@ -20935,9 +20935,9 @@ var require_schemes2 = __commonJS({
   }
 });
 
-// node_modules/fast-uri/index.js
+// nextband/node_modules/fast-uri/index.js
 var require_fast_uri2 = __commonJS({
-  "node_modules/fast-uri/index.js"(exports, module) {
+  "nextband/node_modules/fast-uri/index.js"(exports, module) {
     "use strict";
     var { normalizeIPv6, normalizeIPv4, removeDotSegments, recomposeAuthority, normalizePercentEncoding, normalizePathEncoding, escapePreservingEscapes, reescapeHostDelimiters } = require_utils2();
     var SCHEMES = require_schemes2();
@@ -21251,9 +21251,9 @@ var require_fast_uri2 = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv-formats/dist/formats.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv-formats/dist/formats.js
 var require_formats = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv-formats/dist/formats.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv-formats/dist/formats.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.formatNames = exports.fastFormats = exports.fullFormats = void 0;
@@ -21454,9 +21454,9 @@ var require_formats = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv-formats/dist/limit.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv-formats/dist/limit.js
 var require_limit = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv-formats/dist/limit.js"(exports) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv-formats/dist/limit.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.formatLimitDefinition = void 0;
@@ -21526,9 +21526,9 @@ var require_limit = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/node_modules/ajv-formats/dist/index.js
+// nextband/node_modules/fast-json-stringify/node_modules/ajv-formats/dist/index.js
 var require_dist = __commonJS({
-  "node_modules/fast-json-stringify/node_modules/ajv-formats/dist/index.js"(exports, module) {
+  "nextband/node_modules/fast-json-stringify/node_modules/ajv-formats/dist/index.js"(exports, module) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var formats_1 = require_formats();
@@ -21568,9 +21568,9 @@ var require_dist = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/lib/validator.js
+// nextband/node_modules/fast-json-stringify/lib/validator.js
 var require_validator = __commonJS({
-  "node_modules/fast-json-stringify/lib/validator.js"(exports, module) {
+  "nextband/node_modules/fast-json-stringify/lib/validator.js"(exports, module) {
     "use strict";
     var Ajv = require_ajv();
     var fastUri = require_fast_uri2();
@@ -21648,9 +21648,9 @@ var require_validator = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/lib/location.js
+// nextband/node_modules/fast-json-stringify/lib/location.js
 var require_location = __commonJS({
-  "node_modules/fast-json-stringify/lib/location.js"(exports, module) {
+  "nextband/node_modules/fast-json-stringify/lib/location.js"(exports, module) {
     "use strict";
     var Location = class _Location {
       constructor(schema, schemaId, jsonPointer = "#") {
@@ -21674,9 +21674,9 @@ var require_location = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/lib/schema-validator.js
+// nextband/node_modules/fast-json-stringify/lib/schema-validator.js
 var require_schema_validator = __commonJS({
-  "node_modules/fast-json-stringify/lib/schema-validator.js"(exports, module) {
+  "nextband/node_modules/fast-json-stringify/lib/schema-validator.js"(exports, module) {
     "use strict";
     module.exports = validate10;
     module.exports.default = validate10;
@@ -22725,9 +22725,9 @@ var require_schema_validator = __commonJS({
   }
 });
 
-// node_modules/@fastify/merge-json-schemas/lib/errors.js
+// nextband/node_modules/@fastify/merge-json-schemas/lib/errors.js
 var require_errors4 = __commonJS({
-  "node_modules/@fastify/merge-json-schemas/lib/errors.js"(exports, module) {
+  "nextband/node_modules/@fastify/merge-json-schemas/lib/errors.js"(exports, module) {
     "use strict";
     var MergeError = class extends Error {
       constructor(keyword, schemas) {
@@ -22763,9 +22763,9 @@ var require_errors4 = __commonJS({
   }
 });
 
-// node_modules/@fastify/merge-json-schemas/lib/resolvers.js
+// nextband/node_modules/@fastify/merge-json-schemas/lib/resolvers.js
 var require_resolvers = __commonJS({
-  "node_modules/@fastify/merge-json-schemas/lib/resolvers.js"(exports, module) {
+  "nextband/node_modules/@fastify/merge-json-schemas/lib/resolvers.js"(exports, module) {
     "use strict";
     var deepEqual = require_fast_deep_equal();
     var { MergeError } = require_errors4();
@@ -22877,9 +22877,9 @@ var require_resolvers = __commonJS({
   }
 });
 
-// node_modules/@fastify/merge-json-schemas/index.js
+// nextband/node_modules/@fastify/merge-json-schemas/index.js
 var require_merge_json_schemas = __commonJS({
-  "node_modules/@fastify/merge-json-schemas/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/merge-json-schemas/index.js"(exports, module) {
     "use strict";
     var deepEqual = require_fast_deep_equal();
     var resolvers = require_resolvers();
@@ -23182,9 +23182,9 @@ var require_merge_json_schemas = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/lib/merge-schemas.js
+// nextband/node_modules/fast-json-stringify/lib/merge-schemas.js
 var require_merge_schemas = __commonJS({
-  "node_modules/fast-json-stringify/lib/merge-schemas.js"(exports, module) {
+  "nextband/node_modules/fast-json-stringify/lib/merge-schemas.js"(exports, module) {
     "use strict";
     var { mergeSchemas: _mergeSchemas } = require_merge_json_schemas();
     function mergeSchemas(schemas) {
@@ -23194,9 +23194,9 @@ var require_merge_schemas = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/lib/standalone.js
+// nextband/node_modules/fast-json-stringify/lib/standalone.js
 var require_standalone = __commonJS({
-  "node_modules/fast-json-stringify/lib/standalone.js"(exports, module) {
+  "nextband/node_modules/fast-json-stringify/lib/standalone.js"(exports, module) {
     "use strict";
     function buildStandaloneCode(contextFunc, context, serializer, validator) {
       let ajvDependencyCode = "";
@@ -23228,9 +23228,9 @@ var require_standalone = __commonJS({
   }
 });
 
-// node_modules/fast-json-stringify/index.js
+// nextband/node_modules/fast-json-stringify/index.js
 var require_fast_json_stringify = __commonJS({
-  "node_modules/fast-json-stringify/index.js"(exports, module) {
+  "nextband/node_modules/fast-json-stringify/index.js"(exports, module) {
     "use strict";
     var { RefResolver } = require_json_schema_ref_resolver();
     var Serializer = require_serializer();
@@ -24090,9 +24090,9 @@ ${contextFunctionCode}`,
   }
 });
 
-// node_modules/@fastify/fast-json-stringify-compiler/standalone.js
+// nextband/node_modules/@fastify/fast-json-stringify-compiler/standalone.js
 var require_standalone2 = __commonJS({
-  "node_modules/@fastify/fast-json-stringify-compiler/standalone.js"(exports, module) {
+  "nextband/node_modules/@fastify/fast-json-stringify-compiler/standalone.js"(exports, module) {
     "use strict";
     var SerializerSelector = require_fast_json_stringify_compiler();
     function StandaloneSerializer(options = { readMode: true }) {
@@ -24125,9 +24125,9 @@ var require_standalone2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/fast-json-stringify-compiler/index.js
+// nextband/node_modules/@fastify/fast-json-stringify-compiler/index.js
 var require_fast_json_stringify_compiler = __commonJS({
-  "node_modules/@fastify/fast-json-stringify-compiler/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/fast-json-stringify-compiler/index.js"(exports, module) {
     "use strict";
     var fastJsonStringify = require_fast_json_stringify();
     function SerializerSelector() {
@@ -24153,9 +24153,9 @@ var require_fast_json_stringify_compiler = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/codegen/code.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/codegen/code.js
 var require_code3 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/codegen/code.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/codegen/code.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.regexpCode = exports.getEsmExportName = exports.getProperty = exports.safeStringify = exports.stringify = exports.strConcat = exports.addCodeArg = exports.str = exports._ = exports.nil = exports._Code = exports.Name = exports.IDENTIFIER = exports._CodeOrName = void 0;
@@ -24307,9 +24307,9 @@ var require_code3 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/codegen/scope.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/codegen/scope.js
 var require_scope2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/codegen/scope.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/codegen/scope.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ValueScope = exports.ValueScopeName = exports.Scope = exports.varKinds = exports.UsedValueState = void 0;
@@ -24452,9 +24452,9 @@ var require_scope2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/codegen/index.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/codegen/index.js
 var require_codegen2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/codegen/index.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/codegen/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.or = exports.and = exports.not = exports.CodeGen = exports.operators = exports.varKinds = exports.ValueScopeName = exports.ValueScope = exports.Scope = exports.Name = exports.regexpCode = exports.stringify = exports.getProperty = exports.nil = exports.strConcat = exports.str = exports._ = void 0;
@@ -25172,9 +25172,9 @@ var require_codegen2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/util.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/util.js
 var require_util2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/util.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/util.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.checkStrictMode = exports.getErrorPath = exports.Type = exports.useFunc = exports.setEvaluated = exports.evaluatedPropsToName = exports.mergeEvaluated = exports.eachItem = exports.unescapeJsonPointer = exports.escapeJsonPointer = exports.escapeFragment = exports.unescapeFragment = exports.schemaRefOrVal = exports.schemaHasRulesButRef = exports.schemaHasRules = exports.checkUnknownRules = exports.alwaysValidSchema = exports.toHash = void 0;
@@ -25339,9 +25339,9 @@ var require_util2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/names.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/names.js
 var require_names2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/names.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/names.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -25378,9 +25378,9 @@ var require_names2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/errors.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/errors.js
 var require_errors5 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/errors.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/errors.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.extendErrors = exports.resetErrorsCount = exports.reportExtraError = exports.reportError = exports.keyword$DataError = exports.keywordError = void 0;
@@ -25500,9 +25500,9 @@ var require_errors5 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/boolSchema.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/boolSchema.js
 var require_boolSchema2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/boolSchema.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/boolSchema.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.boolOrEmptySchema = exports.topBoolOrEmptySchema = void 0;
@@ -25551,9 +25551,9 @@ var require_boolSchema2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/rules.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/rules.js
 var require_rules2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/rules.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/rules.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getRules = exports.isJSONType = void 0;
@@ -25582,9 +25582,9 @@ var require_rules2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/applicability.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/applicability.js
 var require_applicability2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/applicability.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/applicability.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.shouldUseRule = exports.shouldUseGroup = exports.schemaHasRulesForType = void 0;
@@ -25605,9 +25605,9 @@ var require_applicability2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/dataType.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/dataType.js
 var require_dataType2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/dataType.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/dataType.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.reportTypeError = exports.checkDataTypes = exports.checkDataType = exports.coerceAndCheckDataType = exports.getJSONTypes = exports.getSchemaTypes = exports.DataType = void 0;
@@ -25789,9 +25789,9 @@ var require_dataType2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/defaults.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/defaults.js
 var require_defaults2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/defaults.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/defaults.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.assignDefaults = void 0;
@@ -25826,9 +25826,9 @@ var require_defaults2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/code.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/code.js
 var require_code4 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/code.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/code.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateUnion = exports.validateArray = exports.usePattern = exports.callValidateCode = exports.schemaProperties = exports.allSchemaProperties = exports.noPropertyInData = exports.propertyInData = exports.isOwnProperty = exports.hasPropFunc = exports.reportMissingProp = exports.checkMissingProp = exports.checkReportMissingProp = void 0;
@@ -25959,9 +25959,9 @@ var require_code4 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/keyword.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/keyword.js
 var require_keyword2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/keyword.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/keyword.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateKeywordUsage = exports.validSchemaType = exports.funcKeywordCode = exports.macroKeywordCode = void 0;
@@ -26077,9 +26077,9 @@ var require_keyword2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/subschema.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/subschema.js
 var require_subschema2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/subschema.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/subschema.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.extendSubschemaMode = exports.extendSubschemaData = exports.getSubschema = void 0;
@@ -26160,9 +26160,9 @@ var require_subschema2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/json-schema-traverse/index.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/json-schema-traverse/index.js
 var require_json_schema_traverse2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/json-schema-traverse/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/json-schema-traverse/index.js"(exports, module) {
     "use strict";
     var traverse = module.exports = function(schema, opts, cb) {
       if (typeof opts == "function") {
@@ -26248,9 +26248,9 @@ var require_json_schema_traverse2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/resolve.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/resolve.js
 var require_resolve2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/resolve.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/resolve.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getSchemaRefs = exports.resolveUrl = exports.normalizeId = exports._getFullPath = exports.getFullPath = exports.inlineRef = void 0;
@@ -26404,9 +26404,9 @@ var require_resolve2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/index.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/index.js
 var require_validate2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/index.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/validate/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getData = exports.KeywordCxt = exports.validateFunctionCode = void 0;
@@ -26912,9 +26912,9 @@ var require_validate2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/validation_error.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/validation_error.js
 var require_validation_error2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/validation_error.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/validation_error.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ValidationError = class extends Error {
@@ -26928,9 +26928,9 @@ var require_validation_error2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/ref_error.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/ref_error.js
 var require_ref_error2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/ref_error.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/ref_error.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var resolve_1 = require_resolve2();
@@ -26945,9 +26945,9 @@ var require_ref_error2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/index.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/index.js
 var require_compile2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/index.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveSchema = exports.getCompilingSchema = exports.resolveRef = exports.compileSchema = exports.SchemaEnv = void 0;
@@ -26958,20 +26958,20 @@ var require_compile2 = __commonJS({
     var util_1 = require_util2();
     var validate_1 = require_validate2();
     var SchemaEnv = class {
-      constructor(env3) {
+      constructor(env2) {
         var _a;
         this.refs = {};
         this.dynamicAnchors = {};
         let schema;
-        if (typeof env3.schema == "object")
-          schema = env3.schema;
-        this.schema = env3.schema;
-        this.schemaId = env3.schemaId;
-        this.root = env3.root || this;
-        this.baseId = (_a = env3.baseId) !== null && _a !== void 0 ? _a : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env3.schemaId || "$id"]);
-        this.schemaPath = env3.schemaPath;
-        this.localRefs = env3.localRefs;
-        this.meta = env3.meta;
+        if (typeof env2.schema == "object")
+          schema = env2.schema;
+        this.schema = env2.schema;
+        this.schemaId = env2.schemaId;
+        this.root = env2.root || this;
+        this.baseId = (_a = env2.baseId) !== null && _a !== void 0 ? _a : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env2.schemaId || "$id"]);
+        this.schemaPath = env2.schemaPath;
+        this.localRefs = env2.localRefs;
+        this.meta = env2.meta;
         this.$async = schema === null || schema === void 0 ? void 0 : schema.$async;
         this.refs = {};
       }
@@ -27155,23 +27155,23 @@ var require_compile2 = __commonJS({
           baseId = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schId);
         }
       }
-      let env3;
+      let env2;
       if (typeof schema != "boolean" && schema.$ref && !(0, util_1.schemaHasRulesButRef)(schema, this.RULES)) {
         const $ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schema.$ref);
-        env3 = resolveSchema.call(this, root, $ref);
+        env2 = resolveSchema.call(this, root, $ref);
       }
       const { schemaId } = this.opts;
-      env3 = env3 || new SchemaEnv({ schema, schemaId, root, baseId });
-      if (env3.schema !== env3.root.schema)
-        return env3;
+      env2 = env2 || new SchemaEnv({ schema, schemaId, root, baseId });
+      if (env2.schema !== env2.root.schema)
+        return env2;
       return void 0;
     }
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/refs/data.json
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/refs/data.json
 var require_data2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/refs/data.json"(exports, module) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/refs/data.json"(exports, module) {
     module.exports = {
       $id: "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#",
       description: "Meta-schema for $data reference (JSON AnySchema extension proposal)",
@@ -27188,9 +27188,9 @@ var require_data2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/node_modules/fast-uri/lib/utils.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/node_modules/fast-uri/lib/utils.js
 var require_utils3 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/node_modules/fast-uri/lib/utils.js"(exports, module) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/node_modules/fast-uri/lib/utils.js"(exports, module) {
     "use strict";
     var isUUID = RegExp.prototype.test.bind(/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iu);
     var isIPv4 = RegExp.prototype.test.bind(/^(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)$/u);
@@ -27501,9 +27501,9 @@ var require_utils3 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/node_modules/fast-uri/lib/schemes.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/node_modules/fast-uri/lib/schemes.js
 var require_schemes3 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/node_modules/fast-uri/lib/schemes.js"(exports, module) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/node_modules/fast-uri/lib/schemes.js"(exports, module) {
     "use strict";
     var { isUUID } = require_utils3();
     var URN_REG = /([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-.:;=@]|%[\da-f]{2})+)/iu;
@@ -27711,9 +27711,9 @@ var require_schemes3 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/node_modules/fast-uri/index.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/node_modules/fast-uri/index.js
 var require_fast_uri3 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/node_modules/fast-uri/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/node_modules/fast-uri/index.js"(exports, module) {
     "use strict";
     var { normalizeIPv6, removeDotSegments, recomposeAuthority, normalizePercentEncoding, normalizePathEncoding, escapePreservingEscapes, reescapeHostDelimiters, isIPv4, nonSimpleDomain } = require_utils3();
     var { SCHEMES, getSchemeHandler } = require_schemes3();
@@ -28023,9 +28023,9 @@ var require_fast_uri3 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/uri.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/uri.js
 var require_uri2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/uri.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/uri.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var uri = require_fast_uri3();
@@ -28034,9 +28034,9 @@ var require_uri2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/core.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/core.js
 var require_core3 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/core.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/core.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = void 0;
@@ -28645,9 +28645,9 @@ var require_core3 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/core/id.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/core/id.js
 var require_id2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/core/id.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/core/id.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var def = {
@@ -28660,9 +28660,9 @@ var require_id2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/core/ref.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/core/ref.js
 var require_ref2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/core/ref.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/core/ref.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.callRef = exports.getValidate = void 0;
@@ -28677,8 +28677,8 @@ var require_ref2 = __commonJS({
       schemaType: "string",
       code(cxt) {
         const { gen, schema: $ref, it } = cxt;
-        const { baseId, schemaEnv: env3, validateName, opts, self: self2 } = it;
-        const { root } = env3;
+        const { baseId, schemaEnv: env2, validateName, opts, self: self2 } = it;
+        const { root } = env2;
         if (($ref === "#" || $ref === "#/") && baseId === root.baseId)
           return callRootRef();
         const schOrEnv = compile_1.resolveRef.call(self2, root, baseId, $ref);
@@ -28688,8 +28688,8 @@ var require_ref2 = __commonJS({
           return callValidate(schOrEnv);
         return inlineRefSchema(schOrEnv);
         function callRootRef() {
-          if (env3 === root)
-            return callRef(cxt, validateName, env3, env3.$async);
+          if (env2 === root)
+            return callRef(cxt, validateName, env2, env2.$async);
           const rootName = gen.scopeValue("root", { ref: root });
           return callRef(cxt, (0, codegen_1._)`${rootName}.validate`, root, root.$async);
         }
@@ -28719,14 +28719,14 @@ var require_ref2 = __commonJS({
     exports.getValidate = getValidate;
     function callRef(cxt, v, sch, $async) {
       const { gen, it } = cxt;
-      const { allErrors, schemaEnv: env3, opts } = it;
+      const { allErrors, schemaEnv: env2, opts } = it;
       const passCxt = opts.passContext ? names_1.default.this : codegen_1.nil;
       if ($async)
         callAsyncRef();
       else
         callSyncRef();
       function callAsyncRef() {
-        if (!env3.$async)
+        if (!env2.$async)
           throw new Error("async schema referenced by sync schema");
         const valid = gen.let("valid");
         gen.try(() => {
@@ -28782,9 +28782,9 @@ var require_ref2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/core/index.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/core/index.js
 var require_core4 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/core/index.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/core/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var id_1 = require_id2();
@@ -28803,9 +28803,9 @@ var require_core4 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitNumber.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitNumber.js
 var require_limitNumber2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitNumber.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitNumber.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -28835,9 +28835,9 @@ var require_limitNumber2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/multipleOf.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/multipleOf.js
 var require_multipleOf2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/multipleOf.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/multipleOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -28863,9 +28863,9 @@ var require_multipleOf2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/ucs2length.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/ucs2length.js
 var require_ucs2length2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function ucs2length(str) {
@@ -28889,9 +28889,9 @@ var require_ucs2length2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitLength.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitLength.js
 var require_limitLength2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitLength.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitLength.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -28921,9 +28921,9 @@ var require_limitLength2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/pattern.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/pattern.js
 var require_pattern2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/pattern.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/pattern.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code4();
@@ -28958,9 +28958,9 @@ var require_pattern2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitProperties.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitProperties.js
 var require_limitProperties2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitProperties.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -28987,9 +28987,9 @@ var require_limitProperties2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/required.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/required.js
 var require_required2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/required.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/required.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code4();
@@ -29069,9 +29069,9 @@ var require_required2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitItems.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitItems.js
 var require_limitItems2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitItems.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/limitItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -29098,9 +29098,9 @@ var require_limitItems2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/equal.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/equal.js
 var require_equal2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/equal.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/equal.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var equal = require_fast_deep_equal();
@@ -29109,9 +29109,9 @@ var require_equal2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js
 var require_uniqueItems2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var dataType_1 = require_dataType2();
@@ -29176,9 +29176,9 @@ var require_uniqueItems2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/const.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/const.js
 var require_const2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/const.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/const.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -29205,9 +29205,9 @@ var require_const2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/enum.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/enum.js
 var require_enum2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/enum.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/enum.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -29254,9 +29254,9 @@ var require_enum2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/index.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/index.js
 var require_validation3 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/index.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/validation/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var limitNumber_1 = require_limitNumber2();
@@ -29292,9 +29292,9 @@ var require_validation3 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js
 var require_additionalItems2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateAdditionalItems = void 0;
@@ -29345,9 +29345,9 @@ var require_additionalItems2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/items.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/items.js
 var require_items2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/items.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/items.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateTuple = void 0;
@@ -29402,9 +29402,9 @@ var require_items2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js
 var require_prefixItems2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var items_1 = require_items2();
@@ -29419,9 +29419,9 @@ var require_prefixItems2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/items2020.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/items2020.js
 var require_items20202 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/items2020.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/items2020.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -29454,9 +29454,9 @@ var require_items20202 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/contains.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/contains.js
 var require_contains2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/contains.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/contains.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -29548,9 +29548,9 @@ var require_contains2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/dependencies.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/dependencies.js
 var require_dependencies2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/dependencies.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/dependencies.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateSchemaDeps = exports.validatePropertyDeps = exports.error = void 0;
@@ -29642,9 +29642,9 @@ var require_dependencies2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js
 var require_propertyNames2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -29685,9 +29685,9 @@ var require_propertyNames2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js
 var require_additionalProperties2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code4();
@@ -29791,9 +29791,9 @@ var require_additionalProperties2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/properties.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/properties.js
 var require_properties2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/properties.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/properties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var validate_1 = require_validate2();
@@ -29849,9 +29849,9 @@ var require_properties2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js
 var require_patternProperties2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code4();
@@ -29923,9 +29923,9 @@ var require_patternProperties2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/not.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/not.js
 var require_not2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/not.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/not.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util2();
@@ -29954,9 +29954,9 @@ var require_not2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/anyOf.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/anyOf.js
 var require_anyOf2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/anyOf.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/anyOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code4();
@@ -29971,9 +29971,9 @@ var require_anyOf2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/oneOf.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/oneOf.js
 var require_oneOf2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/oneOf.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/oneOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -30029,9 +30029,9 @@ var require_oneOf2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/allOf.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/allOf.js
 var require_allOf2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/allOf.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/allOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util2();
@@ -30056,9 +30056,9 @@ var require_allOf2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/if.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/if.js
 var require_if2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/if.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/if.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -30125,9 +30125,9 @@ var require_if2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/thenElse.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/thenElse.js
 var require_thenElse2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/thenElse.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/thenElse.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util2();
@@ -30143,9 +30143,9 @@ var require_thenElse2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/index.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/index.js
 var require_applicator2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/index.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/applicator/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var additionalItems_1 = require_additionalItems2();
@@ -30191,9 +30191,9 @@ var require_applicator2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/format/format.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/format/format.js
 var require_format3 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/format/format.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/format/format.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -30281,9 +30281,9 @@ var require_format3 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/format/index.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/format/index.js
 var require_format4 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/format/index.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/format/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var format_1 = require_format3();
@@ -30292,9 +30292,9 @@ var require_format4 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/metadata.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/metadata.js
 var require_metadata2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/metadata.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/metadata.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.contentVocabulary = exports.metadataVocabulary = void 0;
@@ -30315,9 +30315,9 @@ var require_metadata2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/draft7.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/draft7.js
 var require_draft72 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/draft7.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/draft7.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var core_1 = require_core4();
@@ -30337,9 +30337,9 @@ var require_draft72 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/discriminator/types.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/discriminator/types.js
 var require_types2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/discriminator/types.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/discriminator/types.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DiscrError = void 0;
@@ -30351,9 +30351,9 @@ var require_types2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/discriminator/index.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/discriminator/index.js
 var require_discriminator2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/discriminator/index.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/discriminator/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -30456,9 +30456,9 @@ var require_discriminator2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/refs/json-schema-draft-07.json
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/refs/json-schema-draft-07.json
 var require_json_schema_draft_072 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/refs/json-schema-draft-07.json"(exports, module) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/refs/json-schema-draft-07.json"(exports, module) {
     module.exports = {
       $schema: "http://json-schema.org/draft-07/schema#",
       $id: "http://json-schema.org/draft-07/schema#",
@@ -30613,9 +30613,9 @@ var require_json_schema_draft_072 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/ajv.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/ajv.js
 var require_ajv2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/ajv.js"(exports, module) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/ajv.js"(exports, module) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.MissingRefError = exports.ValidationError = exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = exports.Ajv = void 0;
@@ -30683,9 +30683,9 @@ var require_ajv2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/metadata.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/metadata.js
 var require_metadata3 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/metadata.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/metadata.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.checkMetadata = void 0;
@@ -30713,9 +30713,9 @@ var require_metadata3 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/ref.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/ref.js
 var require_ref3 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/ref.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/ref.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.hasRef = void 0;
@@ -30784,9 +30784,9 @@ var require_ref3 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/timestamp.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/timestamp.js
 var require_timestamp = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/timestamp.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/timestamp.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var DT_SEPARATOR = /t|\s/i;
@@ -30824,9 +30824,9 @@ var require_timestamp = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/error.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/error.js
 var require_error2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/error.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/error.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.typeErrorParams = exports.typeErrorMessage = exports.typeError = void 0;
@@ -30849,9 +30849,9 @@ var require_error2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/type.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/type.js
 var require_type = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/type.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/type.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.intRange = void 0;
@@ -30922,9 +30922,9 @@ var require_type = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/nullable.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/nullable.js
 var require_nullable = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/nullable.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/nullable.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.checkNullableObject = exports.checkNullable = void 0;
@@ -30948,9 +30948,9 @@ var require_nullable = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/enum.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/enum.js
 var require_enum3 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/enum.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/enum.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -30994,9 +30994,9 @@ var require_enum3 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/elements.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/elements.js
 var require_elements = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/elements.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/elements.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util2();
@@ -31023,9 +31023,9 @@ var require_elements = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/properties.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/properties.js
 var require_properties3 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/properties.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/properties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateProperties = exports.error = void 0;
@@ -31158,9 +31158,9 @@ var require_properties3 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/optionalProperties.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/optionalProperties.js
 var require_optionalProperties = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/optionalProperties.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/optionalProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var properties_1 = require_properties3();
@@ -31178,9 +31178,9 @@ var require_optionalProperties = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/discriminator.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/discriminator.js
 var require_discriminator3 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/discriminator.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/discriminator.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen2();
@@ -31248,9 +31248,9 @@ var require_discriminator3 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/values.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/values.js
 var require_values = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/values.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/values.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util2();
@@ -31303,9 +31303,9 @@ var require_values = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/union.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/union.js
 var require_union = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/union.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/union.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code4();
@@ -31320,9 +31320,9 @@ var require_union = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/index.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/index.js
 var require_jtd = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/index.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/vocabularies/jtd/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ref_1 = require_ref3();
@@ -31354,9 +31354,9 @@ var require_jtd = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/refs/jtd-schema.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/refs/jtd-schema.js
 var require_jtd_schema = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/refs/jtd-schema.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/refs/jtd-schema.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var shared = (root) => {
@@ -31477,9 +31477,9 @@ var require_jtd_schema = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/jtd/types.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/jtd/types.js
 var require_types3 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/jtd/types.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/jtd/types.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.jtdForms = void 0;
@@ -31496,9 +31496,9 @@ var require_types3 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/quote.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/quote.js
 var require_quote = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/quote.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/quote.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var rxEscapable = (
@@ -31526,9 +31526,9 @@ var require_quote = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/jtd/serialize.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/jtd/serialize.js
 var require_serialize = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/jtd/serialize.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/jtd/serialize.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var types_1 = require_types3();
@@ -31760,9 +31760,9 @@ var require_serialize = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/parseJson.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/parseJson.js
 var require_parseJson = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/parseJson.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/runtime/parseJson.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.parseJsonString = exports.parseJsonNumber = exports.parseJson = void 0;
@@ -31937,9 +31937,9 @@ var require_parseJson = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/jtd/parse.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/jtd/parse.js
 var require_parse2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/jtd/parse.js"(exports) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/compile/jtd/parse.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var types_1 = require_types3();
@@ -32286,9 +32286,9 @@ var require_parse2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/jtd.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/jtd.js
 var require_jtd2 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/jtd.js"(exports, module) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/jtd.js"(exports, module) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.MissingRefError = exports.ValidationError = exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = exports.Ajv = void 0;
@@ -32378,9 +32378,9 @@ var require_jtd2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/lib/default-ajv-options.js
+// nextband/node_modules/@fastify/ajv-compiler/lib/default-ajv-options.js
 var require_default_ajv_options = __commonJS({
-  "node_modules/@fastify/ajv-compiler/lib/default-ajv-options.js"(exports, module) {
+  "nextband/node_modules/@fastify/ajv-compiler/lib/default-ajv-options.js"(exports, module) {
     "use strict";
     var fastUri = require_fast_uri2();
     module.exports = Object.freeze({
@@ -32396,9 +32396,9 @@ var require_default_ajv_options = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/dist/formats.js
+// nextband/node_modules/ajv-formats/dist/formats.js
 var require_formats2 = __commonJS({
-  "node_modules/ajv-formats/dist/formats.js"(exports) {
+  "nextband/node_modules/ajv-formats/dist/formats.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.formatNames = exports.fastFormats = exports.fullFormats = void 0;
@@ -32563,9 +32563,9 @@ var require_formats2 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/codegen/code.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/codegen/code.js
 var require_code5 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/codegen/code.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/codegen/code.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.regexpCode = exports.getEsmExportName = exports.getProperty = exports.safeStringify = exports.stringify = exports.strConcat = exports.addCodeArg = exports.str = exports._ = exports.nil = exports._Code = exports.Name = exports.IDENTIFIER = exports._CodeOrName = void 0;
@@ -32717,9 +32717,9 @@ var require_code5 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/codegen/scope.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/codegen/scope.js
 var require_scope3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/codegen/scope.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/codegen/scope.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ValueScope = exports.ValueScopeName = exports.Scope = exports.varKinds = exports.UsedValueState = void 0;
@@ -32862,9 +32862,9 @@ var require_scope3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/codegen/index.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/codegen/index.js
 var require_codegen3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/codegen/index.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/codegen/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.or = exports.and = exports.not = exports.CodeGen = exports.operators = exports.varKinds = exports.ValueScopeName = exports.ValueScope = exports.Scope = exports.Name = exports.regexpCode = exports.stringify = exports.getProperty = exports.nil = exports.strConcat = exports.str = exports._ = void 0;
@@ -33582,9 +33582,9 @@ var require_codegen3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/util.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/util.js
 var require_util3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/util.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/util.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.checkStrictMode = exports.getErrorPath = exports.Type = exports.useFunc = exports.setEvaluated = exports.evaluatedPropsToName = exports.mergeEvaluated = exports.eachItem = exports.unescapeJsonPointer = exports.escapeJsonPointer = exports.escapeFragment = exports.unescapeFragment = exports.schemaRefOrVal = exports.schemaHasRulesButRef = exports.schemaHasRules = exports.checkUnknownRules = exports.alwaysValidSchema = exports.toHash = void 0;
@@ -33749,9 +33749,9 @@ var require_util3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/names.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/names.js
 var require_names3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/names.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/names.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen3();
@@ -33788,9 +33788,9 @@ var require_names3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/errors.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/errors.js
 var require_errors6 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/errors.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/errors.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.extendErrors = exports.resetErrorsCount = exports.reportExtraError = exports.reportError = exports.keyword$DataError = exports.keywordError = void 0;
@@ -33910,9 +33910,9 @@ var require_errors6 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/boolSchema.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/boolSchema.js
 var require_boolSchema3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/boolSchema.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/boolSchema.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.boolOrEmptySchema = exports.topBoolOrEmptySchema = void 0;
@@ -33961,9 +33961,9 @@ var require_boolSchema3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/rules.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/rules.js
 var require_rules3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/rules.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/rules.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getRules = exports.isJSONType = void 0;
@@ -33992,9 +33992,9 @@ var require_rules3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/applicability.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/applicability.js
 var require_applicability3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/applicability.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/applicability.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.shouldUseRule = exports.shouldUseGroup = exports.schemaHasRulesForType = void 0;
@@ -34015,9 +34015,9 @@ var require_applicability3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/dataType.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/dataType.js
 var require_dataType3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/dataType.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/dataType.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.reportTypeError = exports.checkDataTypes = exports.checkDataType = exports.coerceAndCheckDataType = exports.getJSONTypes = exports.getSchemaTypes = exports.DataType = void 0;
@@ -34199,9 +34199,9 @@ var require_dataType3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/defaults.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/defaults.js
 var require_defaults3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/defaults.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/defaults.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.assignDefaults = void 0;
@@ -34236,9 +34236,9 @@ var require_defaults3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/code.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/code.js
 var require_code6 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/code.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/code.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateUnion = exports.validateArray = exports.usePattern = exports.callValidateCode = exports.schemaProperties = exports.allSchemaProperties = exports.noPropertyInData = exports.propertyInData = exports.isOwnProperty = exports.hasPropFunc = exports.reportMissingProp = exports.checkMissingProp = exports.checkReportMissingProp = void 0;
@@ -34369,9 +34369,9 @@ var require_code6 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/keyword.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/keyword.js
 var require_keyword3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/keyword.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/keyword.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateKeywordUsage = exports.validSchemaType = exports.funcKeywordCode = exports.macroKeywordCode = void 0;
@@ -34487,9 +34487,9 @@ var require_keyword3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/subschema.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/subschema.js
 var require_subschema3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/subschema.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/subschema.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.extendSubschemaMode = exports.extendSubschemaData = exports.getSubschema = void 0;
@@ -34570,9 +34570,9 @@ var require_subschema3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/json-schema-traverse/index.js
+// nextband/node_modules/ajv-formats/node_modules/json-schema-traverse/index.js
 var require_json_schema_traverse3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/json-schema-traverse/index.js"(exports, module) {
+  "nextband/node_modules/ajv-formats/node_modules/json-schema-traverse/index.js"(exports, module) {
     "use strict";
     var traverse = module.exports = function(schema, opts, cb) {
       if (typeof opts == "function") {
@@ -34658,9 +34658,9 @@ var require_json_schema_traverse3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/resolve.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/resolve.js
 var require_resolve3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/resolve.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/resolve.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getSchemaRefs = exports.resolveUrl = exports.normalizeId = exports._getFullPath = exports.getFullPath = exports.inlineRef = void 0;
@@ -34814,9 +34814,9 @@ var require_resolve3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/index.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/index.js
 var require_validate3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/index.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/validate/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getData = exports.KeywordCxt = exports.validateFunctionCode = void 0;
@@ -35322,9 +35322,9 @@ var require_validate3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/runtime/validation_error.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/runtime/validation_error.js
 var require_validation_error3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/runtime/validation_error.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/runtime/validation_error.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ValidationError = class extends Error {
@@ -35338,9 +35338,9 @@ var require_validation_error3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/ref_error.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/ref_error.js
 var require_ref_error3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/ref_error.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/ref_error.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var resolve_1 = require_resolve3();
@@ -35355,9 +35355,9 @@ var require_ref_error3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/compile/index.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/index.js
 var require_compile3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/compile/index.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/compile/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveSchema = exports.getCompilingSchema = exports.resolveRef = exports.compileSchema = exports.SchemaEnv = void 0;
@@ -35368,20 +35368,20 @@ var require_compile3 = __commonJS({
     var util_1 = require_util3();
     var validate_1 = require_validate3();
     var SchemaEnv = class {
-      constructor(env3) {
+      constructor(env2) {
         var _a;
         this.refs = {};
         this.dynamicAnchors = {};
         let schema;
-        if (typeof env3.schema == "object")
-          schema = env3.schema;
-        this.schema = env3.schema;
-        this.schemaId = env3.schemaId;
-        this.root = env3.root || this;
-        this.baseId = (_a = env3.baseId) !== null && _a !== void 0 ? _a : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env3.schemaId || "$id"]);
-        this.schemaPath = env3.schemaPath;
-        this.localRefs = env3.localRefs;
-        this.meta = env3.meta;
+        if (typeof env2.schema == "object")
+          schema = env2.schema;
+        this.schema = env2.schema;
+        this.schemaId = env2.schemaId;
+        this.root = env2.root || this;
+        this.baseId = (_a = env2.baseId) !== null && _a !== void 0 ? _a : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env2.schemaId || "$id"]);
+        this.schemaPath = env2.schemaPath;
+        this.localRefs = env2.localRefs;
+        this.meta = env2.meta;
         this.$async = schema === null || schema === void 0 ? void 0 : schema.$async;
         this.refs = {};
       }
@@ -35565,23 +35565,23 @@ var require_compile3 = __commonJS({
           baseId = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schId);
         }
       }
-      let env3;
+      let env2;
       if (typeof schema != "boolean" && schema.$ref && !(0, util_1.schemaHasRulesButRef)(schema, this.RULES)) {
         const $ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schema.$ref);
-        env3 = resolveSchema.call(this, root, $ref);
+        env2 = resolveSchema.call(this, root, $ref);
       }
       const { schemaId } = this.opts;
-      env3 = env3 || new SchemaEnv({ schema, schemaId, root, baseId });
-      if (env3.schema !== env3.root.schema)
-        return env3;
+      env2 = env2 || new SchemaEnv({ schema, schemaId, root, baseId });
+      if (env2.schema !== env2.root.schema)
+        return env2;
       return void 0;
     }
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/refs/data.json
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/refs/data.json
 var require_data3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/refs/data.json"(exports, module) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/refs/data.json"(exports, module) {
     module.exports = {
       $id: "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#",
       description: "Meta-schema for $data reference (JSON AnySchema extension proposal)",
@@ -35598,9 +35598,9 @@ var require_data3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/fast-uri/lib/utils.js
+// nextband/node_modules/ajv-formats/node_modules/fast-uri/lib/utils.js
 var require_utils4 = __commonJS({
-  "node_modules/ajv-formats/node_modules/fast-uri/lib/utils.js"(exports, module) {
+  "nextband/node_modules/ajv-formats/node_modules/fast-uri/lib/utils.js"(exports, module) {
     "use strict";
     var isUUID = RegExp.prototype.test.bind(/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iu);
     var isIPv4 = RegExp.prototype.test.bind(/^(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)$/u);
@@ -35911,9 +35911,9 @@ var require_utils4 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/fast-uri/lib/schemes.js
+// nextband/node_modules/ajv-formats/node_modules/fast-uri/lib/schemes.js
 var require_schemes4 = __commonJS({
-  "node_modules/ajv-formats/node_modules/fast-uri/lib/schemes.js"(exports, module) {
+  "nextband/node_modules/ajv-formats/node_modules/fast-uri/lib/schemes.js"(exports, module) {
     "use strict";
     var { isUUID } = require_utils4();
     var URN_REG = /([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-.:;=@]|%[\da-f]{2})+)/iu;
@@ -36121,9 +36121,9 @@ var require_schemes4 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/fast-uri/index.js
+// nextband/node_modules/ajv-formats/node_modules/fast-uri/index.js
 var require_fast_uri4 = __commonJS({
-  "node_modules/ajv-formats/node_modules/fast-uri/index.js"(exports, module) {
+  "nextband/node_modules/ajv-formats/node_modules/fast-uri/index.js"(exports, module) {
     "use strict";
     var { normalizeIPv6, removeDotSegments, recomposeAuthority, normalizePercentEncoding, normalizePathEncoding, escapePreservingEscapes, reescapeHostDelimiters, isIPv4, nonSimpleDomain } = require_utils4();
     var { SCHEMES, getSchemeHandler } = require_schemes4();
@@ -36433,9 +36433,9 @@ var require_fast_uri4 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/runtime/uri.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/runtime/uri.js
 var require_uri3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/runtime/uri.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/runtime/uri.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var uri = require_fast_uri4();
@@ -36444,9 +36444,9 @@ var require_uri3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/core.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/core.js
 var require_core5 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/core.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/core.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = void 0;
@@ -37055,9 +37055,9 @@ var require_core5 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/core/id.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/core/id.js
 var require_id3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/core/id.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/core/id.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var def = {
@@ -37070,9 +37070,9 @@ var require_id3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/core/ref.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/core/ref.js
 var require_ref4 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/core/ref.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/core/ref.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.callRef = exports.getValidate = void 0;
@@ -37087,8 +37087,8 @@ var require_ref4 = __commonJS({
       schemaType: "string",
       code(cxt) {
         const { gen, schema: $ref, it } = cxt;
-        const { baseId, schemaEnv: env3, validateName, opts, self: self2 } = it;
-        const { root } = env3;
+        const { baseId, schemaEnv: env2, validateName, opts, self: self2 } = it;
+        const { root } = env2;
         if (($ref === "#" || $ref === "#/") && baseId === root.baseId)
           return callRootRef();
         const schOrEnv = compile_1.resolveRef.call(self2, root, baseId, $ref);
@@ -37098,8 +37098,8 @@ var require_ref4 = __commonJS({
           return callValidate(schOrEnv);
         return inlineRefSchema(schOrEnv);
         function callRootRef() {
-          if (env3 === root)
-            return callRef(cxt, validateName, env3, env3.$async);
+          if (env2 === root)
+            return callRef(cxt, validateName, env2, env2.$async);
           const rootName = gen.scopeValue("root", { ref: root });
           return callRef(cxt, (0, codegen_1._)`${rootName}.validate`, root, root.$async);
         }
@@ -37129,14 +37129,14 @@ var require_ref4 = __commonJS({
     exports.getValidate = getValidate;
     function callRef(cxt, v, sch, $async) {
       const { gen, it } = cxt;
-      const { allErrors, schemaEnv: env3, opts } = it;
+      const { allErrors, schemaEnv: env2, opts } = it;
       const passCxt = opts.passContext ? names_1.default.this : codegen_1.nil;
       if ($async)
         callAsyncRef();
       else
         callSyncRef();
       function callAsyncRef() {
-        if (!env3.$async)
+        if (!env2.$async)
           throw new Error("async schema referenced by sync schema");
         const valid = gen.let("valid");
         gen.try(() => {
@@ -37192,9 +37192,9 @@ var require_ref4 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/core/index.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/core/index.js
 var require_core6 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/core/index.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/core/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var id_1 = require_id3();
@@ -37213,9 +37213,9 @@ var require_core6 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitNumber.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitNumber.js
 var require_limitNumber3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitNumber.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitNumber.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen3();
@@ -37245,9 +37245,9 @@ var require_limitNumber3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/multipleOf.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/multipleOf.js
 var require_multipleOf3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/multipleOf.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/multipleOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen3();
@@ -37273,9 +37273,9 @@ var require_multipleOf3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/runtime/ucs2length.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/runtime/ucs2length.js
 var require_ucs2length3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function ucs2length(str) {
@@ -37299,9 +37299,9 @@ var require_ucs2length3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitLength.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitLength.js
 var require_limitLength3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitLength.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitLength.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen3();
@@ -37331,9 +37331,9 @@ var require_limitLength3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/pattern.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/pattern.js
 var require_pattern3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/pattern.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/pattern.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code6();
@@ -37368,9 +37368,9 @@ var require_pattern3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitProperties.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitProperties.js
 var require_limitProperties3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitProperties.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen3();
@@ -37397,9 +37397,9 @@ var require_limitProperties3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/required.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/required.js
 var require_required3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/required.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/required.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code6();
@@ -37479,9 +37479,9 @@ var require_required3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitItems.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitItems.js
 var require_limitItems3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitItems.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/limitItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen3();
@@ -37508,9 +37508,9 @@ var require_limitItems3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/runtime/equal.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/runtime/equal.js
 var require_equal3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/runtime/equal.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/runtime/equal.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var equal = require_fast_deep_equal();
@@ -37519,9 +37519,9 @@ var require_equal3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js
 var require_uniqueItems3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var dataType_1 = require_dataType3();
@@ -37586,9 +37586,9 @@ var require_uniqueItems3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/const.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/const.js
 var require_const3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/const.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/const.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen3();
@@ -37615,9 +37615,9 @@ var require_const3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/enum.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/enum.js
 var require_enum4 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/enum.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/enum.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen3();
@@ -37664,9 +37664,9 @@ var require_enum4 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/index.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/index.js
 var require_validation4 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/index.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/validation/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var limitNumber_1 = require_limitNumber3();
@@ -37702,9 +37702,9 @@ var require_validation4 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js
 var require_additionalItems3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateAdditionalItems = void 0;
@@ -37755,9 +37755,9 @@ var require_additionalItems3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/items.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/items.js
 var require_items3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/items.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/items.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateTuple = void 0;
@@ -37812,9 +37812,9 @@ var require_items3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js
 var require_prefixItems3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var items_1 = require_items3();
@@ -37829,9 +37829,9 @@ var require_prefixItems3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/items2020.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/items2020.js
 var require_items20203 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/items2020.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/items2020.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen3();
@@ -37864,9 +37864,9 @@ var require_items20203 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/contains.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/contains.js
 var require_contains3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/contains.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/contains.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen3();
@@ -37958,9 +37958,9 @@ var require_contains3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/dependencies.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/dependencies.js
 var require_dependencies3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/dependencies.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/dependencies.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateSchemaDeps = exports.validatePropertyDeps = exports.error = void 0;
@@ -38052,9 +38052,9 @@ var require_dependencies3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js
 var require_propertyNames3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen3();
@@ -38095,9 +38095,9 @@ var require_propertyNames3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js
 var require_additionalProperties3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code6();
@@ -38201,9 +38201,9 @@ var require_additionalProperties3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/properties.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/properties.js
 var require_properties4 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/properties.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/properties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var validate_1 = require_validate3();
@@ -38259,9 +38259,9 @@ var require_properties4 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js
 var require_patternProperties3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code6();
@@ -38333,9 +38333,9 @@ var require_patternProperties3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/not.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/not.js
 var require_not3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/not.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/not.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util3();
@@ -38364,9 +38364,9 @@ var require_not3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/anyOf.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/anyOf.js
 var require_anyOf3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/anyOf.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/anyOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code6();
@@ -38381,9 +38381,9 @@ var require_anyOf3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/oneOf.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/oneOf.js
 var require_oneOf3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/oneOf.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/oneOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen3();
@@ -38439,9 +38439,9 @@ var require_oneOf3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/allOf.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/allOf.js
 var require_allOf3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/allOf.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/allOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util3();
@@ -38466,9 +38466,9 @@ var require_allOf3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/if.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/if.js
 var require_if3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/if.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/if.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen3();
@@ -38535,9 +38535,9 @@ var require_if3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/thenElse.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/thenElse.js
 var require_thenElse3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/thenElse.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/thenElse.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util3();
@@ -38553,9 +38553,9 @@ var require_thenElse3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/index.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/index.js
 var require_applicator3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/index.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/applicator/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var additionalItems_1 = require_additionalItems3();
@@ -38601,9 +38601,9 @@ var require_applicator3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/format/format.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/format/format.js
 var require_format5 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/format/format.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/format/format.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen3();
@@ -38691,9 +38691,9 @@ var require_format5 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/format/index.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/format/index.js
 var require_format6 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/format/index.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/format/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var format_1 = require_format5();
@@ -38702,9 +38702,9 @@ var require_format6 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/metadata.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/metadata.js
 var require_metadata4 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/metadata.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/metadata.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.contentVocabulary = exports.metadataVocabulary = void 0;
@@ -38725,9 +38725,9 @@ var require_metadata4 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/draft7.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/draft7.js
 var require_draft73 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/draft7.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/draft7.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var core_1 = require_core6();
@@ -38747,9 +38747,9 @@ var require_draft73 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/discriminator/types.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/discriminator/types.js
 var require_types4 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/discriminator/types.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/discriminator/types.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DiscrError = void 0;
@@ -38761,9 +38761,9 @@ var require_types4 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/discriminator/index.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/discriminator/index.js
 var require_discriminator4 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/discriminator/index.js"(exports) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/vocabularies/discriminator/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen3();
@@ -38866,9 +38866,9 @@ var require_discriminator4 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/refs/json-schema-draft-07.json
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/refs/json-schema-draft-07.json
 var require_json_schema_draft_073 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/refs/json-schema-draft-07.json"(exports, module) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/refs/json-schema-draft-07.json"(exports, module) {
     module.exports = {
       $schema: "http://json-schema.org/draft-07/schema#",
       $id: "http://json-schema.org/draft-07/schema#",
@@ -39023,9 +39023,9 @@ var require_json_schema_draft_073 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/node_modules/ajv/dist/ajv.js
+// nextband/node_modules/ajv-formats/node_modules/ajv/dist/ajv.js
 var require_ajv3 = __commonJS({
-  "node_modules/ajv-formats/node_modules/ajv/dist/ajv.js"(exports, module) {
+  "nextband/node_modules/ajv-formats/node_modules/ajv/dist/ajv.js"(exports, module) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.MissingRefError = exports.ValidationError = exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = exports.Ajv = void 0;
@@ -39093,9 +39093,9 @@ var require_ajv3 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/dist/limit.js
+// nextband/node_modules/ajv-formats/dist/limit.js
 var require_limit2 = __commonJS({
-  "node_modules/ajv-formats/dist/limit.js"(exports) {
+  "nextband/node_modules/ajv-formats/dist/limit.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.formatLimitDefinition = void 0;
@@ -39165,9 +39165,9 @@ var require_limit2 = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/dist/index.js
+// nextband/node_modules/ajv-formats/dist/index.js
 var require_dist2 = __commonJS({
-  "node_modules/ajv-formats/dist/index.js"(exports, module) {
+  "nextband/node_modules/ajv-formats/dist/index.js"(exports, module) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var formats_1 = require_formats2();
@@ -39207,9 +39207,9 @@ var require_dist2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/lib/validator-compiler.js
+// nextband/node_modules/@fastify/ajv-compiler/lib/validator-compiler.js
 var require_validator_compiler = __commonJS({
-  "node_modules/@fastify/ajv-compiler/lib/validator-compiler.js"(exports, module) {
+  "nextband/node_modules/@fastify/ajv-compiler/lib/validator-compiler.js"(exports, module) {
     "use strict";
     var Ajv = require_ajv2().default;
     var AjvJTD = require_jtd2();
@@ -39259,9 +39259,9 @@ var require_validator_compiler = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/lib/serializer-compiler.js
+// nextband/node_modules/@fastify/ajv-compiler/lib/serializer-compiler.js
 var require_serializer_compiler = __commonJS({
-  "node_modules/@fastify/ajv-compiler/lib/serializer-compiler.js"(exports, module) {
+  "nextband/node_modules/@fastify/ajv-compiler/lib/serializer-compiler.js"(exports, module) {
     "use strict";
     var AjvJTD = require_jtd2();
     var defaultAjvOptions = require_default_ajv_options();
@@ -39280,9 +39280,9 @@ var require_serializer_compiler = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/standalone/index.js
+// nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/standalone/index.js
 var require_standalone3 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/standalone/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/ajv-compiler/node_modules/ajv/dist/standalone/index.js"(exports, module) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var scope_1 = require_scope2();
@@ -39367,9 +39367,9 @@ var require_standalone3 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/standalone.js
+// nextband/node_modules/@fastify/ajv-compiler/standalone.js
 var require_standalone4 = __commonJS({
-  "node_modules/@fastify/ajv-compiler/standalone.js"(exports, module) {
+  "nextband/node_modules/@fastify/ajv-compiler/standalone.js"(exports, module) {
     "use strict";
     var ValidatorSelector = require_ajv_compiler();
     var standaloneCode = require_standalone3().default;
@@ -39405,9 +39405,9 @@ var require_standalone4 = __commonJS({
   }
 });
 
-// node_modules/@fastify/ajv-compiler/index.js
+// nextband/node_modules/@fastify/ajv-compiler/index.js
 var require_ajv_compiler = __commonJS({
-  "node_modules/@fastify/ajv-compiler/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/ajv-compiler/index.js"(exports, module) {
     "use strict";
     var AjvReference = Symbol.for("fastify.ajv-compiler.reference");
     var ValidatorCompiler = require_validator_compiler();
@@ -39454,9 +39454,9 @@ var require_ajv_compiler = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/schema-controller.js
+// nextband/node_modules/fastify/lib/schema-controller.js
 var require_schema_controller = __commonJS({
-  "node_modules/fastify/lib/schema-controller.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/schema-controller.js"(exports, module) {
     "use strict";
     var { buildSchemas } = require_schemas();
     var SerializerSelector = require_fast_json_stringify_compiler();
@@ -39572,9 +39572,9 @@ var require_schema_controller = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/pluginUtils.js
+// nextband/node_modules/fastify/lib/pluginUtils.js
 var require_pluginUtils = __commonJS({
-  "node_modules/fastify/lib/pluginUtils.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/pluginUtils.js"(exports, module) {
     "use strict";
     var semver = require_semver2();
     var assert = __require("node:assert");
@@ -39705,9 +39705,9 @@ var require_pluginUtils = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/reqIdGenFactory.js
+// nextband/node_modules/fastify/lib/reqIdGenFactory.js
 var require_reqIdGenFactory = __commonJS({
-  "node_modules/fastify/lib/reqIdGenFactory.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/reqIdGenFactory.js"(exports, module) {
     "use strict";
     function reqIdGenFactory(requestIdHeader, optGenReqId) {
       const genReqId = optGenReqId || buildDefaultGenReqId();
@@ -39739,9 +39739,9 @@ var require_reqIdGenFactory = __commonJS({
   }
 });
 
-// node_modules/fast-decode-uri-component/index.js
+// nextband/node_modules/fast-decode-uri-component/index.js
 var require_fast_decode_uri_component = __commonJS({
-  "node_modules/fast-decode-uri-component/index.js"(exports, module) {
+  "nextband/node_modules/fast-decode-uri-component/index.js"(exports, module) {
     "use strict";
     var UTF8_ACCEPT = 12;
     var UTF8_REJECT = 0;
@@ -40195,9 +40195,9 @@ var require_fast_decode_uri_component = __commonJS({
   }
 });
 
-// node_modules/fast-querystring/lib/parse.js
+// nextband/node_modules/fast-querystring/lib/parse.js
 var require_parse3 = __commonJS({
-  "node_modules/fast-querystring/lib/parse.js"(exports, module) {
+  "nextband/node_modules/fast-querystring/lib/parse.js"(exports, module) {
     "use strict";
     var fastDecode = require_fast_decode_uri_component();
     var plusRegex = /\+/g;
@@ -40288,9 +40288,9 @@ var require_parse3 = __commonJS({
   }
 });
 
-// node_modules/fast-querystring/lib/internals/querystring.js
+// nextband/node_modules/fast-querystring/lib/internals/querystring.js
 var require_querystring = __commonJS({
-  "node_modules/fast-querystring/lib/internals/querystring.js"(exports, module) {
+  "nextband/node_modules/fast-querystring/lib/internals/querystring.js"(exports, module) {
     var hexTable = Array.from(
       { length: 256 },
       (_, i2) => "%" + ((i2 < 16 ? "0" : "") + i2.toString(16)).toUpperCase()
@@ -40478,9 +40478,9 @@ var require_querystring = __commonJS({
   }
 });
 
-// node_modules/fast-querystring/lib/stringify.js
+// nextband/node_modules/fast-querystring/lib/stringify.js
 var require_stringify = __commonJS({
-  "node_modules/fast-querystring/lib/stringify.js"(exports, module) {
+  "nextband/node_modules/fast-querystring/lib/stringify.js"(exports, module) {
     "use strict";
     var { encodeString } = require_querystring();
     function getAsPrimitive(value) {
@@ -40532,9 +40532,9 @@ var require_stringify = __commonJS({
   }
 });
 
-// node_modules/fast-querystring/lib/index.js
+// nextband/node_modules/fast-querystring/lib/index.js
 var require_lib = __commonJS({
-  "node_modules/fast-querystring/lib/index.js"(exports, module) {
+  "nextband/node_modules/fast-querystring/lib/index.js"(exports, module) {
     "use strict";
     var parse = require_parse3();
     var stringify = require_stringify();
@@ -40549,17 +40549,17 @@ var require_lib = __commonJS({
   }
 });
 
-// node_modules/ret/dist/types/tokens.js
+// nextband/node_modules/ret/dist/types/tokens.js
 var require_tokens = __commonJS({
-  "node_modules/ret/dist/types/tokens.js"(exports) {
+  "nextband/node_modules/ret/dist/types/tokens.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
 });
 
-// node_modules/ret/dist/types/types.js
+// nextband/node_modules/ret/dist/types/types.js
 var require_types5 = __commonJS({
-  "node_modules/ret/dist/types/types.js"(exports) {
+  "nextband/node_modules/ret/dist/types/types.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.types = void 0;
@@ -40577,17 +40577,17 @@ var require_types5 = __commonJS({
   }
 });
 
-// node_modules/ret/dist/types/set-lookup.js
+// nextband/node_modules/ret/dist/types/set-lookup.js
 var require_set_lookup = __commonJS({
-  "node_modules/ret/dist/types/set-lookup.js"(exports) {
+  "nextband/node_modules/ret/dist/types/set-lookup.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
   }
 });
 
-// node_modules/ret/dist/types/index.js
+// nextband/node_modules/ret/dist/types/index.js
 var require_types6 = __commonJS({
-  "node_modules/ret/dist/types/index.js"(exports) {
+  "nextband/node_modules/ret/dist/types/index.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -40608,9 +40608,9 @@ var require_types6 = __commonJS({
   }
 });
 
-// node_modules/ret/dist/sets.js
+// nextband/node_modules/ret/dist/sets.js
 var require_sets = __commonJS({
-  "node_modules/ret/dist/sets.js"(exports) {
+  "nextband/node_modules/ret/dist/sets.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.anyChar = exports.notWhitespace = exports.whitespace = exports.notInts = exports.ints = exports.notWords = exports.words = void 0;
@@ -40655,9 +40655,9 @@ var require_sets = __commonJS({
   }
 });
 
-// node_modules/ret/dist/util.js
+// nextband/node_modules/ret/dist/util.js
 var require_util4 = __commonJS({
-  "node_modules/ret/dist/util.js"(exports) {
+  "nextband/node_modules/ret/dist/util.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -40726,9 +40726,9 @@ var require_util4 = __commonJS({
   }
 });
 
-// node_modules/ret/dist/tokenizer.js
+// nextband/node_modules/ret/dist/tokenizer.js
 var require_tokenizer = __commonJS({
-  "node_modules/ret/dist/tokenizer.js"(exports) {
+  "nextband/node_modules/ret/dist/tokenizer.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -40988,9 +40988,9 @@ var require_tokenizer = __commonJS({
   }
 });
 
-// node_modules/ret/dist/sets-lookup.js
+// nextband/node_modules/ret/dist/sets-lookup.js
 var require_sets_lookup = __commonJS({
-  "node_modules/ret/dist/sets-lookup.js"(exports) {
+  "nextband/node_modules/ret/dist/sets-lookup.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -41043,9 +41043,9 @@ var require_sets_lookup = __commonJS({
   }
 });
 
-// node_modules/ret/dist/write-set-tokens.js
+// nextband/node_modules/ret/dist/write-set-tokens.js
 var require_write_set_tokens = __commonJS({
-  "node_modules/ret/dist/write-set-tokens.js"(exports) {
+  "nextband/node_modules/ret/dist/write-set-tokens.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -41129,9 +41129,9 @@ var require_write_set_tokens = __commonJS({
   }
 });
 
-// node_modules/ret/dist/reconstruct.js
+// nextband/node_modules/ret/dist/reconstruct.js
 var require_reconstruct = __commonJS({
-  "node_modules/ret/dist/reconstruct.js"(exports) {
+  "nextband/node_modules/ret/dist/reconstruct.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.reconstruct = void 0;
@@ -41196,9 +41196,9 @@ var require_reconstruct = __commonJS({
   }
 });
 
-// node_modules/ret/dist/index.js
+// nextband/node_modules/ret/dist/index.js
 var require_dist3 = __commonJS({
-  "node_modules/ret/dist/index.js"(exports, module) {
+  "nextband/node_modules/ret/dist/index.js"(exports, module) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -41230,9 +41230,9 @@ var require_dist3 = __commonJS({
   }
 });
 
-// node_modules/safe-regex2/index.js
+// nextband/node_modules/safe-regex2/index.js
 var require_safe_regex2 = __commonJS({
-  "node_modules/safe-regex2/index.js"(exports, module) {
+  "nextband/node_modules/safe-regex2/index.js"(exports, module) {
     "use strict";
     var parse = require_dist3();
     var types3 = parse.types;
@@ -41281,9 +41281,9 @@ var require_safe_regex2 = __commonJS({
   }
 });
 
-// node_modules/find-my-way/lib/strategies/http-method.js
+// nextband/node_modules/find-my-way/lib/strategies/http-method.js
 var require_http_method = __commonJS({
-  "node_modules/find-my-way/lib/strategies/http-method.js"(exports, module) {
+  "nextband/node_modules/find-my-way/lib/strategies/http-method.js"(exports, module) {
     "use strict";
     module.exports = {
       name: "__fmw_internal_strategy_merged_tree_http_method__",
@@ -41307,9 +41307,9 @@ var require_http_method = __commonJS({
   }
 });
 
-// node_modules/find-my-way/lib/pretty-print.js
+// nextband/node_modules/find-my-way/lib/pretty-print.js
 var require_pretty_print = __commonJS({
-  "node_modules/find-my-way/lib/pretty-print.js"(exports, module) {
+  "nextband/node_modules/find-my-way/lib/pretty-print.js"(exports, module) {
     "use strict";
     var deepEqual = require_fast_deep_equal();
     var httpMethodStrategy = require_http_method();
@@ -41444,9 +41444,9 @@ ${prefix}`);
   }
 });
 
-// node_modules/find-my-way/lib/handler-storage.js
+// nextband/node_modules/find-my-way/lib/handler-storage.js
 var require_handler_storage = __commonJS({
-  "node_modules/find-my-way/lib/handler-storage.js"(exports, module) {
+  "nextband/node_modules/find-my-way/lib/handler-storage.js"(exports, module) {
     "use strict";
     var httpMethodStrategy = require_http_method();
     var HandlerStorage = class {
@@ -41581,9 +41581,9 @@ var require_handler_storage = __commonJS({
   }
 });
 
-// node_modules/find-my-way/lib/node.js
+// nextband/node_modules/find-my-way/lib/node.js
 var require_node = __commonJS({
-  "node_modules/find-my-way/lib/node.js"(exports, module) {
+  "nextband/node_modules/find-my-way/lib/node.js"(exports, module) {
     "use strict";
     var HandlerStorage = require_handler_storage();
     var NODE_TYPES = {
@@ -41772,9 +41772,9 @@ var require_node = __commonJS({
   }
 });
 
-// node_modules/find-my-way/lib/strategies/accept-version.js
+// nextband/node_modules/find-my-way/lib/strategies/accept-version.js
 var require_accept_version = __commonJS({
-  "node_modules/find-my-way/lib/strategies/accept-version.js"(exports, module) {
+  "nextband/node_modules/find-my-way/lib/strategies/accept-version.js"(exports, module) {
     "use strict";
     var assert = __require("node:assert");
     function SemVerStore() {
@@ -41830,9 +41830,9 @@ var require_accept_version = __commonJS({
   }
 });
 
-// node_modules/find-my-way/lib/strategies/accept-host.js
+// nextband/node_modules/find-my-way/lib/strategies/accept-host.js
 var require_accept_host = __commonJS({
-  "node_modules/find-my-way/lib/strategies/accept-host.js"(exports, module) {
+  "nextband/node_modules/find-my-way/lib/strategies/accept-host.js"(exports, module) {
     "use strict";
     var assert = __require("node:assert");
     function HostStorage() {
@@ -41870,9 +41870,9 @@ var require_accept_host = __commonJS({
   }
 });
 
-// node_modules/find-my-way/lib/constrainer.js
+// nextband/node_modules/find-my-way/lib/constrainer.js
 var require_constrainer = __commonJS({
-  "node_modules/find-my-way/lib/constrainer.js"(exports, module) {
+  "nextband/node_modules/find-my-way/lib/constrainer.js"(exports, module) {
     "use strict";
     var acceptVersionStrategy = require_accept_version();
     var acceptHostStrategy = require_accept_host();
@@ -42013,9 +42013,9 @@ var require_constrainer = __commonJS({
   }
 });
 
-// node_modules/find-my-way/lib/http-methods.js
+// nextband/node_modules/find-my-way/lib/http-methods.js
 var require_http_methods = __commonJS({
-  "node_modules/find-my-way/lib/http-methods.js"(exports, module) {
+  "nextband/node_modules/find-my-way/lib/http-methods.js"(exports, module) {
     "use strict";
     var httpMethods = [
       "ACL",
@@ -42057,9 +42057,9 @@ var require_http_methods = __commonJS({
   }
 });
 
-// node_modules/find-my-way/lib/url-sanitizer.js
+// nextband/node_modules/find-my-way/lib/url-sanitizer.js
 var require_url_sanitizer = __commonJS({
-  "node_modules/find-my-way/lib/url-sanitizer.js"(exports, module) {
+  "nextband/node_modules/find-my-way/lib/url-sanitizer.js"(exports, module) {
     "use strict";
     function decodeComponentChar(highCharCode, lowCharCode) {
       if (highCharCode === 50) {
@@ -42140,9 +42140,9 @@ var require_url_sanitizer = __commonJS({
   }
 });
 
-// node_modules/find-my-way/index.js
+// nextband/node_modules/find-my-way/index.js
 var require_find_my_way = __commonJS({
-  "node_modules/find-my-way/index.js"(exports, module) {
+  "nextband/node_modules/find-my-way/index.js"(exports, module) {
     "use strict";
     var assert = __require("node:assert");
     var querystring = require_lib();
@@ -42754,9 +42754,9 @@ var require_find_my_way = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/headRoute.js
+// nextband/node_modules/fastify/lib/headRoute.js
 var require_headRoute = __commonJS({
-  "node_modules/fastify/lib/headRoute.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/headRoute.js"(exports, module) {
     "use strict";
     function headRouteOnSendHandler(req, reply, payload, done) {
       if (payload === void 0) {
@@ -42784,9 +42784,9 @@ var require_headRoute = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/route.js
+// nextband/node_modules/fastify/lib/route.js
 var require_route = __commonJS({
-  "node_modules/fastify/lib/route.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/route.js"(exports, module) {
     "use strict";
     var FindMyWay = require_find_my_way();
     var Context = require_context();
@@ -43295,9 +43295,9 @@ var require_route = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/fourOhFour.js
+// nextband/node_modules/fastify/lib/fourOhFour.js
 var require_fourOhFour = __commonJS({
-  "node_modules/fastify/lib/fourOhFour.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/fourOhFour.js"(exports, module) {
     "use strict";
     var FindMyWay = require_find_my_way();
     var Reply = require_reply();
@@ -43441,9 +43441,9 @@ var require_fourOhFour = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/configValidator.js
+// nextband/node_modules/fastify/lib/configValidator.js
 var require_configValidator = __commonJS({
-  "node_modules/fastify/lib/configValidator.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/configValidator.js"(exports, module) {
     "use strict";
     module.exports = validate10;
     module.exports.default = validate10;
@@ -44487,9 +44487,9 @@ var require_configValidator = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/initialConfigValidation.js
+// nextband/node_modules/fastify/lib/initialConfigValidation.js
 var require_initialConfigValidation = __commonJS({
-  "node_modules/fastify/lib/initialConfigValidation.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/initialConfigValidation.js"(exports, module) {
     "use strict";
     var validate = require_configValidator();
     var deepClone = require_rfdc()({ circles: true, proto: false });
@@ -44520,9 +44520,9 @@ var require_initialConfigValidation = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/pluginOverride.js
+// nextband/node_modules/fastify/lib/pluginOverride.js
 var require_pluginOverride = __commonJS({
-  "node_modules/fastify/lib/pluginOverride.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/pluginOverride.js"(exports, module) {
     "use strict";
     var {
       kAvvioBoot,
@@ -44589,9 +44589,9 @@ var require_pluginOverride = __commonJS({
   }
 });
 
-// node_modules/fastify/lib/noop-set.js
+// nextband/node_modules/fastify/lib/noop-set.js
 var require_noop_set = __commonJS({
-  "node_modules/fastify/lib/noop-set.js"(exports, module) {
+  "nextband/node_modules/fastify/lib/noop-set.js"(exports, module) {
     "use strict";
     module.exports = function noopSet() {
       return {
@@ -44609,9 +44609,9 @@ var require_noop_set = __commonJS({
   }
 });
 
-// node_modules/cookie/index.js
+// nextband/node_modules/cookie/index.js
 var require_cookie = __commonJS({
-  "node_modules/cookie/index.js"(exports) {
+  "nextband/node_modules/cookie/index.js"(exports) {
     "use strict";
     exports.parse = parse;
     exports.serialize = serialize;
@@ -44775,9 +44775,9 @@ var require_cookie = __commonJS({
   }
 });
 
-// node_modules/light-my-request/lib/parse-url.js
+// nextband/node_modules/light-my-request/lib/parse-url.js
 var require_parse_url = __commonJS({
-  "node_modules/light-my-request/lib/parse-url.js"(exports, module) {
+  "nextband/node_modules/light-my-request/lib/parse-url.js"(exports, module) {
     "use strict";
     var { URL: URL2 } = __require("node:url");
     var BASE_URL = "http://localhost";
@@ -44813,9 +44813,9 @@ var require_parse_url = __commonJS({
   }
 });
 
-// node_modules/light-my-request/lib/form-data.js
+// nextband/node_modules/light-my-request/lib/form-data.js
 var require_form_data = __commonJS({
-  "node_modules/light-my-request/lib/form-data.js"(exports, module) {
+  "nextband/node_modules/light-my-request/lib/form-data.js"(exports, module) {
     "use strict";
     var { randomUUID: randomUUID3 } = __require("node:crypto");
     var { Readable } = __require("node:stream");
@@ -44868,9 +44868,9 @@ Content-Type: ${value.type || "application/octet-stream"}\r
   }
 });
 
-// node_modules/light-my-request/lib/request.js
+// nextband/node_modules/light-my-request/lib/request.js
 var require_request2 = __commonJS({
-  "node_modules/light-my-request/lib/request.js"(exports, module) {
+  "nextband/node_modules/light-my-request/lib/request.js"(exports, module) {
     "use strict";
     var { Readable, addAbortSignal } = __require("node:stream");
     var util2 = __require("node:util");
@@ -45040,9 +45040,9 @@ var require_request2 = __commonJS({
   }
 });
 
-// node_modules/set-cookie-parser/lib/set-cookie.js
+// nextband/node_modules/set-cookie-parser/lib/set-cookie.js
 var require_set_cookie = __commonJS({
-  "node_modules/set-cookie-parser/lib/set-cookie.js"(exports, module) {
+  "nextband/node_modules/set-cookie-parser/lib/set-cookie.js"(exports, module) {
     "use strict";
     var defaultParseOptions = {
       decodeValues: true,
@@ -45223,9 +45223,9 @@ var require_set_cookie = __commonJS({
   }
 });
 
-// node_modules/light-my-request/lib/response.js
+// nextband/node_modules/light-my-request/lib/response.js
 var require_response = __commonJS({
-  "node_modules/light-my-request/lib/response.js"(exports, module) {
+  "nextband/node_modules/light-my-request/lib/response.js"(exports, module) {
     "use strict";
     var http3 = __require("node:http");
     var { Writable, Readable } = __require("node:stream");
@@ -45367,9 +45367,9 @@ var require_response = __commonJS({
   }
 });
 
-// node_modules/light-my-request/lib/config-validator.js
+// nextband/node_modules/light-my-request/lib/config-validator.js
 var require_config_validator = __commonJS({
-  "node_modules/light-my-request/lib/config-validator.js"(exports, module) {
+  "nextband/node_modules/light-my-request/lib/config-validator.js"(exports, module) {
     "use strict";
     module.exports = validate10;
     module.exports.default = validate10;
@@ -46196,9 +46196,9 @@ var require_config_validator = __commonJS({
   }
 });
 
-// node_modules/light-my-request/index.js
+// nextband/node_modules/light-my-request/index.js
 var require_light_my_request = __commonJS({
-  "node_modules/light-my-request/index.js"(exports, module) {
+  "nextband/node_modules/light-my-request/index.js"(exports, module) {
     "use strict";
     var assert = __require("node:assert");
     var Request2 = require_request2();
@@ -46336,9 +46336,9 @@ var require_light_my_request = __commonJS({
   }
 });
 
-// node_modules/fastify/fastify.js
+// nextband/node_modules/fastify/fastify.js
 var require_fastify = __commonJS({
-  "node_modules/fastify/fastify.js"(exports, module) {
+  "nextband/node_modules/fastify/fastify.js"(exports, module) {
     "use strict";
     var VERSION = "4.29.1";
     var Avvio = require_boot();
@@ -47081,9 +47081,9 @@ ${body}`);
   }
 });
 
-// node_modules/fastify-plugin/lib/getPluginName.js
+// nextband/node_modules/fastify-plugin/lib/getPluginName.js
 var require_getPluginName = __commonJS({
-  "node_modules/fastify-plugin/lib/getPluginName.js"(exports, module) {
+  "nextband/node_modules/fastify-plugin/lib/getPluginName.js"(exports, module) {
     "use strict";
     var fpStackTracePattern = /at\s{1}(?:.*\.)?plugin\s{1}.*\n\s*(.*)/;
     var fileNamePattern = /(\w*(\.\w*)*)\..*/;
@@ -47106,9 +47106,9 @@ var require_getPluginName = __commonJS({
   }
 });
 
-// node_modules/fastify-plugin/lib/toCamelCase.js
+// nextband/node_modules/fastify-plugin/lib/toCamelCase.js
 var require_toCamelCase = __commonJS({
-  "node_modules/fastify-plugin/lib/toCamelCase.js"(exports, module) {
+  "nextband/node_modules/fastify-plugin/lib/toCamelCase.js"(exports, module) {
     "use strict";
     module.exports = function toCamelCase(name) {
       if (name[0] === "@") {
@@ -47122,9 +47122,9 @@ var require_toCamelCase = __commonJS({
   }
 });
 
-// node_modules/fastify-plugin/plugin.js
+// nextband/node_modules/fastify-plugin/plugin.js
 var require_plugin2 = __commonJS({
-  "node_modules/fastify-plugin/plugin.js"(exports, module) {
+  "nextband/node_modules/fastify-plugin/plugin.js"(exports, module) {
     "use strict";
     var getPluginName = require_getPluginName();
     var toCamelCase = require_toCamelCase();
@@ -47172,9 +47172,9 @@ var require_plugin2 = __commonJS({
   }
 });
 
-// node_modules/obliterator/iterator.js
+// nextband/node_modules/obliterator/iterator.js
 var require_iterator = __commonJS({
-  "node_modules/obliterator/iterator.js"(exports, module) {
+  "nextband/node_modules/obliterator/iterator.js"(exports, module) {
     function Iterator(next) {
       if (typeof next !== "function")
         throw new Error("obliterator/iterator: expecting a function!");
@@ -47212,17 +47212,17 @@ var require_iterator = __commonJS({
   }
 });
 
-// node_modules/obliterator/support.js
+// nextband/node_modules/obliterator/support.js
 var require_support = __commonJS({
-  "node_modules/obliterator/support.js"(exports) {
+  "nextband/node_modules/obliterator/support.js"(exports) {
     exports.ARRAY_BUFFER_SUPPORT = typeof ArrayBuffer !== "undefined";
     exports.SYMBOL_SUPPORT = typeof Symbol !== "undefined";
   }
 });
 
-// node_modules/obliterator/foreach.js
+// nextband/node_modules/obliterator/foreach.js
 var require_foreach = __commonJS({
-  "node_modules/obliterator/foreach.js"(exports, module) {
+  "nextband/node_modules/obliterator/foreach.js"(exports, module) {
     var support = require_support();
     var ARRAY_BUFFER_SUPPORT = support.ARRAY_BUFFER_SUPPORT;
     var SYMBOL_SUPPORT = support.SYMBOL_SUPPORT;
@@ -47261,9 +47261,9 @@ var require_foreach = __commonJS({
   }
 });
 
-// node_modules/mnemonist/utils/typed-arrays.js
+// nextband/node_modules/mnemonist/utils/typed-arrays.js
 var require_typed_arrays = __commonJS({
-  "node_modules/mnemonist/utils/typed-arrays.js"(exports) {
+  "nextband/node_modules/mnemonist/utils/typed-arrays.js"(exports) {
     var MAX_8BIT_INTEGER = Math.pow(2, 8) - 1;
     var MAX_16BIT_INTEGER = Math.pow(2, 16) - 1;
     var MAX_32BIT_INTEGER = Math.pow(2, 32) - 1;
@@ -47355,9 +47355,9 @@ var require_typed_arrays = __commonJS({
   }
 });
 
-// node_modules/mnemonist/utils/iterables.js
+// nextband/node_modules/mnemonist/utils/iterables.js
 var require_iterables = __commonJS({
-  "node_modules/mnemonist/utils/iterables.js"(exports) {
+  "nextband/node_modules/mnemonist/utils/iterables.js"(exports) {
     var forEach = require_foreach();
     var typed = require_typed_arrays();
     function isArrayLike(target) {
@@ -47398,9 +47398,9 @@ var require_iterables = __commonJS({
   }
 });
 
-// node_modules/mnemonist/lru-cache.js
+// nextband/node_modules/mnemonist/lru-cache.js
 var require_lru_cache = __commonJS({
-  "node_modules/mnemonist/lru-cache.js"(exports, module) {
+  "nextband/node_modules/mnemonist/lru-cache.js"(exports, module) {
     var Iterator = require_iterator();
     var forEach = require_foreach();
     var typed = require_typed_arrays();
@@ -47609,9 +47609,9 @@ var require_lru_cache = __commonJS({
   }
 });
 
-// node_modules/@fastify/cors/vary.js
+// nextband/node_modules/@fastify/cors/vary.js
 var require_vary = __commonJS({
-  "node_modules/@fastify/cors/vary.js"(exports, module) {
+  "nextband/node_modules/@fastify/cors/vary.js"(exports, module) {
     "use strict";
     var LRUCache = require_lru_cache();
     var validFieldnameRE = /^[!#$%&'*+\-.^\w`|~]+$/u;
@@ -47690,9 +47690,9 @@ var require_vary = __commonJS({
   }
 });
 
-// node_modules/@fastify/cors/index.js
+// nextband/node_modules/@fastify/cors/index.js
 var require_cors = __commonJS({
-  "node_modules/@fastify/cors/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/cors/index.js"(exports, module) {
     "use strict";
     var fp3 = require_plugin2();
     var {
@@ -47930,9 +47930,9 @@ var require_cors = __commonJS({
   }
 });
 
-// node_modules/@lukeed/ms/dist/index.js
+// nextband/node_modules/@lukeed/ms/dist/index.js
 var require_dist4 = __commonJS({
-  "node_modules/@lukeed/ms/dist/index.js"(exports) {
+  "nextband/node_modules/@lukeed/ms/dist/index.js"(exports) {
     var RGX = /^(-?(?:\d+)?\.?\d+) *(m(?:illiseconds?|s(?:ecs?)?))?(s(?:ec(?:onds?|s)?)?)?(m(?:in(?:utes?|s)?)?)?(h(?:ours?|rs?)?)?(d(?:ays?)?)?(w(?:eeks?|ks?)?)?(y(?:ears?|rs?)?)?$/;
     var SEC = 1e3;
     var MIN = SEC * 60;
@@ -47969,9 +47969,9 @@ var require_dist4 = __commonJS({
   }
 });
 
-// node_modules/@fastify/rate-limit/store/LocalStore.js
+// nextband/node_modules/@fastify/rate-limit/store/LocalStore.js
 var require_LocalStore = __commonJS({
-  "node_modules/@fastify/rate-limit/store/LocalStore.js"(exports, module) {
+  "nextband/node_modules/@fastify/rate-limit/store/LocalStore.js"(exports, module) {
     "use strict";
     var { LruMap: Lru } = require_toad_cache();
     function LocalStore(cache2 = 5e3, timeWindow, continueExceeding) {
@@ -48011,9 +48011,9 @@ var require_LocalStore = __commonJS({
   }
 });
 
-// node_modules/@fastify/rate-limit/store/RedisStore.js
+// nextband/node_modules/@fastify/rate-limit/store/RedisStore.js
 var require_RedisStore = __commonJS({
-  "node_modules/@fastify/rate-limit/store/RedisStore.js"(exports, module) {
+  "nextband/node_modules/@fastify/rate-limit/store/RedisStore.js"(exports, module) {
     "use strict";
     var lua = `
   -- Key to operate on
@@ -48065,9 +48065,9 @@ var require_RedisStore = __commonJS({
   }
 });
 
-// node_modules/@fastify/rate-limit/index.js
+// nextband/node_modules/@fastify/rate-limit/index.js
 var require_rate_limit = __commonJS({
-  "node_modules/@fastify/rate-limit/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/rate-limit/index.js"(exports, module) {
     "use strict";
     var fp3 = require_plugin2();
     var ms = require_dist4();
@@ -48294,9 +48294,9 @@ var require_rate_limit = __commonJS({
   }
 });
 
-// node_modules/helmet/index.cjs
+// nextband/node_modules/helmet/index.cjs
 var require_helmet = __commonJS({
-  "node_modules/helmet/index.cjs"(exports, module) {
+  "nextband/node_modules/helmet/index.cjs"(exports, module) {
     "use strict";
     Object.defineProperties(exports, { __esModule: { value: true }, [Symbol.toStringTag]: { value: "Module" } });
     var dangerouslyDisableDefaultSrc = Symbol("dangerouslyDisableDefaultSrc");
@@ -48873,9 +48873,9 @@ var require_helmet = __commonJS({
   }
 });
 
-// node_modules/@fastify/helmet/index.js
+// nextband/node_modules/@fastify/helmet/index.js
 var require_helmet2 = __commonJS({
-  "node_modules/@fastify/helmet/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/helmet/index.js"(exports, module) {
     "use strict";
     var { randomBytes: randomBytes2 } = __require("node:crypto");
     var fp3 = require_plugin2();
@@ -48972,9 +48972,9 @@ var require_helmet2 = __commonJS({
   }
 });
 
-// node_modules/@fastify/busboy/deps/streamsearch/sbmh.js
+// nextband/node_modules/@fastify/busboy/deps/streamsearch/sbmh.js
 var require_sbmh = __commonJS({
-  "node_modules/@fastify/busboy/deps/streamsearch/sbmh.js"(exports, module) {
+  "nextband/node_modules/@fastify/busboy/deps/streamsearch/sbmh.js"(exports, module) {
     "use strict";
     var { EventEmitter } = __require("node:events");
     var { inherits } = __require("node:util");
@@ -49105,9 +49105,9 @@ var require_sbmh = __commonJS({
   }
 });
 
-// node_modules/@fastify/busboy/deps/dicer/lib/PartStream.js
+// nextband/node_modules/@fastify/busboy/deps/dicer/lib/PartStream.js
 var require_PartStream = __commonJS({
-  "node_modules/@fastify/busboy/deps/dicer/lib/PartStream.js"(exports, module) {
+  "nextband/node_modules/@fastify/busboy/deps/dicer/lib/PartStream.js"(exports, module) {
     "use strict";
     var inherits = __require("node:util").inherits;
     var ReadableStream2 = __require("node:stream").Readable;
@@ -49121,9 +49121,9 @@ var require_PartStream = __commonJS({
   }
 });
 
-// node_modules/@fastify/busboy/lib/utils/getLimit.js
+// nextband/node_modules/@fastify/busboy/lib/utils/getLimit.js
 var require_getLimit = __commonJS({
-  "node_modules/@fastify/busboy/lib/utils/getLimit.js"(exports, module) {
+  "nextband/node_modules/@fastify/busboy/lib/utils/getLimit.js"(exports, module) {
     "use strict";
     module.exports = function getLimit(limits, name, defaultLimit) {
       if (!limits || limits[name] === void 0 || limits[name] === null) {
@@ -49137,9 +49137,9 @@ var require_getLimit = __commonJS({
   }
 });
 
-// node_modules/@fastify/busboy/deps/dicer/lib/HeaderParser.js
+// nextband/node_modules/@fastify/busboy/deps/dicer/lib/HeaderParser.js
 var require_HeaderParser = __commonJS({
-  "node_modules/@fastify/busboy/deps/dicer/lib/HeaderParser.js"(exports, module) {
+  "nextband/node_modules/@fastify/busboy/deps/dicer/lib/HeaderParser.js"(exports, module) {
     "use strict";
     var EventEmitter = __require("node:events").EventEmitter;
     var inherits = __require("node:util").inherits;
@@ -49276,9 +49276,9 @@ var require_HeaderParser = __commonJS({
   }
 });
 
-// node_modules/@fastify/busboy/deps/dicer/lib/Dicer.js
+// nextband/node_modules/@fastify/busboy/deps/dicer/lib/Dicer.js
 var require_Dicer = __commonJS({
-  "node_modules/@fastify/busboy/deps/dicer/lib/Dicer.js"(exports, module) {
+  "nextband/node_modules/@fastify/busboy/deps/dicer/lib/Dicer.js"(exports, module) {
     "use strict";
     var WritableStream = __require("node:stream").Writable;
     var inherits = __require("node:util").inherits;
@@ -49516,9 +49516,9 @@ var require_Dicer = __commonJS({
   }
 });
 
-// node_modules/@fastify/busboy/lib/utils/decodeText.js
+// nextband/node_modules/@fastify/busboy/lib/utils/decodeText.js
 var require_decodeText = __commonJS({
-  "node_modules/@fastify/busboy/lib/utils/decodeText.js"(exports, module) {
+  "nextband/node_modules/@fastify/busboy/lib/utils/decodeText.js"(exports, module) {
     "use strict";
     var utf8Decoder = new TextDecoder("utf-8");
     var textDecoders = /* @__PURE__ */ new Map([
@@ -49635,9 +49635,9 @@ var require_decodeText = __commonJS({
   }
 });
 
-// node_modules/@fastify/busboy/lib/utils/parseParams.js
+// nextband/node_modules/@fastify/busboy/lib/utils/parseParams.js
 var require_parseParams = __commonJS({
-  "node_modules/@fastify/busboy/lib/utils/parseParams.js"(exports, module) {
+  "nextband/node_modules/@fastify/busboy/lib/utils/parseParams.js"(exports, module) {
     "use strict";
     var decodeText = require_decodeText();
     var RE_ENCODED = /%[a-fA-F0-9][a-fA-F0-9]/g;
@@ -50283,9 +50283,9 @@ var require_parseParams = __commonJS({
   }
 });
 
-// node_modules/@fastify/busboy/lib/utils/basename.js
+// nextband/node_modules/@fastify/busboy/lib/utils/basename.js
 var require_basename = __commonJS({
-  "node_modules/@fastify/busboy/lib/utils/basename.js"(exports, module) {
+  "nextband/node_modules/@fastify/busboy/lib/utils/basename.js"(exports, module) {
     "use strict";
     module.exports = function basename3(path) {
       if (typeof path !== "string") {
@@ -50304,9 +50304,9 @@ var require_basename = __commonJS({
   }
 });
 
-// node_modules/@fastify/busboy/lib/types/multipart.js
+// nextband/node_modules/@fastify/busboy/lib/types/multipart.js
 var require_multipart = __commonJS({
-  "node_modules/@fastify/busboy/lib/types/multipart.js"(exports, module) {
+  "nextband/node_modules/@fastify/busboy/lib/types/multipart.js"(exports, module) {
     "use strict";
     var { Readable } = __require("node:stream");
     var { inherits } = __require("node:util");
@@ -50598,9 +50598,9 @@ var require_multipart = __commonJS({
   }
 });
 
-// node_modules/@fastify/busboy/lib/utils/Decoder.js
+// nextband/node_modules/@fastify/busboy/lib/utils/Decoder.js
 var require_Decoder = __commonJS({
-  "node_modules/@fastify/busboy/lib/utils/Decoder.js"(exports, module) {
+  "nextband/node_modules/@fastify/busboy/lib/utils/Decoder.js"(exports, module) {
     "use strict";
     var RE_PLUS = /\+/g;
     var HEX = [
@@ -50777,9 +50777,9 @@ var require_Decoder = __commonJS({
   }
 });
 
-// node_modules/@fastify/busboy/lib/types/urlencoded.js
+// nextband/node_modules/@fastify/busboy/lib/types/urlencoded.js
 var require_urlencoded = __commonJS({
-  "node_modules/@fastify/busboy/lib/types/urlencoded.js"(exports, module) {
+  "nextband/node_modules/@fastify/busboy/lib/types/urlencoded.js"(exports, module) {
     "use strict";
     var Decoder = require_Decoder();
     var decodeText = require_decodeText();
@@ -50992,9 +50992,9 @@ var require_urlencoded = __commonJS({
   }
 });
 
-// node_modules/@fastify/busboy/index.js
+// nextband/node_modules/@fastify/busboy/index.js
 var require_busboy = __commonJS({
-  "node_modules/@fastify/busboy/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/busboy/index.js"(exports, module) {
     "use strict";
     var WritableStream = __require("node:stream").Writable;
     var { inherits } = __require("node:util");
@@ -51071,9 +51071,9 @@ var require_busboy = __commonJS({
   }
 });
 
-// node_modules/@fastify/multipart/lib/generateId.js
+// nextband/node_modules/@fastify/multipart/lib/generateId.js
 var require_generateId = __commonJS({
-  "node_modules/@fastify/multipart/lib/generateId.js"(exports, module) {
+  "nextband/node_modules/@fastify/multipart/lib/generateId.js"(exports, module) {
     "use strict";
     var HEX = [
       "00",
@@ -51347,9 +51347,9 @@ var require_generateId = __commonJS({
   }
 });
 
-// node_modules/@fastify/multipart/node_modules/@fastify/error/index.js
+// nextband/node_modules/@fastify/multipart/node_modules/@fastify/error/index.js
 var require_error3 = __commonJS({
-  "node_modules/@fastify/multipart/node_modules/@fastify/error/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/multipart/node_modules/@fastify/error/index.js"(exports, module) {
     "use strict";
     var { format } = __require("node:util");
     function toString() {
@@ -51432,9 +51432,9 @@ var require_error3 = __commonJS({
   }
 });
 
-// node_modules/stream-wormhole/index.js
+// nextband/node_modules/stream-wormhole/index.js
 var require_stream_wormhole = __commonJS({
-  "node_modules/stream-wormhole/index.js"(exports, module) {
+  "nextband/node_modules/stream-wormhole/index.js"(exports, module) {
     "use strict";
     module.exports = (stream, throwError) => {
       return new Promise((resolve2, reject) => {
@@ -51474,9 +51474,9 @@ var require_stream_wormhole = __commonJS({
   }
 });
 
-// node_modules/@fastify/deepmerge/index.js
+// nextband/node_modules/@fastify/deepmerge/index.js
 var require_deepmerge = __commonJS({
-  "node_modules/@fastify/deepmerge/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/deepmerge/index.js"(exports, module) {
     "use strict";
     var JSON_PROTO = Object.getPrototypeOf({});
     function deepmergeConstructor(options) {
@@ -51603,9 +51603,9 @@ var require_deepmerge = __commonJS({
   }
 });
 
-// node_modules/@fastify/multipart/index.js
+// nextband/node_modules/@fastify/multipart/index.js
 var require_multipart2 = __commonJS({
-  "node_modules/@fastify/multipart/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/multipart/index.js"(exports, module) {
     "use strict";
     var Busboy = require_busboy();
     var os = __require("node:os");
@@ -52063,9 +52063,9 @@ var require_multipart2 = __commonJS({
   }
 });
 
-// node_modules/balanced-match/index.js
+// nextband/node_modules/balanced-match/index.js
 var require_balanced_match = __commonJS({
-  "node_modules/balanced-match/index.js"(exports, module) {
+  "nextband/node_modules/balanced-match/index.js"(exports, module) {
     "use strict";
     module.exports = balanced;
     function balanced(a, b, str) {
@@ -52121,9 +52121,9 @@ var require_balanced_match = __commonJS({
   }
 });
 
-// node_modules/glob/node_modules/brace-expansion/index.js
+// nextband/node_modules/glob/node_modules/brace-expansion/index.js
 var require_brace_expansion = __commonJS({
-  "node_modules/glob/node_modules/brace-expansion/index.js"(exports, module) {
+  "nextband/node_modules/glob/node_modules/brace-expansion/index.js"(exports, module) {
     var balanced = require_balanced_match();
     module.exports = expandTop;
     var escSlash = "\0SLASH" + Math.random() + "\0";
@@ -52343,9 +52343,9 @@ var require_brace_expansion = __commonJS({
   }
 });
 
-// node_modules/glob/node_modules/minimatch/dist/commonjs/assert-valid-pattern.js
+// nextband/node_modules/glob/node_modules/minimatch/dist/commonjs/assert-valid-pattern.js
 var require_assert_valid_pattern = __commonJS({
-  "node_modules/glob/node_modules/minimatch/dist/commonjs/assert-valid-pattern.js"(exports) {
+  "nextband/node_modules/glob/node_modules/minimatch/dist/commonjs/assert-valid-pattern.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.assertValidPattern = void 0;
@@ -52362,9 +52362,9 @@ var require_assert_valid_pattern = __commonJS({
   }
 });
 
-// node_modules/glob/node_modules/minimatch/dist/commonjs/brace-expressions.js
+// nextband/node_modules/glob/node_modules/minimatch/dist/commonjs/brace-expressions.js
 var require_brace_expressions = __commonJS({
-  "node_modules/glob/node_modules/minimatch/dist/commonjs/brace-expressions.js"(exports) {
+  "nextband/node_modules/glob/node_modules/minimatch/dist/commonjs/brace-expressions.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.parseClass = void 0;
@@ -52479,9 +52479,9 @@ var require_brace_expressions = __commonJS({
   }
 });
 
-// node_modules/glob/node_modules/minimatch/dist/commonjs/unescape.js
+// nextband/node_modules/glob/node_modules/minimatch/dist/commonjs/unescape.js
 var require_unescape = __commonJS({
-  "node_modules/glob/node_modules/minimatch/dist/commonjs/unescape.js"(exports) {
+  "nextband/node_modules/glob/node_modules/minimatch/dist/commonjs/unescape.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.unescape = void 0;
@@ -52492,9 +52492,9 @@ var require_unescape = __commonJS({
   }
 });
 
-// node_modules/glob/node_modules/minimatch/dist/commonjs/ast.js
+// nextband/node_modules/glob/node_modules/minimatch/dist/commonjs/ast.js
 var require_ast = __commonJS({
-  "node_modules/glob/node_modules/minimatch/dist/commonjs/ast.js"(exports) {
+  "nextband/node_modules/glob/node_modules/minimatch/dist/commonjs/ast.js"(exports) {
     "use strict";
     var _a;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -53114,9 +53114,9 @@ var require_ast = __commonJS({
   }
 });
 
-// node_modules/glob/node_modules/minimatch/dist/commonjs/escape.js
+// nextband/node_modules/glob/node_modules/minimatch/dist/commonjs/escape.js
 var require_escape = __commonJS({
-  "node_modules/glob/node_modules/minimatch/dist/commonjs/escape.js"(exports) {
+  "nextband/node_modules/glob/node_modules/minimatch/dist/commonjs/escape.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.escape = void 0;
@@ -53127,9 +53127,9 @@ var require_escape = __commonJS({
   }
 });
 
-// node_modules/glob/node_modules/minimatch/dist/commonjs/index.js
+// nextband/node_modules/glob/node_modules/minimatch/dist/commonjs/index.js
 var require_commonjs = __commonJS({
-  "node_modules/glob/node_modules/minimatch/dist/commonjs/index.js"(exports) {
+  "nextband/node_modules/glob/node_modules/minimatch/dist/commonjs/index.js"(exports) {
     "use strict";
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -53949,9 +53949,9 @@ var require_commonjs = __commonJS({
   }
 });
 
-// node_modules/lru-cache/dist/commonjs/index.js
+// nextband/node_modules/lru-cache/dist/commonjs/index.js
 var require_commonjs2 = __commonJS({
-  "node_modules/lru-cache/dist/commonjs/index.js"(exports) {
+  "nextband/node_modules/lru-cache/dist/commonjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.LRUCache = void 0;
@@ -55326,9 +55326,9 @@ var require_commonjs2 = __commonJS({
   }
 });
 
-// node_modules/minipass/dist/commonjs/index.js
+// nextband/node_modules/minipass/dist/commonjs/index.js
 var require_commonjs3 = __commonJS({
-  "node_modules/minipass/dist/commonjs/index.js"(exports) {
+  "nextband/node_modules/minipass/dist/commonjs/index.js"(exports) {
     "use strict";
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -56218,9 +56218,9 @@ var require_commonjs3 = __commonJS({
   }
 });
 
-// node_modules/path-scurry/dist/commonjs/index.js
+// nextband/node_modules/path-scurry/dist/commonjs/index.js
 var require_commonjs4 = __commonJS({
-  "node_modules/path-scurry/dist/commonjs/index.js"(exports) {
+  "nextband/node_modules/path-scurry/dist/commonjs/index.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -57992,9 +57992,9 @@ var require_commonjs4 = __commonJS({
   }
 });
 
-// node_modules/glob/dist/commonjs/pattern.js
+// nextband/node_modules/glob/dist/commonjs/pattern.js
 var require_pattern4 = __commonJS({
-  "node_modules/glob/dist/commonjs/pattern.js"(exports) {
+  "nextband/node_modules/glob/dist/commonjs/pattern.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Pattern = void 0;
@@ -58166,9 +58166,9 @@ var require_pattern4 = __commonJS({
   }
 });
 
-// node_modules/glob/dist/commonjs/ignore.js
+// nextband/node_modules/glob/dist/commonjs/ignore.js
 var require_ignore = __commonJS({
-  "node_modules/glob/dist/commonjs/ignore.js"(exports) {
+  "nextband/node_modules/glob/dist/commonjs/ignore.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Ignore = void 0;
@@ -58263,9 +58263,9 @@ var require_ignore = __commonJS({
   }
 });
 
-// node_modules/glob/dist/commonjs/processor.js
+// nextband/node_modules/glob/dist/commonjs/processor.js
 var require_processor = __commonJS({
-  "node_modules/glob/dist/commonjs/processor.js"(exports) {
+  "nextband/node_modules/glob/dist/commonjs/processor.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Processor = exports.SubWalks = exports.MatchRecord = exports.HasWalkedCache = void 0;
@@ -58496,9 +58496,9 @@ var require_processor = __commonJS({
   }
 });
 
-// node_modules/glob/dist/commonjs/walker.js
+// nextband/node_modules/glob/dist/commonjs/walker.js
 var require_walker = __commonJS({
-  "node_modules/glob/dist/commonjs/walker.js"(exports) {
+  "nextband/node_modules/glob/dist/commonjs/walker.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GlobStream = exports.GlobWalker = exports.GlobUtil = void 0;
@@ -58836,9 +58836,9 @@ var require_walker = __commonJS({
   }
 });
 
-// node_modules/glob/dist/commonjs/glob.js
+// nextband/node_modules/glob/dist/commonjs/glob.js
 var require_glob = __commonJS({
-  "node_modules/glob/dist/commonjs/glob.js"(exports) {
+  "nextband/node_modules/glob/dist/commonjs/glob.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Glob = void 0;
@@ -59049,9 +59049,9 @@ var require_glob = __commonJS({
   }
 });
 
-// node_modules/glob/dist/commonjs/has-magic.js
+// nextband/node_modules/glob/dist/commonjs/has-magic.js
 var require_has_magic = __commonJS({
-  "node_modules/glob/dist/commonjs/has-magic.js"(exports) {
+  "nextband/node_modules/glob/dist/commonjs/has-magic.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.hasMagic = void 0;
@@ -59070,9 +59070,9 @@ var require_has_magic = __commonJS({
   }
 });
 
-// node_modules/glob/dist/commonjs/index.js
+// nextband/node_modules/glob/dist/commonjs/index.js
 var require_commonjs5 = __commonJS({
-  "node_modules/glob/dist/commonjs/index.js"(exports) {
+  "nextband/node_modules/glob/dist/commonjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.glob = exports.sync = exports.iterate = exports.iterateSync = exports.stream = exports.streamSync = exports.Ignore = exports.hasMagic = exports.Glob = exports.unescape = exports.escape = void 0;
@@ -59152,9 +59152,9 @@ var require_commonjs5 = __commonJS({
   }
 });
 
-// node_modules/@fastify/send/lib/isUtf8MimeType.js
+// nextband/node_modules/@fastify/send/lib/isUtf8MimeType.js
 var require_isUtf8MimeType = __commonJS({
-  "node_modules/@fastify/send/lib/isUtf8MimeType.js"(exports, module) {
+  "nextband/node_modules/@fastify/send/lib/isUtf8MimeType.js"(exports, module) {
     "use strict";
     function isUtf8MimeType(value) {
       const len = value.length;
@@ -59164,9 +59164,9 @@ var require_isUtf8MimeType = __commonJS({
   }
 });
 
-// node_modules/mime/Mime.js
+// nextband/node_modules/mime/Mime.js
 var require_Mime = __commonJS({
-  "node_modules/mime/Mime.js"(exports, module) {
+  "nextband/node_modules/mime/Mime.js"(exports, module) {
     "use strict";
     function Mime() {
       this._types = /* @__PURE__ */ Object.create(null);
@@ -59218,32 +59218,32 @@ var require_Mime = __commonJS({
   }
 });
 
-// node_modules/mime/types/standard.js
+// nextband/node_modules/mime/types/standard.js
 var require_standard = __commonJS({
-  "node_modules/mime/types/standard.js"(exports, module) {
+  "nextband/node_modules/mime/types/standard.js"(exports, module) {
     module.exports = { "application/andrew-inset": ["ez"], "application/applixware": ["aw"], "application/atom+xml": ["atom"], "application/atomcat+xml": ["atomcat"], "application/atomdeleted+xml": ["atomdeleted"], "application/atomsvc+xml": ["atomsvc"], "application/atsc-dwd+xml": ["dwd"], "application/atsc-held+xml": ["held"], "application/atsc-rsat+xml": ["rsat"], "application/bdoc": ["bdoc"], "application/calendar+xml": ["xcs"], "application/ccxml+xml": ["ccxml"], "application/cdfx+xml": ["cdfx"], "application/cdmi-capability": ["cdmia"], "application/cdmi-container": ["cdmic"], "application/cdmi-domain": ["cdmid"], "application/cdmi-object": ["cdmio"], "application/cdmi-queue": ["cdmiq"], "application/cu-seeme": ["cu"], "application/dash+xml": ["mpd"], "application/davmount+xml": ["davmount"], "application/docbook+xml": ["dbk"], "application/dssc+der": ["dssc"], "application/dssc+xml": ["xdssc"], "application/ecmascript": ["es", "ecma"], "application/emma+xml": ["emma"], "application/emotionml+xml": ["emotionml"], "application/epub+zip": ["epub"], "application/exi": ["exi"], "application/express": ["exp"], "application/fdt+xml": ["fdt"], "application/font-tdpfr": ["pfr"], "application/geo+json": ["geojson"], "application/gml+xml": ["gml"], "application/gpx+xml": ["gpx"], "application/gxf": ["gxf"], "application/gzip": ["gz"], "application/hjson": ["hjson"], "application/hyperstudio": ["stk"], "application/inkml+xml": ["ink", "inkml"], "application/ipfix": ["ipfix"], "application/its+xml": ["its"], "application/java-archive": ["jar", "war", "ear"], "application/java-serialized-object": ["ser"], "application/java-vm": ["class"], "application/javascript": ["js", "mjs"], "application/json": ["json", "map"], "application/json5": ["json5"], "application/jsonml+json": ["jsonml"], "application/ld+json": ["jsonld"], "application/lgr+xml": ["lgr"], "application/lost+xml": ["lostxml"], "application/mac-binhex40": ["hqx"], "application/mac-compactpro": ["cpt"], "application/mads+xml": ["mads"], "application/manifest+json": ["webmanifest"], "application/marc": ["mrc"], "application/marcxml+xml": ["mrcx"], "application/mathematica": ["ma", "nb", "mb"], "application/mathml+xml": ["mathml"], "application/mbox": ["mbox"], "application/mediaservercontrol+xml": ["mscml"], "application/metalink+xml": ["metalink"], "application/metalink4+xml": ["meta4"], "application/mets+xml": ["mets"], "application/mmt-aei+xml": ["maei"], "application/mmt-usd+xml": ["musd"], "application/mods+xml": ["mods"], "application/mp21": ["m21", "mp21"], "application/mp4": ["mp4s", "m4p"], "application/msword": ["doc", "dot"], "application/mxf": ["mxf"], "application/n-quads": ["nq"], "application/n-triples": ["nt"], "application/node": ["cjs"], "application/octet-stream": ["bin", "dms", "lrf", "mar", "so", "dist", "distz", "pkg", "bpk", "dump", "elc", "deploy", "exe", "dll", "deb", "dmg", "iso", "img", "msi", "msp", "msm", "buffer"], "application/oda": ["oda"], "application/oebps-package+xml": ["opf"], "application/ogg": ["ogx"], "application/omdoc+xml": ["omdoc"], "application/onenote": ["onetoc", "onetoc2", "onetmp", "onepkg"], "application/oxps": ["oxps"], "application/p2p-overlay+xml": ["relo"], "application/patch-ops-error+xml": ["xer"], "application/pdf": ["pdf"], "application/pgp-encrypted": ["pgp"], "application/pgp-signature": ["asc", "sig"], "application/pics-rules": ["prf"], "application/pkcs10": ["p10"], "application/pkcs7-mime": ["p7m", "p7c"], "application/pkcs7-signature": ["p7s"], "application/pkcs8": ["p8"], "application/pkix-attr-cert": ["ac"], "application/pkix-cert": ["cer"], "application/pkix-crl": ["crl"], "application/pkix-pkipath": ["pkipath"], "application/pkixcmp": ["pki"], "application/pls+xml": ["pls"], "application/postscript": ["ai", "eps", "ps"], "application/provenance+xml": ["provx"], "application/pskc+xml": ["pskcxml"], "application/raml+yaml": ["raml"], "application/rdf+xml": ["rdf", "owl"], "application/reginfo+xml": ["rif"], "application/relax-ng-compact-syntax": ["rnc"], "application/resource-lists+xml": ["rl"], "application/resource-lists-diff+xml": ["rld"], "application/rls-services+xml": ["rs"], "application/route-apd+xml": ["rapd"], "application/route-s-tsid+xml": ["sls"], "application/route-usd+xml": ["rusd"], "application/rpki-ghostbusters": ["gbr"], "application/rpki-manifest": ["mft"], "application/rpki-roa": ["roa"], "application/rsd+xml": ["rsd"], "application/rss+xml": ["rss"], "application/rtf": ["rtf"], "application/sbml+xml": ["sbml"], "application/scvp-cv-request": ["scq"], "application/scvp-cv-response": ["scs"], "application/scvp-vp-request": ["spq"], "application/scvp-vp-response": ["spp"], "application/sdp": ["sdp"], "application/senml+xml": ["senmlx"], "application/sensml+xml": ["sensmlx"], "application/set-payment-initiation": ["setpay"], "application/set-registration-initiation": ["setreg"], "application/shf+xml": ["shf"], "application/sieve": ["siv", "sieve"], "application/smil+xml": ["smi", "smil"], "application/sparql-query": ["rq"], "application/sparql-results+xml": ["srx"], "application/srgs": ["gram"], "application/srgs+xml": ["grxml"], "application/sru+xml": ["sru"], "application/ssdl+xml": ["ssdl"], "application/ssml+xml": ["ssml"], "application/swid+xml": ["swidtag"], "application/tei+xml": ["tei", "teicorpus"], "application/thraud+xml": ["tfi"], "application/timestamped-data": ["tsd"], "application/toml": ["toml"], "application/trig": ["trig"], "application/ttml+xml": ["ttml"], "application/ubjson": ["ubj"], "application/urc-ressheet+xml": ["rsheet"], "application/urc-targetdesc+xml": ["td"], "application/voicexml+xml": ["vxml"], "application/wasm": ["wasm"], "application/widget": ["wgt"], "application/winhlp": ["hlp"], "application/wsdl+xml": ["wsdl"], "application/wspolicy+xml": ["wspolicy"], "application/xaml+xml": ["xaml"], "application/xcap-att+xml": ["xav"], "application/xcap-caps+xml": ["xca"], "application/xcap-diff+xml": ["xdf"], "application/xcap-el+xml": ["xel"], "application/xcap-ns+xml": ["xns"], "application/xenc+xml": ["xenc"], "application/xhtml+xml": ["xhtml", "xht"], "application/xliff+xml": ["xlf"], "application/xml": ["xml", "xsl", "xsd", "rng"], "application/xml-dtd": ["dtd"], "application/xop+xml": ["xop"], "application/xproc+xml": ["xpl"], "application/xslt+xml": ["*xsl", "xslt"], "application/xspf+xml": ["xspf"], "application/xv+xml": ["mxml", "xhvml", "xvml", "xvm"], "application/yang": ["yang"], "application/yin+xml": ["yin"], "application/zip": ["zip"], "audio/3gpp": ["*3gpp"], "audio/adpcm": ["adp"], "audio/amr": ["amr"], "audio/basic": ["au", "snd"], "audio/midi": ["mid", "midi", "kar", "rmi"], "audio/mobile-xmf": ["mxmf"], "audio/mp3": ["*mp3"], "audio/mp4": ["m4a", "mp4a"], "audio/mpeg": ["mpga", "mp2", "mp2a", "mp3", "m2a", "m3a"], "audio/ogg": ["oga", "ogg", "spx", "opus"], "audio/s3m": ["s3m"], "audio/silk": ["sil"], "audio/wav": ["wav"], "audio/wave": ["*wav"], "audio/webm": ["weba"], "audio/xm": ["xm"], "font/collection": ["ttc"], "font/otf": ["otf"], "font/ttf": ["ttf"], "font/woff": ["woff"], "font/woff2": ["woff2"], "image/aces": ["exr"], "image/apng": ["apng"], "image/avif": ["avif"], "image/bmp": ["bmp"], "image/cgm": ["cgm"], "image/dicom-rle": ["drle"], "image/emf": ["emf"], "image/fits": ["fits"], "image/g3fax": ["g3"], "image/gif": ["gif"], "image/heic": ["heic"], "image/heic-sequence": ["heics"], "image/heif": ["heif"], "image/heif-sequence": ["heifs"], "image/hej2k": ["hej2"], "image/hsj2": ["hsj2"], "image/ief": ["ief"], "image/jls": ["jls"], "image/jp2": ["jp2", "jpg2"], "image/jpeg": ["jpeg", "jpg", "jpe"], "image/jph": ["jph"], "image/jphc": ["jhc"], "image/jpm": ["jpm"], "image/jpx": ["jpx", "jpf"], "image/jxr": ["jxr"], "image/jxra": ["jxra"], "image/jxrs": ["jxrs"], "image/jxs": ["jxs"], "image/jxsc": ["jxsc"], "image/jxsi": ["jxsi"], "image/jxss": ["jxss"], "image/ktx": ["ktx"], "image/ktx2": ["ktx2"], "image/png": ["png"], "image/sgi": ["sgi"], "image/svg+xml": ["svg", "svgz"], "image/t38": ["t38"], "image/tiff": ["tif", "tiff"], "image/tiff-fx": ["tfx"], "image/webp": ["webp"], "image/wmf": ["wmf"], "message/disposition-notification": ["disposition-notification"], "message/global": ["u8msg"], "message/global-delivery-status": ["u8dsn"], "message/global-disposition-notification": ["u8mdn"], "message/global-headers": ["u8hdr"], "message/rfc822": ["eml", "mime"], "model/3mf": ["3mf"], "model/gltf+json": ["gltf"], "model/gltf-binary": ["glb"], "model/iges": ["igs", "iges"], "model/mesh": ["msh", "mesh", "silo"], "model/mtl": ["mtl"], "model/obj": ["obj"], "model/step+xml": ["stpx"], "model/step+zip": ["stpz"], "model/step-xml+zip": ["stpxz"], "model/stl": ["stl"], "model/vrml": ["wrl", "vrml"], "model/x3d+binary": ["*x3db", "x3dbz"], "model/x3d+fastinfoset": ["x3db"], "model/x3d+vrml": ["*x3dv", "x3dvz"], "model/x3d+xml": ["x3d", "x3dz"], "model/x3d-vrml": ["x3dv"], "text/cache-manifest": ["appcache", "manifest"], "text/calendar": ["ics", "ifb"], "text/coffeescript": ["coffee", "litcoffee"], "text/css": ["css"], "text/csv": ["csv"], "text/html": ["html", "htm", "shtml"], "text/jade": ["jade"], "text/jsx": ["jsx"], "text/less": ["less"], "text/markdown": ["markdown", "md"], "text/mathml": ["mml"], "text/mdx": ["mdx"], "text/n3": ["n3"], "text/plain": ["txt", "text", "conf", "def", "list", "log", "in", "ini"], "text/richtext": ["rtx"], "text/rtf": ["*rtf"], "text/sgml": ["sgml", "sgm"], "text/shex": ["shex"], "text/slim": ["slim", "slm"], "text/spdx": ["spdx"], "text/stylus": ["stylus", "styl"], "text/tab-separated-values": ["tsv"], "text/troff": ["t", "tr", "roff", "man", "me", "ms"], "text/turtle": ["ttl"], "text/uri-list": ["uri", "uris", "urls"], "text/vcard": ["vcard"], "text/vtt": ["vtt"], "text/xml": ["*xml"], "text/yaml": ["yaml", "yml"], "video/3gpp": ["3gp", "3gpp"], "video/3gpp2": ["3g2"], "video/h261": ["h261"], "video/h263": ["h263"], "video/h264": ["h264"], "video/iso.segment": ["m4s"], "video/jpeg": ["jpgv"], "video/jpm": ["*jpm", "jpgm"], "video/mj2": ["mj2", "mjp2"], "video/mp2t": ["ts"], "video/mp4": ["mp4", "mp4v", "mpg4"], "video/mpeg": ["mpeg", "mpg", "mpe", "m1v", "m2v"], "video/ogg": ["ogv"], "video/quicktime": ["qt", "mov"], "video/webm": ["webm"] };
   }
 });
 
-// node_modules/mime/types/other.js
+// nextband/node_modules/mime/types/other.js
 var require_other = __commonJS({
-  "node_modules/mime/types/other.js"(exports, module) {
+  "nextband/node_modules/mime/types/other.js"(exports, module) {
     module.exports = { "application/prs.cww": ["cww"], "application/vnd.1000minds.decision-model+xml": ["1km"], "application/vnd.3gpp.pic-bw-large": ["plb"], "application/vnd.3gpp.pic-bw-small": ["psb"], "application/vnd.3gpp.pic-bw-var": ["pvb"], "application/vnd.3gpp2.tcap": ["tcap"], "application/vnd.3m.post-it-notes": ["pwn"], "application/vnd.accpac.simply.aso": ["aso"], "application/vnd.accpac.simply.imp": ["imp"], "application/vnd.acucobol": ["acu"], "application/vnd.acucorp": ["atc", "acutc"], "application/vnd.adobe.air-application-installer-package+zip": ["air"], "application/vnd.adobe.formscentral.fcdt": ["fcdt"], "application/vnd.adobe.fxp": ["fxp", "fxpl"], "application/vnd.adobe.xdp+xml": ["xdp"], "application/vnd.adobe.xfdf": ["xfdf"], "application/vnd.ahead.space": ["ahead"], "application/vnd.airzip.filesecure.azf": ["azf"], "application/vnd.airzip.filesecure.azs": ["azs"], "application/vnd.amazon.ebook": ["azw"], "application/vnd.americandynamics.acc": ["acc"], "application/vnd.amiga.ami": ["ami"], "application/vnd.android.package-archive": ["apk"], "application/vnd.anser-web-certificate-issue-initiation": ["cii"], "application/vnd.anser-web-funds-transfer-initiation": ["fti"], "application/vnd.antix.game-component": ["atx"], "application/vnd.apple.installer+xml": ["mpkg"], "application/vnd.apple.keynote": ["key"], "application/vnd.apple.mpegurl": ["m3u8"], "application/vnd.apple.numbers": ["numbers"], "application/vnd.apple.pages": ["pages"], "application/vnd.apple.pkpass": ["pkpass"], "application/vnd.aristanetworks.swi": ["swi"], "application/vnd.astraea-software.iota": ["iota"], "application/vnd.audiograph": ["aep"], "application/vnd.balsamiq.bmml+xml": ["bmml"], "application/vnd.blueice.multipass": ["mpm"], "application/vnd.bmi": ["bmi"], "application/vnd.businessobjects": ["rep"], "application/vnd.chemdraw+xml": ["cdxml"], "application/vnd.chipnuts.karaoke-mmd": ["mmd"], "application/vnd.cinderella": ["cdy"], "application/vnd.citationstyles.style+xml": ["csl"], "application/vnd.claymore": ["cla"], "application/vnd.cloanto.rp9": ["rp9"], "application/vnd.clonk.c4group": ["c4g", "c4d", "c4f", "c4p", "c4u"], "application/vnd.cluetrust.cartomobile-config": ["c11amc"], "application/vnd.cluetrust.cartomobile-config-pkg": ["c11amz"], "application/vnd.commonspace": ["csp"], "application/vnd.contact.cmsg": ["cdbcmsg"], "application/vnd.cosmocaller": ["cmc"], "application/vnd.crick.clicker": ["clkx"], "application/vnd.crick.clicker.keyboard": ["clkk"], "application/vnd.crick.clicker.palette": ["clkp"], "application/vnd.crick.clicker.template": ["clkt"], "application/vnd.crick.clicker.wordbank": ["clkw"], "application/vnd.criticaltools.wbs+xml": ["wbs"], "application/vnd.ctc-posml": ["pml"], "application/vnd.cups-ppd": ["ppd"], "application/vnd.curl.car": ["car"], "application/vnd.curl.pcurl": ["pcurl"], "application/vnd.dart": ["dart"], "application/vnd.data-vision.rdz": ["rdz"], "application/vnd.dbf": ["dbf"], "application/vnd.dece.data": ["uvf", "uvvf", "uvd", "uvvd"], "application/vnd.dece.ttml+xml": ["uvt", "uvvt"], "application/vnd.dece.unspecified": ["uvx", "uvvx"], "application/vnd.dece.zip": ["uvz", "uvvz"], "application/vnd.denovo.fcselayout-link": ["fe_launch"], "application/vnd.dna": ["dna"], "application/vnd.dolby.mlp": ["mlp"], "application/vnd.dpgraph": ["dpg"], "application/vnd.dreamfactory": ["dfac"], "application/vnd.ds-keypoint": ["kpxx"], "application/vnd.dvb.ait": ["ait"], "application/vnd.dvb.service": ["svc"], "application/vnd.dynageo": ["geo"], "application/vnd.ecowin.chart": ["mag"], "application/vnd.enliven": ["nml"], "application/vnd.epson.esf": ["esf"], "application/vnd.epson.msf": ["msf"], "application/vnd.epson.quickanime": ["qam"], "application/vnd.epson.salt": ["slt"], "application/vnd.epson.ssf": ["ssf"], "application/vnd.eszigno3+xml": ["es3", "et3"], "application/vnd.ezpix-album": ["ez2"], "application/vnd.ezpix-package": ["ez3"], "application/vnd.fdf": ["fdf"], "application/vnd.fdsn.mseed": ["mseed"], "application/vnd.fdsn.seed": ["seed", "dataless"], "application/vnd.flographit": ["gph"], "application/vnd.fluxtime.clip": ["ftc"], "application/vnd.framemaker": ["fm", "frame", "maker", "book"], "application/vnd.frogans.fnc": ["fnc"], "application/vnd.frogans.ltf": ["ltf"], "application/vnd.fsc.weblaunch": ["fsc"], "application/vnd.fujitsu.oasys": ["oas"], "application/vnd.fujitsu.oasys2": ["oa2"], "application/vnd.fujitsu.oasys3": ["oa3"], "application/vnd.fujitsu.oasysgp": ["fg5"], "application/vnd.fujitsu.oasysprs": ["bh2"], "application/vnd.fujixerox.ddd": ["ddd"], "application/vnd.fujixerox.docuworks": ["xdw"], "application/vnd.fujixerox.docuworks.binder": ["xbd"], "application/vnd.fuzzysheet": ["fzs"], "application/vnd.genomatix.tuxedo": ["txd"], "application/vnd.geogebra.file": ["ggb"], "application/vnd.geogebra.tool": ["ggt"], "application/vnd.geometry-explorer": ["gex", "gre"], "application/vnd.geonext": ["gxt"], "application/vnd.geoplan": ["g2w"], "application/vnd.geospace": ["g3w"], "application/vnd.gmx": ["gmx"], "application/vnd.google-apps.document": ["gdoc"], "application/vnd.google-apps.presentation": ["gslides"], "application/vnd.google-apps.spreadsheet": ["gsheet"], "application/vnd.google-earth.kml+xml": ["kml"], "application/vnd.google-earth.kmz": ["kmz"], "application/vnd.grafeq": ["gqf", "gqs"], "application/vnd.groove-account": ["gac"], "application/vnd.groove-help": ["ghf"], "application/vnd.groove-identity-message": ["gim"], "application/vnd.groove-injector": ["grv"], "application/vnd.groove-tool-message": ["gtm"], "application/vnd.groove-tool-template": ["tpl"], "application/vnd.groove-vcard": ["vcg"], "application/vnd.hal+xml": ["hal"], "application/vnd.handheld-entertainment+xml": ["zmm"], "application/vnd.hbci": ["hbci"], "application/vnd.hhe.lesson-player": ["les"], "application/vnd.hp-hpgl": ["hpgl"], "application/vnd.hp-hpid": ["hpid"], "application/vnd.hp-hps": ["hps"], "application/vnd.hp-jlyt": ["jlt"], "application/vnd.hp-pcl": ["pcl"], "application/vnd.hp-pclxl": ["pclxl"], "application/vnd.hydrostatix.sof-data": ["sfd-hdstx"], "application/vnd.ibm.minipay": ["mpy"], "application/vnd.ibm.modcap": ["afp", "listafp", "list3820"], "application/vnd.ibm.rights-management": ["irm"], "application/vnd.ibm.secure-container": ["sc"], "application/vnd.iccprofile": ["icc", "icm"], "application/vnd.igloader": ["igl"], "application/vnd.immervision-ivp": ["ivp"], "application/vnd.immervision-ivu": ["ivu"], "application/vnd.insors.igm": ["igm"], "application/vnd.intercon.formnet": ["xpw", "xpx"], "application/vnd.intergeo": ["i2g"], "application/vnd.intu.qbo": ["qbo"], "application/vnd.intu.qfx": ["qfx"], "application/vnd.ipunplugged.rcprofile": ["rcprofile"], "application/vnd.irepository.package+xml": ["irp"], "application/vnd.is-xpr": ["xpr"], "application/vnd.isac.fcs": ["fcs"], "application/vnd.jam": ["jam"], "application/vnd.jcp.javame.midlet-rms": ["rms"], "application/vnd.jisp": ["jisp"], "application/vnd.joost.joda-archive": ["joda"], "application/vnd.kahootz": ["ktz", "ktr"], "application/vnd.kde.karbon": ["karbon"], "application/vnd.kde.kchart": ["chrt"], "application/vnd.kde.kformula": ["kfo"], "application/vnd.kde.kivio": ["flw"], "application/vnd.kde.kontour": ["kon"], "application/vnd.kde.kpresenter": ["kpr", "kpt"], "application/vnd.kde.kspread": ["ksp"], "application/vnd.kde.kword": ["kwd", "kwt"], "application/vnd.kenameaapp": ["htke"], "application/vnd.kidspiration": ["kia"], "application/vnd.kinar": ["kne", "knp"], "application/vnd.koan": ["skp", "skd", "skt", "skm"], "application/vnd.kodak-descriptor": ["sse"], "application/vnd.las.las+xml": ["lasxml"], "application/vnd.llamagraphics.life-balance.desktop": ["lbd"], "application/vnd.llamagraphics.life-balance.exchange+xml": ["lbe"], "application/vnd.lotus-1-2-3": ["123"], "application/vnd.lotus-approach": ["apr"], "application/vnd.lotus-freelance": ["pre"], "application/vnd.lotus-notes": ["nsf"], "application/vnd.lotus-organizer": ["org"], "application/vnd.lotus-screencam": ["scm"], "application/vnd.lotus-wordpro": ["lwp"], "application/vnd.macports.portpkg": ["portpkg"], "application/vnd.mapbox-vector-tile": ["mvt"], "application/vnd.mcd": ["mcd"], "application/vnd.medcalcdata": ["mc1"], "application/vnd.mediastation.cdkey": ["cdkey"], "application/vnd.mfer": ["mwf"], "application/vnd.mfmp": ["mfm"], "application/vnd.micrografx.flo": ["flo"], "application/vnd.micrografx.igx": ["igx"], "application/vnd.mif": ["mif"], "application/vnd.mobius.daf": ["daf"], "application/vnd.mobius.dis": ["dis"], "application/vnd.mobius.mbk": ["mbk"], "application/vnd.mobius.mqy": ["mqy"], "application/vnd.mobius.msl": ["msl"], "application/vnd.mobius.plc": ["plc"], "application/vnd.mobius.txf": ["txf"], "application/vnd.mophun.application": ["mpn"], "application/vnd.mophun.certificate": ["mpc"], "application/vnd.mozilla.xul+xml": ["xul"], "application/vnd.ms-artgalry": ["cil"], "application/vnd.ms-cab-compressed": ["cab"], "application/vnd.ms-excel": ["xls", "xlm", "xla", "xlc", "xlt", "xlw"], "application/vnd.ms-excel.addin.macroenabled.12": ["xlam"], "application/vnd.ms-excel.sheet.binary.macroenabled.12": ["xlsb"], "application/vnd.ms-excel.sheet.macroenabled.12": ["xlsm"], "application/vnd.ms-excel.template.macroenabled.12": ["xltm"], "application/vnd.ms-fontobject": ["eot"], "application/vnd.ms-htmlhelp": ["chm"], "application/vnd.ms-ims": ["ims"], "application/vnd.ms-lrm": ["lrm"], "application/vnd.ms-officetheme": ["thmx"], "application/vnd.ms-outlook": ["msg"], "application/vnd.ms-pki.seccat": ["cat"], "application/vnd.ms-pki.stl": ["*stl"], "application/vnd.ms-powerpoint": ["ppt", "pps", "pot"], "application/vnd.ms-powerpoint.addin.macroenabled.12": ["ppam"], "application/vnd.ms-powerpoint.presentation.macroenabled.12": ["pptm"], "application/vnd.ms-powerpoint.slide.macroenabled.12": ["sldm"], "application/vnd.ms-powerpoint.slideshow.macroenabled.12": ["ppsm"], "application/vnd.ms-powerpoint.template.macroenabled.12": ["potm"], "application/vnd.ms-project": ["mpp", "mpt"], "application/vnd.ms-word.document.macroenabled.12": ["docm"], "application/vnd.ms-word.template.macroenabled.12": ["dotm"], "application/vnd.ms-works": ["wps", "wks", "wcm", "wdb"], "application/vnd.ms-wpl": ["wpl"], "application/vnd.ms-xpsdocument": ["xps"], "application/vnd.mseq": ["mseq"], "application/vnd.musician": ["mus"], "application/vnd.muvee.style": ["msty"], "application/vnd.mynfc": ["taglet"], "application/vnd.neurolanguage.nlu": ["nlu"], "application/vnd.nitf": ["ntf", "nitf"], "application/vnd.noblenet-directory": ["nnd"], "application/vnd.noblenet-sealer": ["nns"], "application/vnd.noblenet-web": ["nnw"], "application/vnd.nokia.n-gage.ac+xml": ["*ac"], "application/vnd.nokia.n-gage.data": ["ngdat"], "application/vnd.nokia.n-gage.symbian.install": ["n-gage"], "application/vnd.nokia.radio-preset": ["rpst"], "application/vnd.nokia.radio-presets": ["rpss"], "application/vnd.novadigm.edm": ["edm"], "application/vnd.novadigm.edx": ["edx"], "application/vnd.novadigm.ext": ["ext"], "application/vnd.oasis.opendocument.chart": ["odc"], "application/vnd.oasis.opendocument.chart-template": ["otc"], "application/vnd.oasis.opendocument.database": ["odb"], "application/vnd.oasis.opendocument.formula": ["odf"], "application/vnd.oasis.opendocument.formula-template": ["odft"], "application/vnd.oasis.opendocument.graphics": ["odg"], "application/vnd.oasis.opendocument.graphics-template": ["otg"], "application/vnd.oasis.opendocument.image": ["odi"], "application/vnd.oasis.opendocument.image-template": ["oti"], "application/vnd.oasis.opendocument.presentation": ["odp"], "application/vnd.oasis.opendocument.presentation-template": ["otp"], "application/vnd.oasis.opendocument.spreadsheet": ["ods"], "application/vnd.oasis.opendocument.spreadsheet-template": ["ots"], "application/vnd.oasis.opendocument.text": ["odt"], "application/vnd.oasis.opendocument.text-master": ["odm"], "application/vnd.oasis.opendocument.text-template": ["ott"], "application/vnd.oasis.opendocument.text-web": ["oth"], "application/vnd.olpc-sugar": ["xo"], "application/vnd.oma.dd2+xml": ["dd2"], "application/vnd.openblox.game+xml": ["obgx"], "application/vnd.openofficeorg.extension": ["oxt"], "application/vnd.openstreetmap.data+xml": ["osm"], "application/vnd.openxmlformats-officedocument.presentationml.presentation": ["pptx"], "application/vnd.openxmlformats-officedocument.presentationml.slide": ["sldx"], "application/vnd.openxmlformats-officedocument.presentationml.slideshow": ["ppsx"], "application/vnd.openxmlformats-officedocument.presentationml.template": ["potx"], "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ["xlsx"], "application/vnd.openxmlformats-officedocument.spreadsheetml.template": ["xltx"], "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ["docx"], "application/vnd.openxmlformats-officedocument.wordprocessingml.template": ["dotx"], "application/vnd.osgeo.mapguide.package": ["mgp"], "application/vnd.osgi.dp": ["dp"], "application/vnd.osgi.subsystem": ["esa"], "application/vnd.palm": ["pdb", "pqa", "oprc"], "application/vnd.pawaafile": ["paw"], "application/vnd.pg.format": ["str"], "application/vnd.pg.osasli": ["ei6"], "application/vnd.picsel": ["efif"], "application/vnd.pmi.widget": ["wg"], "application/vnd.pocketlearn": ["plf"], "application/vnd.powerbuilder6": ["pbd"], "application/vnd.previewsystems.box": ["box"], "application/vnd.proteus.magazine": ["mgz"], "application/vnd.publishare-delta-tree": ["qps"], "application/vnd.pvi.ptid1": ["ptid"], "application/vnd.quark.quarkxpress": ["qxd", "qxt", "qwd", "qwt", "qxl", "qxb"], "application/vnd.rar": ["rar"], "application/vnd.realvnc.bed": ["bed"], "application/vnd.recordare.musicxml": ["mxl"], "application/vnd.recordare.musicxml+xml": ["musicxml"], "application/vnd.rig.cryptonote": ["cryptonote"], "application/vnd.rim.cod": ["cod"], "application/vnd.rn-realmedia": ["rm"], "application/vnd.rn-realmedia-vbr": ["rmvb"], "application/vnd.route66.link66+xml": ["link66"], "application/vnd.sailingtracker.track": ["st"], "application/vnd.seemail": ["see"], "application/vnd.sema": ["sema"], "application/vnd.semd": ["semd"], "application/vnd.semf": ["semf"], "application/vnd.shana.informed.formdata": ["ifm"], "application/vnd.shana.informed.formtemplate": ["itp"], "application/vnd.shana.informed.interchange": ["iif"], "application/vnd.shana.informed.package": ["ipk"], "application/vnd.simtech-mindmapper": ["twd", "twds"], "application/vnd.smaf": ["mmf"], "application/vnd.smart.teacher": ["teacher"], "application/vnd.software602.filler.form+xml": ["fo"], "application/vnd.solent.sdkm+xml": ["sdkm", "sdkd"], "application/vnd.spotfire.dxp": ["dxp"], "application/vnd.spotfire.sfs": ["sfs"], "application/vnd.stardivision.calc": ["sdc"], "application/vnd.stardivision.draw": ["sda"], "application/vnd.stardivision.impress": ["sdd"], "application/vnd.stardivision.math": ["smf"], "application/vnd.stardivision.writer": ["sdw", "vor"], "application/vnd.stardivision.writer-global": ["sgl"], "application/vnd.stepmania.package": ["smzip"], "application/vnd.stepmania.stepchart": ["sm"], "application/vnd.sun.wadl+xml": ["wadl"], "application/vnd.sun.xml.calc": ["sxc"], "application/vnd.sun.xml.calc.template": ["stc"], "application/vnd.sun.xml.draw": ["sxd"], "application/vnd.sun.xml.draw.template": ["std"], "application/vnd.sun.xml.impress": ["sxi"], "application/vnd.sun.xml.impress.template": ["sti"], "application/vnd.sun.xml.math": ["sxm"], "application/vnd.sun.xml.writer": ["sxw"], "application/vnd.sun.xml.writer.global": ["sxg"], "application/vnd.sun.xml.writer.template": ["stw"], "application/vnd.sus-calendar": ["sus", "susp"], "application/vnd.svd": ["svd"], "application/vnd.symbian.install": ["sis", "sisx"], "application/vnd.syncml+xml": ["xsm"], "application/vnd.syncml.dm+wbxml": ["bdm"], "application/vnd.syncml.dm+xml": ["xdm"], "application/vnd.syncml.dmddf+xml": ["ddf"], "application/vnd.tao.intent-module-archive": ["tao"], "application/vnd.tcpdump.pcap": ["pcap", "cap", "dmp"], "application/vnd.tmobile-livetv": ["tmo"], "application/vnd.trid.tpt": ["tpt"], "application/vnd.triscape.mxs": ["mxs"], "application/vnd.trueapp": ["tra"], "application/vnd.ufdl": ["ufd", "ufdl"], "application/vnd.uiq.theme": ["utz"], "application/vnd.umajin": ["umj"], "application/vnd.unity": ["unityweb"], "application/vnd.uoml+xml": ["uoml"], "application/vnd.vcx": ["vcx"], "application/vnd.visio": ["vsd", "vst", "vss", "vsw"], "application/vnd.visionary": ["vis"], "application/vnd.vsf": ["vsf"], "application/vnd.wap.wbxml": ["wbxml"], "application/vnd.wap.wmlc": ["wmlc"], "application/vnd.wap.wmlscriptc": ["wmlsc"], "application/vnd.webturbo": ["wtb"], "application/vnd.wolfram.player": ["nbp"], "application/vnd.wordperfect": ["wpd"], "application/vnd.wqd": ["wqd"], "application/vnd.wt.stf": ["stf"], "application/vnd.xara": ["xar"], "application/vnd.xfdl": ["xfdl"], "application/vnd.yamaha.hv-dic": ["hvd"], "application/vnd.yamaha.hv-script": ["hvs"], "application/vnd.yamaha.hv-voice": ["hvp"], "application/vnd.yamaha.openscoreformat": ["osf"], "application/vnd.yamaha.openscoreformat.osfpvg+xml": ["osfpvg"], "application/vnd.yamaha.smaf-audio": ["saf"], "application/vnd.yamaha.smaf-phrase": ["spf"], "application/vnd.yellowriver-custom-menu": ["cmp"], "application/vnd.zul": ["zir", "zirz"], "application/vnd.zzazz.deck+xml": ["zaz"], "application/x-7z-compressed": ["7z"], "application/x-abiword": ["abw"], "application/x-ace-compressed": ["ace"], "application/x-apple-diskimage": ["*dmg"], "application/x-arj": ["arj"], "application/x-authorware-bin": ["aab", "x32", "u32", "vox"], "application/x-authorware-map": ["aam"], "application/x-authorware-seg": ["aas"], "application/x-bcpio": ["bcpio"], "application/x-bdoc": ["*bdoc"], "application/x-bittorrent": ["torrent"], "application/x-blorb": ["blb", "blorb"], "application/x-bzip": ["bz"], "application/x-bzip2": ["bz2", "boz"], "application/x-cbr": ["cbr", "cba", "cbt", "cbz", "cb7"], "application/x-cdlink": ["vcd"], "application/x-cfs-compressed": ["cfs"], "application/x-chat": ["chat"], "application/x-chess-pgn": ["pgn"], "application/x-chrome-extension": ["crx"], "application/x-cocoa": ["cco"], "application/x-conference": ["nsc"], "application/x-cpio": ["cpio"], "application/x-csh": ["csh"], "application/x-debian-package": ["*deb", "udeb"], "application/x-dgc-compressed": ["dgc"], "application/x-director": ["dir", "dcr", "dxr", "cst", "cct", "cxt", "w3d", "fgd", "swa"], "application/x-doom": ["wad"], "application/x-dtbncx+xml": ["ncx"], "application/x-dtbook+xml": ["dtb"], "application/x-dtbresource+xml": ["res"], "application/x-dvi": ["dvi"], "application/x-envoy": ["evy"], "application/x-eva": ["eva"], "application/x-font-bdf": ["bdf"], "application/x-font-ghostscript": ["gsf"], "application/x-font-linux-psf": ["psf"], "application/x-font-pcf": ["pcf"], "application/x-font-snf": ["snf"], "application/x-font-type1": ["pfa", "pfb", "pfm", "afm"], "application/x-freearc": ["arc"], "application/x-futuresplash": ["spl"], "application/x-gca-compressed": ["gca"], "application/x-glulx": ["ulx"], "application/x-gnumeric": ["gnumeric"], "application/x-gramps-xml": ["gramps"], "application/x-gtar": ["gtar"], "application/x-hdf": ["hdf"], "application/x-httpd-php": ["php"], "application/x-install-instructions": ["install"], "application/x-iso9660-image": ["*iso"], "application/x-iwork-keynote-sffkey": ["*key"], "application/x-iwork-numbers-sffnumbers": ["*numbers"], "application/x-iwork-pages-sffpages": ["*pages"], "application/x-java-archive-diff": ["jardiff"], "application/x-java-jnlp-file": ["jnlp"], "application/x-keepass2": ["kdbx"], "application/x-latex": ["latex"], "application/x-lua-bytecode": ["luac"], "application/x-lzh-compressed": ["lzh", "lha"], "application/x-makeself": ["run"], "application/x-mie": ["mie"], "application/x-mobipocket-ebook": ["prc", "mobi"], "application/x-ms-application": ["application"], "application/x-ms-shortcut": ["lnk"], "application/x-ms-wmd": ["wmd"], "application/x-ms-wmz": ["wmz"], "application/x-ms-xbap": ["xbap"], "application/x-msaccess": ["mdb"], "application/x-msbinder": ["obd"], "application/x-mscardfile": ["crd"], "application/x-msclip": ["clp"], "application/x-msdos-program": ["*exe"], "application/x-msdownload": ["*exe", "*dll", "com", "bat", "*msi"], "application/x-msmediaview": ["mvb", "m13", "m14"], "application/x-msmetafile": ["*wmf", "*wmz", "*emf", "emz"], "application/x-msmoney": ["mny"], "application/x-mspublisher": ["pub"], "application/x-msschedule": ["scd"], "application/x-msterminal": ["trm"], "application/x-mswrite": ["wri"], "application/x-netcdf": ["nc", "cdf"], "application/x-ns-proxy-autoconfig": ["pac"], "application/x-nzb": ["nzb"], "application/x-perl": ["pl", "pm"], "application/x-pilot": ["*prc", "*pdb"], "application/x-pkcs12": ["p12", "pfx"], "application/x-pkcs7-certificates": ["p7b", "spc"], "application/x-pkcs7-certreqresp": ["p7r"], "application/x-rar-compressed": ["*rar"], "application/x-redhat-package-manager": ["rpm"], "application/x-research-info-systems": ["ris"], "application/x-sea": ["sea"], "application/x-sh": ["sh"], "application/x-shar": ["shar"], "application/x-shockwave-flash": ["swf"], "application/x-silverlight-app": ["xap"], "application/x-sql": ["sql"], "application/x-stuffit": ["sit"], "application/x-stuffitx": ["sitx"], "application/x-subrip": ["srt"], "application/x-sv4cpio": ["sv4cpio"], "application/x-sv4crc": ["sv4crc"], "application/x-t3vm-image": ["t3"], "application/x-tads": ["gam"], "application/x-tar": ["tar"], "application/x-tcl": ["tcl", "tk"], "application/x-tex": ["tex"], "application/x-tex-tfm": ["tfm"], "application/x-texinfo": ["texinfo", "texi"], "application/x-tgif": ["*obj"], "application/x-ustar": ["ustar"], "application/x-virtualbox-hdd": ["hdd"], "application/x-virtualbox-ova": ["ova"], "application/x-virtualbox-ovf": ["ovf"], "application/x-virtualbox-vbox": ["vbox"], "application/x-virtualbox-vbox-extpack": ["vbox-extpack"], "application/x-virtualbox-vdi": ["vdi"], "application/x-virtualbox-vhd": ["vhd"], "application/x-virtualbox-vmdk": ["vmdk"], "application/x-wais-source": ["src"], "application/x-web-app-manifest+json": ["webapp"], "application/x-x509-ca-cert": ["der", "crt", "pem"], "application/x-xfig": ["fig"], "application/x-xliff+xml": ["*xlf"], "application/x-xpinstall": ["xpi"], "application/x-xz": ["xz"], "application/x-zmachine": ["z1", "z2", "z3", "z4", "z5", "z6", "z7", "z8"], "audio/vnd.dece.audio": ["uva", "uvva"], "audio/vnd.digital-winds": ["eol"], "audio/vnd.dra": ["dra"], "audio/vnd.dts": ["dts"], "audio/vnd.dts.hd": ["dtshd"], "audio/vnd.lucent.voice": ["lvp"], "audio/vnd.ms-playready.media.pya": ["pya"], "audio/vnd.nuera.ecelp4800": ["ecelp4800"], "audio/vnd.nuera.ecelp7470": ["ecelp7470"], "audio/vnd.nuera.ecelp9600": ["ecelp9600"], "audio/vnd.rip": ["rip"], "audio/x-aac": ["aac"], "audio/x-aiff": ["aif", "aiff", "aifc"], "audio/x-caf": ["caf"], "audio/x-flac": ["flac"], "audio/x-m4a": ["*m4a"], "audio/x-matroska": ["mka"], "audio/x-mpegurl": ["m3u"], "audio/x-ms-wax": ["wax"], "audio/x-ms-wma": ["wma"], "audio/x-pn-realaudio": ["ram", "ra"], "audio/x-pn-realaudio-plugin": ["rmp"], "audio/x-realaudio": ["*ra"], "audio/x-wav": ["*wav"], "chemical/x-cdx": ["cdx"], "chemical/x-cif": ["cif"], "chemical/x-cmdf": ["cmdf"], "chemical/x-cml": ["cml"], "chemical/x-csml": ["csml"], "chemical/x-xyz": ["xyz"], "image/prs.btif": ["btif"], "image/prs.pti": ["pti"], "image/vnd.adobe.photoshop": ["psd"], "image/vnd.airzip.accelerator.azv": ["azv"], "image/vnd.dece.graphic": ["uvi", "uvvi", "uvg", "uvvg"], "image/vnd.djvu": ["djvu", "djv"], "image/vnd.dvb.subtitle": ["*sub"], "image/vnd.dwg": ["dwg"], "image/vnd.dxf": ["dxf"], "image/vnd.fastbidsheet": ["fbs"], "image/vnd.fpx": ["fpx"], "image/vnd.fst": ["fst"], "image/vnd.fujixerox.edmics-mmr": ["mmr"], "image/vnd.fujixerox.edmics-rlc": ["rlc"], "image/vnd.microsoft.icon": ["ico"], "image/vnd.ms-dds": ["dds"], "image/vnd.ms-modi": ["mdi"], "image/vnd.ms-photo": ["wdp"], "image/vnd.net-fpx": ["npx"], "image/vnd.pco.b16": ["b16"], "image/vnd.tencent.tap": ["tap"], "image/vnd.valve.source.texture": ["vtf"], "image/vnd.wap.wbmp": ["wbmp"], "image/vnd.xiff": ["xif"], "image/vnd.zbrush.pcx": ["pcx"], "image/x-3ds": ["3ds"], "image/x-cmu-raster": ["ras"], "image/x-cmx": ["cmx"], "image/x-freehand": ["fh", "fhc", "fh4", "fh5", "fh7"], "image/x-icon": ["*ico"], "image/x-jng": ["jng"], "image/x-mrsid-image": ["sid"], "image/x-ms-bmp": ["*bmp"], "image/x-pcx": ["*pcx"], "image/x-pict": ["pic", "pct"], "image/x-portable-anymap": ["pnm"], "image/x-portable-bitmap": ["pbm"], "image/x-portable-graymap": ["pgm"], "image/x-portable-pixmap": ["ppm"], "image/x-rgb": ["rgb"], "image/x-tga": ["tga"], "image/x-xbitmap": ["xbm"], "image/x-xpixmap": ["xpm"], "image/x-xwindowdump": ["xwd"], "message/vnd.wfa.wsc": ["wsc"], "model/vnd.collada+xml": ["dae"], "model/vnd.dwf": ["dwf"], "model/vnd.gdl": ["gdl"], "model/vnd.gtw": ["gtw"], "model/vnd.mts": ["mts"], "model/vnd.opengex": ["ogex"], "model/vnd.parasolid.transmit.binary": ["x_b"], "model/vnd.parasolid.transmit.text": ["x_t"], "model/vnd.sap.vds": ["vds"], "model/vnd.usdz+zip": ["usdz"], "model/vnd.valve.source.compiled-map": ["bsp"], "model/vnd.vtu": ["vtu"], "text/prs.lines.tag": ["dsc"], "text/vnd.curl": ["curl"], "text/vnd.curl.dcurl": ["dcurl"], "text/vnd.curl.mcurl": ["mcurl"], "text/vnd.curl.scurl": ["scurl"], "text/vnd.dvb.subtitle": ["sub"], "text/vnd.fly": ["fly"], "text/vnd.fmi.flexstor": ["flx"], "text/vnd.graphviz": ["gv"], "text/vnd.in3d.3dml": ["3dml"], "text/vnd.in3d.spot": ["spot"], "text/vnd.sun.j2me.app-descriptor": ["jad"], "text/vnd.wap.wml": ["wml"], "text/vnd.wap.wmlscript": ["wmls"], "text/x-asm": ["s", "asm"], "text/x-c": ["c", "cc", "cxx", "cpp", "h", "hh", "dic"], "text/x-component": ["htc"], "text/x-fortran": ["f", "for", "f77", "f90"], "text/x-handlebars-template": ["hbs"], "text/x-java-source": ["java"], "text/x-lua": ["lua"], "text/x-markdown": ["mkd"], "text/x-nfo": ["nfo"], "text/x-opml": ["opml"], "text/x-org": ["*org"], "text/x-pascal": ["p", "pas"], "text/x-processing": ["pde"], "text/x-sass": ["sass"], "text/x-scss": ["scss"], "text/x-setext": ["etx"], "text/x-sfv": ["sfv"], "text/x-suse-ymp": ["ymp"], "text/x-uuencode": ["uu"], "text/x-vcalendar": ["vcs"], "text/x-vcard": ["vcf"], "video/vnd.dece.hd": ["uvh", "uvvh"], "video/vnd.dece.mobile": ["uvm", "uvvm"], "video/vnd.dece.pd": ["uvp", "uvvp"], "video/vnd.dece.sd": ["uvs", "uvvs"], "video/vnd.dece.video": ["uvv", "uvvv"], "video/vnd.dvb.file": ["dvb"], "video/vnd.fvt": ["fvt"], "video/vnd.mpegurl": ["mxu", "m4u"], "video/vnd.ms-playready.media.pyv": ["pyv"], "video/vnd.uvvu.mp4": ["uvu", "uvvu"], "video/vnd.vivo": ["viv"], "video/x-f4v": ["f4v"], "video/x-fli": ["fli"], "video/x-flv": ["flv"], "video/x-m4v": ["m4v"], "video/x-matroska": ["mkv", "mk3d", "mks"], "video/x-mng": ["mng"], "video/x-ms-asf": ["asf", "asx"], "video/x-ms-vob": ["vob"], "video/x-ms-wm": ["wm"], "video/x-ms-wmv": ["wmv"], "video/x-ms-wmx": ["wmx"], "video/x-ms-wvx": ["wvx"], "video/x-msvideo": ["avi"], "video/x-sgi-movie": ["movie"], "video/x-smv": ["smv"], "x-conference/x-cooltalk": ["ice"] };
   }
 });
 
-// node_modules/mime/index.js
+// nextband/node_modules/mime/index.js
 var require_mime = __commonJS({
-  "node_modules/mime/index.js"(exports, module) {
+  "nextband/node_modules/mime/index.js"(exports, module) {
     "use strict";
     var Mime = require_Mime();
     module.exports = new Mime(require_standard(), require_other());
   }
 });
 
-// node_modules/escape-html/index.js
+// nextband/node_modules/escape-html/index.js
 var require_escape_html = __commonJS({
-  "node_modules/escape-html/index.js"(exports, module) {
+  "nextband/node_modules/escape-html/index.js"(exports, module) {
     "use strict";
     var matchHtmlRegExp = /["'&<>]/;
     module.exports = escapeHtml;
@@ -59288,9 +59288,9 @@ var require_escape_html = __commonJS({
   }
 });
 
-// node_modules/@fastify/send/lib/clearHeaders.js
+// nextband/node_modules/@fastify/send/lib/clearHeaders.js
 var require_clearHeaders = __commonJS({
-  "node_modules/@fastify/send/lib/clearHeaders.js"(exports) {
+  "nextband/node_modules/@fastify/send/lib/clearHeaders.js"(exports) {
     "use strict";
     function clearHeaders(res) {
       const headers = res.getHeaderNames();
@@ -59302,9 +59302,9 @@ var require_clearHeaders = __commonJS({
   }
 });
 
-// node_modules/@fastify/send/lib/collapseLeadingSlashes.js
+// nextband/node_modules/@fastify/send/lib/collapseLeadingSlashes.js
 var require_collapseLeadingSlashes = __commonJS({
-  "node_modules/@fastify/send/lib/collapseLeadingSlashes.js"(exports, module) {
+  "nextband/node_modules/@fastify/send/lib/collapseLeadingSlashes.js"(exports, module) {
     "use strict";
     function collapseLeadingSlashes(str) {
       if (str[0] !== "/" || str[1] !== "/") {
@@ -59320,9 +59320,9 @@ var require_collapseLeadingSlashes = __commonJS({
   }
 });
 
-// node_modules/@fastify/send/lib/containsDotFile.js
+// nextband/node_modules/@fastify/send/lib/containsDotFile.js
 var require_containsDotFile = __commonJS({
-  "node_modules/@fastify/send/lib/containsDotFile.js"(exports, module) {
+  "nextband/node_modules/@fastify/send/lib/containsDotFile.js"(exports, module) {
     "use strict";
     function containsDotFile(parts) {
       for (let i2 = 0, il = parts.length; i2 < il; ++i2) {
@@ -59336,9 +59336,9 @@ var require_containsDotFile = __commonJS({
   }
 });
 
-// node_modules/@fastify/send/lib/contentRange.js
+// nextband/node_modules/@fastify/send/lib/contentRange.js
 var require_contentRange = __commonJS({
-  "node_modules/@fastify/send/lib/contentRange.js"(exports) {
+  "nextband/node_modules/@fastify/send/lib/contentRange.js"(exports) {
     "use strict";
     function contentRange(type, size, range) {
       return type + " " + (range ? range.start + "-" + range.end : "*") + "/" + size;
@@ -59347,9 +59347,9 @@ var require_contentRange = __commonJS({
   }
 });
 
-// node_modules/@fastify/send/lib/createHtmlDocument.js
+// nextband/node_modules/@fastify/send/lib/createHtmlDocument.js
 var require_createHtmlDocument = __commonJS({
-  "node_modules/@fastify/send/lib/createHtmlDocument.js"(exports) {
+  "nextband/node_modules/@fastify/send/lib/createHtmlDocument.js"(exports) {
     "use strict";
     function createHtmlDocument(title, body) {
       const html = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<title>' + title + "</title>\n</head>\n<body>\n<pre>" + body + "</pre>\n</body>\n</html>\n";
@@ -59359,9 +59359,9 @@ var require_createHtmlDocument = __commonJS({
   }
 });
 
-// node_modules/depd/index.js
+// nextband/node_modules/depd/index.js
 var require_depd = __commonJS({
-  "node_modules/depd/index.js"(exports, module) {
+  "nextband/node_modules/depd/index.js"(exports, module) {
     var relative = __require("path").relative;
     module.exports = depd;
     var basePath = process.cwd();
@@ -59665,9 +59665,9 @@ var require_depd = __commonJS({
   }
 });
 
-// node_modules/setprototypeof/index.js
+// nextband/node_modules/setprototypeof/index.js
 var require_setprototypeof = __commonJS({
-  "node_modules/setprototypeof/index.js"(exports, module) {
+  "nextband/node_modules/setprototypeof/index.js"(exports, module) {
     "use strict";
     module.exports = Object.setPrototypeOf || ({ __proto__: [] } instanceof Array ? setProtoOf : mixinProperties);
     function setProtoOf(obj, proto) {
@@ -59685,9 +59685,9 @@ var require_setprototypeof = __commonJS({
   }
 });
 
-// node_modules/statuses/codes.json
+// nextband/node_modules/statuses/codes.json
 var require_codes = __commonJS({
-  "node_modules/statuses/codes.json"(exports, module) {
+  "nextband/node_modules/statuses/codes.json"(exports, module) {
     module.exports = {
       "100": "Continue",
       "101": "Switching Protocols",
@@ -59756,9 +59756,9 @@ var require_codes = __commonJS({
   }
 });
 
-// node_modules/statuses/index.js
+// nextband/node_modules/statuses/index.js
 var require_statuses = __commonJS({
-  "node_modules/statuses/index.js"(exports, module) {
+  "nextband/node_modules/statuses/index.js"(exports, module) {
     "use strict";
     var codes = require_codes();
     module.exports = status;
@@ -59827,9 +59827,9 @@ var require_statuses = __commonJS({
   }
 });
 
-// node_modules/inherits/inherits_browser.js
+// nextband/node_modules/inherits/inherits_browser.js
 var require_inherits_browser = __commonJS({
-  "node_modules/inherits/inherits_browser.js"(exports, module) {
+  "nextband/node_modules/inherits/inherits_browser.js"(exports, module) {
     if (typeof Object.create === "function") {
       module.exports = function inherits(ctor, superCtor) {
         if (superCtor) {
@@ -59859,9 +59859,9 @@ var require_inherits_browser = __commonJS({
   }
 });
 
-// node_modules/inherits/inherits.js
+// nextband/node_modules/inherits/inherits.js
 var require_inherits = __commonJS({
-  "node_modules/inherits/inherits.js"(exports, module) {
+  "nextband/node_modules/inherits/inherits.js"(exports, module) {
     try {
       util2 = __require("util");
       if (typeof util2.inherits !== "function") throw "";
@@ -59873,9 +59873,9 @@ var require_inherits = __commonJS({
   }
 });
 
-// node_modules/toidentifier/index.js
+// nextband/node_modules/toidentifier/index.js
 var require_toidentifier = __commonJS({
-  "node_modules/toidentifier/index.js"(exports, module) {
+  "nextband/node_modules/toidentifier/index.js"(exports, module) {
     "use strict";
     module.exports = toIdentifier;
     function toIdentifier(str) {
@@ -59886,9 +59886,9 @@ var require_toidentifier = __commonJS({
   }
 });
 
-// node_modules/http-errors/index.js
+// nextband/node_modules/http-errors/index.js
 var require_http_errors = __commonJS({
-  "node_modules/http-errors/index.js"(exports, module) {
+  "nextband/node_modules/http-errors/index.js"(exports, module) {
     "use strict";
     var deprecate3 = require_depd()("http-errors");
     var setPrototypeOf = require_setprototypeof();
@@ -60050,9 +60050,9 @@ var require_http_errors = __commonJS({
   }
 });
 
-// node_modules/@fastify/send/lib/createHttpError.js
+// nextband/node_modules/@fastify/send/lib/createHttpError.js
 var require_createHttpError = __commonJS({
-  "node_modules/@fastify/send/lib/createHttpError.js"(exports, module) {
+  "nextband/node_modules/@fastify/send/lib/createHttpError.js"(exports, module) {
     "use strict";
     var createError = require_http_errors();
     function createHttpError(status, err) {
@@ -60065,9 +60065,9 @@ var require_createHttpError = __commonJS({
   }
 });
 
-// node_modules/@fastify/send/lib/normalizeList.js
+// nextband/node_modules/@fastify/send/lib/normalizeList.js
 var require_normalizeList = __commonJS({
-  "node_modules/@fastify/send/lib/normalizeList.js"(exports, module) {
+  "nextband/node_modules/@fastify/send/lib/normalizeList.js"(exports, module) {
     "use strict";
     function normalizeList(val, name) {
       if (typeof val === "string") {
@@ -60089,9 +60089,9 @@ var require_normalizeList = __commonJS({
   }
 });
 
-// node_modules/@fastify/send/lib/parseBytesRange.js
+// nextband/node_modules/@fastify/send/lib/parseBytesRange.js
 var require_parseBytesRange = __commonJS({
-  "node_modules/@fastify/send/lib/parseBytesRange.js"(exports, module) {
+  "nextband/node_modules/@fastify/send/lib/parseBytesRange.js"(exports, module) {
     "use strict";
     function parseBytesRange(size, str) {
       const values = str.slice(str.indexOf("=") + 1);
@@ -60168,9 +60168,9 @@ var require_parseBytesRange = __commonJS({
   }
 });
 
-// node_modules/@fastify/send/lib/parseTokenList.js
+// nextband/node_modules/@fastify/send/lib/parseTokenList.js
 var require_parseTokenList = __commonJS({
-  "node_modules/@fastify/send/lib/parseTokenList.js"(exports, module) {
+  "nextband/node_modules/@fastify/send/lib/parseTokenList.js"(exports, module) {
     "use strict";
     var slice = String.prototype.slice;
     function parseTokenList(str, cb) {
@@ -60206,9 +60206,9 @@ var require_parseTokenList = __commonJS({
   }
 });
 
-// node_modules/@fastify/send/lib/setHeaders.js
+// nextband/node_modules/@fastify/send/lib/setHeaders.js
 var require_setHeaders = __commonJS({
-  "node_modules/@fastify/send/lib/setHeaders.js"(exports, module) {
+  "nextband/node_modules/@fastify/send/lib/setHeaders.js"(exports, module) {
     "use strict";
     function setHeaders(res, headers) {
       const keys = Object.keys(headers);
@@ -60221,9 +60221,9 @@ var require_setHeaders = __commonJS({
   }
 });
 
-// node_modules/@fastify/send/lib/SendStream.js
+// nextband/node_modules/@fastify/send/lib/SendStream.js
 var require_SendStream = __commonJS({
-  "node_modules/@fastify/send/lib/SendStream.js"(exports, module) {
+  "nextband/node_modules/@fastify/send/lib/SendStream.js"(exports, module) {
     "use strict";
     var fs2 = __require("node:fs");
     var path = __require("node:path");
@@ -60700,9 +60700,9 @@ var require_SendStream = __commonJS({
   }
 });
 
-// node_modules/@fastify/send/index.js
+// nextband/node_modules/@fastify/send/index.js
 var require_send = __commonJS({
-  "node_modules/@fastify/send/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/send/index.js"(exports, module) {
     "use strict";
     var isUtf8MimeType = require_isUtf8MimeType().isUtf8MimeType;
     var mime = require_mime();
@@ -60719,9 +60719,9 @@ var require_send = __commonJS({
   }
 });
 
-// node_modules/@fastify/accept-negotiator/index.js
+// nextband/node_modules/@fastify/accept-negotiator/index.js
 var require_accept_negotiator = __commonJS({
-  "node_modules/@fastify/accept-negotiator/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/accept-negotiator/index.js"(exports, module) {
     "use strict";
     function Negotiator(options) {
       if (!new.target) {
@@ -60859,9 +60859,9 @@ var require_accept_negotiator = __commonJS({
   }
 });
 
-// node_modules/safe-buffer/index.js
+// nextband/node_modules/safe-buffer/index.js
 var require_safe_buffer = __commonJS({
-  "node_modules/safe-buffer/index.js"(exports, module) {
+  "nextband/node_modules/safe-buffer/index.js"(exports, module) {
     var buffer = __require("buffer");
     var Buffer4 = buffer.Buffer;
     function copyProps(src, dst) {
@@ -60917,9 +60917,9 @@ var require_safe_buffer = __commonJS({
   }
 });
 
-// node_modules/content-disposition/index.js
+// nextband/node_modules/content-disposition/index.js
 var require_content_disposition = __commonJS({
-  "node_modules/content-disposition/index.js"(exports, module) {
+  "nextband/node_modules/content-disposition/index.js"(exports, module) {
     "use strict";
     module.exports = contentDisposition;
     module.exports.parse = parse;
@@ -61080,9 +61080,9 @@ var require_content_disposition = __commonJS({
   }
 });
 
-// node_modules/@fastify/static/lib/dirList.js
+// nextband/node_modules/@fastify/static/lib/dirList.js
 var require_dirList = __commonJS({
-  "node_modules/@fastify/static/lib/dirList.js"(exports, module) {
+  "nextband/node_modules/@fastify/static/lib/dirList.js"(exports, module) {
     "use strict";
     var os = __require("node:os");
     var path = __require("node:path");
@@ -61272,9 +61272,9 @@ var require_dirList = __commonJS({
   }
 });
 
-// node_modules/@fastify/static/index.js
+// nextband/node_modules/@fastify/static/index.js
 var require_static = __commonJS({
-  "node_modules/@fastify/static/index.js"(exports, module) {
+  "nextband/node_modules/@fastify/static/index.js"(exports, module) {
     "use strict";
     var { PassThrough: PassThrough3 } = __require("node:stream");
     var path = __require("node:path");
@@ -61718,9 +61718,9 @@ var require_static = __commonJS({
   }
 });
 
-// node_modules/dotenv/package.json
+// nextband/node_modules/dotenv/package.json
 var require_package2 = __commonJS({
-  "node_modules/dotenv/package.json"(exports, module) {
+  "nextband/node_modules/dotenv/package.json"(exports, module) {
     module.exports = {
       name: "dotenv",
       version: "16.6.1",
@@ -61786,9 +61786,9 @@ var require_package2 = __commonJS({
   }
 });
 
-// node_modules/dotenv/lib/main.js
+// nextband/node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
-  "node_modules/dotenv/lib/main.js"(exports, module) {
+  "nextband/node_modules/dotenv/lib/main.js"(exports, module) {
     var fs2 = __require("fs");
     var path = __require("path");
     var os = __require("os");
@@ -62076,9 +62076,9 @@ var require_main = __commonJS({
   }
 });
 
-// node_modules/dotenv/lib/env-options.js
+// nextband/node_modules/dotenv/lib/env-options.js
 var require_env_options = __commonJS({
-  "node_modules/dotenv/lib/env-options.js"(exports, module) {
+  "nextband/node_modules/dotenv/lib/env-options.js"(exports, module) {
     var options = {};
     if (process.env.DOTENV_CONFIG_ENCODING != null) {
       options.encoding = process.env.DOTENV_CONFIG_ENCODING;
@@ -62102,9 +62102,9 @@ var require_env_options = __commonJS({
   }
 });
 
-// node_modules/dotenv/lib/cli-options.js
+// nextband/node_modules/dotenv/lib/cli-options.js
 var require_cli_options = __commonJS({
-  "node_modules/dotenv/lib/cli-options.js"(exports, module) {
+  "nextband/node_modules/dotenv/lib/cli-options.js"(exports, module) {
     var re = /^dotenv_config_(encoding|path|quiet|debug|override|DOTENV_KEY)=(.+)$/;
     module.exports = function optionMatcher(args) {
       const options = args.reduce(function(acc, cur) {
@@ -62122,9 +62122,9 @@ var require_cli_options = __commonJS({
   }
 });
 
-// node_modules/fast-jwt/src/error.js
+// nextband/node_modules/fast-jwt/src/error.js
 var require_error4 = __commonJS({
-  "node_modules/fast-jwt/src/error.js"(exports, module) {
+  "nextband/node_modules/fast-jwt/src/error.js"(exports, module) {
     "use strict";
     var TOKEN_ERROR_CODES = {
       invalidType: "FAST_JWT_INVALID_TYPE",
@@ -62188,9 +62188,9 @@ var require_error4 = __commonJS({
   }
 });
 
-// node_modules/fast-jwt/src/decoder.js
+// nextband/node_modules/fast-jwt/src/decoder.js
 var require_decoder = __commonJS({
-  "node_modules/fast-jwt/src/decoder.js"(exports, module) {
+  "nextband/node_modules/fast-jwt/src/decoder.js"(exports, module) {
     "use strict";
     var { TokenError } = require_error4();
     function decode2({ complete, checkTyp }, token) {
@@ -62233,9 +62233,9 @@ var require_decoder = __commonJS({
   }
 });
 
-// node_modules/bn.js/lib/bn.js
+// nextband/node_modules/bn.js/lib/bn.js
 var require_bn = __commonJS({
-  "node_modules/bn.js/lib/bn.js"(exports, module) {
+  "nextband/node_modules/bn.js/lib/bn.js"(exports, module) {
     (function(module2, exports2) {
       "use strict";
       function assert(val, msg) {
@@ -65053,9 +65053,9 @@ var require_bn = __commonJS({
   }
 });
 
-// node_modules/safer-buffer/safer.js
+// nextband/node_modules/safer-buffer/safer.js
 var require_safer = __commonJS({
-  "node_modules/safer-buffer/safer.js"(exports, module) {
+  "nextband/node_modules/safer-buffer/safer.js"(exports, module) {
     "use strict";
     var buffer = __require("buffer");
     var Buffer4 = buffer.Buffer;
@@ -65121,9 +65121,9 @@ var require_safer = __commonJS({
   }
 });
 
-// node_modules/asn1.js/lib/asn1/base/reporter.js
+// nextband/node_modules/asn1.js/lib/asn1/base/reporter.js
 var require_reporter = __commonJS({
-  "node_modules/asn1.js/lib/asn1/base/reporter.js"(exports) {
+  "nextband/node_modules/asn1.js/lib/asn1/base/reporter.js"(exports) {
     "use strict";
     var inherits = require_inherits();
     function Reporter(options) {
@@ -65222,9 +65222,9 @@ var require_reporter = __commonJS({
   }
 });
 
-// node_modules/asn1.js/lib/asn1/base/buffer.js
+// nextband/node_modules/asn1.js/lib/asn1/base/buffer.js
 var require_buffer = __commonJS({
-  "node_modules/asn1.js/lib/asn1/base/buffer.js"(exports) {
+  "nextband/node_modules/asn1.js/lib/asn1/base/buffer.js"(exports) {
     "use strict";
     var inherits = require_inherits();
     var Reporter = require_reporter().Reporter;
@@ -65339,9 +65339,9 @@ var require_buffer = __commonJS({
   }
 });
 
-// node_modules/minimalistic-assert/index.js
+// nextband/node_modules/minimalistic-assert/index.js
 var require_minimalistic_assert = __commonJS({
-  "node_modules/minimalistic-assert/index.js"(exports, module) {
+  "nextband/node_modules/minimalistic-assert/index.js"(exports, module) {
     module.exports = assert;
     function assert(val, msg) {
       if (!val)
@@ -65354,9 +65354,9 @@ var require_minimalistic_assert = __commonJS({
   }
 });
 
-// node_modules/asn1.js/lib/asn1/base/node.js
+// nextband/node_modules/asn1.js/lib/asn1/base/node.js
 var require_node2 = __commonJS({
-  "node_modules/asn1.js/lib/asn1/base/node.js"(exports, module) {
+  "nextband/node_modules/asn1.js/lib/asn1/base/node.js"(exports, module) {
     "use strict";
     var Reporter = require_reporter().Reporter;
     var EncoderBuffer = require_buffer().EncoderBuffer;
@@ -65889,9 +65889,9 @@ var require_node2 = __commonJS({
   }
 });
 
-// node_modules/asn1.js/lib/asn1/constants/der.js
+// nextband/node_modules/asn1.js/lib/asn1/constants/der.js
 var require_der = __commonJS({
-  "node_modules/asn1.js/lib/asn1/constants/der.js"(exports) {
+  "nextband/node_modules/asn1.js/lib/asn1/constants/der.js"(exports) {
     "use strict";
     function reverse(map) {
       const res = {};
@@ -65945,9 +65945,9 @@ var require_der = __commonJS({
   }
 });
 
-// node_modules/asn1.js/lib/asn1/encoders/der.js
+// nextband/node_modules/asn1.js/lib/asn1/encoders/der.js
 var require_der2 = __commonJS({
-  "node_modules/asn1.js/lib/asn1/encoders/der.js"(exports, module) {
+  "nextband/node_modules/asn1.js/lib/asn1/encoders/der.js"(exports, module) {
     "use strict";
     var inherits = require_inherits();
     var Buffer4 = require_safer().Buffer;
@@ -66176,9 +66176,9 @@ var require_der2 = __commonJS({
   }
 });
 
-// node_modules/asn1.js/lib/asn1/encoders/pem.js
+// nextband/node_modules/asn1.js/lib/asn1/encoders/pem.js
 var require_pem = __commonJS({
-  "node_modules/asn1.js/lib/asn1/encoders/pem.js"(exports, module) {
+  "nextband/node_modules/asn1.js/lib/asn1/encoders/pem.js"(exports, module) {
     "use strict";
     var inherits = require_inherits();
     var DEREncoder = require_der2();
@@ -66200,9 +66200,9 @@ var require_pem = __commonJS({
   }
 });
 
-// node_modules/asn1.js/lib/asn1/encoders/index.js
+// nextband/node_modules/asn1.js/lib/asn1/encoders/index.js
 var require_encoders = __commonJS({
-  "node_modules/asn1.js/lib/asn1/encoders/index.js"(exports) {
+  "nextband/node_modules/asn1.js/lib/asn1/encoders/index.js"(exports) {
     "use strict";
     var encoders = exports;
     encoders.der = require_der2();
@@ -66210,9 +66210,9 @@ var require_encoders = __commonJS({
   }
 });
 
-// node_modules/asn1.js/lib/asn1/decoders/der.js
+// nextband/node_modules/asn1.js/lib/asn1/decoders/der.js
 var require_der3 = __commonJS({
-  "node_modules/asn1.js/lib/asn1/decoders/der.js"(exports, module) {
+  "nextband/node_modules/asn1.js/lib/asn1/decoders/der.js"(exports, module) {
     "use strict";
     var inherits = require_inherits();
     var bignum = require_bn();
@@ -66482,9 +66482,9 @@ var require_der3 = __commonJS({
   }
 });
 
-// node_modules/asn1.js/lib/asn1/decoders/pem.js
+// nextband/node_modules/asn1.js/lib/asn1/decoders/pem.js
 var require_pem2 = __commonJS({
-  "node_modules/asn1.js/lib/asn1/decoders/pem.js"(exports, module) {
+  "nextband/node_modules/asn1.js/lib/asn1/decoders/pem.js"(exports, module) {
     "use strict";
     var inherits = require_inherits();
     var Buffer4 = require_safer().Buffer;
@@ -66528,9 +66528,9 @@ var require_pem2 = __commonJS({
   }
 });
 
-// node_modules/asn1.js/lib/asn1/decoders/index.js
+// nextband/node_modules/asn1.js/lib/asn1/decoders/index.js
 var require_decoders = __commonJS({
-  "node_modules/asn1.js/lib/asn1/decoders/index.js"(exports) {
+  "nextband/node_modules/asn1.js/lib/asn1/decoders/index.js"(exports) {
     "use strict";
     var decoders = exports;
     decoders.der = require_der3();
@@ -66538,9 +66538,9 @@ var require_decoders = __commonJS({
   }
 });
 
-// node_modules/asn1.js/lib/asn1/api.js
+// nextband/node_modules/asn1.js/lib/asn1/api.js
 var require_api = __commonJS({
-  "node_modules/asn1.js/lib/asn1/api.js"(exports) {
+  "nextband/node_modules/asn1.js/lib/asn1/api.js"(exports) {
     "use strict";
     var encoders = require_encoders();
     var decoders = require_decoders();
@@ -66587,9 +66587,9 @@ var require_api = __commonJS({
   }
 });
 
-// node_modules/asn1.js/lib/asn1/base/index.js
+// nextband/node_modules/asn1.js/lib/asn1/base/index.js
 var require_base = __commonJS({
-  "node_modules/asn1.js/lib/asn1/base/index.js"(exports) {
+  "nextband/node_modules/asn1.js/lib/asn1/base/index.js"(exports) {
     "use strict";
     var base = exports;
     base.Reporter = require_reporter().Reporter;
@@ -66599,9 +66599,9 @@ var require_base = __commonJS({
   }
 });
 
-// node_modules/asn1.js/lib/asn1/constants/index.js
+// nextband/node_modules/asn1.js/lib/asn1/constants/index.js
 var require_constants3 = __commonJS({
-  "node_modules/asn1.js/lib/asn1/constants/index.js"(exports) {
+  "nextband/node_modules/asn1.js/lib/asn1/constants/index.js"(exports) {
     "use strict";
     var constants = exports;
     constants._reverse = function reverse(map) {
@@ -66618,9 +66618,9 @@ var require_constants3 = __commonJS({
   }
 });
 
-// node_modules/asn1.js/lib/asn1.js
+// nextband/node_modules/asn1.js/lib/asn1.js
 var require_asn1 = __commonJS({
-  "node_modules/asn1.js/lib/asn1.js"(exports) {
+  "nextband/node_modules/asn1.js/lib/asn1.js"(exports) {
     "use strict";
     var asn1 = exports;
     asn1.bignum = require_bn();
@@ -66632,9 +66632,9 @@ var require_asn1 = __commonJS({
   }
 });
 
-// node_modules/ecdsa-sig-formatter/src/param-bytes-for-alg.js
+// nextband/node_modules/ecdsa-sig-formatter/src/param-bytes-for-alg.js
 var require_param_bytes_for_alg = __commonJS({
-  "node_modules/ecdsa-sig-formatter/src/param-bytes-for-alg.js"(exports, module) {
+  "nextband/node_modules/ecdsa-sig-formatter/src/param-bytes-for-alg.js"(exports, module) {
     "use strict";
     function getParamSize(keySize) {
       var result = (keySize / 8 | 0) + (keySize % 8 === 0 ? 0 : 1);
@@ -66656,9 +66656,9 @@ var require_param_bytes_for_alg = __commonJS({
   }
 });
 
-// node_modules/ecdsa-sig-formatter/src/ecdsa-sig-formatter.js
+// nextband/node_modules/ecdsa-sig-formatter/src/ecdsa-sig-formatter.js
 var require_ecdsa_sig_formatter = __commonJS({
-  "node_modules/ecdsa-sig-formatter/src/ecdsa-sig-formatter.js"(exports, module) {
+  "nextband/node_modules/ecdsa-sig-formatter/src/ecdsa-sig-formatter.js"(exports, module) {
     "use strict";
     var Buffer4 = require_safe_buffer().Buffer;
     var getParamBytesForAlg = require_param_bytes_for_alg();
@@ -66796,9 +66796,9 @@ var require_ecdsa_sig_formatter = __commonJS({
   }
 });
 
-// node_modules/fast-jwt/src/crypto.js
+// nextband/node_modules/fast-jwt/src/crypto.js
 var require_crypto = __commonJS({
-  "node_modules/fast-jwt/src/crypto.js"(exports, module) {
+  "nextband/node_modules/fast-jwt/src/crypto.js"(exports, module) {
     "use strict";
     var asn = require_asn1();
     var {
@@ -67082,9 +67082,9 @@ var require_crypto = __commonJS({
   }
 });
 
-// node_modules/fast-jwt/src/utils.js
+// nextband/node_modules/fast-jwt/src/utils.js
 var require_utils5 = __commonJS({
-  "node_modules/fast-jwt/src/utils.js"(exports, module) {
+  "nextband/node_modules/fast-jwt/src/utils.js"(exports, module) {
     "use strict";
     var { createHash: createHash2 } = __require("node:crypto");
     var algorithmMatcher = /"alg"\s*:\s*"[HERP]S(256|384)"/m;
@@ -67137,9 +67137,9 @@ var require_utils5 = __commonJS({
   }
 });
 
-// node_modules/fast-jwt/src/verifier.js
+// nextband/node_modules/fast-jwt/src/verifier.js
 var require_verifier = __commonJS({
-  "node_modules/fast-jwt/src/verifier.js"(exports, module) {
+  "nextband/node_modules/fast-jwt/src/verifier.js"(exports, module) {
     "use strict";
     var { createPublicKey, createSecretKey } = __require("node:crypto");
     var Cache = require_lru_cache();
@@ -67529,9 +67529,9 @@ var require_verifier = __commonJS({
   }
 });
 
-// node_modules/fast-jwt/src/signer.js
+// nextband/node_modules/fast-jwt/src/signer.js
 var require_signer = __commonJS({
-  "node_modules/fast-jwt/src/signer.js"(exports, module) {
+  "nextband/node_modules/fast-jwt/src/signer.js"(exports, module) {
     "use strict";
     var {
       base64UrlMatcher,
@@ -67771,9 +67771,9 @@ var require_signer = __commonJS({
   }
 });
 
-// node_modules/fast-jwt/src/index.js
+// nextband/node_modules/fast-jwt/src/index.js
 var require_src = __commonJS({
-  "node_modules/fast-jwt/src/index.js"(exports, module) {
+  "nextband/node_modules/fast-jwt/src/index.js"(exports, module) {
     "use strict";
     var { TokenError, TOKEN_ERROR_CODES } = require_error4();
     var createDecoder = require_decoder();
@@ -67789,9 +67789,9 @@ var require_src = __commonJS({
   }
 });
 
-// node_modules/xtend/immutable.js
+// nextband/node_modules/xtend/immutable.js
 var require_immutable = __commonJS({
-  "node_modules/xtend/immutable.js"(exports, module) {
+  "nextband/node_modules/xtend/immutable.js"(exports, module) {
     module.exports = extend;
     var hasOwnProperty = Object.prototype.hasOwnProperty;
     function extend() {
@@ -67809,9 +67809,9 @@ var require_immutable = __commonJS({
   }
 });
 
-// node_modules/fastparallel/parallel.js
+// nextband/node_modules/fastparallel/parallel.js
 var require_parallel = __commonJS({
-  "node_modules/fastparallel/parallel.js"(exports, module) {
+  "nextband/node_modules/fastparallel/parallel.js"(exports, module) {
     "use strict";
     var xtend = require_immutable();
     var reusify = require_reusify();
@@ -67994,9 +67994,9 @@ var require_parallel = __commonJS({
   }
 });
 
-// node_modules/fastseries/series.js
+// nextband/node_modules/fastseries/series.js
 var require_series = __commonJS({
-  "node_modules/fastseries/series.js"(exports, module) {
+  "nextband/node_modules/fastseries/series.js"(exports, module) {
     "use strict";
     var xtend = require_immutable();
     var reusify = require_reusify();
@@ -68107,9 +68107,9 @@ var require_series = __commonJS({
   }
 });
 
-// node_modules/fastfall/fall.js
+// nextband/node_modules/fastfall/fall.js
 var require_fall = __commonJS({
-  "node_modules/fastfall/fall.js"(exports, module) {
+  "nextband/node_modules/fastfall/fall.js"(exports, module) {
     "use strict";
     var reusify = require_reusify();
     var empty = [];
@@ -68244,9 +68244,9 @@ var require_fall = __commonJS({
   }
 });
 
-// node_modules/steed/steed.js
+// nextband/node_modules/steed/steed.js
 var require_steed = __commonJS({
-  "node_modules/steed/steed.js"(exports, module) {
+  "nextband/node_modules/steed/steed.js"(exports, module) {
     "use strict";
     var nr = { results: false };
     var fastparallel = require_parallel();
@@ -68359,9 +68359,9 @@ var require_steed = __commonJS({
   }
 });
 
-// node_modules/@fastify/jwt/jwt.js
+// nextband/node_modules/@fastify/jwt/jwt.js
 var require_jwt = __commonJS({
-  "node_modules/@fastify/jwt/jwt.js"(exports, module) {
+  "nextband/node_modules/@fastify/jwt/jwt.js"(exports, module) {
     "use strict";
     var fp3 = require_plugin2();
     var { createSigner, createDecoder, createVerifier, TokenError } = require_src();
@@ -68807,9 +68807,9 @@ var require_jwt = __commonJS({
   }
 });
 
-// node_modules/extend/index.js
+// nextband/node_modules/extend/index.js
 var require_extend = __commonJS({
-  "node_modules/extend/index.js"(exports, module) {
+  "nextband/node_modules/extend/index.js"(exports, module) {
     "use strict";
     var hasOwn = Object.prototype.hasOwnProperty;
     var toStr = Object.prototype.toString;
@@ -68898,9 +68898,9 @@ var require_extend = __commonJS({
   }
 });
 
-// node_modules/gaxios/package.json
+// nextband/node_modules/gaxios/package.json
 var require_package3 = __commonJS({
-  "node_modules/gaxios/package.json"(exports, module) {
+  "nextband/node_modules/gaxios/package.json"(exports, module) {
     module.exports = {
       name: "gaxios",
       version: "7.3.1",
@@ -69009,18 +69009,18 @@ var require_package3 = __commonJS({
   }
 });
 
-// node_modules/gaxios/build/cjs/src/util.cjs
+// nextband/node_modules/gaxios/build/cjs/src/util.cjs
 var require_util5 = __commonJS({
-  "node_modules/gaxios/build/cjs/src/util.cjs"(exports, module) {
+  "nextband/node_modules/gaxios/build/cjs/src/util.cjs"(exports, module) {
     "use strict";
     var pkg = require_package3();
     module.exports = { pkg };
   }
 });
 
-// node_modules/gaxios/build/cjs/src/common.js
+// nextband/node_modules/gaxios/build/cjs/src/common.js
 var require_common = __commonJS({
-  "node_modules/gaxios/build/cjs/src/common.js"(exports) {
+  "nextband/node_modules/gaxios/build/cjs/src/common.js"(exports) {
     "use strict";
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -69260,9 +69260,9 @@ var require_common = __commonJS({
   }
 });
 
-// node_modules/gaxios/build/cjs/src/retry.js
+// nextband/node_modules/gaxios/build/cjs/src/retry.js
 var require_retry = __commonJS({
-  "node_modules/gaxios/build/cjs/src/retry.js"(exports) {
+  "nextband/node_modules/gaxios/build/cjs/src/retry.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getRetryConfig = getRetryConfig;
@@ -69365,9 +69365,9 @@ var require_retry = __commonJS({
   }
 });
 
-// node_modules/gaxios/build/cjs/src/interceptor.js
+// nextband/node_modules/gaxios/build/cjs/src/interceptor.js
 var require_interceptor = __commonJS({
-  "node_modules/gaxios/build/cjs/src/interceptor.js"(exports) {
+  "nextband/node_modules/gaxios/build/cjs/src/interceptor.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GaxiosInterceptorManager = void 0;
@@ -69377,9 +69377,9 @@ var require_interceptor = __commonJS({
   }
 });
 
-// node_modules/ms/index.js
+// nextband/node_modules/ms/index.js
 var require_ms = __commonJS({
-  "node_modules/ms/index.js"(exports, module) {
+  "nextband/node_modules/ms/index.js"(exports, module) {
     var s2 = 1e3;
     var m2 = s2 * 60;
     var h2 = m2 * 60;
@@ -69493,10 +69493,10 @@ var require_ms = __commonJS({
   }
 });
 
-// node_modules/debug/src/common.js
+// nextband/node_modules/debug/src/common.js
 var require_common2 = __commonJS({
-  "node_modules/debug/src/common.js"(exports, module) {
-    function setup(env3) {
+  "nextband/node_modules/debug/src/common.js"(exports, module) {
+    function setup(env2) {
       createDebug.debug = createDebug;
       createDebug.default = createDebug;
       createDebug.coerce = coerce2;
@@ -69505,8 +69505,8 @@ var require_common2 = __commonJS({
       createDebug.enabled = enabled;
       createDebug.humanize = require_ms();
       createDebug.destroy = destroy;
-      Object.keys(env3).forEach((key) => {
-        createDebug[key] = env3[key];
+      Object.keys(env2).forEach((key) => {
+        createDebug[key] = env2[key];
       });
       createDebug.names = [];
       createDebug.skips = [];
@@ -69670,9 +69670,9 @@ var require_common2 = __commonJS({
   }
 });
 
-// node_modules/debug/src/browser.js
+// nextband/node_modules/debug/src/browser.js
 var require_browser = __commonJS({
-  "node_modules/debug/src/browser.js"(exports, module) {
+  "nextband/node_modules/debug/src/browser.js"(exports, module) {
     exports.formatArgs = formatArgs;
     exports.save = save;
     exports.load = load;
@@ -69840,9 +69840,9 @@ var require_browser = __commonJS({
   }
 });
 
-// node_modules/has-flag/index.js
+// nextband/node_modules/has-flag/index.js
 var require_has_flag = __commonJS({
-  "node_modules/has-flag/index.js"(exports, module) {
+  "nextband/node_modules/has-flag/index.js"(exports, module) {
     "use strict";
     module.exports = (flag, argv = process.argv) => {
       const prefix = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
@@ -69853,27 +69853,27 @@ var require_has_flag = __commonJS({
   }
 });
 
-// node_modules/supports-color/index.js
+// nextband/node_modules/supports-color/index.js
 var require_supports_color = __commonJS({
-  "node_modules/supports-color/index.js"(exports, module) {
+  "nextband/node_modules/supports-color/index.js"(exports, module) {
     "use strict";
     var os = __require("os");
     var tty = __require("tty");
     var hasFlag = require_has_flag();
-    var { env: env3 } = process;
+    var { env: env2 } = process;
     var forceColor;
     if (hasFlag("no-color") || hasFlag("no-colors") || hasFlag("color=false") || hasFlag("color=never")) {
       forceColor = 0;
     } else if (hasFlag("color") || hasFlag("colors") || hasFlag("color=true") || hasFlag("color=always")) {
       forceColor = 1;
     }
-    if ("FORCE_COLOR" in env3) {
-      if (env3.FORCE_COLOR === "true") {
+    if ("FORCE_COLOR" in env2) {
+      if (env2.FORCE_COLOR === "true") {
         forceColor = 1;
-      } else if (env3.FORCE_COLOR === "false") {
+      } else if (env2.FORCE_COLOR === "false") {
         forceColor = 0;
       } else {
-        forceColor = env3.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env3.FORCE_COLOR, 10), 3);
+        forceColor = env2.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env2.FORCE_COLOR, 10), 3);
       }
     }
     function translateLevel(level) {
@@ -69901,7 +69901,7 @@ var require_supports_color = __commonJS({
         return 0;
       }
       const min = forceColor || 0;
-      if (env3.TERM === "dumb") {
+      if (env2.TERM === "dumb") {
         return min;
       }
       if (process.platform === "win32") {
@@ -69911,34 +69911,34 @@ var require_supports_color = __commonJS({
         }
         return 1;
       }
-      if ("CI" in env3) {
-        if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "GITHUB_ACTIONS", "BUILDKITE"].some((sign) => sign in env3) || env3.CI_NAME === "codeship") {
+      if ("CI" in env2) {
+        if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "GITHUB_ACTIONS", "BUILDKITE"].some((sign) => sign in env2) || env2.CI_NAME === "codeship") {
           return 1;
         }
         return min;
       }
-      if ("TEAMCITY_VERSION" in env3) {
-        return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env3.TEAMCITY_VERSION) ? 1 : 0;
+      if ("TEAMCITY_VERSION" in env2) {
+        return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env2.TEAMCITY_VERSION) ? 1 : 0;
       }
-      if (env3.COLORTERM === "truecolor") {
+      if (env2.COLORTERM === "truecolor") {
         return 3;
       }
-      if ("TERM_PROGRAM" in env3) {
-        const version = parseInt((env3.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
-        switch (env3.TERM_PROGRAM) {
+      if ("TERM_PROGRAM" in env2) {
+        const version = parseInt((env2.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
+        switch (env2.TERM_PROGRAM) {
           case "iTerm.app":
             return version >= 3 ? 3 : 2;
           case "Apple_Terminal":
             return 2;
         }
       }
-      if (/-256(color)?$/i.test(env3.TERM)) {
+      if (/-256(color)?$/i.test(env2.TERM)) {
         return 2;
       }
-      if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env3.TERM)) {
+      if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env2.TERM)) {
         return 1;
       }
-      if ("COLORTERM" in env3) {
+      if ("COLORTERM" in env2) {
         return 1;
       }
       return min;
@@ -69955,9 +69955,9 @@ var require_supports_color = __commonJS({
   }
 });
 
-// node_modules/debug/src/node.js
+// nextband/node_modules/debug/src/node.js
 var require_node3 = __commonJS({
-  "node_modules/debug/src/node.js"(exports, module) {
+  "nextband/node_modules/debug/src/node.js"(exports, module) {
     var tty = __require("tty");
     var util2 = __require("util");
     exports.init = init;
@@ -70129,9 +70129,9 @@ var require_node3 = __commonJS({
   }
 });
 
-// node_modules/debug/src/index.js
+// nextband/node_modules/debug/src/index.js
 var require_src2 = __commonJS({
-  "node_modules/debug/src/index.js"(exports, module) {
+  "nextband/node_modules/debug/src/index.js"(exports, module) {
     if (typeof process === "undefined" || process.type === "renderer" || process.browser === true || process.__nwjs) {
       module.exports = require_browser();
     } else {
@@ -70140,9 +70140,9 @@ var require_src2 = __commonJS({
   }
 });
 
-// node_modules/gaxios/node_modules/agent-base/dist/helpers.js
+// nextband/node_modules/gaxios/node_modules/agent-base/dist/helpers.js
 var require_helpers = __commonJS({
-  "node_modules/gaxios/node_modules/agent-base/dist/helpers.js"(exports) {
+  "nextband/node_modules/gaxios/node_modules/agent-base/dist/helpers.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -70210,9 +70210,9 @@ var require_helpers = __commonJS({
   }
 });
 
-// node_modules/gaxios/node_modules/agent-base/dist/index.js
+// nextband/node_modules/gaxios/node_modules/agent-base/dist/index.js
 var require_dist5 = __commonJS({
-  "node_modules/gaxios/node_modules/agent-base/dist/index.js"(exports) {
+  "nextband/node_modules/gaxios/node_modules/agent-base/dist/index.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -70366,9 +70366,9 @@ var require_dist5 = __commonJS({
   }
 });
 
-// node_modules/gaxios/node_modules/https-proxy-agent/dist/parse-proxy-response.js
+// nextband/node_modules/gaxios/node_modules/https-proxy-agent/dist/parse-proxy-response.js
 var require_parse_proxy_response = __commonJS({
-  "node_modules/gaxios/node_modules/https-proxy-agent/dist/parse-proxy-response.js"(exports) {
+  "nextband/node_modules/gaxios/node_modules/https-proxy-agent/dist/parse-proxy-response.js"(exports) {
     "use strict";
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -70462,9 +70462,9 @@ var require_parse_proxy_response = __commonJS({
   }
 });
 
-// node_modules/gaxios/node_modules/https-proxy-agent/dist/index.js
+// nextband/node_modules/gaxios/node_modules/https-proxy-agent/dist/index.js
 var require_dist6 = __commonJS({
-  "node_modules/gaxios/node_modules/https-proxy-agent/dist/index.js"(exports) {
+  "nextband/node_modules/gaxios/node_modules/https-proxy-agent/dist/index.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -70612,7 +70612,7 @@ var require_dist6 = __commonJS({
   }
 });
 
-// node_modules/data-uri-to-buffer/dist/index.js
+// nextband/node_modules/data-uri-to-buffer/dist/index.js
 function dataUriToBuffer(uri) {
   if (!/^data:/i.test(uri)) {
     throw new TypeError('`uri` does not appear to be a Data URI (must begin with "data:")');
@@ -70651,14 +70651,14 @@ function dataUriToBuffer(uri) {
 }
 var dist_default;
 var init_dist = __esm({
-  "node_modules/data-uri-to-buffer/dist/index.js"() {
+  "nextband/node_modules/data-uri-to-buffer/dist/index.js"() {
     dist_default = dataUriToBuffer;
   }
 });
 
-// node_modules/web-streams-polyfill/dist/ponyfill.es2018.js
+// nextband/node_modules/web-streams-polyfill/dist/ponyfill.es2018.js
 var require_ponyfill_es2018 = __commonJS({
-  "node_modules/web-streams-polyfill/dist/ponyfill.es2018.js"(exports, module) {
+  "nextband/node_modules/web-streams-polyfill/dist/ponyfill.es2018.js"(exports, module) {
     (function(global2, factory) {
       typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2.WebStreamsPolyfill = {}));
     })(exports, function(exports2) {
@@ -74931,9 +74931,9 @@ var require_ponyfill_es2018 = __commonJS({
   }
 });
 
-// node_modules/fetch-blob/streams.cjs
+// nextband/node_modules/fetch-blob/streams.cjs
 var require_streams = __commonJS({
-  "node_modules/fetch-blob/streams.cjs"() {
+  "nextband/node_modules/fetch-blob/streams.cjs"() {
     var POOL_SIZE2 = 65536;
     if (!globalThis.ReadableStream) {
       try {
@@ -74977,7 +74977,7 @@ var require_streams = __commonJS({
   }
 });
 
-// node_modules/fetch-blob/index.js
+// nextband/node_modules/fetch-blob/index.js
 async function* toIterator(parts, clone2 = true) {
   for (const part of parts) {
     if ("stream" in part) {
@@ -75014,7 +75014,7 @@ async function* toIterator(parts, clone2 = true) {
 }
 var import_streams, POOL_SIZE, _Blob, Blob3, fetch_blob_default;
 var init_fetch_blob = __esm({
-  "node_modules/fetch-blob/index.js"() {
+  "nextband/node_modules/fetch-blob/index.js"() {
     import_streams = __toESM(require_streams(), 1);
     POOL_SIZE = 65536;
     _Blob = class Blob2 {
@@ -75181,10 +75181,10 @@ var init_fetch_blob = __esm({
   }
 });
 
-// node_modules/fetch-blob/file.js
+// nextband/node_modules/fetch-blob/file.js
 var _File, File3, file_default;
 var init_file = __esm({
-  "node_modules/fetch-blob/file.js"() {
+  "nextband/node_modules/fetch-blob/file.js"() {
     init_fetch_blob();
     _File = class File2 extends fetch_blob_default {
       #lastModified = 0;
@@ -75225,7 +75225,7 @@ var init_file = __esm({
   }
 });
 
-// node_modules/formdata-polyfill/esm.min.js
+// nextband/node_modules/formdata-polyfill/esm.min.js
 function formDataToBlob(F2, B = fetch_blob_default) {
   var b = `${r()}${r()}`.replace(/\./g, "").slice(-28).padStart(32, "-"), c = [], p = `--${b}\r
 Content-Disposition: form-data; name="`;
@@ -75241,7 +75241,7 @@ Content-Type: ${v.type || "application/octet-stream"}\r
 }
 var t, i, h, r, m, f, e, x, FormData2;
 var init_esm_min = __esm({
-  "node_modules/formdata-polyfill/esm.min.js"() {
+  "nextband/node_modules/formdata-polyfill/esm.min.js"() {
     init_fetch_blob();
     init_file();
     ({ toStringTag: t, iterator: i, hasInstance: h } = Symbol);
@@ -75322,10 +75322,10 @@ var init_esm_min = __esm({
   }
 });
 
-// node_modules/gaxios/node_modules/node-fetch/src/errors/base.js
+// nextband/node_modules/gaxios/node_modules/node-fetch/src/errors/base.js
 var FetchBaseError;
 var init_base = __esm({
-  "node_modules/gaxios/node_modules/node-fetch/src/errors/base.js"() {
+  "nextband/node_modules/gaxios/node_modules/node-fetch/src/errors/base.js"() {
     FetchBaseError = class extends Error {
       constructor(message2, type) {
         super(message2);
@@ -75342,10 +75342,10 @@ var init_base = __esm({
   }
 });
 
-// node_modules/gaxios/node_modules/node-fetch/src/errors/fetch-error.js
+// nextband/node_modules/gaxios/node_modules/node-fetch/src/errors/fetch-error.js
 var FetchError;
 var init_fetch_error = __esm({
-  "node_modules/gaxios/node_modules/node-fetch/src/errors/fetch-error.js"() {
+  "nextband/node_modules/gaxios/node_modules/node-fetch/src/errors/fetch-error.js"() {
     init_base();
     FetchError = class extends FetchBaseError {
       /**
@@ -75364,10 +75364,10 @@ var init_fetch_error = __esm({
   }
 });
 
-// node_modules/gaxios/node_modules/node-fetch/src/utils/is.js
+// nextband/node_modules/gaxios/node_modules/node-fetch/src/utils/is.js
 var NAME, isURLSearchParameters, isBlob, isAbortSignal, isDomainOrSubdomain, isSameProtocol;
 var init_is = __esm({
-  "node_modules/gaxios/node_modules/node-fetch/src/utils/is.js"() {
+  "nextband/node_modules/gaxios/node_modules/node-fetch/src/utils/is.js"() {
     NAME = Symbol.toStringTag;
     isURLSearchParameters = (object) => {
       return typeof object === "object" && typeof object.append === "function" && typeof object.delete === "function" && typeof object.get === "function" && typeof object.getAll === "function" && typeof object.has === "function" && typeof object.set === "function" && typeof object.sort === "function" && object[NAME] === "URLSearchParams";
@@ -75391,9 +75391,9 @@ var init_is = __esm({
   }
 });
 
-// node_modules/node-domexception/index.js
+// nextband/node_modules/node-domexception/index.js
 var require_node_domexception = __commonJS({
-  "node_modules/node-domexception/index.js"(exports, module) {
+  "nextband/node_modules/node-domexception/index.js"(exports, module) {
     if (!globalThis.DOMException) {
       try {
         const { MessageChannel } = __require("worker_threads"), port = new MessageChannel().port1, ab = new ArrayBuffer();
@@ -75406,12 +75406,12 @@ var require_node_domexception = __commonJS({
   }
 });
 
-// node_modules/fetch-blob/from.js
+// nextband/node_modules/fetch-blob/from.js
 import { statSync, createReadStream, promises as fs } from "node:fs";
 import { basename } from "node:path";
 var import_node_domexception, stat, blobFromSync, blobFrom, fileFrom, fileFromSync, fromBlob, fromFile, BlobDataItem;
 var init_from = __esm({
-  "node_modules/fetch-blob/from.js"() {
+  "nextband/node_modules/fetch-blob/from.js"() {
     import_node_domexception = __toESM(require_node_domexception(), 1);
     init_file();
     init_fetch_blob();
@@ -75470,7 +75470,7 @@ var init_from = __esm({
   }
 });
 
-// node_modules/gaxios/node_modules/node-fetch/src/utils/multipart-parser.js
+// nextband/node_modules/gaxios/node_modules/node-fetch/src/utils/multipart-parser.js
 var multipart_parser_exports = {};
 __export(multipart_parser_exports, {
   toFormData: () => toFormData
@@ -75564,7 +75564,7 @@ async function toFormData(Body2, ct) {
 }
 var s, S, f2, F, LF, CR, SPACE, HYPHEN, COLON, A, Z, lower, noop, MultipartParser;
 var init_multipart_parser = __esm({
-  "node_modules/gaxios/node_modules/node-fetch/src/utils/multipart-parser.js"() {
+  "nextband/node_modules/gaxios/node_modules/node-fetch/src/utils/multipart-parser.js"() {
     init_from();
     init_esm_min();
     s = 0;
@@ -75829,7 +75829,7 @@ var init_multipart_parser = __esm({
   }
 });
 
-// node_modules/gaxios/node_modules/node-fetch/src/body.js
+// nextband/node_modules/gaxios/node_modules/node-fetch/src/body.js
 import Stream, { PassThrough } from "node:stream";
 import { types, deprecate, promisify } from "node:util";
 import { Buffer as Buffer2 } from "node:buffer";
@@ -75879,7 +75879,7 @@ async function consumeBody(data) {
 }
 var pipeline, INTERNALS, Body, clone, getNonSpecFormDataBoundary, extractContentType, getTotalBytes, writeToStream;
 var init_body = __esm({
-  "node_modules/gaxios/node_modules/node-fetch/src/body.js"() {
+  "nextband/node_modules/gaxios/node_modules/node-fetch/src/body.js"() {
     init_fetch_blob();
     init_esm_min();
     init_fetch_error();
@@ -76087,7 +76087,7 @@ var init_body = __esm({
   }
 });
 
-// node_modules/gaxios/node_modules/node-fetch/src/headers.js
+// nextband/node_modules/gaxios/node_modules/node-fetch/src/headers.js
 import { types as types2 } from "node:util";
 import http from "node:http";
 function fromRawHeaders(headers = []) {
@@ -76110,7 +76110,7 @@ function fromRawHeaders(headers = []) {
 }
 var validateHeaderName, validateHeaderValue, Headers2;
 var init_headers = __esm({
-  "node_modules/gaxios/node_modules/node-fetch/src/headers.js"() {
+  "nextband/node_modules/gaxios/node_modules/node-fetch/src/headers.js"() {
     validateHeaderName = typeof http.validateHeaderName === "function" ? http.validateHeaderName : (name) => {
       if (!/^[\^`\-\w!#$%&'*+.|~]+$/.test(name)) {
         const error = new TypeError(`Header name must be a valid HTTP token [${name}]`);
@@ -76278,10 +76278,10 @@ var init_headers = __esm({
   }
 });
 
-// node_modules/gaxios/node_modules/node-fetch/src/utils/is-redirect.js
+// nextband/node_modules/gaxios/node_modules/node-fetch/src/utils/is-redirect.js
 var redirectStatus, isRedirect;
 var init_is_redirect = __esm({
-  "node_modules/gaxios/node_modules/node-fetch/src/utils/is-redirect.js"() {
+  "nextband/node_modules/gaxios/node_modules/node-fetch/src/utils/is-redirect.js"() {
     redirectStatus = /* @__PURE__ */ new Set([301, 302, 303, 307, 308]);
     isRedirect = (code) => {
       return redirectStatus.has(code);
@@ -76289,10 +76289,10 @@ var init_is_redirect = __esm({
   }
 });
 
-// node_modules/gaxios/node_modules/node-fetch/src/response.js
+// nextband/node_modules/gaxios/node_modules/node-fetch/src/response.js
 var INTERNALS2, Response;
 var init_response = __esm({
-  "node_modules/gaxios/node_modules/node-fetch/src/response.js"() {
+  "nextband/node_modules/gaxios/node_modules/node-fetch/src/response.js"() {
     init_headers();
     init_body();
     init_is_redirect();
@@ -76415,10 +76415,10 @@ var init_response = __esm({
   }
 });
 
-// node_modules/gaxios/node_modules/node-fetch/src/utils/get-search.js
+// nextband/node_modules/gaxios/node_modules/node-fetch/src/utils/get-search.js
 var getSearch;
 var init_get_search = __esm({
-  "node_modules/gaxios/node_modules/node-fetch/src/utils/get-search.js"() {
+  "nextband/node_modules/gaxios/node_modules/node-fetch/src/utils/get-search.js"() {
     getSearch = (parsedURL) => {
       if (parsedURL.search) {
         return parsedURL.search;
@@ -76430,7 +76430,7 @@ var init_get_search = __esm({
   }
 });
 
-// node_modules/gaxios/node_modules/node-fetch/src/utils/referrer.js
+// nextband/node_modules/gaxios/node_modules/node-fetch/src/utils/referrer.js
 import { isIP } from "node:net";
 function stripURLForUseAsAReferrer(url, originOnly = false) {
   if (url == null) {
@@ -76559,7 +76559,7 @@ function parseReferrerPolicyFromHeader(headers) {
 }
 var ReferrerPolicy, DEFAULT_REFERRER_POLICY;
 var init_referrer = __esm({
-  "node_modules/gaxios/node_modules/node-fetch/src/utils/referrer.js"() {
+  "nextband/node_modules/gaxios/node_modules/node-fetch/src/utils/referrer.js"() {
     ReferrerPolicy = /* @__PURE__ */ new Set([
       "",
       "no-referrer",
@@ -76575,12 +76575,12 @@ var init_referrer = __esm({
   }
 });
 
-// node_modules/gaxios/node_modules/node-fetch/src/request.js
+// nextband/node_modules/gaxios/node_modules/node-fetch/src/request.js
 import { format as formatUrl } from "node:url";
 import { deprecate as deprecate2 } from "node:util";
 var INTERNALS3, isRequest, doBadDataWarn, Request, getNodeRequestOptions;
 var init_request = __esm({
-  "node_modules/gaxios/node_modules/node-fetch/src/request.js"() {
+  "nextband/node_modules/gaxios/node_modules/node-fetch/src/request.js"() {
     init_headers();
     init_body();
     init_is();
@@ -76780,10 +76780,10 @@ var init_request = __esm({
   }
 });
 
-// node_modules/gaxios/node_modules/node-fetch/src/errors/abort-error.js
+// nextband/node_modules/gaxios/node_modules/node-fetch/src/errors/abort-error.js
 var AbortError;
 var init_abort_error = __esm({
-  "node_modules/gaxios/node_modules/node-fetch/src/errors/abort-error.js"() {
+  "nextband/node_modules/gaxios/node_modules/node-fetch/src/errors/abort-error.js"() {
     init_base();
     AbortError = class extends FetchBaseError {
       constructor(message2, type = "aborted") {
@@ -76793,7 +76793,7 @@ var init_abort_error = __esm({
   }
 });
 
-// node_modules/gaxios/node_modules/node-fetch/src/index.js
+// nextband/node_modules/gaxios/node_modules/node-fetch/src/index.js
 var src_exports = {};
 __export(src_exports, {
   AbortError: () => AbortError,
@@ -77079,7 +77079,7 @@ function fixResponseChunkedTransferBadEnding(request, errorCallback) {
 }
 var supportedSchemas;
 var init_src = __esm({
-  "node_modules/gaxios/node_modules/node-fetch/src/index.js"() {
+  "nextband/node_modules/gaxios/node_modules/node-fetch/src/index.js"() {
     init_dist();
     init_body();
     init_response();
@@ -77096,9 +77096,9 @@ var init_src = __esm({
   }
 });
 
-// node_modules/gaxios/build/cjs/src/gaxios.js
+// nextband/node_modules/gaxios/build/cjs/src/gaxios.js
 var require_gaxios = __commonJS({
-  "node_modules/gaxios/build/cjs/src/gaxios.js"(exports) {
+  "nextband/node_modules/gaxios/build/cjs/src/gaxios.js"(exports) {
     "use strict";
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -77570,9 +77570,9 @@ Content-Type: ${partContentType}\r
   }
 });
 
-// node_modules/gaxios/build/cjs/src/index.js
+// nextband/node_modules/gaxios/build/cjs/src/index.js
 var require_src3 = __commonJS({
-  "node_modules/gaxios/build/cjs/src/index.js"(exports) {
+  "nextband/node_modules/gaxios/build/cjs/src/index.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -77609,9 +77609,9 @@ var require_src3 = __commonJS({
   }
 });
 
-// node_modules/bignumber.js/bignumber.js
+// nextband/node_modules/bignumber.js/bignumber.js
 var require_bignumber = __commonJS({
-  "node_modules/bignumber.js/bignumber.js"(exports, module) {
+  "nextband/node_modules/bignumber.js/bignumber.js"(exports, module) {
     (function(globalObject) {
       "use strict";
       var BigNumber, isNumeric = /^-?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i, mathceil = Math.ceil, mathfloor = Math.floor, bignumberError = "[BigNumber Error] ", tooManyDigits = bignumberError + "Number primitive has more than 15 significant digits: ", BASE = 1e14, LOG_BASE = 14, MAX_SAFE_INTEGER = 9007199254740991, POWS_TEN = [1, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12, 1e13], SQRT_BASE = 1e7, MAX = 1e9;
@@ -78960,9 +78960,9 @@ var require_bignumber = __commonJS({
   }
 });
 
-// node_modules/json-bigint/lib/stringify.js
+// nextband/node_modules/json-bigint/lib/stringify.js
 var require_stringify2 = __commonJS({
-  "node_modules/json-bigint/lib/stringify.js"(exports, module) {
+  "nextband/node_modules/json-bigint/lib/stringify.js"(exports, module) {
     var BigNumber = require_bignumber();
     var JSON2 = module.exports;
     (function() {
@@ -79070,9 +79070,9 @@ var require_stringify2 = __commonJS({
   }
 });
 
-// node_modules/json-bigint/lib/parse.js
+// nextband/node_modules/json-bigint/lib/parse.js
 var require_parse4 = __commonJS({
-  "node_modules/json-bigint/lib/parse.js"(exports, module) {
+  "nextband/node_modules/json-bigint/lib/parse.js"(exports, module) {
     var BigNumber = null;
     var suspectProtoRx = /(?:_|\\u005[Ff])(?:_|\\u005[Ff])(?:p|\\u0070)(?:r|\\u0072)(?:o|\\u006[Ff])(?:t|\\u0074)(?:o|\\u006[Ff])(?:_|\\u005[Ff])(?:_|\\u005[Ff])/;
     var suspectConstructorRx = /(?:c|\\u0063)(?:o|\\u006[Ff])(?:n|\\u006[Ee])(?:s|\\u0073)(?:t|\\u0074)(?:r|\\u0072)(?:u|\\u0075)(?:c|\\u0063)(?:t|\\u0074)(?:o|\\u006[Ff])(?:r|\\u0072)/;
@@ -79351,9 +79351,9 @@ var require_parse4 = __commonJS({
   }
 });
 
-// node_modules/json-bigint/index.js
+// nextband/node_modules/json-bigint/index.js
 var require_json_bigint = __commonJS({
-  "node_modules/json-bigint/index.js"(exports, module) {
+  "nextband/node_modules/json-bigint/index.js"(exports, module) {
     var json_stringify = require_stringify2().stringify;
     var json_parse = require_parse4();
     module.exports = function(options) {
@@ -79367,9 +79367,9 @@ var require_json_bigint = __commonJS({
   }
 });
 
-// node_modules/gcp-metadata/build/src/gcp-residency.js
+// nextband/node_modules/gcp-metadata/build/src/gcp-residency.js
 var require_gcp_residency = __commonJS({
-  "node_modules/gcp-metadata/build/src/gcp-residency.js"(exports) {
+  "nextband/node_modules/gcp-metadata/build/src/gcp-residency.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GCE_LINUX_BIOS_PATHS = void 0;
@@ -79422,9 +79422,9 @@ var require_gcp_residency = __commonJS({
   }
 });
 
-// node_modules/google-logging-utils/build/src/colours.js
+// nextband/node_modules/google-logging-utils/build/src/colours.js
 var require_colours = __commonJS({
-  "node_modules/google-logging-utils/build/src/colours.js"(exports) {
+  "nextband/node_modules/google-logging-utils/build/src/colours.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Colours = void 0;
@@ -79483,9 +79483,9 @@ var require_colours = __commonJS({
   }
 });
 
-// node_modules/google-logging-utils/build/src/logging-utils.js
+// nextband/node_modules/google-logging-utils/build/src/logging-utils.js
 var require_logging_utils = __commonJS({
-  "node_modules/google-logging-utils/build/src/logging-utils.js"(exports) {
+  "nextband/node_modules/google-logging-utils/build/src/logging-utils.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -79772,9 +79772,9 @@ var require_logging_utils = __commonJS({
   }
 });
 
-// node_modules/google-logging-utils/build/src/index.js
+// nextband/node_modules/google-logging-utils/build/src/index.js
 var require_src4 = __commonJS({
-  "node_modules/google-logging-utils/build/src/index.js"(exports) {
+  "nextband/node_modules/google-logging-utils/build/src/index.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -79797,9 +79797,9 @@ var require_src4 = __commonJS({
   }
 });
 
-// node_modules/gcp-metadata/build/src/index.js
+// nextband/node_modules/gcp-metadata/build/src/index.js
 var require_src5 = __commonJS({
-  "node_modules/gcp-metadata/build/src/index.js"(exports) {
+  "nextband/node_modules/gcp-metadata/build/src/index.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -80053,9 +80053,9 @@ var require_src5 = __commonJS({
   }
 });
 
-// node_modules/base64-js/index.js
+// nextband/node_modules/base64-js/index.js
 var require_base64_js = __commonJS({
-  "node_modules/base64-js/index.js"(exports) {
+  "nextband/node_modules/base64-js/index.js"(exports) {
     "use strict";
     exports.byteLength = byteLength;
     exports.toByteArray = toByteArray;
@@ -80154,9 +80154,9 @@ var require_base64_js = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/crypto/shared.js
+// nextband/node_modules/google-auth-library/build/src/crypto/shared.js
 var require_shared = __commonJS({
-  "node_modules/google-auth-library/build/src/crypto/shared.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/crypto/shared.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fromArrayBufferToHex = fromArrayBufferToHex;
@@ -80169,9 +80169,9 @@ var require_shared = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/crypto/browser/crypto.js
+// nextband/node_modules/google-auth-library/build/src/crypto/browser/crypto.js
 var require_crypto2 = __commonJS({
-  "node_modules/google-auth-library/build/src/crypto/browser/crypto.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/crypto/browser/crypto.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.BrowserCrypto = void 0;
@@ -80265,9 +80265,9 @@ var require_crypto2 = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/crypto/node/crypto.js
+// nextband/node_modules/google-auth-library/build/src/crypto/node/crypto.js
 var require_crypto3 = __commonJS({
-  "node_modules/google-auth-library/build/src/crypto/node/crypto.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/crypto/node/crypto.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.NodeCrypto = void 0;
@@ -80334,9 +80334,9 @@ var require_crypto3 = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/crypto/crypto.js
+// nextband/node_modules/google-auth-library/build/src/crypto/crypto.js
 var require_crypto4 = __commonJS({
-  "node_modules/google-auth-library/build/src/crypto/crypto.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/crypto/crypto.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -80372,9 +80372,9 @@ var require_crypto4 = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/util.js
+// nextband/node_modules/google-auth-library/build/src/util.js
 var require_util6 = __commonJS({
-  "node_modules/google-auth-library/build/src/util.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/util.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.LRUCache = void 0;
@@ -80487,9 +80487,9 @@ var require_util6 = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/package.json
+// nextband/node_modules/google-auth-library/package.json
 var require_package4 = __commonJS({
-  "node_modules/google-auth-library/package.json"(exports, module) {
+  "nextband/node_modules/google-auth-library/package.json"(exports, module) {
     module.exports = {
       name: "google-auth-library",
       version: "10.9.1",
@@ -80583,9 +80583,9 @@ var require_package4 = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/shared.cjs
+// nextband/node_modules/google-auth-library/build/src/shared.cjs
 var require_shared2 = __commonJS({
-  "node_modules/google-auth-library/build/src/shared.cjs"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/shared.cjs"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.USER_AGENT = exports.PRODUCT_NAME = exports.pkg = void 0;
@@ -80598,9 +80598,9 @@ var require_shared2 = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/authclient.js
+// nextband/node_modules/google-auth-library/build/src/auth/authclient.js
 var require_authclient = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/authclient.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/authclient.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AuthClient = exports.DEFAULT_EAGER_REFRESH_THRESHOLD_MILLIS = exports.DEFAULT_UNIVERSE = void 0;
@@ -80833,9 +80833,9 @@ var require_authclient = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/loginticket.js
+// nextband/node_modules/google-auth-library/build/src/auth/loginticket.js
 var require_loginticket = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/loginticket.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/loginticket.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.LoginTicket = void 0;
@@ -80849,8 +80849,8 @@ var require_loginticket = __commonJS({
        * @param {TokenPayload} pay Payload of the jwt
        * @constructor
        */
-      constructor(env3, pay) {
-        this.envelope = env3;
+      constructor(env2, pay) {
+        this.envelope = env2;
         this.payload = pay;
       }
       getEnvelope() {
@@ -80885,9 +80885,9 @@ var require_loginticket = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/oauth2client.js
+// nextband/node_modules/google-auth-library/build/src/auth/oauth2client.js
 var require_oauth2client = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/oauth2client.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/oauth2client.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.OAuth2Client = exports.ClientAuthentication = exports.CertificateFormat = exports.CodeChallengeMethod = void 0;
@@ -81566,9 +81566,9 @@ var require_oauth2client = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/computeclient.js
+// nextband/node_modules/google-auth-library/build/src/auth/computeclient.js
 var require_computeclient = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/computeclient.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/computeclient.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Compute = void 0;
@@ -81658,9 +81658,9 @@ var require_computeclient = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/idtokenclient.js
+// nextband/node_modules/google-auth-library/build/src/auth/idtokenclient.js
 var require_idtokenclient = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/idtokenclient.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/idtokenclient.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IdTokenClient = void 0;
@@ -81704,9 +81704,9 @@ var require_idtokenclient = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/envDetect.js
+// nextband/node_modules/google-auth-library/build/src/auth/envDetect.js
 var require_envDetect = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/envDetect.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/envDetect.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GCPEnv = void 0;
@@ -81735,25 +81735,25 @@ var require_envDetect = __commonJS({
       return envPromise;
     }
     async function getEnvMemoized() {
-      let env3 = GCPEnv.NONE;
+      let env2 = GCPEnv.NONE;
       if (isAppEngine()) {
-        env3 = GCPEnv.APP_ENGINE;
+        env2 = GCPEnv.APP_ENGINE;
       } else if (isCloudFunction()) {
-        env3 = GCPEnv.CLOUD_FUNCTIONS;
+        env2 = GCPEnv.CLOUD_FUNCTIONS;
       } else if (await isComputeEngine()) {
         if (await isKubernetesEngine()) {
-          env3 = GCPEnv.KUBERNETES_ENGINE;
+          env2 = GCPEnv.KUBERNETES_ENGINE;
         } else if (isCloudRun()) {
-          env3 = GCPEnv.CLOUD_RUN;
+          env2 = GCPEnv.CLOUD_RUN;
         } else if (isCloudRunJob()) {
-          env3 = GCPEnv.CLOUD_RUN_JOBS;
+          env2 = GCPEnv.CLOUD_RUN_JOBS;
         } else {
-          env3 = GCPEnv.COMPUTE_ENGINE;
+          env2 = GCPEnv.COMPUTE_ENGINE;
         }
       } else {
-        env3 = GCPEnv.NONE;
+        env2 = GCPEnv.NONE;
       }
-      return env3;
+      return env2;
     }
     function isAppEngine() {
       return !!(process.env.GAE_SERVICE || process.env.GAE_MODULE_NAME);
@@ -81781,9 +81781,9 @@ var require_envDetect = __commonJS({
   }
 });
 
-// node_modules/jws/lib/data-stream.js
+// nextband/node_modules/jws/lib/data-stream.js
 var require_data_stream = __commonJS({
-  "node_modules/jws/lib/data-stream.js"(exports, module) {
+  "nextband/node_modules/jws/lib/data-stream.js"(exports, module) {
     var Buffer4 = require_safe_buffer().Buffer;
     var Stream3 = __require("stream");
     var util2 = __require("util");
@@ -81829,9 +81829,9 @@ var require_data_stream = __commonJS({
   }
 });
 
-// node_modules/buffer-equal-constant-time/index.js
+// nextband/node_modules/buffer-equal-constant-time/index.js
 var require_buffer_equal_constant_time = __commonJS({
-  "node_modules/buffer-equal-constant-time/index.js"(exports, module) {
+  "nextband/node_modules/buffer-equal-constant-time/index.js"(exports, module) {
     "use strict";
     var Buffer4 = __require("buffer").Buffer;
     var SlowBuffer = __require("buffer").SlowBuffer;
@@ -81863,9 +81863,9 @@ var require_buffer_equal_constant_time = __commonJS({
   }
 });
 
-// node_modules/jwa/index.js
+// nextband/node_modules/jwa/index.js
 var require_jwa = __commonJS({
-  "node_modules/jwa/index.js"(exports, module) {
+  "nextband/node_modules/jwa/index.js"(exports, module) {
     var Buffer4 = require_safe_buffer().Buffer;
     var crypto3 = __require("crypto");
     var formatEcdsa = require_ecdsa_sig_formatter();
@@ -82087,9 +82087,9 @@ var require_jwa = __commonJS({
   }
 });
 
-// node_modules/jws/lib/tostring.js
+// nextband/node_modules/jws/lib/tostring.js
 var require_tostring = __commonJS({
-  "node_modules/jws/lib/tostring.js"(exports, module) {
+  "nextband/node_modules/jws/lib/tostring.js"(exports, module) {
     var Buffer4 = __require("buffer").Buffer;
     module.exports = function toString(obj) {
       if (typeof obj === "string")
@@ -82101,9 +82101,9 @@ var require_tostring = __commonJS({
   }
 });
 
-// node_modules/jws/lib/sign-stream.js
+// nextband/node_modules/jws/lib/sign-stream.js
 var require_sign_stream = __commonJS({
-  "node_modules/jws/lib/sign-stream.js"(exports, module) {
+  "nextband/node_modules/jws/lib/sign-stream.js"(exports, module) {
     var Buffer4 = require_safe_buffer().Buffer;
     var DataStream = require_data_stream();
     var jwa = require_jwa();
@@ -82176,9 +82176,9 @@ var require_sign_stream = __commonJS({
   }
 });
 
-// node_modules/jws/lib/verify-stream.js
+// nextband/node_modules/jws/lib/verify-stream.js
 var require_verify_stream = __commonJS({
-  "node_modules/jws/lib/verify-stream.js"(exports, module) {
+  "nextband/node_modules/jws/lib/verify-stream.js"(exports, module) {
     var Buffer4 = require_safe_buffer().Buffer;
     var DataStream = require_data_stream();
     var jwa = require_jwa();
@@ -82291,9 +82291,9 @@ var require_verify_stream = __commonJS({
   }
 });
 
-// node_modules/jws/index.js
+// nextband/node_modules/jws/index.js
 var require_jws = __commonJS({
-  "node_modules/jws/index.js"(exports) {
+  "nextband/node_modules/jws/index.js"(exports) {
     var SignStream = require_sign_stream();
     var VerifyStream = require_verify_stream();
     var ALGORITHMS = [
@@ -82324,9 +82324,9 @@ var require_jws = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/gtoken/jwsSign.js
+// nextband/node_modules/google-auth-library/build/src/gtoken/jwsSign.js
 var require_jwsSign = __commonJS({
-  "node_modules/google-auth-library/build/src/gtoken/jwsSign.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/gtoken/jwsSign.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.buildPayloadForJwsSign = buildPayloadForJwsSign;
@@ -82358,9 +82358,9 @@ var require_jwsSign = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/gtoken/getToken.js
+// nextband/node_modules/google-auth-library/build/src/gtoken/getToken.js
 var require_getToken = __commonJS({
-  "node_modules/google-auth-library/build/src/gtoken/getToken.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/gtoken/getToken.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getToken = getToken;
@@ -82402,9 +82402,9 @@ var require_getToken = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/gtoken/errorWithCode.js
+// nextband/node_modules/google-auth-library/build/src/gtoken/errorWithCode.js
 var require_errorWithCode = __commonJS({
-  "node_modules/google-auth-library/build/src/gtoken/errorWithCode.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/gtoken/errorWithCode.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ErrorWithCode = void 0;
@@ -82419,9 +82419,9 @@ var require_errorWithCode = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/gtoken/getCredentials.js
+// nextband/node_modules/google-auth-library/build/src/gtoken/getCredentials.js
 var require_getCredentials = __commonJS({
-  "node_modules/google-auth-library/build/src/gtoken/getCredentials.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/gtoken/getCredentials.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getCredentials = getCredentials;
@@ -82520,9 +82520,9 @@ var require_getCredentials = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/gtoken/tokenHandler.js
+// nextband/node_modules/google-auth-library/build/src/gtoken/tokenHandler.js
 var require_tokenHandler = __commonJS({
-  "node_modules/google-auth-library/build/src/gtoken/tokenHandler.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/gtoken/tokenHandler.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TokenHandler = void 0;
@@ -82611,9 +82611,9 @@ var require_tokenHandler = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/gtoken/revokeToken.js
+// nextband/node_modules/google-auth-library/build/src/gtoken/revokeToken.js
 var require_revokeToken = __commonJS({
-  "node_modules/google-auth-library/build/src/gtoken/revokeToken.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/gtoken/revokeToken.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.revokeToken = revokeToken;
@@ -82629,9 +82629,9 @@ var require_revokeToken = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/gtoken/googleToken.js
+// nextband/node_modules/google-auth-library/build/src/gtoken/googleToken.js
 var require_googleToken = __commonJS({
-  "node_modules/google-auth-library/build/src/gtoken/googleToken.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/gtoken/googleToken.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GoogleToken = void 0;
@@ -82735,9 +82735,9 @@ var require_googleToken = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/jwtaccess.js
+// nextband/node_modules/google-auth-library/build/src/auth/jwtaccess.js
 var require_jwtaccess = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/jwtaccess.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/jwtaccess.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.JWTAccess = void 0;
@@ -82905,9 +82905,9 @@ var require_jwtaccess = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/jwtclient.js
+// nextband/node_modules/google-auth-library/build/src/auth/jwtclient.js
 var require_jwtclient = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/jwtclient.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/jwtclient.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.JWT = void 0;
@@ -83177,9 +83177,9 @@ var require_jwtclient = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/refreshclient.js
+// nextband/node_modules/google-auth-library/build/src/auth/refreshclient.js
 var require_refreshclient = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/refreshclient.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/refreshclient.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UserRefreshClient = exports.USER_REFRESH_ACCOUNT_TYPE = void 0;
@@ -83305,9 +83305,9 @@ var require_refreshclient = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/impersonated.js
+// nextband/node_modules/google-auth-library/build/src/auth/impersonated.js
 var require_impersonated = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/impersonated.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/impersonated.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Impersonated = exports.IMPERSONATED_ACCOUNT_TYPE = void 0;
@@ -83484,9 +83484,9 @@ var require_impersonated = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/oauth2common.js
+// nextband/node_modules/google-auth-library/build/src/auth/oauth2common.js
 var require_oauth2common = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/oauth2common.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/oauth2common.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.OAuthClientAuthHandler = void 0;
@@ -83632,9 +83632,9 @@ var require_oauth2common = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/stscredentials.js
+// nextband/node_modules/google-auth-library/build/src/auth/stscredentials.js
 var require_stscredentials = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/stscredentials.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/stscredentials.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.StsCredentials = void 0;
@@ -83720,9 +83720,9 @@ var require_stscredentials = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/baseexternalclient.js
+// nextband/node_modules/google-auth-library/build/src/auth/baseexternalclient.js
 var require_baseexternalclient = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/baseexternalclient.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/baseexternalclient.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.BaseExternalAccountClient = exports.CLOUD_RESOURCE_MANAGER = exports.EXTERNAL_ACCOUNT_TYPE = exports.EXPIRATION_TIME_OFFSET = void 0;
@@ -84099,9 +84099,9 @@ var require_baseexternalclient = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/filesubjecttokensupplier.js
+// nextband/node_modules/google-auth-library/build/src/auth/filesubjecttokensupplier.js
 var require_filesubjecttokensupplier = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/filesubjecttokensupplier.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/filesubjecttokensupplier.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.FileSubjectTokenSupplier = void 0;
@@ -84164,9 +84164,9 @@ var require_filesubjecttokensupplier = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/urlsubjecttokensupplier.js
+// nextband/node_modules/google-auth-library/build/src/auth/urlsubjecttokensupplier.js
 var require_urlsubjecttokensupplier = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/urlsubjecttokensupplier.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/urlsubjecttokensupplier.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UrlSubjectTokenSupplier = void 0;
@@ -84222,9 +84222,9 @@ var require_urlsubjecttokensupplier = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/certificatesubjecttokensupplier.js
+// nextband/node_modules/google-auth-library/build/src/auth/certificatesubjecttokensupplier.js
 var require_certificatesubjecttokensupplier = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/certificatesubjecttokensupplier.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/certificatesubjecttokensupplier.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CertificateSubjectTokenSupplier = exports.InvalidConfigurationError = exports.CertificateSourceUnavailableError = exports.CERTIFICATE_CONFIGURATION_ENV_VARIABLE = void 0;
@@ -84406,9 +84406,9 @@ var require_certificatesubjecttokensupplier = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/identitypoolclient.js
+// nextband/node_modules/google-auth-library/build/src/auth/identitypoolclient.js
 var require_identitypoolclient = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/identitypoolclient.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/identitypoolclient.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IdentityPoolClient = void 0;
@@ -84518,9 +84518,9 @@ var require_identitypoolclient = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/awsrequestsigner.js
+// nextband/node_modules/google-auth-library/build/src/auth/awsrequestsigner.js
 var require_awsrequestsigner = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/awsrequestsigner.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/awsrequestsigner.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AwsRequestSigner = void 0;
@@ -84668,9 +84668,9 @@ ${credentialScope}
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/defaultawssecuritycredentialssupplier.js
+// nextband/node_modules/google-auth-library/build/src/auth/defaultawssecuritycredentialssupplier.js
 var require_defaultawssecuritycredentialssupplier = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/defaultawssecuritycredentialssupplier.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/defaultawssecuritycredentialssupplier.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DefaultAwsSecurityCredentialsSupplier = void 0;
@@ -84823,9 +84823,9 @@ var require_defaultawssecuritycredentialssupplier = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/awsclient.js
+// nextband/node_modules/google-auth-library/build/src/auth/awsclient.js
 var require_awsclient = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/awsclient.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/awsclient.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AwsClient = void 0;
@@ -84937,9 +84937,9 @@ var require_awsclient = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/executable-response.js
+// nextband/node_modules/google-auth-library/build/src/auth/executable-response.js
 var require_executable_response = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/executable-response.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/executable-response.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.InvalidSubjectTokenError = exports.InvalidMessageFieldError = exports.InvalidCodeFieldError = exports.InvalidTokenTypeFieldError = exports.InvalidExpirationTimeFieldError = exports.InvalidSuccessFieldError = exports.InvalidVersionFieldError = exports.ExecutableResponseError = exports.ExecutableResponse = void 0;
@@ -85068,9 +85068,9 @@ var require_executable_response = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/pluggable-auth-handler.js
+// nextband/node_modules/google-auth-library/build/src/auth/pluggable-auth-handler.js
 var require_pluggable_auth_handler = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/pluggable-auth-handler.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/pluggable-auth-handler.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.PluggableAuthHandler = exports.ExecutableError = void 0;
@@ -85209,9 +85209,9 @@ var require_pluggable_auth_handler = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/pluggable-auth-client.js
+// nextband/node_modules/google-auth-library/build/src/auth/pluggable-auth-client.js
 var require_pluggable_auth_client = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/pluggable-auth-client.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/pluggable-auth-client.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.PluggableAuthClient = exports.ExecutableError = void 0;
@@ -85336,9 +85336,9 @@ var require_pluggable_auth_client = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/externalclient.js
+// nextband/node_modules/google-auth-library/build/src/auth/externalclient.js
 var require_externalclient = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/externalclient.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/externalclient.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ExternalAccountClient = void 0;
@@ -85385,9 +85385,9 @@ var require_externalclient = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/externalAccountAuthorizedUserClient.js
+// nextband/node_modules/google-auth-library/build/src/auth/externalAccountAuthorizedUserClient.js
 var require_externalAccountAuthorizedUserClient = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/externalAccountAuthorizedUserClient.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/externalAccountAuthorizedUserClient.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ExternalAccountAuthorizedUserClient = exports.EXTERNAL_ACCOUNT_AUTHORIZED_USER_TYPE = void 0;
@@ -85572,9 +85572,9 @@ var require_externalAccountAuthorizedUserClient = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/gdchclient.js
+// nextband/node_modules/google-auth-library/build/src/auth/gdchclient.js
 var require_gdchclient = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/gdchclient.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/gdchclient.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GdchClient = exports.GDCH_SERVICE_ACCOUNT_TYPE = void 0;
@@ -85855,9 +85855,9 @@ var require_gdchclient = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/googleauth.js
+// nextband/node_modules/google-auth-library/build/src/auth/googleauth.js
 var require_googleauth = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/googleauth.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/googleauth.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GoogleAuth = exports.GoogleAuthExceptionMessages = void 0;
@@ -86663,9 +86663,9 @@ var require_googleauth = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/iam.js
+// nextband/node_modules/google-auth-library/build/src/auth/iam.js
 var require_iam = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/iam.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/iam.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.IAMAuth = void 0;
@@ -86699,9 +86699,9 @@ var require_iam = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/downscopedclient.js
+// nextband/node_modules/google-auth-library/build/src/auth/downscopedclient.js
 var require_downscopedclient = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/downscopedclient.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/downscopedclient.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DownscopedClient = exports.EXPIRATION_TIME_OFFSET = exports.MAX_ACCESS_BOUNDARY_RULES_COUNT = void 0;
@@ -86884,9 +86884,9 @@ var require_downscopedclient = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/auth/passthrough.js
+// nextband/node_modules/google-auth-library/build/src/auth/passthrough.js
 var require_passthrough = __commonJS({
-  "node_modules/google-auth-library/build/src/auth/passthrough.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/auth/passthrough.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.PassThroughClient = void 0;
@@ -86929,9 +86929,9 @@ var require_passthrough = __commonJS({
   }
 });
 
-// node_modules/google-auth-library/build/src/index.js
+// nextband/node_modules/google-auth-library/build/src/index.js
 var require_src6 = __commonJS({
-  "node_modules/google-auth-library/build/src/index.js"(exports) {
+  "nextband/node_modules/google-auth-library/build/src/index.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m2, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -87065,9 +87065,9 @@ var require_src6 = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/punycode/index.js
+// nextband/node_modules/nodemailer/lib/punycode/index.js
 var require_punycode = __commonJS({
-  "node_modules/nodemailer/lib/punycode/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/punycode/index.js"(exports, module) {
     "use strict";
     var maxInt = 2147483647;
     var base = 36;
@@ -87307,9 +87307,9 @@ var require_punycode = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/shared/url.js
+// nextband/node_modules/nodemailer/lib/shared/url.js
 var require_url = __commonJS({
-  "node_modules/nodemailer/lib/shared/url.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/shared/url.js"(exports, module) {
     "use strict";
     var urllib = __require("url");
     var punycode = require_punycode();
@@ -87396,9 +87396,9 @@ var require_url = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/fetch/cookies.js
+// nextband/node_modules/nodemailer/lib/fetch/cookies.js
 var require_cookies = __commonJS({
-  "node_modules/nodemailer/lib/fetch/cookies.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/fetch/cookies.js"(exports, module) {
     "use strict";
     var urllib = require_url();
     var SESSION_TIMEOUT = 1800;
@@ -87604,9 +87604,9 @@ var require_cookies = __commonJS({
   }
 });
 
-// node_modules/nodemailer/package.json
+// nextband/node_modules/nodemailer/package.json
 var require_package5 = __commonJS({
-  "node_modules/nodemailer/package.json"(exports, module) {
+  "nextband/node_modules/nodemailer/package.json"(exports, module) {
     module.exports = {
       name: "nodemailer",
       version: "9.0.5",
@@ -87657,9 +87657,9 @@ var require_package5 = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/errors.js
+// nextband/node_modules/nodemailer/lib/errors.js
 var require_errors7 = __commonJS({
-  "node_modules/nodemailer/lib/errors.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/errors.js"(exports, module) {
     "use strict";
     var ERROR_CODES = {
       // Connection errors
@@ -87698,9 +87698,9 @@ var require_errors7 = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/fetch/index.js
+// nextband/node_modules/nodemailer/lib/fetch/index.js
 var require_fetch = __commonJS({
-  "node_modules/nodemailer/lib/fetch/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/fetch/index.js"(exports, module) {
     "use strict";
     var http3 = __require("http");
     var https2 = __require("https");
@@ -87950,9 +87950,9 @@ var require_fetch = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/shared/index.js
+// nextband/node_modules/nodemailer/lib/shared/index.js
 var require_shared3 = __commonJS({
-  "node_modules/nodemailer/lib/shared/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/shared/index.js"(exports, module) {
     "use strict";
     var urllib = require_url();
     var util2 = __require("util");
@@ -88493,9 +88493,9 @@ var require_shared3 = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/mime-funcs/mime-types.js
+// nextband/node_modules/nodemailer/lib/mime-funcs/mime-types.js
 var require_mime_types = __commonJS({
-  "node_modules/nodemailer/lib/mime-funcs/mime-types.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/mime-funcs/mime-types.js"(exports, module) {
     "use strict";
     var path = __require("path");
     var defaultMimeType = "application/octet-stream";
@@ -90597,9 +90597,9 @@ var require_mime_types = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/base64/index.js
+// nextband/node_modules/nodemailer/lib/base64/index.js
 var require_base64 = __commonJS({
-  "node_modules/nodemailer/lib/base64/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/base64/index.js"(exports, module) {
     "use strict";
     var { Transform } = __require("stream");
     function encode2(buffer) {
@@ -90696,9 +90696,9 @@ var require_base64 = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/qp/index.js
+// nextband/node_modules/nodemailer/lib/qp/index.js
 var require_qp = __commonJS({
-  "node_modules/nodemailer/lib/qp/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/qp/index.js"(exports, module) {
     "use strict";
     var { Transform } = __require("stream");
     var QP_RANGES = [
@@ -90860,9 +90860,9 @@ var require_qp = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/mime-funcs/index.js
+// nextband/node_modules/nodemailer/lib/mime-funcs/index.js
 var require_mime_funcs = __commonJS({
-  "node_modules/nodemailer/lib/mime-funcs/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/mime-funcs/index.js"(exports, module) {
     "use strict";
     var base64 = require_base64();
     var qp = require_qp();
@@ -91370,9 +91370,9 @@ var require_mime_funcs = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/addressparser/index.js
+// nextband/node_modules/nodemailer/lib/addressparser/index.js
 var require_addressparser = __commonJS({
-  "node_modules/nodemailer/lib/addressparser/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/addressparser/index.js"(exports, module) {
     "use strict";
     function _quoteLocalPart(address) {
       const lastAt = address.lastIndexOf("@");
@@ -91677,9 +91677,9 @@ var require_addressparser = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/mime-node/last-newline.js
+// nextband/node_modules/nodemailer/lib/mime-node/last-newline.js
 var require_last_newline = __commonJS({
-  "node_modules/nodemailer/lib/mime-node/last-newline.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/mime-node/last-newline.js"(exports, module) {
     "use strict";
     var { Transform } = __require("stream");
     var LastNewline = class extends Transform {
@@ -91710,9 +91710,9 @@ var require_last_newline = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/mime-node/le-windows.js
+// nextband/node_modules/nodemailer/lib/mime-node/le-windows.js
 var require_le_windows = __commonJS({
-  "node_modules/nodemailer/lib/mime-node/le-windows.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/mime-node/le-windows.js"(exports, module) {
     "use strict";
     var { Transform } = __require("stream");
     var LeWindows = class extends Transform {
@@ -91752,9 +91752,9 @@ var require_le_windows = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/mime-node/le-unix.js
+// nextband/node_modules/nodemailer/lib/mime-node/le-unix.js
 var require_le_unix = __commonJS({
-  "node_modules/nodemailer/lib/mime-node/le-unix.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/mime-node/le-unix.js"(exports, module) {
     "use strict";
     var { Transform } = __require("stream");
     var LeUnix = class extends Transform {
@@ -91787,9 +91787,9 @@ var require_le_unix = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/mime-node/index.js
+// nextband/node_modules/nodemailer/lib/mime-node/index.js
 var require_mime_node = __commonJS({
-  "node_modules/nodemailer/lib/mime-node/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/mime-node/index.js"(exports, module) {
     "use strict";
     var crypto3 = __require("crypto");
     var fs2 = __require("fs");
@@ -92853,9 +92853,9 @@ var require_mime_node = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/mail-composer/index.js
+// nextband/node_modules/nodemailer/lib/mail-composer/index.js
 var require_mail_composer = __commonJS({
-  "node_modules/nodemailer/lib/mail-composer/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/mail-composer/index.js"(exports, module) {
     "use strict";
     var MimeNode = require_mime_node();
     var mimeFuncs = require_mime_funcs();
@@ -93340,9 +93340,9 @@ var require_mail_composer = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/dkim/message-parser.js
+// nextband/node_modules/nodemailer/lib/dkim/message-parser.js
 var require_message_parser = __commonJS({
-  "node_modules/nodemailer/lib/dkim/message-parser.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/dkim/message-parser.js"(exports, module) {
     "use strict";
     var { Transform } = __require("stream");
     var MessageParser = class extends Transform {
@@ -93469,9 +93469,9 @@ var require_message_parser = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/dkim/relaxed-body.js
+// nextband/node_modules/nodemailer/lib/dkim/relaxed-body.js
 var require_relaxed_body = __commonJS({
-  "node_modules/nodemailer/lib/dkim/relaxed-body.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/dkim/relaxed-body.js"(exports, module) {
     "use strict";
     var { Transform } = __require("stream");
     var crypto3 = __require("crypto");
@@ -93578,9 +93578,9 @@ var require_relaxed_body = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/dkim/sign.js
+// nextband/node_modules/nodemailer/lib/dkim/sign.js
 var require_sign = __commonJS({
-  "node_modules/nodemailer/lib/dkim/sign.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/dkim/sign.js"(exports, module) {
     "use strict";
     var punycode = require_punycode();
     var mimeFuncs = require_mime_funcs();
@@ -93652,9 +93652,9 @@ var require_sign = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/dkim/index.js
+// nextband/node_modules/nodemailer/lib/dkim/index.js
 var require_dkim = __commonJS({
-  "node_modules/nodemailer/lib/dkim/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/dkim/index.js"(exports, module) {
     "use strict";
     var MessageParser = require_message_parser();
     var RelaxedBody = require_relaxed_body();
@@ -93847,9 +93847,9 @@ var require_dkim = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/smtp-connection/http-proxy-client.js
+// nextband/node_modules/nodemailer/lib/smtp-connection/http-proxy-client.js
 var require_http_proxy_client = __commonJS({
-  "node_modules/nodemailer/lib/smtp-connection/http-proxy-client.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/smtp-connection/http-proxy-client.js"(exports, module) {
     "use strict";
     var net = __require("net");
     var tls = __require("tls");
@@ -93963,9 +93963,9 @@ var require_http_proxy_client = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/mailer/mail-message.js
+// nextband/node_modules/nodemailer/lib/mailer/mail-message.js
 var require_mail_message = __commonJS({
-  "node_modules/nodemailer/lib/mailer/mail-message.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/mailer/mail-message.js"(exports, module) {
     "use strict";
     var shared = require_shared3();
     var MimeNode = require_mime_node();
@@ -94221,9 +94221,9 @@ var require_mail_message = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/mailer/index.js
+// nextband/node_modules/nodemailer/lib/mailer/index.js
 var require_mailer = __commonJS({
-  "node_modules/nodemailer/lib/mailer/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/mailer/index.js"(exports, module) {
     "use strict";
     var EventEmitter = __require("events");
     var shared = require_shared3();
@@ -94611,9 +94611,9 @@ var require_mailer = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/smtp-connection/data-stream.js
+// nextband/node_modules/nodemailer/lib/smtp-connection/data-stream.js
 var require_data_stream2 = __commonJS({
-  "node_modules/nodemailer/lib/smtp-connection/data-stream.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/smtp-connection/data-stream.js"(exports, module) {
     "use strict";
     var { Transform } = __require("stream");
     var DataStream = class extends Transform {
@@ -94698,9 +94698,9 @@ var require_data_stream2 = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/smtp-connection/index.js
+// nextband/node_modules/nodemailer/lib/smtp-connection/index.js
 var require_smtp_connection = __commonJS({
-  "node_modules/nodemailer/lib/smtp-connection/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/smtp-connection/index.js"(exports, module) {
     "use strict";
     var packageInfo = require_package5();
     var { EventEmitter } = __require("events");
@@ -96199,9 +96199,9 @@ var require_smtp_connection = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/xoauth2/index.js
+// nextband/node_modules/nodemailer/lib/xoauth2/index.js
 var require_xoauth2 = __commonJS({
-  "node_modules/nodemailer/lib/xoauth2/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/xoauth2/index.js"(exports, module) {
     "use strict";
     var { Stream: Stream3 } = __require("stream");
     var nmfetch = require_fetch();
@@ -96559,9 +96559,9 @@ var require_xoauth2 = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/smtp-pool/pool-resource.js
+// nextband/node_modules/nodemailer/lib/smtp-pool/pool-resource.js
 var require_pool_resource = __commonJS({
-  "node_modules/nodemailer/lib/smtp-pool/pool-resource.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/smtp-pool/pool-resource.js"(exports, module) {
     "use strict";
     var SMTPConnection = require_smtp_connection();
     var assign = require_shared3().assign;
@@ -96780,9 +96780,9 @@ var require_pool_resource = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/well-known/services.json
+// nextband/node_modules/nodemailer/lib/well-known/services.json
 var require_services = __commonJS({
-  "node_modules/nodemailer/lib/well-known/services.json"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/well-known/services.json"(exports, module) {
     module.exports = {
       "1und1": {
         description: "1&1 Mail (German hosting provider)",
@@ -97332,9 +97332,9 @@ var require_services = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/well-known/index.js
+// nextband/node_modules/nodemailer/lib/well-known/index.js
 var require_well_known = __commonJS({
-  "node_modules/nodemailer/lib/well-known/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/well-known/index.js"(exports, module) {
     "use strict";
     var services = require_services();
     var normalized = {};
@@ -97368,9 +97368,9 @@ var require_well_known = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/smtp-pool/index.js
+// nextband/node_modules/nodemailer/lib/smtp-pool/index.js
 var require_smtp_pool = __commonJS({
-  "node_modules/nodemailer/lib/smtp-pool/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/smtp-pool/index.js"(exports, module) {
     "use strict";
     var EventEmitter = __require("events");
     var PoolResource = require_pool_resource();
@@ -97907,9 +97907,9 @@ var require_smtp_pool = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/smtp-transport/index.js
+// nextband/node_modules/nodemailer/lib/smtp-transport/index.js
 var require_smtp_transport = __commonJS({
-  "node_modules/nodemailer/lib/smtp-transport/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/smtp-transport/index.js"(exports, module) {
     "use strict";
     var EventEmitter = __require("events");
     var SMTPConnection = require_smtp_connection();
@@ -98276,9 +98276,9 @@ var require_smtp_transport = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/sendmail-transport/index.js
+// nextband/node_modules/nodemailer/lib/sendmail-transport/index.js
 var require_sendmail_transport = __commonJS({
-  "node_modules/nodemailer/lib/sendmail-transport/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/sendmail-transport/index.js"(exports, module) {
     "use strict";
     var { spawn } = __require("child_process");
     var packageData = require_package5();
@@ -98452,9 +98452,9 @@ var require_sendmail_transport = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/stream-transport/index.js
+// nextband/node_modules/nodemailer/lib/stream-transport/index.js
 var require_stream_transport = __commonJS({
-  "node_modules/nodemailer/lib/stream-transport/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/stream-transport/index.js"(exports, module) {
     "use strict";
     var packageData = require_package5();
     var shared = require_shared3();
@@ -98573,9 +98573,9 @@ var require_stream_transport = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/json-transport/index.js
+// nextband/node_modules/nodemailer/lib/json-transport/index.js
 var require_json_transport = __commonJS({
-  "node_modules/nodemailer/lib/json-transport/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/json-transport/index.js"(exports, module) {
     "use strict";
     var packageData = require_package5();
     var shared = require_shared3();
@@ -98642,9 +98642,9 @@ var require_json_transport = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/ses-transport/index.js
+// nextband/node_modules/nodemailer/lib/ses-transport/index.js
 var require_ses_transport = __commonJS({
-  "node_modules/nodemailer/lib/ses-transport/index.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/ses-transport/index.js"(exports, module) {
     "use strict";
     var EventEmitter = __require("events");
     var packageData = require_package5();
@@ -98861,9 +98861,9 @@ var require_ses_transport = __commonJS({
   }
 });
 
-// node_modules/nodemailer/lib/nodemailer.js
+// nextband/node_modules/nodemailer/lib/nodemailer.js
 var require_nodemailer = __commonJS({
-  "node_modules/nodemailer/lib/nodemailer.js"(exports, module) {
+  "nextband/node_modules/nodemailer/lib/nodemailer.js"(exports, module) {
     "use strict";
     var Mailer = require_mailer();
     var shared = require_shared3();
@@ -99001,7 +99001,7 @@ var require_nodemailer = __commonJS({
   }
 });
 
-// server/app.ts
+// nextband/server/app.ts
 var import_fastify = __toESM(require_fastify(), 1);
 var import_cors = __toESM(require_cors(), 1);
 var import_rate_limit = __toESM(require_rate_limit(), 1);
@@ -99011,7 +99011,7 @@ var import_static = __toESM(require_static(), 1);
 import { join as join3 } from "path";
 import { existsSync as existsSync3, mkdirSync as mkdirSync2 } from "fs";
 
-// node_modules/zod/v3/external.js
+// nextband/node_modules/zod/v3/external.js
 var external_exports = {};
 __export(external_exports, {
   BRAND: () => BRAND,
@@ -99123,7 +99123,7 @@ __export(external_exports, {
   void: () => voidType
 });
 
-// node_modules/zod/v3/helpers/util.js
+// nextband/node_modules/zod/v3/helpers/util.js
 var util;
 (function(util2) {
   util2.assertEqual = (_) => {
@@ -99257,7 +99257,7 @@ var getParsedType = (data) => {
   }
 };
 
-// node_modules/zod/v3/ZodError.js
+// nextband/node_modules/zod/v3/ZodError.js
 var ZodIssueCode = util.arrayToEnum([
   "invalid_type",
   "invalid_literal",
@@ -99375,7 +99375,7 @@ ZodError.create = (issues) => {
   return error;
 };
 
-// node_modules/zod/v3/locales/en.js
+// nextband/node_modules/zod/v3/locales/en.js
 var errorMap = (issue, _ctx) => {
   let message2;
   switch (issue.code) {
@@ -99478,7 +99478,7 @@ var errorMap = (issue, _ctx) => {
 };
 var en_default = errorMap;
 
-// node_modules/zod/v3/errors.js
+// nextband/node_modules/zod/v3/errors.js
 var overrideErrorMap = en_default;
 function setErrorMap(map) {
   overrideErrorMap = map;
@@ -99487,7 +99487,7 @@ function getErrorMap() {
   return overrideErrorMap;
 }
 
-// node_modules/zod/v3/helpers/parseUtil.js
+// nextband/node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
   const { data, path, errorMaps, issueData } = params;
   const fullPath = [...path, ...issueData.path || []];
@@ -99597,14 +99597,14 @@ var isDirty = (x2) => x2.status === "dirty";
 var isValid = (x2) => x2.status === "valid";
 var isAsync = (x2) => typeof Promise !== "undefined" && x2 instanceof Promise;
 
-// node_modules/zod/v3/helpers/errorUtil.js
+// nextband/node_modules/zod/v3/helpers/errorUtil.js
 var errorUtil;
 (function(errorUtil2) {
   errorUtil2.errToObj = (message2) => typeof message2 === "string" ? { message: message2 } : message2 || {};
   errorUtil2.toString = (message2) => typeof message2 === "string" ? message2 : message2?.message;
 })(errorUtil || (errorUtil = {}));
 
-// node_modules/zod/v3/types.js
+// nextband/node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
   constructor(parent, value, path, key) {
     this._cachedPath = [];
@@ -103052,7 +103052,7 @@ var coerce = {
 };
 var NEVER = INVALID;
 
-// node_modules/dotenv/config.js
+// nextband/node_modules/dotenv/config.js
 (function() {
   require_main().config(
     Object.assign(
@@ -103063,7 +103063,7 @@ var NEVER = INVALID;
   );
 })();
 
-// server/config/env.ts
+// nextband/server/config/env.ts
 var WEAK_SECRETS = /* @__PURE__ */ new Set([
   "secret",
   "jwt_secret",
@@ -103138,13 +103138,13 @@ try {
     NOTIFICATION_EMAIL_TO: "arisieltsdeeplearning@gmail.com"
   };
 }
-var env2 = envData;
+var env = envData;
 
-// server/plugins/prisma.ts
+// nextband/server/plugins/prisma.ts
 var import_fastify_plugin = __toESM(require_plugin2(), 1);
 import { PrismaClient } from "@prisma/client";
 var prismaPlugin = async (fastify) => {
-  const dbUrl = process.env.DATABASE_URL || env.DATABASE_URL;
+  const dbUrl = process.env.DATABASE_URL;
   const prisma = new PrismaClient({
     datasources: dbUrl ? { db: { url: dbUrl } } : void 0,
     log: fastify.log.level === "debug" ? ["query", "error", "warn"] : ["error"]
@@ -103163,11 +103163,11 @@ var prisma_default = (0, import_fastify_plugin.default)(prismaPlugin, {
   name: "prisma"
 });
 
-// server/plugins/auth.ts
+// nextband/server/plugins/auth.ts
 var import_fastify_plugin2 = __toESM(require_plugin2(), 1);
 var import_jwt = __toESM(require_jwt(), 1);
 
-// node_modules/jose/dist/webapi/lib/buffer_utils.js
+// nextband/node_modules/jose/dist/webapi/lib/buffer_utils.js
 var encoder = new TextEncoder();
 var decoder = new TextDecoder();
 var strictDecoder = new TextDecoder("utf-8", { fatal: true });
@@ -103194,7 +103194,7 @@ function encode(string) {
   return bytes;
 }
 
-// node_modules/jose/dist/webapi/lib/crypto_key.js
+// nextband/node_modules/jose/dist/webapi/lib/crypto_key.js
 var unusable = (name, prop = "algorithm.name") => new TypeError(`CryptoKey does not support this operation, its ${prop} must be ${name}`);
 function checkUsage(key, usage) {
   if (usage && !key.usages.includes(usage)) {
@@ -103224,7 +103224,7 @@ function checkCryptoKey(key, expected, usage) {
   checkUsage(key, usage);
 }
 
-// node_modules/jose/dist/webapi/lib/invalid_key_input.js
+// nextband/node_modules/jose/dist/webapi/lib/invalid_key_input.js
 function message(msg, actual, ...types3) {
   if (types3.length > 2) {
     const last = types3.pop();
@@ -103247,7 +103247,7 @@ function message(msg, actual, ...types3) {
 }
 var withAlg = (alg, actual, ...types3) => message(`Key for the ${alg} algorithm must be `, actual, ...types3);
 
-// node_modules/jose/dist/webapi/util/errors.js
+// nextband/node_modules/jose/dist/webapi/util/errors.js
 var JOSEError = class extends Error {
   static code = "ERR_JOSE_GENERIC";
   code = "ERR_JOSE_GENERIC";
@@ -103334,7 +103334,7 @@ var JWSSignatureVerificationFailed = class extends JOSEError {
   }
 };
 
-// node_modules/jose/dist/webapi/lib/is_key_like.js
+// nextband/node_modules/jose/dist/webapi/lib/is_key_like.js
 var isCryptoKey = (key) => {
   if (key?.[Symbol.toStringTag] === "CryptoKey")
     return true;
@@ -103347,7 +103347,7 @@ var isCryptoKey = (key) => {
 var isKeyObject = (key) => key?.[Symbol.toStringTag] === "KeyObject";
 var isKeyLike = (key) => isCryptoKey(key) || isKeyObject(key);
 
-// node_modules/jose/dist/webapi/lib/base64.js
+// nextband/node_modules/jose/dist/webapi/lib/base64.js
 function decodeBase64(encoded) {
   if (Uint8Array.fromBase64) {
     return Uint8Array.fromBase64(encoded);
@@ -103360,7 +103360,7 @@ function decodeBase64(encoded) {
   return bytes;
 }
 
-// node_modules/jose/dist/webapi/util/base64url.js
+// nextband/node_modules/jose/dist/webapi/util/base64url.js
 var invalid = "The input to be decoded is not correctly encoded.";
 function decode(input) {
   if (Uint8Array.fromBase64) {
@@ -103387,7 +103387,7 @@ function decode(input) {
   }
 }
 
-// node_modules/jose/dist/webapi/lib/type_checks.js
+// nextband/node_modules/jose/dist/webapi/lib/type_checks.js
 function isObject(input) {
   if (typeof input !== "object" || input === null || Object.prototype.toString.call(input) !== "[object Object]") {
     return false;
@@ -103421,7 +103421,7 @@ var isPrivateJWK = (key) => key.kty !== "oct" && (key.kty === "AKP" && typeof ke
 var isPublicJWK = (key) => key.kty !== "oct" && key.d === void 0 && key.priv === void 0;
 var isSecretJWK = (key) => key.kty === "oct" && typeof key.k === "string";
 
-// node_modules/jose/dist/webapi/lib/helpers.js
+// nextband/node_modules/jose/dist/webapi/lib/helpers.js
 var unprotected = Symbol();
 function decodeBase64url(value, label, ErrorClass) {
   try {
@@ -103450,7 +103450,7 @@ function parseJoseHeader(b64, ErrorClass, message2) {
   return parsed;
 }
 
-// node_modules/jose/dist/webapi/lib/jwk_to_key.js
+// nextband/node_modules/jose/dist/webapi/lib/jwk_to_key.js
 async function jwkToKey(entry, jwk) {
   if (jwk.kty === "RSA" && "oth" in jwk && jwk.oth !== void 0) {
     throw new JOSENotSupported('RSA JWK "oth" (Other Primes Info) Parameter value is not supported');
@@ -103468,7 +103468,7 @@ async function jwkToKey(entry, jwk) {
   return crypto.subtle.importKey("jwk", keyData, algorithm, jwk.ext ?? !isPrivate, jwk.key_ops ?? entry.usages[isPrivate ? 1 : 0]);
 }
 
-// node_modules/jose/dist/webapi/lib/key.js
+// nextband/node_modules/jose/dist/webapi/lib/key.js
 var tag = (key) => key[Symbol.toStringTag];
 var jwkMatchesOp = (entry, key, usage) => {
   const { alg } = entry;
@@ -103586,7 +103586,7 @@ async function prepareKey(entry, key, usage) {
   }
 }
 
-// node_modules/jose/dist/webapi/lib/key_descriptor.js
+// nextband/node_modules/jose/dist/webapi/lib/key_descriptor.js
 function table(entries) {
   const out = { __proto__: null };
   for (const alg in entries) {
@@ -103595,7 +103595,7 @@ function table(entries) {
   return out;
 }
 
-// node_modules/jose/dist/webapi/lib/options.js
+// nextband/node_modules/jose/dist/webapi/lib/options.js
 var JWS_RECOGNIZED = { __proto__: null, b64: true };
 function validateAlgorithms(option, algorithms) {
   if (algorithms !== void 0 && (!Array.isArray(algorithms) || algorithms.some((s2) => typeof s2 !== "string"))) {
@@ -103631,7 +103631,7 @@ function validateCrit(Err, recognizedDefault, recognizedOption, protectedHeader,
   return protectedHeader.crit;
 }
 
-// node_modules/jose/dist/webapi/lib/signing.js
+// nextband/node_modules/jose/dist/webapi/lib/signing.js
 async function getSigKey(entry, key, usage) {
   if (key instanceof Uint8Array) {
     return crypto.subtle.importKey("raw", key, entry.subtle, false, [
@@ -103652,7 +103652,7 @@ async function verify(entry, key, signature, data) {
   }
 }
 
-// node_modules/jose/dist/webapi/lib/jws_algorithms.js
+// nextband/node_modules/jose/dist/webapi/lib/jws_algorithms.js
 var sig = [["verify"], ["sign"]];
 function hmac(bits) {
   const subtle = { name: "HMAC", hash: `SHA-${bits}` };
@@ -103725,7 +103725,7 @@ function jwsAlgorithm(alg) {
   return entry;
 }
 
-// node_modules/jose/dist/webapi/lib/jws_verify.js
+// nextband/node_modules/jose/dist/webapi/lib/jws_verify.js
 function prepareVerify(options) {
   return [options && validateAlgorithms("algorithms", options.algorithms), options?.crit];
 }
@@ -103803,7 +103803,7 @@ async function verifyCompact(jws, shared, key) {
   return verifySignature({ payload, protected: protectedHeader, signature }, shared, key);
 }
 
-// node_modules/jose/dist/webapi/lib/jwt_claims_set.js
+// nextband/node_modules/jose/dist/webapi/lib/jwt_claims_set.js
 var epoch = (date) => Math.floor(date.getTime() / 1e3);
 var multipliers = {
   s: 1,
@@ -103936,7 +103936,7 @@ function validateClaimsSet(protectedHeader, encodedPayload, options = {}) {
   return payload;
 }
 
-// node_modules/jose/dist/webapi/jwt/verify.js
+// nextband/node_modules/jose/dist/webapi/jwt/verify.js
 async function jwtVerify(jwt2, key, options) {
   const verified = await verifyCompact(jwt2, prepareVerify(options), key);
   if (!verified[2]) {
@@ -103950,7 +103950,7 @@ async function jwtVerify(jwt2, key, options) {
   return result;
 }
 
-// node_modules/jose/dist/webapi/jwks/local.js
+// nextband/node_modules/jose/dist/webapi/jwks/local.js
 function signatureAlgorithm(alg) {
   const entry = typeof alg === "string" ? JWS[alg] : void 0;
   if (!entry || entry.secret) {
@@ -104021,7 +104021,7 @@ function createLocalJWKSet(jwks) {
   return localJWKSet;
 }
 
-// node_modules/jose/dist/webapi/jwks/remote.js
+// nextband/node_modules/jose/dist/webapi/jwks/remote.js
 function isCloudflareWorkers() {
   return typeof WebSocketPair !== "undefined" || typeof navigator !== "undefined" && navigator.userAgent === "Cloudflare-Workers" || typeof EdgeRuntime !== "undefined" && EdgeRuntime === "vercel";
 }
@@ -104180,7 +104180,7 @@ function createRemoteJWKSet(url, options) {
   return remoteJWKSet;
 }
 
-// server/middlewares/auth.middleware.ts
+// nextband/server/middlewares/auth.middleware.ts
 async function verifyAndResolveUser(request) {
   const authHeader = request.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -104192,7 +104192,7 @@ async function verifyAndResolveUser(request) {
   let email = "";
   let fallbackRoles = [];
   try {
-    const expectedIssuer = `${env2.SUPABASE_URL.replace(/\/$/, "")}/auth/v1`;
+    const expectedIssuer = `${env.SUPABASE_URL.replace(/\/$/, "")}/auth/v1`;
     const { payload } = await jwtVerify(token, supabaseJWKS, {
       issuer: expectedIssuer,
       algorithms: ["ES256", "RS256"]
@@ -104311,17 +104311,17 @@ function requireRoles(...roles) {
   };
 }
 
-// server/plugins/auth.ts
+// nextband/server/plugins/auth.ts
 var getJwksUrl = () => {
-  const base = env2.SUPABASE_URL || "https://gzpdlqxjggyxlkeatvvf.supabase.co";
-  return env2.SUPABASE_JWKS_URL || `${base.replace(/\/$/, "")}/auth/v1/.well-known/jwks.json`;
+  const base = env.SUPABASE_URL || "https://gzpdlqxjggyxlkeatvvf.supabase.co";
+  return env.SUPABASE_JWKS_URL || `${base.replace(/\/$/, "")}/auth/v1/.well-known/jwks.json`;
 };
 var supabaseJWKS = createRemoteJWKSet(new URL(getJwksUrl()));
 var authPlugin = async (fastify) => {
   await fastify.register(import_jwt.default, {
-    secret: env2.JWT_SECRET,
+    secret: env.JWT_SECRET,
     sign: {
-      expiresIn: env2.JWT_EXPIRES_IN
+      expiresIn: env.JWT_EXPIRES_IN
     }
   });
   fastify.decorate("authenticate", authenticate);
@@ -104331,7 +104331,7 @@ var auth_default = (0, import_fastify_plugin2.default)(authPlugin, {
   dependencies: ["prisma"]
 });
 
-// server/schemas/auth.schema.ts
+// nextband/server/schemas/auth.schema.ts
 var loginSchema = external_exports.object({
   email: external_exports.string().email("\u0110\u1ECBnh d\u1EA1ng email kh\xF4ng h\u1EE3p l\u1EC7"),
   password: external_exports.string().min(6, "M\u1EADt kh\u1EA9u ph\u1EA3i c\xF3 \xEDt nh\u1EA5t 6 k\xFD t\u1EF1")
@@ -104345,10 +104345,10 @@ var googleLoginSchema = external_exports.object({
   credential: external_exports.string().min(1, "Y\xEAu c\u1EA7u th\xF4ng tin x\xE1c th\u1EF1c")
 });
 
-// server/routes/auth.routes.ts
+// nextband/server/routes/auth.routes.ts
 var import_google_auth_library = __toESM(require_src6(), 1);
 
-// server/utils/validation.ts
+// nextband/server/utils/validation.ts
 function handleValidation(validation, request, reply) {
   if (!validation.success) {
     request.log.warn({
@@ -104367,10 +104367,10 @@ function handleValidation(validation, request, reply) {
   return validation.data;
 }
 
-// server/utils/file.ts
+// nextband/server/utils/file.ts
 function getBaseUrl() {
-  if (env2.APP_URL) return env2.APP_URL;
-  const port = env2.PORT ?? "3000";
+  if (env.APP_URL) return env.APP_URL;
+  const port = env.PORT ?? "3000";
   return `http://localhost:${port}`;
 }
 function toFileUrl(path) {
@@ -104392,7 +104392,7 @@ function withFileUrlsMany(arr, keys) {
   return arr.map((item) => withFileUrls(item, keys));
 }
 
-// server/routes/auth.routes.ts
+// nextband/server/routes/auth.routes.ts
 var authRoutes = async (fastify) => {
   fastify.post(
     "/register",
@@ -104663,10 +104663,10 @@ var authRoutes = async (fastify) => {
 };
 var auth_routes_default = authRoutes;
 
-// server/routes/courses.routes.ts
+// nextband/server/routes/courses.routes.ts
 import { Prisma } from "@prisma/client";
 
-// server/schemas/common.schema.ts
+// nextband/server/schemas/common.schema.ts
 var paginationSchema = external_exports.object({
   page: external_exports.coerce.number().min(1, "Trang ph\u1EA3i \xEDt nh\u1EA5t l\xE0 1").default(1),
   limit: external_exports.coerce.number().min(1, "Gi\u1EDBi h\u1EA1n ph\u1EA3i \xEDt nh\u1EA5t l\xE0 1").max(100, "Gi\u1EDBi h\u1EA1n t\u1ED1i \u0111a l\xE0 100").default(10),
@@ -104677,7 +104677,7 @@ var paginationSchema = external_exports.object({
   }).default("desc")
 });
 
-// server/schemas/course.schema.ts
+// nextband/server/schemas/course.schema.ts
 var createCourseSchema = external_exports.object({
   title: external_exports.string().min(1, "Ti\xEAu \u0111\u1EC1 l\xE0 b\u1EAFt bu\u1ED9c"),
   description: external_exports.string().optional().nullable(),
@@ -104694,7 +104694,7 @@ var createCourseSchema = external_exports.object({
 });
 var updateCourseSchema = createCourseSchema.partial();
 
-// server/routes/courses.routes.ts
+// nextband/server/routes/courses.routes.ts
 var coursesRoutes = async (fastify) => {
   const slugify = (value) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const buildUniqueSlug = async (baseInput, excludeId) => {
@@ -105000,7 +105000,7 @@ var coursesRoutes = async (fastify) => {
 };
 var courses_routes_default = coursesRoutes;
 
-// server/schemas/exam.schema.ts
+// nextband/server/schemas/exam.schema.ts
 var createExamSchema = external_exports.object({
   courseId: external_exports.string(),
   title: external_exports.string().min(1, "Ti\xEAu \u0111\u1EC1 l\xE0 b\u1EAFt bu\u1ED9c"),
@@ -105016,7 +105016,7 @@ var createExamSchema = external_exports.object({
 });
 var updateExamSchema = createExamSchema.partial();
 
-// server/services/authorization.service.ts
+// nextband/server/services/authorization.service.ts
 import { basename as basename2, resolve, sep } from "path";
 var AuthorizationError = class extends Error {
   statusCode;
@@ -105232,7 +105232,7 @@ var AuthorizationService = class {
   }
 };
 
-// server/routes/exams.routes.ts
+// nextband/server/routes/exams.routes.ts
 var examsRoutes = async (fastify) => {
   const cleanQuestionData = (q, isAdminOrTeacher) => {
     let selectionMode = "single";
@@ -105551,7 +105551,7 @@ var examsRoutes = async (fastify) => {
 };
 var exams_routes_default = examsRoutes;
 
-// server/routes/sections.routes.ts
+// nextband/server/routes/sections.routes.ts
 var sectionTypeEnum = external_exports.enum(
   ["listening", "reading", "writing", "speaking", "general"],
   {
@@ -105728,7 +105728,7 @@ var sectionsRoutes = async (fastify) => {
 };
 var sections_routes_default = sectionsRoutes;
 
-// server/utils/questionNormalizer.ts
+// nextband/server/utils/questionNormalizer.ts
 function sanitizeBackendQuestionPayload(input) {
   const type = input.questionType || "short_answer";
   const text = (input.questionText || "").trim();
@@ -105788,7 +105788,7 @@ function sanitizeBackendQuestionPayload(input) {
   };
 }
 
-// server/routes/questions.routes.ts
+// nextband/server/routes/questions.routes.ts
 var questionTypeEnum = external_exports.enum(
   [
     "multiple_choice",
@@ -106324,7 +106324,7 @@ var questionsRoutes = async (fastify) => {
 };
 var questions_routes_default = questionsRoutes;
 
-// server/repositories/submission.repository.ts
+// nextband/server/repositories/submission.repository.ts
 var SubmissionRepository = class {
   constructor(prisma) {
     this.prisma = prisma;
@@ -106399,7 +106399,7 @@ var SubmissionRepository = class {
   }
 };
 
-// server/services/scoring/TextNormalizer.ts
+// nextband/server/services/scoring/TextNormalizer.ts
 var TextNormalizer = class {
   /**
    * Universal text normalization for IELTS answer matching
@@ -106491,7 +106491,7 @@ var TextNormalizer = class {
 };
 var defaultTextNormalizer = new TextNormalizer();
 
-// server/services/scoring/AnswerResolver.ts
+// nextband/server/services/scoring/AnswerResolver.ts
 var AnswerResolver = class {
   /**
    * Extracts and flattens all questions from exam structure and pairs them with student answers
@@ -106553,7 +106553,7 @@ var AnswerResolver = class {
   }
 };
 
-// server/services/scoring/evaluators/MultipleChoiceEvaluator.ts
+// nextband/server/services/scoring/evaluators/MultipleChoiceEvaluator.ts
 var MultipleChoiceEvaluator = class {
   supportedTypes = [
     "multiple_choice",
@@ -106686,7 +106686,7 @@ var MultipleChoiceEvaluator = class {
   }
 };
 
-// server/services/scoring/evaluators/FillBlankEvaluator.ts
+// nextband/server/services/scoring/evaluators/FillBlankEvaluator.ts
 var FillBlankEvaluator = class {
   supportedTypes = [
     "fill_blank",
@@ -106831,7 +106831,7 @@ var FillBlankEvaluator = class {
   }
 };
 
-// server/services/scoring/evaluators/MatchingEvaluator.ts
+// nextband/server/services/scoring/evaluators/MatchingEvaluator.ts
 var MatchingEvaluator = class {
   supportedTypes = [
     "matching",
@@ -106915,7 +106915,7 @@ var MatchingEvaluator = class {
   }
 };
 
-// server/services/scoring/evaluators/TFNG_Evaluator.ts
+// nextband/server/services/scoring/evaluators/TFNG_Evaluator.ts
 var TFNG_Evaluator = class {
   supportedTypes = [
     "true_false_not_given",
@@ -106978,7 +106978,7 @@ var TFNG_Evaluator = class {
   }
 };
 
-// server/services/scoring/evaluators/ManualEvaluator.ts
+// nextband/server/services/scoring/evaluators/ManualEvaluator.ts
 var ManualEvaluator = class {
   supportedTypes = [
     "essay",
@@ -107019,7 +107019,7 @@ var ManualEvaluator = class {
   }
 };
 
-// server/services/scoring/evaluators/index.ts
+// nextband/server/services/scoring/evaluators/index.ts
 var EVALUATORS = [
   new MultipleChoiceEvaluator(),
   new FillBlankEvaluator(),
@@ -107038,7 +107038,7 @@ function getEvaluatorForType(questionType) {
   return fallbackEvaluator;
 }
 
-// server/services/scoring/IeltsBandCalculator.ts
+// nextband/server/services/scoring/IeltsBandCalculator.ts
 var IeltsBandCalculator = class {
   /**
    * Converts raw score (number of correct answers out of 40) to IELTS Band Score (0.0 - 9.0)
@@ -107110,7 +107110,7 @@ var IeltsBandCalculator = class {
   }
 };
 
-// server/services/scoring/ScoreAggregator.ts
+// nextband/server/services/scoring/ScoreAggregator.ts
 var ScoreAggregator = class {
   /**
    * Aggregates individual question evaluations into a holistic submission grading summary
@@ -107151,7 +107151,7 @@ var ScoreAggregator = class {
   }
 };
 
-// server/services/scoring/ResultBuilder.ts
+// nextband/server/services/scoring/ResultBuilder.ts
 var ResultBuilder = class {
   /**
    * Builds the database persistence payload for Prisma transaction
@@ -107198,7 +107198,7 @@ var ResultBuilder = class {
   }
 };
 
-// server/services/scoring/CanonicalScoringService.ts
+// nextband/server/services/scoring/CanonicalScoringService.ts
 var CanonicalScoringService = class {
   normalizer;
   resolver;
@@ -107231,7 +107231,7 @@ var CanonicalScoringService = class {
 };
 var canonicalScoringService = new CanonicalScoringService();
 
-// server/services/audit/AuditOutboxService.ts
+// nextband/server/services/audit/AuditOutboxService.ts
 import { randomUUID, createHash } from "crypto";
 var AuditOutboxService = class {
   /**
@@ -107281,7 +107281,7 @@ var AuditOutboxService = class {
 };
 var auditOutboxService = new AuditOutboxService();
 
-// server/services/submission-state-machine.ts
+// nextband/server/services/submission-state-machine.ts
 var StateTransitionError = class extends Error {
   statusCode = 409;
   constructor(message2) {
@@ -107328,7 +107328,7 @@ var SubmissionStateMachine = class {
   }
 };
 
-// server/services/notification.service.ts
+// nextband/server/services/notification.service.ts
 var NotificationService = class {
   constructor(prisma) {
     this.prisma = prisma;
@@ -107448,7 +107448,7 @@ var NotificationService = class {
   }
 };
 
-// server/utils/teacherScope.ts
+// nextband/server/utils/teacherScope.ts
 async function getTeacherStudentIds(prisma, teacherId) {
   const classStudents = await prisma.classStudent.findMany({
     where: {
@@ -107490,7 +107490,7 @@ async function isTeacherOfClass(prisma, teacherId, classId) {
   return !!cls;
 }
 
-// server/services/exam-submission.service.ts
+// nextband/server/services/exam-submission.service.ts
 var MAX_EXAM_ATTEMPTS = 3;
 function getRemainingSeconds(startedAt, durationMinutes) {
   const safeDuration = Math.max(1, durationMinutes || 60);
@@ -108330,7 +108330,7 @@ var ExamSubmissionService = class {
   }
 };
 
-// server/controllers/submission.controller.ts
+// nextband/server/controllers/submission.controller.ts
 var SubmissionController = class {
   service;
   constructor(fastify) {
@@ -108443,7 +108443,7 @@ var SubmissionController = class {
   }
 };
 
-// server/routes/submissions.routes.ts
+// nextband/server/routes/submissions.routes.ts
 async function submissionsRoutes(fastify) {
   const controller = new SubmissionController(fastify);
   fastify.get("/", { preHandler: authenticate }, async (request, reply) => {
@@ -108492,7 +108492,7 @@ async function submissionsRoutes(fastify) {
   );
 }
 
-// node_modules/bcryptjs/index.js
+// nextband/node_modules/bcryptjs/index.js
 import nodeCrypto from "crypto";
 var randomFallback = null;
 function randomBytes(len) {
@@ -110215,13 +110215,13 @@ var bcryptjs_default = {
   decodeBase64: decodeBase642
 };
 
-// server/utils/password.ts
+// nextband/server/utils/password.ts
 var SALT_ROUNDS = 10;
 async function hashPassword(password) {
   return bcryptjs_default.hash(password, SALT_ROUNDS);
 }
 
-// server/routes/users.routes.ts
+// nextband/server/routes/users.routes.ts
 var usersRoutes = async (fastify) => {
   fastify.get(
     "/",
@@ -110612,7 +110612,7 @@ var usersRoutes = async (fastify) => {
 };
 var users_routes_default = usersRoutes;
 
-// server/routes/enrollments.routes.ts
+// nextband/server/routes/enrollments.routes.ts
 var enrollmentsRoutes = async (fastify) => {
   fastify.get("/", { preHandler: authenticate }, async (request) => {
     const user = request.user;
@@ -110756,7 +110756,7 @@ var enrollmentsRoutes = async (fastify) => {
 };
 var enrollments_routes_default = enrollmentsRoutes;
 
-// server/routes/uploads.routes.ts
+// nextband/server/routes/uploads.routes.ts
 import { createWriteStream, existsSync, mkdirSync, unlinkSync } from "fs";
 import { join, extname } from "path";
 import { pipeline as pipeline2 } from "stream/promises";
@@ -110776,7 +110776,7 @@ var ALLOWED_AUDIO_TYPES = [
 ];
 var ALLOWED_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_AUDIO_TYPES];
 function getUploadDir(subDir) {
-  const baseDir = join(process.cwd(), env2.UPLOAD_DIR);
+  const baseDir = join(process.cwd(), env.UPLOAD_DIR);
   const targetDir = subDir ? join(baseDir, subDir) : baseDir;
   if (!existsSync(targetDir)) {
     mkdirSync(targetDir, { recursive: true });
@@ -110910,7 +110910,7 @@ var uploadsRoutes = async (fastify) => {
         return reply.status(400).send({ error: "URL t\u1EC7p kh\xF4ng \u0111\xFAng \u0111\u1ECBnh d\u1EA1ng /uploads/(images|audio)/..." });
       }
       const [, subDir, rawFileName] = match;
-      const baseUploadDir = join(process.cwd(), env2.UPLOAD_DIR);
+      const baseUploadDir = join(process.cwd(), env.UPLOAD_DIR);
       const authService = new AuthorizationService(fastify.prisma);
       let filePath;
       try {
@@ -110939,7 +110939,7 @@ var uploadsRoutes = async (fastify) => {
 };
 var uploads_routes_default = uploadsRoutes;
 
-// server/routes/logs.routes.ts
+// nextband/server/routes/logs.routes.ts
 import { readFileSync, existsSync as existsSync2 } from "fs";
 import { join as join2 } from "path";
 var logsRoutes = async (fastify) => {
@@ -110984,7 +110984,7 @@ var logsRoutes = async (fastify) => {
 };
 var logs_routes_default = logsRoutes;
 
-// server/repositories/class.repository.ts
+// nextband/server/repositories/class.repository.ts
 var ClassRepository = class {
   constructor(prisma) {
     this.prisma = prisma;
@@ -111120,7 +111120,7 @@ var ClassRepository = class {
   }
 };
 
-// server/services/class.service.ts
+// nextband/server/services/class.service.ts
 var ClassService = class {
   constructor(prisma) {
     this.prisma = prisma;
@@ -111293,7 +111293,7 @@ var ClassService = class {
   }
 };
 
-// server/schemas/class.schema.ts
+// nextband/server/schemas/class.schema.ts
 var createClassSchema = external_exports.object({
   name: external_exports.string().min(1, "T\xEAn l\u1EDBp kh\xF4ng \u0111\u01B0\u1EE3c \u0111\u1EC3 tr\u1ED1ng"),
   description: external_exports.string().optional().default(""),
@@ -111313,7 +111313,7 @@ var updateClassSchema = external_exports.object({
   isActive: external_exports.boolean().optional()
 });
 
-// server/controllers/class.controller.ts
+// nextband/server/controllers/class.controller.ts
 var ClassController = class {
   service;
   constructor(fastify) {
@@ -111429,7 +111429,7 @@ var ClassController = class {
   }
 };
 
-// server/routes/classes.routes.ts
+// nextband/server/routes/classes.routes.ts
 async function classesRoutes(fastify) {
   const controller = new ClassController(fastify);
   fastify.get("/my-classes", { preHandler: authenticate }, async (request, reply) => {
@@ -111471,7 +111471,7 @@ async function classesRoutes(fastify) {
   );
 }
 
-// server/routes/highlights.routes.ts
+// nextband/server/routes/highlights.routes.ts
 var createHighlightSchema = external_exports.object({
   sectionId: external_exports.string().min(1),
   passageId: external_exports.string().optional(),
@@ -111589,10 +111589,10 @@ var highlightsRoutes = async (fastify) => {
 };
 var highlights_routes_default = highlightsRoutes;
 
-// server/routes/attendance.routes.ts
+// nextband/server/routes/attendance.routes.ts
 import crypto2 from "node:crypto";
 
-// server/services/attendance.service.ts
+// nextband/server/services/attendance.service.ts
 var ClassSessionStatus = {
   SCHEDULED: "SCHEDULED",
   PLANNED: "PLANNED",
@@ -111945,7 +111945,7 @@ var AttendanceService = class {
   }
 };
 
-// server/routes/attendance.routes.ts
+// nextband/server/routes/attendance.routes.ts
 var markAttendanceSchema = external_exports.object({
   items: external_exports.array(
     external_exports.object({
@@ -112213,7 +112213,7 @@ var attendanceRoutes = async (fastify) => {
 };
 var attendance_routes_default = attendanceRoutes;
 
-// server/routes/site-settings.routes.ts
+// nextband/server/routes/site-settings.routes.ts
 var SETTINGS_KEY = "global";
 var strictInt = (min, max) => external_exports.preprocess((val) => {
   if (typeof val === "string") {
@@ -112358,10 +112358,10 @@ var siteSettingsRoutes = async (fastify) => {
 };
 var site_settings_routes_default = siteSettingsRoutes;
 
-// server/services/invitation.service.ts
+// nextband/server/services/invitation.service.ts
 import { InvitationStatus } from "@prisma/client";
 
-// server/repositories/invitation.repository.ts
+// nextband/server/repositories/invitation.repository.ts
 var InvitationRepository = class {
   constructor(prisma) {
     this.prisma = prisma;
@@ -112377,7 +112377,7 @@ var InvitationRepository = class {
   }
 };
 
-// server/services/invitation.service.ts
+// nextband/server/services/invitation.service.ts
 var InvitationService = class {
   constructor(prisma) {
     this.prisma = prisma;
@@ -112433,7 +112433,7 @@ var InvitationService = class {
   }
 };
 
-// server/validations/schemas.ts
+// nextband/server/validations/schemas.ts
 var joinByCodeSchema = external_exports.object({
   inviteCode: external_exports.string().min(1, "M\xE3 m\u1EDDi kh\xF4ng \u0111\u01B0\u1EE3c \u0111\u1EC3 tr\u1ED1ng").max(10)
 });
@@ -112461,7 +112461,7 @@ var gradeSubmissionSchema = external_exports.object({
   feedback: external_exports.string().min(1, "Nh\u1EADn x\xE9t kh\xF4ng \u0111\u01B0\u1EE3c \u0111\u1EC3 tr\u1ED1ng")
 });
 
-// server/routes/invitation.routes.ts
+// nextband/server/routes/invitation.routes.ts
 var invitationRoutes = async (fastify) => {
   const invitationService = new InvitationService(fastify.prisma);
   fastify.post("/join", { preHandler: [fastify.authenticate] }, async (request, reply) => {
@@ -112495,7 +112495,7 @@ var invitationRoutes = async (fastify) => {
 };
 var invitation_routes_default = invitationRoutes;
 
-// server/services/lesson.service.ts
+// nextband/server/services/lesson.service.ts
 var LessonService = class {
   constructor(prisma) {
     this.prisma = prisma;
@@ -112599,7 +112599,7 @@ var LessonService = class {
   }
 };
 
-// server/routes/lesson.routes.ts
+// nextband/server/routes/lesson.routes.ts
 var lessonRoutes = async (fastify) => {
   const lessonService = new LessonService(fastify.prisma);
   fastify.get("/classes/:classId/lessons", { preHandler: [fastify.authenticate] }, async (request, reply) => {
@@ -112617,7 +112617,7 @@ var lessonRoutes = async (fastify) => {
 };
 var lesson_routes_default = lessonRoutes;
 
-// server/routes/notifications.routes.ts
+// nextband/server/routes/notifications.routes.ts
 var notificationsRoutes = async (fastify) => {
   const notificationService = new NotificationService(fastify.prisma);
   fastify.get("/", { preHandler: [fastify.authenticate] }, async (request, reply) => {
@@ -112665,10 +112665,10 @@ var notificationsRoutes = async (fastify) => {
 };
 var notifications_routes_default = notificationsRoutes;
 
-// server/services/lead.service.ts
+// nextband/server/services/lead.service.ts
 import { LeadStatus } from "@prisma/client";
 
-// server/services/leadNotification.service.ts
+// nextband/server/services/leadNotification.service.ts
 var import_nodemailer = __toESM(require_nodemailer(), 1);
 var LeadNotificationService = class {
   transporter = null;
@@ -112676,24 +112676,24 @@ var LeadNotificationService = class {
     this.initTransporter();
   }
   initTransporter() {
-    if (env2.SMTP_HOST) {
-      const port = env2.SMTP_PORT ? parseInt(env2.SMTP_PORT, 10) : 587;
-      const isSecure = env2.SMTP_SECURE === "true" || port === 465;
+    if (env.SMTP_HOST) {
+      const port = env.SMTP_PORT ? parseInt(env.SMTP_PORT, 10) : 587;
+      const isSecure = env.SMTP_SECURE === "true" || port === 465;
       this.transporter = import_nodemailer.default.createTransport({
-        host: env2.SMTP_HOST,
+        host: env.SMTP_HOST,
         port,
         secure: isSecure,
-        auth: env2.SMTP_USER && env2.SMTP_PASS ? {
-          user: env2.SMTP_USER,
-          pass: env2.SMTP_PASS
+        auth: env.SMTP_USER && env.SMTP_PASS ? {
+          user: env.SMTP_USER,
+          pass: env.SMTP_PASS
         } : void 0
       });
-    } else if (env2.SMTP_USER && env2.SMTP_PASS) {
+    } else if (env.SMTP_USER && env.SMTP_PASS) {
       this.transporter = import_nodemailer.default.createTransport({
         service: "gmail",
         auth: {
-          user: env2.SMTP_USER,
-          pass: env2.SMTP_PASS
+          user: env.SMTP_USER,
+          pass: env.SMTP_PASS
         }
       });
     }
@@ -112702,7 +112702,7 @@ var LeadNotificationService = class {
    * Send notification to staff via Email
    */
   async notifyNewLead(lead) {
-    const recipient = env2.NOTIFICATION_EMAIL_TO || "arisieltsdeeplearning@gmail.com";
+    const recipient = env.NOTIFICATION_EMAIL_TO || "arisieltsdeeplearning@gmail.com";
     const formattedDate = new Intl.DateTimeFormat("vi-VN", {
       dateStyle: "full",
       timeStyle: "medium",
@@ -112778,7 +112778,7 @@ Vui l\xF2ng g\u1ECDi \u0111i\u1EC7n t\u01B0 v\u1EA5n cho h\u1ECDc vi\xEAn s\u1ED
     `.trim();
     if (this.transporter) {
       try {
-        const fromAddress = env2.SMTP_FROM || `"ARIS IELTS System" <${env2.SMTP_USER || "no-reply@nextband.site"}>`;
+        const fromAddress = env.SMTP_FROM || `"ARIS IELTS System" <${env.SMTP_USER || "no-reply@nextband.site"}>`;
         await this.transporter.sendMail({
           from: fromAddress,
           to: recipient,
@@ -112796,7 +112796,7 @@ Vui l\xF2ng g\u1ECDi \u0111i\u1EC7n t\u01B0 v\u1EA5n cho h\u1ECDc vi\xEAn s\u1ED
 >>> LEAD ID: ${lead.id} | NAME: ${lead.fullName} | PHONE: ${lead.phone} | GOAL: ${lead.goal || "N/A"}`
       );
     }
-    if (env2.TELEGRAM_BOT_TOKEN && env2.TELEGRAM_CHAT_ID) {
+    if (env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID) {
       try {
         const telegramMessage = `\u{1F514} *[LEAD M\u1EDAI] Y\xCAU C\u1EA6U T\u01AF V\u1EA4N L\u1ED8 TR\xCCNH*
 
@@ -112807,11 +112807,11 @@ Vui l\xF2ng g\u1ECDi \u0111i\u1EC7n t\u01B0 v\u1EA5n cho h\u1ECDc vi\xEAn s\u1ED
 \u{1F310} *Ngu\u1ED3n:* ${lead.source || "contact_page"}
 \u23F0 *Th\u1EDDi gian:* ${formattedDate}
 \u{1F194} *M\xE3 Lead:* \`${lead.id}\``;
-        await fetch(`https://api.telegram.org/bot${env2.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            chat_id: env2.TELEGRAM_CHAT_ID,
+            chat_id: env.TELEGRAM_CHAT_ID,
             text: telegramMessage,
             parse_mode: "Markdown"
           })
@@ -112825,7 +112825,7 @@ Vui l\xF2ng g\u1ECDi \u0111i\u1EC7n t\u01B0 v\u1EA5n cho h\u1ECDc vi\xEAn s\u1ED
 };
 var leadNotificationService = new LeadNotificationService();
 
-// server/services/lead.service.ts
+// nextband/server/services/lead.service.ts
 var LeadService = class {
   constructor(prisma) {
     this.prisma = prisma;
@@ -112924,7 +112924,7 @@ var LeadService = class {
   }
 };
 
-// server/schemas/lead.schema.ts
+// nextband/server/schemas/lead.schema.ts
 var createLeadSchema = external_exports.object({
   fullName: external_exports.string({ required_error: "H\u1ECD v\xE0 t\xEAn l\xE0 b\u1EAFt bu\u1ED9c" }).trim().min(2, "H\u1ECD v\xE0 t\xEAn ph\u1EA3i c\xF3 \xEDt nh\u1EA5t 2 k\xFD t\u1EF1").max(255, "H\u1ECD v\xE0 t\xEAn kh\xF4ng \u0111\u01B0\u1EE3c v\u01B0\u1EE3t qu\xE1 255 k\xFD t\u1EF1"),
   phone: external_exports.string({ required_error: "S\u1ED1 \u0111i\u1EC7n tho\u1EA1i l\xE0 b\u1EAFt bu\u1ED9c" }).trim().min(9, "S\u1ED1 \u0111i\u1EC7n tho\u1EA1i ph\u1EA3i c\xF3 \xEDt nh\u1EA5t 9 ch\u1EEF s\u1ED1").max(20, "S\u1ED1 \u0111i\u1EC7n tho\u1EA1i kh\xF4ng h\u1EE3p l\u1EC7"),
@@ -112944,7 +112944,7 @@ var listLeadsQuerySchema = external_exports.object({
   search: external_exports.string().optional()
 });
 
-// server/routes/lead.routes.ts
+// nextband/server/routes/lead.routes.ts
 var leadRoutes = async (fastify) => {
   const leadService = new LeadService(fastify.prisma);
   fastify.post("/", async (request, reply) => {
@@ -113057,7 +113057,7 @@ var leadRoutes = async (fastify) => {
 };
 var lead_routes_default = leadRoutes;
 
-// server/data/placement-test/questions.ts
+// nextband/server/data/placement-test/questions.ts
 var canonicalPlacementTestPayload = {
   testId: "aris-placement-v1",
   title: "ARIS IELTS-style Diagnostic Assessment (4 K\u1EF9 N\u0103ng & Ng\u1EEF Ph\xE1p)",
@@ -113475,7 +113475,7 @@ Furthermore, the retention of academic vocabulary requires spaced repetition rat
   }
 };
 
-// server/data/placement-test/answerKeys.ts
+// nextband/server/data/placement-test/answerKeys.ts
 var authoritativePlacementAnswerKeys = {
   // Listening (10 questions)
   L1: {
@@ -113766,7 +113766,7 @@ var authoritativePlacementAnswerKeys = {
   }
 };
 
-// server/services/assessment.service.ts
+// nextband/server/services/assessment.service.ts
 var ipRateLimitMap = /* @__PURE__ */ new Map();
 var phoneRateLimitMap = /* @__PURE__ */ new Map();
 var inMemoryAssessmentSessions = /* @__PURE__ */ new Map();
@@ -114254,7 +114254,7 @@ var AssessmentService = class {
   }
 };
 
-// server/routes/assessment.routes.ts
+// nextband/server/routes/assessment.routes.ts
 var assessmentRoutes = async (fastify) => {
   const assessmentService = new AssessmentService(fastify.prisma);
   const resolveAssessmentCredential = async (request, reply) => {
@@ -114324,7 +114324,7 @@ var assessmentRoutes = async (fastify) => {
         );
         reply.header(
           "Set-Cookie",
-          `nb_assessment_token=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=10800${env2.NODE_ENV === "production" ? "; Secure" : ""}`
+          `nb_assessment_token=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=10800${env.NODE_ENV === "production" ? "; Secure" : ""}`
         );
         return reply.status(201).send({
           success: true,
@@ -114465,7 +114465,7 @@ var assessmentRoutes = async (fastify) => {
 };
 var assessment_routes_default = assessmentRoutes;
 
-// server/routes/index.ts
+// nextband/server/routes/index.ts
 var routes = async (fastify) => {
   fastify.get("/health", async () => {
     return {
@@ -114496,10 +114496,10 @@ var routes = async (fastify) => {
 };
 var routes_default = routes;
 
-// server/app.ts
+// nextband/server/app.ts
 async function buildApp() {
   const isServerless = process.env.VERCEL === "1" || Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME) || Boolean(process.env.VERCEL_ENV);
-  const isProduction = env2.NODE_ENV === "production" || process.env.NODE_ENV === "production";
+  const isProduction = env.NODE_ENV === "production" || process.env.NODE_ENV === "production";
   let loggerConfig;
   if (isServerless || isProduction) {
     loggerConfig = {
@@ -114554,18 +114554,18 @@ async function buildApp() {
     "https://nextband.site",
     "https://www.nextband.site"
   ]);
-  if (env2.FRONTEND_URL) {
-    env2.FRONTEND_URL.split(",").map((s2) => s2.trim()).filter(Boolean).forEach((u) => exactAllowedOrigins.add(u));
+  if (env.FRONTEND_URL) {
+    env.FRONTEND_URL.split(",").map((s2) => s2.trim()).filter(Boolean).forEach((u) => exactAllowedOrigins.add(u));
   }
-  if (env2.PREVIEW_ALLOWED_ORIGINS) {
-    env2.PREVIEW_ALLOWED_ORIGINS.split(",").map((s2) => s2.trim()).filter(Boolean).forEach((u) => exactAllowedOrigins.add(u));
+  if (env.PREVIEW_ALLOWED_ORIGINS) {
+    env.PREVIEW_ALLOWED_ORIGINS.split(",").map((s2) => s2.trim()).filter(Boolean).forEach((u) => exactAllowedOrigins.add(u));
   }
   await app.register(import_cors.default, {
     origin: (origin, cb) => {
       if (!origin) {
         return cb(null, true);
       }
-      const isProduction2 = process.env.NODE_ENV === "production" || env2.NODE_ENV === "production";
+      const isProduction2 = process.env.NODE_ENV === "production" || env.NODE_ENV === "production";
       if (!isProduction2) {
         return cb(null, true);
       }
@@ -114600,8 +114600,8 @@ async function buildApp() {
     max: 200,
     timeWindow: "1 minute",
     keyGenerator: (request) => {
-      if (env2.TRUST_PROXY_IPS) {
-        const trustedList = env2.TRUST_PROXY_IPS.split(",").map((s2) => s2.trim());
+      if (env.TRUST_PROXY_IPS) {
+        const trustedList = env.TRUST_PROXY_IPS.split(",").map((s2) => s2.trim());
         const remoteSocketIp = request.raw.socket.remoteAddress || "";
         if (trustedList.includes(remoteSocketIp)) {
           const xForwardedFor = request.headers["x-forwarded-for"];
@@ -114624,11 +114624,11 @@ async function buildApp() {
   });
   await app.register(import_multipart.default, {
     limits: {
-      fileSize: parseInt(env2.MAX_FILE_SIZE)
+      fileSize: parseInt(env.MAX_FILE_SIZE)
       // 50MB default
     }
   });
-  const uploadDir = isServerless ? join3("/tmp", env2.UPLOAD_DIR || "uploads") : join3(process.cwd(), env2.UPLOAD_DIR || "uploads");
+  const uploadDir = isServerless ? join3("/tmp", env.UPLOAD_DIR || "uploads") : join3(process.cwd(), env.UPLOAD_DIR || "uploads");
   if (!existsSync3(uploadDir)) {
     try {
       mkdirSync2(uploadDir, { recursive: true });
@@ -114653,7 +114653,7 @@ async function buildApp() {
   });
   await app.register(routes_default, { prefix: "/api/v1" });
   app.setErrorHandler((error, request, reply) => {
-    const isProduction2 = process.env.NODE_ENV === "production" || env2.NODE_ENV === "production";
+    const isProduction2 = process.env.NODE_ENV === "production" || env.NODE_ENV === "production";
     const statusCode = error.statusCode || 500;
     app.log.error({
       requestId: request.id,
