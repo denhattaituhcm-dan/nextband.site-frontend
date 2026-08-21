@@ -105,10 +105,19 @@ export class ExamSubmissionService {
     }
 
     if (examId) where.examId = examId;
-    if (status) where.status = status;
-
+    const sortFieldMap: Record<string, string> = {
+      newest: "createdAt",
+      createdAt: "createdAt",
+      updatedAt: "updatedAt",
+      score: "totalScore",
+      totalScore: "totalScore",
+      status: "status",
+      submittedAt: "submittedAt",
+      startedAt: "startedAt",
+    };
+    const orderField = (sortBy && sortFieldMap[sortBy]) ? sortFieldMap[sortBy] : "createdAt";
     const orderBy: any = {};
-    orderBy[sortBy === "createdAt" ? "createdAt" : sortBy] = sortOrder;
+    orderBy[orderField] = sortOrder;
 
     const [data, total] = await Promise.all([
       this.repo.findMany(
