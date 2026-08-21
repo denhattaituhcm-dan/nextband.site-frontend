@@ -1,5 +1,5 @@
 import esbuild from "esbuild";
-import { mkdirSync, writeFileSync } from "fs";
+import { mkdirSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -8,20 +8,8 @@ const rootDir = resolve(__dirname, "..");
 
 mkdirSync(resolve(rootDir, "api"), { recursive: true });
 
-// 1. Bundle server/app.ts directly into api/server.cjs (Pre-compiled CommonJS for zero-overhead Vercel packaging)
-await esbuild.build({
-  entryPoints: [resolve(rootDir, "server/app.ts")],
-  bundle: true,
-  platform: "node",
-  format: "cjs",
-  outfile: resolve(rootDir, "api/server.cjs"),
-  external: ["@prisma/client", "@vercel/node"],
-});
-
-// 2. Write lightweight api/index.js handler that Vercel recognizes natively
-const indexCode = `import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-const { buildApp } = require("./server.cjs");
+const entryCode = `
+import { buildApp } from "../server/app.js";
 
 let fastifyApp = null;
 
@@ -66,5 +54,17 @@ export default async function handler(req, res) {
 }
 `;
 
-writeFileSync(resolve(rootDir, "api/index.js"), indexCode);
-console.log("✅ API Serverless Gateway (api/index.js + api/server.cjs) created in 100ms!");
+await esbuild.build({
+  stdin: {
+    contents: entryCode,
+    resolveDir: resolve(rootDir, "api"),
+    loader: "ts",
+  },
+  bundle: true,
+  platform: "node",
+  format: "esm",
+  outfile: resolve(rootDir, "api/index.js"),
+  external: ["@prisma/client", "@vercel/node"],
+});
+
+console.log("✅ 100% self-contained Fastify Serverless Gateway bundled into api/index.js!");
