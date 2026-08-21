@@ -2,6 +2,7 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { lessonsApi, submissionsApi } from "@/lib/api";
+import { deriveHomeworkStatus, HomeworkStatus } from "@/types/homework";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -184,16 +185,9 @@ export default function StudentLessonViewerPage() {
   // Homework items formatted for Practice Platform
   const homeworkList = lessons.map((item: any, idx: number) => {
     const sub = submissionsMap[item.id] || item.submission;
-    let status: "NOT_STARTED" | "IN_PROGRESS" | "SUBMITTED" | "REVIEWED" | "REVISION_REQUIRED" = "NOT_STARTED";
-
-    // Sole Source of Truth: submission.status & revisionRequired
-    if (sub?.status === "graded" || sub?.status === "GRADED" || sub?.grade_status === "graded") {
-      status = sub?.revisionRequired ? "REVISION_REQUIRED" : "REVIEWED";
-    } else if (sub?.status === "submitted" || sub?.status === "SUBMITTED") {
-      status = "SUBMITTED";
-    } else if (sub?.status === "in_progress" || sub?.status === "IN_PROGRESS") {
-      status = "IN_PROGRESS";
-    }
+    const derived = deriveHomeworkStatus(sub);
+    const status: "NOT_STARTED" | "IN_PROGRESS" | "SUBMITTED" | "REVIEWED" | "REVISION_REQUIRED" =
+      derived === "GRADED" ? "REVIEWED" : derived === "GRADING" ? "SUBMITTED" : derived;
 
     return {
       id: item.id,
@@ -222,6 +216,7 @@ export default function StudentLessonViewerPage() {
             Cần sửa bài (Attempt 2)
           </Badge>
         );
+      case "GRADED":
       case "REVIEWED":
         return (
           <Badge variant="success">
@@ -230,6 +225,7 @@ export default function StudentLessonViewerPage() {
           </Badge>
         );
       case "SUBMITTED":
+      case "GRADING":
         return (
           <Badge variant="warning">
             <Clock className="h-3 w-3" />
