@@ -111552,7 +111552,7 @@ async function buildApp() {
   return app;
 }
 
-// api/_temp_index.ts
+// <stdin>
 var fastifyApp = null;
 async function handler(req, res) {
   try {

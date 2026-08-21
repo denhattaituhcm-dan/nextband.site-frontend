@@ -1735,7 +1735,7 @@ export const classStudentsApi = {
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/classes/my-classes`, {
+      const res = await fetchWithResilience(`${API_BASE_URL}/classes/my-classes`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -1752,6 +1752,12 @@ export const classStudentsApi = {
         return { status: "ok", data };
       }
 
+      // Fastify returned 4xx / 5xx -> Attempt Safe Read-Only Supabase Fallback before giving up
+      const fallbackResult = await classStudentsApi.readOnlySupabaseFallback();
+      if (fallbackResult) {
+        return fallbackResult;
+      }
+
       const errBody = await res.json().catch(() => ({}));
       return {
         status: "api_error",
@@ -1759,10 +1765,74 @@ export const classStudentsApi = {
         message: errBody?.error || errBody?.message || "Không thể tải danh sách lớp học",
       };
     } catch (networkErr: any) {
+      // Network failure / offline -> Attempt Safe Read-Only Supabase Fallback
+      const fallbackResult = await classStudentsApi.readOnlySupabaseFallback();
+      if (fallbackResult) {
+        return fallbackResult;
+      }
+
       return {
         status: "network_error",
         message: networkErr?.message || "Không thể kết nối tới máy chủ",
       };
+    }
+  },
+
+  /**
+   * Safe Read-Only Resilience Fallback for Class Discovery
+   * Allowed ONLY for non-mutating discovery when Fastify Gateway is degraded (Invariant CORE-009).
+   */
+  readOnlySupabaseFallback: async (): Promise<MyClassesResult | null> => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return { status: "unauthenticated" };
+
+      const { data: memberships, error } = await supabase
+        .from("class_students")
+        .select(`
+          id,
+          class_id,
+          status,
+          joined_at,
+          classes:class_id (
+            id,
+            name,
+            course_id,
+            is_active,
+            courses:course_id (
+              id,
+              title
+            )
+          )
+        `)
+        .eq("student_id", user.id);
+
+      if (!error && Array.isArray(memberships)) {
+        const mapped: MyClassEnrollment[] = memberships
+          .filter((m: any) => m.classes)
+          .map((m: any) => {
+            const cls = Array.isArray(m.classes) ? m.classes[0] : m.classes;
+            const course = Array.isArray(cls?.courses) ? cls?.courses[0] : cls?.courses;
+            return {
+              id: m.id,
+              classId: cls?.id || m.class_id,
+              className: cls?.name || "Lớp học",
+              courseId: cls?.course_id || course?.id || "",
+              courseTitle: course?.title || cls?.name || "Khóa học",
+              teacherName: null,
+              isActive: cls?.is_active ?? true,
+              membershipStatus: (m.status || "ACTIVE").toUpperCase(),
+              joinedAt: m.joined_at || new Date().toISOString(),
+            };
+          });
+
+        return { status: "ok", data: mapped };
+      }
+      return null;
+    } catch {
+      return null;
     }
   },
 };
@@ -3126,22 +3196,113 @@ export const lessonsApi = {
     }
 
     const token = await getAuthToken();
-    const response = await fetch(`${API_BASE_URL}/classes/${classId}/lessons`, {
-      headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/classes/${classId}/lessons`, {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
 
-    if (response.ok) {
-      const result = await response.json();
-      if (result?.success && result?.data) {
-        return result.data;
+      if (response.ok) {
+        const result = await response.json();
+        if (result?.success && result?.data) {
+          return result;
+        }
+        if (result?.data) {
+          return { success: true, data: result.data };
+        }
+        return { success: true, data: result };
       }
-      return result;
+    } catch {
+      // Fastify backend offline or test environment -> safe Read-Only Supabase fallback
     }
 
-    const errData = await response.json().catch(() => ({}));
-    throw new Error(errData?.error || errData?.message || "Không thể tải lộ trình bài học");
+    // 1. Fetch class & course info from Supabase
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthenticated");
+
+    const { data: cls, error: clsErr } = await supabase
+      .from("classes")
+      .select("id, name, course_id, courses(*)")
+      .eq("id", classId)
+      .single();
+
+    if (clsErr || !cls) {
+      throw new Error("Không tìm thấy thông tin lớp học");
+    }
+
+    const courseObj = Array.isArray(cls.courses) ? cls.courses[0] : cls.courses;
+    const courseId = cls.course_id || courseObj?.id;
+    const courseTitle = courseObj?.title || cls.name || "Lớp học";
+    const className = cls.name || courseTitle || "Lớp học";
+
+    let exams: any[] = [];
+    if (courseId) {
+      const { data: examData } = await supabase
+        .from("exams")
+        .select("id, title, description, week, exam_type, exam_sections(id, section_type, title, instructions, order_index)")
+        .eq("course_id", courseId)
+        .order("week", { ascending: true });
+      exams = examData || [];
+    }
+
+    const examIds = exams.map((e) => e.id);
+    let submissionsMap: Record<string, any> = {};
+
+    if (examIds.length > 0) {
+      const { data: subs } = await supabase
+        .from("exam_submissions")
+        .select("id, exam_id, status, total_score, submitted_at")
+        .eq("student_id", user.id)
+        .in("exam_id", examIds);
+
+      (subs || []).forEach((s: any) => {
+        submissionsMap[s.exam_id] = s;
+      });
+    }
+
+    const completedLessons = exams.filter((e) => {
+      const sub = submissionsMap[e.id];
+      return sub && ["submitted", "SUBMITTED", "graded", "GRADED"].includes(sub.status);
+    }).length;
+
+    return {
+      success: true,
+      data: {
+        classId,
+        className,
+        courseTitle,
+        progress: {
+          completedLessons,
+          totalLessons: exams.length,
+          percentage: exams.length > 0 ? Math.round((completedLessons / exams.length) * 100) : 0,
+        },
+        lessons: exams.map((e: any, idx: number) => {
+          const sub = submissionsMap[e.id];
+          return {
+            id: e.id,
+            title: e.title || `Bài tập ${idx + 1}`,
+            description: e.description || "",
+            week: e.week || 1,
+            lessonNumber: idx + 1,
+            homework: {
+              id: e.id,
+              title: e.title || `Bài tập ${idx + 1}`,
+              deadline: null,
+              status: (sub?.status || "NOT_STARTED").toUpperCase(),
+              score: sub?.total_score ?? null,
+            },
+            progress: {
+              homeworkSubmitted: !!sub && ["submitted", "SUBMITTED", "graded", "GRADED"].includes(sub.status),
+              homeworkGraded: !!sub && ["graded", "GRADED"].includes(sub.status),
+              lessonCompleted: !!sub && ["submitted", "SUBMITTED", "graded", "GRADED"].includes(sub.status),
+            },
+          };
+        }),
+      },
+    };
   },
 };
 

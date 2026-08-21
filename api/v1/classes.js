@@ -111552,7 +111552,7 @@ async function buildApp() {
   return app;
 }
 
-// api/v1/_temp_classes.ts
+// <stdin>
 var fastifyApp = null;
 async function handler(req, res) {
   try {
