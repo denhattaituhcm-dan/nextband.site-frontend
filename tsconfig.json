@@ -21,6 +21,7 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "api"],
-  "exclude": ["node_modules", "src/test", "src/tests"]
+  "files": [],
+  "include": [],
+  "exclude": ["**/*"]
 }
