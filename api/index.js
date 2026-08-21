@@ -1,8 +1,10 @@
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 const { buildApp } = require("./server.cjs");
 
 let fastifyApp = null;
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   try {
     if (!fastifyApp) {
       fastifyApp = await buildApp();
@@ -40,4 +42,4 @@ module.exports = async function handler(req, res) {
       })
     );
   }
-};
+}

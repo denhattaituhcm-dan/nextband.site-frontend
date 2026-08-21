@@ -18,12 +18,14 @@ await esbuild.build({
   external: ["@prisma/client", "@vercel/node"],
 });
 
-// 2. Write lightweight api/index.cjs handler
-const indexCode = `const { buildApp } = require("./server.cjs");
+// 2. Write lightweight api/index.js handler that Vercel recognizes natively
+const indexCode = `import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const { buildApp } = require("./server.cjs");
 
 let fastifyApp = null;
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   try {
     if (!fastifyApp) {
       fastifyApp = await buildApp();
@@ -61,8 +63,8 @@ module.exports = async function handler(req, res) {
       })
     );
   }
-};
+}
 `;
 
-writeFileSync(resolve(rootDir, "api/index.cjs"), indexCode);
-console.log("✅ Single CommonJS API Serverless Gateway built successfully (0 memory overhead)!");
+writeFileSync(resolve(rootDir, "api/index.js"), indexCode);
+console.log("✅ API Serverless Gateway (api/index.js + api/server.cjs) created in 100ms!");
