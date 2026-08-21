@@ -57,8 +57,11 @@ export function QuickTrialModal({
       const goal = `${courseTitle} | Ca học: ${shiftPreference}`;
 
       await submitContactLead({
+        leadType: "QUICK_TRIAL",
         fullName: cleanName,
         phone: cleanPhone,
+        course: courseTitle,
+        preferredSchedule: shiftPreference,
         goal,
         source: `trial_modal_${selectedCourse}`,
       });

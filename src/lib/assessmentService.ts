@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { IeltsBandCalculator, IeltsSectionType } from "./ieltsBandCalculator";
+import { submitContactLead } from "./contactService";
 
 export interface AssessmentLead {
   id: string;
@@ -248,11 +249,15 @@ export async function submitAssessmentBooking(params: {
   preferredDate?: string;
 }): Promise<{ success: boolean; lead: AssessmentLead; message?: string }> {
   const now = new Date().toISOString();
+  const cleanName = params.fullName.trim();
+  const cleanPhone = params.phone.trim().replace(/\s+/g, "");
+  const cleanEmail = params.email?.trim() || "";
+
   const lead: AssessmentLead = {
     id: `assess-${Date.now()}`,
-    fullName: params.fullName.trim(),
-    phone: params.phone.trim(),
-    email: params.email?.trim() || "",
+    fullName: cleanName,
+    phone: cleanPhone,
+    email: cleanEmail,
     currentLevel: params.currentLevel || "Mới bắt đầu",
     targetBand: params.targetBand || "IELTS 6.5",
     testFormat: params.testFormat || "online",
@@ -264,26 +269,29 @@ export async function submitAssessmentBooking(params: {
   saveLocalAssessmentLead(lead);
 
   try {
-    const { data, error } = await supabase
-      .from("contact_leads")
-      .insert({
-        full_name: lead.fullName,
-        phone: lead.phone,
-        email: lead.email,
-        goal: `Khảo thí: ${lead.currentLevel} -> Mục tiêu ${lead.targetBand} (${lead.testFormat})`,
-        source: "assessment_page",
-        status: "NEW",
-      })
-      .select()
-      .single();
+    const formattedGoal = `[Khảo Thí] Trình độ: ${lead.currentLevel} -> Mục tiêu: ${lead.targetBand} (${lead.testFormat === "online" ? "Online LMS" : "Trực tiếp tại cơ sở"})${lead.preferredDate ? ` | Ngày hẹn: ${lead.preferredDate}` : ""}`;
 
-    if (error) {
-      console.warn("Supabase lead notice:", error.message);
-    } else if (data?.id) {
-      lead.id = data.id;
+    const contactRes = await submitContactLead({
+      leadType: "ASSESSMENT",
+      fullName: cleanName,
+      phone: cleanPhone,
+      email: cleanEmail,
+      goal: formattedGoal,
+      message: formattedGoal,
+      source: "assessment_page",
+      metadata: {
+        currentLevel: lead.currentLevel,
+        targetBand: lead.targetBand,
+        testFormat: lead.testFormat,
+        preferredDate: lead.preferredDate,
+      },
+    });
+
+    if (contactRes?.lead?.id) {
+      lead.id = contactRes.lead.id;
     }
   } catch (err: any) {
-    console.warn("Supabase lead sync notice:", err?.message);
+    console.warn("[AssessmentService] Sync notice:", err?.message || err);
   }
 
   return {

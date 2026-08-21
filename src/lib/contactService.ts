@@ -39,31 +39,56 @@ function saveLocalLead(lead: ContactLead) {
   }
 }
 
-/**
- * Submit a real contact lead
- * 1. Calls Backend API `POST /leads` to record lead & trigger instant staff email alert to arisieltsdeeplearning@gmail.com.
- * 2. Fallbacks to Supabase + LocalStorage if offline or backend is unreachable to guarantee zero lead loss.
- */
-export async function submitContactLead(params: {
+export type LeadType = "QUICK_TRIAL" | "CONTACT" | "ASSESSMENT";
+
+export interface SubmitLeadParams {
+  leadType?: LeadType;
   fullName: string;
   phone: string;
   email?: string;
+  course?: string;
+  preferredSchedule?: string;
   goal?: string;
+  message?: string;
   source?: string;
-}): Promise<{ success: boolean; lead: ContactLead; message?: string }> {
+  metadata?: Record<string, any>;
+}
+
+/**
+ * Submit a real contact lead
+ * 1. Calls Vercel Serverless API `POST /api/v1/leads` which saves to Supabase (Source of Truth)
+ *    and dispatches to Google Apps Script (Gmail + Google Sheet) asynchronously.
+ * 2. Fallbacks to direct Supabase SDK + LocalStorage if network is completely down.
+ */
+export async function submitContactLead(
+  params: SubmitLeadParams
+): Promise<{ success: boolean; lead: ContactLead; message?: string }> {
   const now = new Date().toISOString();
+  const leadType: LeadType = params.leadType || "CONTACT";
+  const cleanName = params.fullName.trim();
+  const cleanPhone = params.phone.trim().replace(/\s+/g, "");
+  const cleanEmail = params.email?.trim() || "";
+
+  // Prepare fallback goal string
+  let fallbackGoal = params.goal || params.message || "";
+  if (leadType === "QUICK_TRIAL") {
+    fallbackGoal = `[Học Thử 02 Buổi] Khóa: ${params.course || "N/A"} | Ca học: ${params.preferredSchedule || "Linh hoạt"}`;
+  } else if (leadType === "ASSESSMENT") {
+    fallbackGoal = `[Khảo Thí] Trình độ: ${params.metadata?.currentLevel || "N/A"} -> Mục tiêu: ${params.metadata?.targetBand || "N/A"}`;
+  }
+
   let lead: ContactLead = {
     id: `lead-${Date.now()}`,
-    fullName: params.fullName.trim(),
-    phone: params.phone.trim(),
-    email: params.email?.trim() || "",
-    goal: params.goal?.trim() || "",
-    source: params.source || "contact_page",
+    fullName: cleanName,
+    phone: cleanPhone,
+    email: cleanEmail,
+    goal: fallbackGoal,
+    source: params.source || `web_${leadType.toLowerCase()}`,
     status: "NEW",
     createdAt: now,
   };
 
-  // 1. Try Backend Fastify Server
+  // 1. Primary: Call Vercel Serverless API /api/v1/leads
   try {
     const res = await fetch(`${API_BASE_URL}/leads`, {
       method: "POST",
@@ -71,11 +96,15 @@ export async function submitContactLead(params: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        fullName: lead.fullName,
-        phone: lead.phone,
-        email: lead.email || undefined,
-        goal: lead.goal || undefined,
+        leadType,
+        fullName: cleanName,
+        phone: cleanPhone,
+        email: cleanEmail || undefined,
+        course: params.course,
+        preferredSchedule: params.preferredSchedule,
+        message: params.message || params.goal,
         source: lead.source,
+        metadata: params.metadata,
       }),
     });
 
@@ -88,7 +117,6 @@ export async function submitContactLead(params: {
           createdAt: data.data.createdAt || lead.createdAt,
         };
       }
-      // Save copy in local for fast reference
       saveLocalLead(lead);
       return {
         success: true,
@@ -97,18 +125,18 @@ export async function submitContactLead(params: {
       };
     }
   } catch (apiErr) {
-    console.warn("[ContactService] Backend API not reachable, falling back to direct persistence:", apiErr);
+    console.warn("[ContactService] Vercel Serverless API unreachable, executing direct Supabase fallback:", apiErr);
   }
 
-  // 2. Direct Supabase Fallback (if backend is temporarily offline)
+  // 2. Direct Supabase Fallback (if client network glitch prevented hitting Vercel API)
   try {
     const { data, error } = await supabase
       .from("contact_leads")
       .insert({
         full_name: lead.fullName,
         phone: lead.phone,
-        email: lead.email,
-        goal: lead.goal,
+        email: lead.email || null,
+        goal: lead.goal || null,
         source: lead.source,
         status: lead.status,
       })

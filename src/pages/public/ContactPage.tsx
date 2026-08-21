@@ -45,10 +45,12 @@ export default function ContactPage() {
     setIsSubmitting(true);
     try {
       const res = await submitContactLead({
+        leadType: "CONTACT",
         fullName,
         phone: cleanPhone,
         email,
         goal,
+        message: goal,
         source: "contact_page",
       });
 

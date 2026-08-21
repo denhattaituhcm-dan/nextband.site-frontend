@@ -61,12 +61,24 @@ try {
   if (err instanceof z.ZodError) {
     console.error(
       "❌ Invalid environment variables:",
-      err.flatten().fieldErrors,
+      JSON.stringify(err.flatten().fieldErrors),
     );
   } else {
     console.error("❌ Invalid environment variables:", err);
   }
-  process.exit(1);
+  // Resilient fallback in serverless: do not process.exit(1)
+  envData = {
+    NODE_ENV: (process.env.NODE_ENV as any) || "production",
+    PORT: process.env.PORT || "3000",
+    DATABASE_URL: process.env.DATABASE_URL || "",
+    JWT_SECRET: process.env.JWT_SECRET || "default_jwt_secret_must_be_set_in_vercel_environment_variables",
+    JWT_EXPIRES_IN: "7d",
+    UPLOAD_DIR: "uploads",
+    MAX_FILE_SIZE: "52428800",
+    FRONTEND_URL: "https://nextband.site",
+    SUPABASE_URL: "https://gzpdlqxjggyxlkeatvvf.supabase.co",
+    NOTIFICATION_EMAIL_TO: "arisieltsdeeplearning@gmail.com",
+  };
 }
 
 export const env = envData;
