@@ -65,11 +65,13 @@ export default function Auth() {
       if (savedTarget) {
         sessionStorage.removeItem("auth_redirect_target");
       }
-      // Automatic role-based routing:
-      // If user has teacher or admin role (logged in via Password), redirect to Teacher Workspace for grading
-      if (user.roles?.includes("teacher") || user.roles?.includes("admin")) {
-        const adminTarget = studentTarget.startsWith("/admin") ? studentTarget : "/admin/teacher-workspace";
+      // Priority-based routing: admin > teacher > student
+      if (user.roles?.includes("admin")) {
+        const adminTarget = studentTarget.startsWith("/admin") ? studentTarget : "/admin";
         navigate(adminTarget, { replace: true });
+      } else if (user.roles?.includes("teacher")) {
+        const teacherTarget = studentTarget.startsWith("/admin") ? studentTarget : "/admin/teacher-workspace";
+        navigate(teacherTarget, { replace: true });
       } else {
         // Students redirect to Student Workspace /app (or next destination)
         navigate(studentTarget, { replace: true });
@@ -240,7 +242,7 @@ export default function Auth() {
         </div>
       </div>
 
-      {/* Right side - Student Login Workspace Form */}
+      {/* Right side - Unified Single Sign-On Portal */}
       <div className="flex-1 flex items-center justify-center px-6 lg:px-12 py-6 lg:py-8 z-10">
         <Card className="w-full max-w-[520px] border border-border shadow-lg rounded-2xl bg-card p-7 sm:p-8">
           <CardHeader className="space-y-1.5 text-center p-0 pb-5">
@@ -254,15 +256,15 @@ export default function Auth() {
               </Link>
             </div>
             <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-              Đăng nhập
+              Đăng nhập hệ thống
             </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Dành cho Học viên, Giáo viên và Quản trị viên
+            </p>
           </CardHeader>
           <CardContent className="space-y-6 p-0">
-            {/* DÀNH CHO HỌC VIÊN + Google Button */}
-            <div className="space-y-3">
-              <div className="text-xs font-bold tracking-wider text-primary uppercase text-center">
-                🎓 DÀNH CHO HỌC VIÊN
-              </div>
+            {/* Google Single Sign-On Button */}
+            <div className="space-y-2">
               <Button
                 type="button"
                 variant="outline"
@@ -301,11 +303,8 @@ export default function Auth() {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                   />
                 </svg>
-                <span className="tracking-tight">Đăng nhập bằng Google</span>
+                <span className="tracking-tight">Tiếp tục với Google</span>
               </Button>
-              <p className="text-xs text-center text-muted-foreground font-normal">
-                Cách đăng nhập nhanh chóng nhất
-              </p>
             </div>
 
             {/* Divider */}
@@ -315,12 +314,12 @@ export default function Auth() {
               </div>
               <div className="relative flex justify-center text-xs uppercase tracking-wider">
                 <span className="bg-card px-3 text-muted-foreground font-semibold">
-                  Giáo viên &amp; Quản trị
+                  hoặc đăng nhập bằng email
                 </span>
               </div>
             </div>
 
-            {/* Teacher & Admin Form */}
+            {/* Password Login Form */}
             <form onSubmit={handleSignIn} className="space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="login-email" className="text-xs font-semibold text-foreground flex items-center gap-1.5">

@@ -2714,72 +2714,28 @@ export const classesApi = {
   },
 
   claimProfileOnLogin: async (authUser: { id: string; email: string; user_metadata?: any }) => {
-    if (!authUser.email) return;
+    if (!authUser.id) return;
 
-    const email = authUser.email.toLowerCase();
+    const email = authUser.email ? authUser.email.toLowerCase() : null;
     const fullName =
       authUser.user_metadata?.full_name ||
       authUser.user_metadata?.name ||
-      email.split("@")[0];
+      (email ? email.split("@")[0] : "User");
     const avatarUrl =
       authUser.user_metadata?.avatar_url ||
       authUser.user_metadata?.picture ||
       null;
 
-    // Check if a pre-provisioned profile exists for this email
-    const { data: existingProfile } = await supabase
-      .from("profiles")
-      .select("id, user_id")
-      .eq("email", email)
-      .maybeSingle();
+    // 1. Resolve Canonical Profile by auth.users.id
+    try {
+      const { data: existingProfile } = await supabase
+        .from("profiles")
+        .select("id, user_id")
+        .eq("user_id", authUser.id)
+        .maybeSingle();
 
-    if (existingProfile) {
-      const oldIds = [existingProfile.id, existingProfile.user_id].filter(Boolean);
-
-      // If user_id is not set or different, update it to claim ownership
-      if (existingProfile.user_id !== authUser.id) {
-        await supabase
-          .from("profiles")
-          .update({
-            user_id: authUser.id,
-            full_name: fullName,
-            avatar_url: avatarUrl,
-          })
-          .eq("id", existingProfile.id);
-      }
-
-      // Migrate any class_students or enrollments created with pre-provisioned profile IDs
-      for (const oldId of oldIds) {
-        if (oldId && oldId !== authUser.id) {
-          // Check for duplicate class_students with same class_id and delete old duplicates first
-          const { data: existingTargetClasses } = await supabase
-            .from("class_students")
-            .select("id, class_id")
-            .eq("student_id", authUser.id);
-
-          const existingClassIds = (existingTargetClasses || []).map((r) => r.class_id);
-          if (existingClassIds.length > 0) {
-            await supabase
-              .from("class_students")
-              .delete()
-              .eq("student_id", oldId)
-              .in("class_id", existingClassIds);
-          }
-
-          await supabase
-            .from("class_students")
-            .update({ student_id: authUser.id })
-            .eq("student_id", oldId);
-
-          await supabase
-            .from("enrollments")
-            .update({ student_id: authUser.id })
-            .eq("student_id", oldId);
-        }
-      }
-    } else {
-      // Brand new login (e.g. via Google SSO): Ensure profile exists in profiles table
-      try {
+      if (!existingProfile) {
+        // First-time login: create baseline canonical profile
         await supabase
           .from("profiles")
           .upsert(
@@ -2793,12 +2749,12 @@ export const classesApi = {
             },
             { onConflict: "user_id" }
           );
-      } catch (upsertErr) {
-        console.warn("Profiles auto-provision notice:", upsertErr);
       }
+    } catch (profileErr) {
+      console.warn("Canonical profile resolution warning:", profileErr);
     }
 
-    // Ensure user_roles has 'student' role for this user if not already present
+    // 2. Ensure brand new accounts have baseline 'student' role if completely empty
     try {
       const { data: existingRoles } = await supabase
         .from("user_roles")
@@ -2814,7 +2770,7 @@ export const classesApi = {
           });
       }
     } catch (roleErr) {
-      console.warn("User role auto-provision notice:", roleErr);
+      console.warn("User role check warning:", roleErr);
     }
   },
 

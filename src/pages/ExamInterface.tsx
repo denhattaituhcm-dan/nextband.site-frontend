@@ -132,8 +132,14 @@ export default function ExamInterface() {
 
   const syncEngineRef = useRef<ExamSyncEngine | null>(null);
   const tabLeaseManagerRef = useRef<TabLeaseManager | null>(null);
-  const isSubmissionCompletedRef = useRef<boolean>(false);
+  const perfMetricsRef = useRef({
+    mountTime: Date.now(),
+    examLatencyMs: 0,
+    submissionLatencyMs: 0,
+    logged: false,
+  });
 
+  const isSubmissionCompletedRef = useRef<boolean>(false);
   const questionRefs = useRef<Map<string, HTMLElement>>(new Map());
 
   const {
@@ -180,7 +186,7 @@ export default function ExamInterface() {
       const result = await submissionsApi.start(examId);
       return result;
     },
-    enabled: !!examId && !!user && !!exam,
+    enabled: !!examId && !!user,
     retry: false,
   });
 
@@ -189,6 +195,31 @@ export default function ExamInterface() {
     (submissionError as any)?.response?.data?.error ||
     (submissionError as any)?.message ||
     "";
+
+  // Telemetry: Record latency breakdown
+  useEffect(() => {
+    if (examData && !perfMetricsRef.current.examLatencyMs) {
+      perfMetricsRef.current.examLatencyMs = Date.now() - perfMetricsRef.current.mountTime;
+    }
+  }, [examData]);
+
+  useEffect(() => {
+    if (submissionData && !perfMetricsRef.current.submissionLatencyMs) {
+      perfMetricsRef.current.submissionLatencyMs = Date.now() - perfMetricsRef.current.mountTime;
+    }
+  }, [submissionData]);
+
+  useEffect(() => {
+    if (examData && submissionData && !perfMetricsRef.current.logged) {
+      perfMetricsRef.current.logged = true;
+      const totalMs = Date.now() - perfMetricsRef.current.mountTime;
+      console.debug(
+        `%c[Exam Latency Audit]%c Total: ${totalMs}ms | Exam: ${perfMetricsRef.current.examLatencyMs}ms | Submission: ${perfMetricsRef.current.submissionLatencyMs}ms | Resumed: ${!!submissionData?.isResumed}`,
+        "color: #10b981; font-weight: bold",
+        "color: inherit"
+      );
+    }
+  }, [examData, submissionData]);
 
   // Initialize Tab Lease Manager & Sync Engine
   useEffect(() => {
@@ -254,7 +285,7 @@ export default function ExamInterface() {
     autoSubmitTriggeredRef.current = false;
   }, [submission?.id]);
 
-  // Load existing answers if resuming
+  // Load existing answers if resuming (only when answers are not already provided in submission payload)
   const { data: savedAnswersData } = useQuery({
     queryKey: ["exam-saved-answers", submission?.id],
     queryFn: async () => {
@@ -262,65 +293,61 @@ export default function ExamInterface() {
       const result = await submissionsApi.getById(submission.id);
       return result?.answers || [];
     },
-    enabled: !!submission?.id,
+    enabled: !!submission?.id && (!submission?.answers || submission.answers.length === 0),
   });
 
-  // 1. Restore offline local draft (Triple-key identity check + conflict check)
+  // Unified Answer Hydration: Server Baseline + Offline Local Draft Overlay (Deterministic, No Overwrite Race)
   useEffect(() => {
-    if (!submission?.id || !user?.id || !examId || localDraftRestoredRef.current) return;
+    if (!submission?.id || !user?.id || !examId) return;
 
     let isMounted = true;
     (async () => {
+      // 1. Server Baseline
+      const rawServerAnswers = (submission?.answers && submission.answers.length > 0)
+        ? submission.answers
+        : savedAnswersData || [];
+
+      const serverMap: Record<string, any> = {};
+      rawServerAnswers.forEach((a: any) => {
+        if (!a.answerText) return;
+        const parsed = safeJsonParse(a.answerText);
+        serverMap[a.questionId] = parsed ?? a.answerText;
+      });
+
+      // 2. Offline Local Draft Overlay
+      let localDraftMap: Record<string, any> = {};
       try {
         const result = await loadDraftLocally(submission.id, user.id, examId);
-        if (!isMounted) return;
-
         if (result.status === "DRAFT_LOADED") {
-          const draft = result.draft;
-          draftVersionRef.current = draft.draftVersion;
-
-          // Conflict check: Only restore if draft was saved after server baseline or server has no baseline
-          const isNewerThanServer = !serverHydratedAtRef.current || draft.lastSavedAt >= serverHydratedAtRef.current;
-          if (isNewerThanServer && Object.keys(draft.answers).length > 0) {
-            setAnswers((prev) => {
-              const merged = { ...draft.answers, ...prev };
-              answersRef.current = merged;
-              return merged;
-            });
-            localDraftRestoredRef.current = true;
-            toast({
-              title: "Đã khôi phục bản nháp",
-              description: "Các câu trả lời offline đã được tự động khôi phục từ bộ nhớ cục bộ.",
-            });
-          }
+          draftVersionRef.current = result.draft.draftVersion;
+          localDraftMap = result.draft.answers || {};
         }
       } catch (err) {
         console.error("[DraftStore Restore Error]", err);
+      }
+
+      if (!isMounted) return;
+
+      // 3. Deterministic Merge: Server (Base) -> Local Draft (Overlay) -> Current In-Memory State
+      setAnswers((prev) => {
+        const merged = { ...serverMap, ...localDraftMap, ...prev };
+        answersRef.current = merged;
+        return merged;
+      });
+
+      if (Object.keys(localDraftMap).length > 0 && !localDraftRestoredRef.current) {
+        localDraftRestoredRef.current = true;
+        toast({
+          title: "Đã khôi phục bản nháp",
+          description: "Các câu trả lời offline đã được tự động khôi phục từ bộ nhớ cục bộ.",
+        });
       }
     })();
 
     return () => {
       isMounted = false;
     };
-  }, [submission?.id, user?.id, examId, toast]);
-
-  // 2. Restore saved answers from server
-  useEffect(() => {
-    if (savedAnswersData && savedAnswersData.length > 0) {
-      serverHydratedAtRef.current = Date.now();
-      const restored: Record<string, any> = {};
-      savedAnswersData.forEach((a: any) => {
-        if (!a.answerText) return;
-        const parsed = safeJsonParse(a.answerText);
-        restored[a.questionId] = parsed ?? a.answerText;
-      });
-      setAnswers((prev) => {
-        const merged = { ...restored, ...prev };
-        answersRef.current = merged;
-        return merged;
-      });
-    }
-  }, [savedAnswersData]);
+  }, [submission?.id, submission?.answers, savedAnswersData, user?.id, examId, toast]);
 
   // Set default active section
   useEffect(() => {
@@ -782,8 +809,52 @@ export default function ExamInterface() {
 
   if (examLoading || submissionLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="min-h-screen bg-slate-50 flex flex-col">
+        {/* Header Skeleton */}
+        <header className="sticky top-0 z-50 bg-white border-b border-border shadow-xs px-4 py-3">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-24 bg-slate-200 rounded-md animate-pulse" />
+              <div className="h-6 w-px bg-slate-200" />
+              <div className="h-6 w-48 bg-slate-200 rounded-md animate-pulse" />
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="h-8 w-28 bg-slate-200 rounded-full animate-pulse" />
+              <div className="h-9 w-24 bg-primary/20 rounded-md animate-pulse" />
+            </div>
+          </div>
+        </header>
+
+        {/* Section Tabs Skeleton */}
+        <div className="bg-white border-b border-border py-2 px-4">
+          <div className="max-w-7xl mx-auto flex items-center gap-2">
+            <div className="h-8 w-24 bg-primary/15 rounded-lg animate-pulse" />
+            <div className="h-8 w-24 bg-slate-200 rounded-lg animate-pulse" />
+            <div className="h-8 w-24 bg-slate-200 rounded-lg animate-pulse" />
+            <div className="h-8 w-24 bg-slate-200 rounded-lg animate-pulse" />
+          </div>
+        </div>
+
+        {/* Content Body Skeleton */}
+        <main className="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 space-y-6">
+          <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
+            <div className="h-6 w-1/3 bg-slate-200 rounded animate-pulse" />
+            <div className="h-4 w-2/3 bg-slate-100 rounded animate-pulse" />
+            <div className="h-24 w-full bg-slate-50 rounded-lg border border-slate-100 p-4 space-y-2">
+              <div className="h-4 w-full bg-slate-200 rounded animate-pulse" />
+              <div className="h-4 w-4/5 bg-slate-200 rounded animate-pulse" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
+            <div className="h-5 w-40 bg-slate-200 rounded animate-pulse" />
+            <div className="space-y-3">
+              <div className="h-12 w-full bg-slate-100 rounded-lg animate-pulse" />
+              <div className="h-12 w-full bg-slate-100 rounded-lg animate-pulse" />
+              <div className="h-12 w-full bg-slate-100 rounded-lg animate-pulse" />
+            </div>
+          </div>
+        </main>
       </div>
     );
   }

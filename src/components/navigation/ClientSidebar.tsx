@@ -5,6 +5,8 @@ import {
   ClipboardList,
   GraduationCap,
   User,
+  Briefcase,
+  ShieldCheck,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -74,6 +76,9 @@ export function ClientSidebar() {
   const { user } = useAuth();
   const { state: lifecycleState } = useStudentLifecycle();
 
+  const isTeacher = user?.roles?.includes("teacher");
+  const isAdmin = user?.roles?.includes("admin");
+
   /**
    * INVARIANT-01 & INVARIANT-05:
    * Menu is only reduced to preEnrollmentNavigationItems when Backend
@@ -128,6 +133,43 @@ export function ClientSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Workspace Switcher for Teachers & Admins */}
+        {(isTeacher || isAdmin) && (
+          <SidebarGroup className="mt-auto border-t">
+            <SidebarGroupLabel>Không gian làm việc</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {isTeacher && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild tooltip="Teacher Workspace">
+                      <NavLink
+                        to="/admin/teacher-workspace"
+                        className="flex items-center gap-3 text-primary font-medium hover:bg-primary/10"
+                      >
+                        <Briefcase className="h-4 w-4 shrink-0" />
+                        <span>Teacher Workspace</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+                {isAdmin && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild tooltip="Quản trị hệ thống">
+                      <NavLink
+                        to="/admin"
+                        className="flex items-center gap-3 text-amber-600 dark:text-amber-400 font-medium hover:bg-amber-500/10"
+                      >
+                        <ShieldCheck className="h-4 w-4 shrink-0" />
+                        <span>Quản trị hệ thống</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="border-t p-4">

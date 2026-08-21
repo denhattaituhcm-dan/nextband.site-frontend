@@ -300,6 +300,9 @@ export class ExamSubmissionService {
           studentId: user.id,
           status: "IN_PROGRESS",
         },
+        include: {
+          answers: true,
+        },
       });
 
       if (inProgress) {
@@ -308,8 +311,10 @@ export class ExamSubmissionService {
           return {
             submission: {
               ...inProgress,
+              answers: inProgress.answers || [],
               remainingSeconds,
               serverTime: new Date().toISOString(),
+              isResumed: true,
             },
             isNew: false,
           };
@@ -327,8 +332,10 @@ export class ExamSubmissionService {
           return {
             submission: {
               ...reset,
+              answers: [],
               remainingSeconds: Math.max(1, (exam.durationMinutes || 60) * 60),
               serverTime: new Date().toISOString(),
+              isResumed: false,
             },
             isNew: false,
           };
@@ -344,6 +351,35 @@ export class ExamSubmissionService {
         });
       }
 
+      // Concurrency / Multi-tab Guard: Check if another concurrent request created IN_PROGRESS in the last 10s
+      const recentConcurrent = await tx.examSubmission.findFirst({
+        where: {
+          examId,
+          studentId: user.id,
+          status: "IN_PROGRESS",
+        },
+        orderBy: { createdAt: "desc" },
+        include: {
+          answers: true,
+        },
+      });
+
+      if (recentConcurrent) {
+        const rem = getRemainingSeconds(recentConcurrent.startedAt, exam.durationMinutes);
+        if (rem > 0) {
+          return {
+            submission: {
+              ...recentConcurrent,
+              answers: recentConcurrent.answers || [],
+              remainingSeconds: rem,
+              serverTime: new Date().toISOString(),
+              isResumed: true,
+            },
+            isNew: false,
+          };
+        }
+      }
+
       const newSubmission = await tx.examSubmission.create({
         data: {
           examId,
@@ -357,8 +393,10 @@ export class ExamSubmissionService {
       return {
         submission: {
           ...newSubmission,
+          answers: [],
           remainingSeconds: (exam.durationMinutes || 60) * 60,
           serverTime: new Date().toISOString(),
+          isResumed: false,
         },
         isNew: true,
       };

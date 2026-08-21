@@ -321,6 +321,7 @@ model Exam {
   homeworks           Homework[]
   course              Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
+  @@index([courseId])
   @@map("exams")
 }
 
@@ -342,6 +343,7 @@ model ExamSection {
   highlights      Highlight[]
   questionGroups  QuestionGroup[]
 
+  @@index([examId, orderIndex])
   @@map("exam_sections")
 }
 
@@ -358,6 +360,7 @@ model QuestionGroup {
   section      ExamSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   questions    Question[]
 
+  @@index([sectionId, orderIndex])
   @@map("question_groups")
 }
 
@@ -376,6 +379,7 @@ model Question {
   group         QuestionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
   answers       Answer[]
 
+  @@index([groupId, orderIndex])
   @@map("questions")
 }
 
@@ -399,6 +403,9 @@ model ExamSubmission {
   grader         User?            @relation("GraderSubmissions", fields: [gradedBy], references: [userId])
   student        User             @relation("StudentSubmissions", fields: [studentId], references: [userId], onDelete: Cascade)
 
+  @@index([studentId, examId, status])
+  @@index([examId])
+  @@index([studentId])
   @@map("exam_submissions")
 }
 

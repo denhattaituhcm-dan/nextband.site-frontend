@@ -66,15 +66,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq("user_id", authUser.id)
         .maybeSingle();
 
-      // 2. Fetch User Roles
+      // 2. Fetch User Roles directly from source of truth
       const { data: rolesData } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", authUser.id);
 
       const userRoles: AppRole[] = rolesData
-        ? (rolesData.map((r) => r.role) as AppRole[])
-        : ["student"];
+        ? (rolesData.map((r) => r.role as AppRole))
+        : [];
 
       setUser({
         id: authUser.id,
@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         bio: profile?.bio || null,
         phone: profile?.phone || null,
         gender: profile?.gender || null,
-        roles: userRoles.length > 0 ? userRoles : ["student"],
+        roles: userRoles,
       });
     } catch (err) {
       console.error("Failed to load user profile:", err);
