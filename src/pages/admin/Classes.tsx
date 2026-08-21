@@ -59,6 +59,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { DataTablePagination } from "@/components/admin/DataTablePagination";
 import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
 
@@ -90,6 +91,7 @@ const emptyForm = {
 };
 
 export default function AdminClasses() {
+  const { isAdmin } = useAuth();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -310,10 +312,12 @@ export default function AdminClasses() {
             </p>
           </div>
         </div>
-        <Button onClick={openCreate}>
-          <Plus className="mr-2 h-4 w-4" />
-          Thêm lớp học
-        </Button>
+        {isAdmin && (
+          <Button onClick={openCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            Thêm lớp học
+          </Button>
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -540,31 +544,33 @@ export default function AdminClasses() {
                           Workspace
                           <ArrowRight className="ml-1 h-3.5 w-3.5" />
                         </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => navigate(`/admin/classes/${cls.id}`)}>
-                              <BookOpen className="mr-2 h-4 w-4 text-emerald-600" />
-                              Mở Workspace
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => openEdit(cls)}>
-                              <Edit className="mr-2 h-4 w-4" />
-                              Sửa thông tin
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-destructive focus:text-destructive"
-                              onClick={() => setDeleteClass({ id: cls.id, name: cls.name })}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Xóa lớp
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        {isAdmin && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => navigate(`/admin/classes/${cls.id}`)}>
+                                <BookOpen className="mr-2 h-4 w-4 text-emerald-600" />
+                                Mở Workspace
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => openEdit(cls)}>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Sửa thông tin
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className="text-destructive focus:text-destructive"
+                                onClick={() => setDeleteClass({ id: cls.id, name: cls.name })}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Xóa lớp
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

@@ -112627,43 +112627,60 @@ var coursesRoutes = async (fastify) => {
     }
     const { page, limit, search, sortBy = "createdAt", sortOrder } = query.data;
     const skip = (page - 1) * limit;
-    const { level } = request.query;
+    const { level, isActive, isPublished } = request.query;
     const where = {};
     const currentUser = request.user;
     if (!currentUser) {
       where.isPublished = true;
       where.isActive = true;
     } else {
-      const hasAdminOrTeacherRole = currentUser.roles?.some(
+      const hasAdminOrTeacherRole = currentUser?.roles?.some(
         (r2) => ["admin", "teacher"].includes(r2)
       );
       if (!hasAdminOrTeacherRole) {
         where.OR = [
-          { enrollments: { some: { studentId: currentUser.id } } },
+          { enrollments: { some: { studentId: currentUser?.id } } },
           { isPublished: true, isActive: true }
         ];
       } else {
-        where.isActive = true;
+        if (isActive !== void 0) {
+          where.isActive = isActive === "true" || isActive === true;
+        } else {
+          where.isActive = true;
+        }
+        if (isPublished !== void 0) {
+          where.isPublished = isPublished === "true" || isPublished === true;
+        }
       }
     }
     if (search) {
-      where.title = { contains: search };
+      where.title = { contains: search, mode: "insensitive" };
     }
     if (level && level !== "all") {
       where.level = level;
     }
+    const sortFieldMap = {
+      newest: "createdAt",
+      createdAt: "createdAt",
+      updatedAt: "updatedAt",
+      name: "title",
+      title: "title",
+      level: "level",
+      price: "price"
+    };
+    const orderField = sortBy && sortFieldMap[sortBy] ? sortFieldMap[sortBy] : "createdAt";
     const [data, total] = await Promise.all([
       fastify.prisma.course.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { [sortBy]: sortOrder },
+        orderBy: { [orderField]: sortOrder },
         include: {
           creator: {
             select: { id: true, fullName: true, avatarUrl: true }
           },
           _count: {
-            select: { exams: true, enrollments: true }
+            select: { exams: true, enrollments: true, classes: true }
           }
         }
       }),
@@ -113244,14 +113261,27 @@ var examsRoutes = async (fastify) => {
       where.isActive = isActive === "true";
     }
     if (search) {
-      where.title = { contains: search };
+      where.title = { contains: search, mode: "insensitive" };
     }
+    const sortFieldMap = {
+      newest: "createdAt",
+      createdAt: "createdAt",
+      updatedAt: "updatedAt",
+      name: "title",
+      title: "title",
+      duration: "durationMinutes",
+      durationMinutes: "durationMinutes",
+      type: "examType",
+      examType: "examType",
+      week: "week"
+    };
+    const orderField = sortBy && sortFieldMap[sortBy] ? sortFieldMap[sortBy] : "createdAt";
     const [data, total] = await Promise.all([
       fastify.prisma.exam.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { [sortBy]: sortOrder },
+        orderBy: { [orderField]: sortOrder },
         include: {
           course: {
             select: { id: true, title: true }
@@ -115499,9 +115529,19 @@ var ExamSubmissionService = class {
       where.studentId = studentId ? classStudentIds.includes(studentId) ? studentId : "__none__" : { in: inClass };
     }
     if (examId) where.examId = examId;
-    if (status) where.status = status;
+    const sortFieldMap = {
+      newest: "createdAt",
+      createdAt: "createdAt",
+      updatedAt: "updatedAt",
+      score: "totalScore",
+      totalScore: "totalScore",
+      status: "status",
+      submittedAt: "submittedAt",
+      startedAt: "startedAt"
+    };
+    const orderField = sortBy && sortFieldMap[sortBy] ? sortFieldMap[sortBy] : "createdAt";
     const orderBy = {};
-    orderBy[sortBy === "createdAt" ? "createdAt" : sortBy] = sortOrder;
+    orderBy[orderField] = sortOrder;
     const [data, total] = await Promise.all([
       this.repo.findMany(
         where,
@@ -121274,8 +121314,8 @@ var usersRoutes = async (fastify) => {
       }
       if (search) {
         where.OR = [
-          { email: { contains: search } },
-          { fullName: { contains: search } }
+          { email: { contains: search, mode: "insensitive" } },
+          { fullName: { contains: search, mode: "insensitive" } }
         ];
       }
       if (role) {
@@ -121283,12 +121323,21 @@ var usersRoutes = async (fastify) => {
           some: { role }
         };
       }
+      const sortFieldMap = {
+        newest: "createdAt",
+        createdAt: "createdAt",
+        updatedAt: "updatedAt",
+        name: "fullName",
+        fullName: "fullName",
+        email: "email"
+      };
+      const orderField = sortBy && sortFieldMap[sortBy] ? sortFieldMap[sortBy] : "createdAt";
       const [data, total] = await Promise.all([
         fastify.prisma.user.findMany({
           where,
           skip,
           take: limit,
-          orderBy: { [sortBy]: sortOrder },
+          orderBy: { [orderField]: sortOrder },
           select: {
             id: true,
             email: true,

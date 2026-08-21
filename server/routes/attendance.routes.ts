@@ -244,10 +244,11 @@ const attendanceRoutes: FastifyPluginAsync = async (fastify: any) => {
           classId,
         });
 
-        // Find lessons for course
-        const lessons = await prisma.lesson.findMany({
+        // Find exams for course to contextualize session titles if available
+        const courseExams = await prisma.exam.findMany({
           where: { courseId: cls.courseId },
-          orderBy: { lessonOrder: 'asc' },
+          orderBy: { createdAt: 'asc' },
+          select: { id: true, title: true },
         });
 
         const dates: string[] = [];
@@ -268,18 +269,19 @@ const attendanceRoutes: FastifyPluginAsync = async (fastify: any) => {
         for (let i = 0; i < dates.length; i++) {
           const sessionNum = i + 1;
           const sessionDate = new Date(dates[i]);
-          const lesson = lessons[i] || lessons[0] || null;
-          const title = lesson?.title || `Lesson ${sessionNum}`;
+          const exam = courseExams[i] || null;
+          const title = exam?.title ? `Buổi ${sessionNum}: ${exam.title}` : `Buổi ${sessionNum}`;
 
           const sess = await prisma.classSession.create({
             data: {
               id: crypto.randomUUID(),
               classId,
-              lessonId: lesson?.id || 'default-lesson-id',
               sessionNumber: sessionNum,
-              title,
-              sessionDate,
-              status: 'SCHEDULED',
+              plannedDate: sessionDate,
+              startTime: new Date(`1970-01-01T${startTime}:00Z`),
+              endTime: new Date(`1970-01-01T${endTime}:00Z`),
+              status: 'PLANNED',
+              note: title,
             },
           });
           createdSessions.push({
@@ -287,7 +289,7 @@ const attendanceRoutes: FastifyPluginAsync = async (fastify: any) => {
             sessionNumber: sessionNum,
             sessionDate: dates[i],
             title,
-            status: 'SCHEDULED',
+            status: 'PLANNED',
           });
         }
 

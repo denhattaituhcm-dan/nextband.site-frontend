@@ -3956,7 +3956,7 @@ export const assessmentApi = {
     }
 
     // Resilient local test bank fallback
-    const { canonicalPlacementTestPayload } = await import("../../server/data/placement-test/questions.js");
+    const { canonicalPlacementTestPayload } = await import("../../server/data/placement-test/questions");
     return {
       session: {
         sessionId,

@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { classesApi, examsApi, submissionsApi } from "@/lib/api";
+import { deriveHomeworkStatus, HomeworkStatus } from "@/types/homework";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -143,15 +144,20 @@ export default function TeacherWorkspace() {
             (s: any) => s.examId === ex.id || s.exam_id === ex.id,
           );
           const firstAnswer = sub?.answers?.[0];
-          const rawStatus = sub?.status?.toLowerCase();
+          const isRevision = !!(firstAnswer?.revisionRequired ?? sub?.revisionRequired ?? sub?.revision_required);
+          const canonicalStatus = deriveHomeworkStatus(
+            sub ? { ...sub, revisionRequired: isRevision } : null,
+          );
           const normalizedStatus =
-            rawStatus === "graded"
-              ? "graded"
-              : rawStatus === "submitted"
-                ? "submitted"
-                : rawStatus === "in_progress"
-                  ? "in_progress"
-                  : "unsubmitted";
+            canonicalStatus === "REVISION_REQUIRED"
+              ? "needs_revision"
+              : canonicalStatus === "GRADED"
+                ? "graded"
+                : canonicalStatus === "SUBMITTED" || canonicalStatus === "GRADING"
+                  ? "submitted"
+                  : canonicalStatus === "IN_PROGRESS"
+                    ? "in_progress"
+                    : "unsubmitted";
 
           return {
             id: ex.id,

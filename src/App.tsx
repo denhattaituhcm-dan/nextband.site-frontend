@@ -353,7 +353,7 @@ const App = () => (
                 <Route
                   path="/admin/exams"
                   element={
-                    <ProtectedRoute requiredRoles={["admin"]}>
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
                       <AdminExams />
                     </ProtectedRoute>
                   }
@@ -361,7 +361,7 @@ const App = () => (
                 <Route
                   path="/admin/exams/create"
                   element={
-                    <ProtectedRoute requiredRoles={["admin"]}>
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
                       <AdminExamCreate />
                     </ProtectedRoute>
                   }
@@ -369,7 +369,7 @@ const App = () => (
                 <Route
                   path="/admin/exams/:id"
                   element={
-                    <ProtectedRoute requiredRoles={["admin"]}>
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
                       <AdminExamEdit />
                     </ProtectedRoute>
                   }
@@ -377,7 +377,7 @@ const App = () => (
                 <Route
                   path="/admin/sections/:id"
                   element={
-                    <ProtectedRoute requiredRoles={["admin"]}>
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
                       <AdminSectionEdit />
                     </ProtectedRoute>
                   }
@@ -449,7 +449,7 @@ const App = () => (
                 <Route
                   path="/admin/classes/:id"
                   element={
-                    <ProtectedRoute requiredRoles={["admin"]}>
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
                       <AdminClassEdit />
                     </ProtectedRoute>
                   }
@@ -465,7 +465,7 @@ const App = () => (
                 <Route
                   path="/admin/leads"
                   element={
-                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                    <ProtectedRoute requiredRoles={["admin"]}>
                       <AdminLeads />
                     </ProtectedRoute>
                   }

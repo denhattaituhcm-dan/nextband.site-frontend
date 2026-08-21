@@ -93,16 +93,13 @@ export class AuthorizationService {
     });
     if (enrollment) return true;
 
-    // 2. Class-based membership (via ClassStudent)
+    // 2. Class-based membership (via ClassStudent in active class for this course)
     const classStudent = await this.prisma.classStudent.findFirst({
       where: {
         studentId,
         class: {
           isActive: true,
-          OR: [
-            { courseId },
-            { homeworks: { some: { examId } } },
-          ],
+          courseId,
         },
       },
     });
