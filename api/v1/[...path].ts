@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { buildApp } from "../../server/app.js";
+import { buildApp } from "../../dist-server/app.js";
 
 let fastifyApp: any = null;
 
