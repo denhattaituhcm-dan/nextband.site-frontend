@@ -29,14 +29,20 @@ export default async function handler(req, res) {
       }
     }
 
-    res.status(response.statusCode).send(response.body);
+    res.statusCode = response.statusCode;
+    res.end(response.body);
   } catch (err) {
     console.error("Fastify Serverless Handler Error:", err);
-    res.status(500).json({
-      statusCode: 500,
-      error: "Internal Server Error",
-      message: err?.message || "Serverless runtime error",
-    });
+    res.statusCode = 500;
+    res.setHeader("Content-Type", "application/json");
+    res.end(
+      JSON.stringify({
+        statusCode: 500,
+        error: "Internal Server Error",
+        message: err?.message || "Serverless runtime error",
+        stack: err?.stack,
+      })
+    );
   }
 }
 `;
