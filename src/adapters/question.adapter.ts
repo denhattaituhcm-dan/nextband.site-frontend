@@ -6,17 +6,7 @@ import { CanonicalQuestionSchema, QuestionDTO } from "../contracts/question.cont
  */
 export function adaptQuestion(raw: any): QuestionDTO {
   if (!raw || typeof raw !== "object") {
-    console.warn("[CONTRACT_VIOLATION] Invalid raw question received:", raw);
-    return CanonicalQuestionSchema.parse({
-      id: "fallback-question",
-      questionType: "short_answer",
-      questionText: "",
-      options: [],
-      correctAnswer: null,
-      fillBlankAnswers: [],
-      points: 1,
-      orderIndex: 0,
-    });
+    throw new Error(`[CONTRACT_VIOLATION] Invalid raw question received: expected object, got ${typeof raw}`);
   }
 
   // Parse options safely: support JSON string or array

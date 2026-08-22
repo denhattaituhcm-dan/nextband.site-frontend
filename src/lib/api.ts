@@ -351,177 +351,78 @@ export const coursesApi = {
   list: async (params?: {
     page?: number;
     limit?: number;
-    search?: string;
     level?: string;
+    search?: string;
     sortBy?: string;
     sortOrder?: "asc" | "desc";
     isPublished?: boolean;
     isActive?: boolean;
   }) => {
-    const page = params?.page || 1;
-    const limit = params?.limit || 10;
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
+    const token = await getAuthToken();
+    const query = new URLSearchParams();
+    if (params?.page) query.set("page", String(params.page));
+    if (params?.limit) query.set("limit", String(params.limit));
+    if (params?.level) query.set("level", params.level);
+    if (params?.search) query.set("search", params.search);
+    if (params?.sortBy) query.set("sortBy", params.sortBy);
+    if (params?.sortOrder) query.set("sortOrder", params.sortOrder);
+    if (params?.isPublished !== undefined) query.set("isPublished", String(params.isPublished));
+    if (params?.isActive !== undefined) query.set("isActive", String(params.isActive));
 
-    // Direct Supabase Fallback
-    const fetchFromSupabase = async () => {
-      try {
-        let query = supabase
-          .from("courses")
-          .select(
-            "id, title, description, thumbnail_url, level, price, is_published, is_active, is_locked, slug, created_at, updated_at, exams(id), classes(id), enrollments(id)",
-            { count: "exact" }
-          );
+    const res = await fetch(`${API_BASE_URL}/courses?${query.toString()}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
 
-        if (params?.search) {
-          query = query.ilike("title", `%${params.search}%`);
-        }
+    if (res.ok) {
+      const result = await res.json();
+      const rawData = result.data || [];
+      const formattedData = rawData.map((c: any) => ({
+        id: c.id,
+        title: c.title,
+        description: c.description,
+        level: c.level || "beginner",
+        price: c.price || 0,
+        isPublished: c.isPublished ?? c.is_published ?? false,
+        isActive: c.isActive ?? c.is_active ?? true,
+        thumbnailUrl: c.thumbnailUrl || c.thumbnail_url,
+        createdAt: c.createdAt || c.created_at,
+        band: c.level === "beginner" ? "3.0 - 4.0" : c.level === "intermediate" ? "5.0 - 5.5" : "6.0 - 6.5+",
+        lessonsCount: c._count?.exams ?? (c.exams && Array.isArray(c.exams) ? c.exams.length : 0),
+        activeClassesCount: c._count?.classes ?? 0,
+        totalClassesCount: c._count?.classes ?? 0,
+        studentsCount: c._count?.enrollments ?? 0,
+        ...c,
+      }));
 
-        if (params?.level && params.level !== "all") {
-          query = query.eq("level", params.level);
-        }
-
-        if (params?.isPublished !== undefined) {
-          query = query.eq("is_published", params.isPublished);
-        }
-
-        if (params?.isActive !== undefined) {
-          query = query.eq("is_active", params.isActive);
-        }
-
-        const sortFieldMap: Record<string, string> = {
-          newest: "created_at",
-          createdAt: "created_at",
-          name: "title",
-          title: "title",
-          level: "level",
-          price: "price",
-        };
-        const sortField = (params?.sortBy && sortFieldMap[params.sortBy]) || "created_at";
-        const ascending = params?.sortOrder === "asc";
-        query = query.order(sortField, { ascending }).range(from, to);
-
-        const { data, count, error } = await query;
-        if (error) throw error;
-
-        const formattedData = (data || []).map((c: any) => ({
-          id: c.id,
-          title: c.title,
-          description: c.description,
-          level: c.level || "beginner",
-          price: c.price || 0,
-          isPublished: c.is_published ?? c.isPublished ?? true,
-          isActive: c.is_active ?? c.isActive ?? true,
-          thumbnailUrl: c.thumbnail_url || c.thumbnailUrl,
-          createdAt: c.created_at || c.createdAt,
-          band: c.level === "beginner" ? "3.0 - 4.0" : c.level === "intermediate" ? "5.0 - 5.5" : "6.0 - 6.5+",
-          lessonsCount: c.exams && Array.isArray(c.exams) ? c.exams.length : 0,
-          activeClassesCount: c.classes && Array.isArray(c.classes) ? c.classes.length : 0,
-          totalClassesCount: c.classes && Array.isArray(c.classes) ? c.classes.length : 0,
-          studentsCount: c.enrollments && Array.isArray(c.enrollments) ? c.enrollments.length : 0,
-          ...c,
-        }));
-
-        return {
-          data: formattedData,
-          meta: {
-            total: count || formattedData.length,
-            page,
-            limit,
-            totalPages: Math.ceil((count || formattedData.length) / limit),
-          },
-        };
-      } catch (sbErr) {
-        console.error("Supabase direct query failed:", sbErr);
-        throw sbErr;
-      }
-    };
-
-    // 1. Primary Path: Fastify API Gateway
-    try {
-      const token = await getAuthToken();
-      const query = new URLSearchParams();
-      if (params?.page) query.set("page", String(params.page));
-      if (params?.limit) query.set("limit", String(params.limit));
-      if (params?.level) query.set("level", params.level);
-      if (params?.search) query.set("search", params.search);
-      if (params?.sortBy) query.set("sortBy", params.sortBy);
-      if (params?.sortOrder) query.set("sortOrder", params.sortOrder);
-      if (params?.isPublished !== undefined) query.set("isPublished", String(params.isPublished));
-      if (params?.isActive !== undefined) query.set("isActive", String(params.isActive));
-
-      const res = await fetch(`${API_BASE_URL}/courses?${query.toString()}`, {
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
-
-      if (res.ok) {
-        const result = await res.json();
-        const rawData = result.data || [];
-        const formattedData = rawData.map((c: any) => ({
-          id: c.id,
-          title: c.title,
-          description: c.description,
-          level: c.level || "beginner",
-          price: c.price || 0,
-          isPublished: c.isPublished ?? c.is_published ?? false,
-          isActive: c.isActive ?? c.is_active ?? true,
-          thumbnailUrl: c.thumbnailUrl || c.thumbnail_url,
-          createdAt: c.createdAt || c.created_at,
-          band: c.level === "beginner" ? "3.0 - 4.0" : c.level === "intermediate" ? "5.0 - 5.5" : "6.0 - 6.5+",
-          lessonsCount: c._count?.exams ?? (c.exams && Array.isArray(c.exams) ? c.exams.length : 0),
-          activeClassesCount: c._count?.classes ?? 0,
-          totalClassesCount: c._count?.classes ?? 0,
-          studentsCount: c._count?.enrollments ?? 0,
-          ...c,
-        }));
-
-        return {
-          data: formattedData,
-          meta: result.meta || { total: formattedData.length, page: 1, limit: 10, totalPages: 1 },
-        };
-      }
-
-      // If status is 5xx or server error, fallback to Supabase SDK
-      return await fetchFromSupabase();
-    } catch (networkErr) {
-      // 2. Read-Only Resilience Fallback: Supabase Direct Query
-      return await fetchFromSupabase();
+      return {
+        data: formattedData,
+        meta: result.meta || { total: formattedData.length, page: 1, limit: 10, totalPages: 1 },
+      };
     }
+
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Không thể tải danh sách khóa học");
   },
 
   getById: async (id: string) => {
-    const fetchFromSupabase = async () => {
-      const { data, error } = await supabase
-        .from("courses")
-        .select("*, exams(id, title, description, week, duration_minutes, is_published, is_active, created_at, updated_at)")
-        .or(`id.eq.${id},slug.eq.${id}`)
-        .maybeSingle();
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/courses/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
 
-      if (error || !data) throw error || new Error("Không tìm thấy khóa học");
+    if (res.ok) {
+      const data = await res.json();
       return normalizeCourseData(data);
-    };
-
-    try {
-      const token = await getAuthToken();
-      const res = await fetch(`${API_BASE_URL}/courses/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        return normalizeCourseData(data);
-      }
-
-      return await fetchFromSupabase();
-    } catch {
-      return await fetchFromSupabase();
     }
+
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Không tìm thấy khóa học");
   },
 
   getBySlug: async (slug: string) => {
@@ -538,36 +439,22 @@ export const coursesApi = {
     isActive?: boolean;
     slug?: string;
   }) => {
-    try {
-      const token = await getAuthToken();
-      const res = await fetch(`${API_BASE_URL}/courses`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(course),
-      });
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/courses`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(course),
+    });
 
-      if (res.ok) {
-        return res.json();
-      }
-    } catch {}
+    if (res.ok) {
+      return res.json();
+    }
 
-    // Fallback directly to Supabase
-    const dbPayload: any = {
-      title: course.title,
-      description: course.description || null,
-      level: course.level || "beginner",
-      price: course.price || 0,
-      thumbnail_url: course.thumbnailUrl || null,
-      is_published: course.isPublished ?? true,
-      is_active: course.isActive ?? true,
-      slug: course.slug || null,
-    };
-    const { data, error } = await supabase.from("courses").insert(dbPayload).select().single();
-    if (error) throw error;
-    return data;
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Tạo khóa học thất bại");
   },
 
   update: async (
@@ -582,66 +469,41 @@ export const coursesApi = {
       slug: string;
     }>
   ) => {
-    try {
-      const token = await getAuthToken();
-      const res = await fetch(`${API_BASE_URL}/courses/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(course),
-      });
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/courses/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(course),
+    });
 
-      if (res.ok) {
-        return res.json();
-      }
-    } catch {}
+    if (res.ok) {
+      return res.json();
+    }
 
-    // Fallback directly to Supabase
-    const dbPayload: any = {};
-    if (course.title !== undefined) dbPayload.title = course.title;
-    if (course.description !== undefined) dbPayload.description = course.description;
-    if (course.level !== undefined) dbPayload.level = course.level;
-    if (course.thumbnailUrl !== undefined) dbPayload.thumbnail_url = course.thumbnailUrl;
-    if (course.isPublished !== undefined) dbPayload.is_published = course.isPublished;
-    if (course.isActive !== undefined) dbPayload.is_active = course.isActive;
-    if (course.slug !== undefined) dbPayload.slug = course.slug;
-
-    const { data, error } = await supabase
-      .from("courses")
-      .update(dbPayload)
-      .eq("id", id)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Cập nhật khóa học thất bại");
   },
 
   delete: async (id: string, password?: string) => {
-    try {
-      const token = await getAuthToken();
-      const res = await fetch(`${API_BASE_URL}/courses/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ password }),
-      });
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/courses/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ password }),
+    });
 
-      if (res.ok) {
-        return { success: true };
-      }
-    } catch {}
+    if (res.ok) {
+      return { success: true };
+    }
 
-    // Fallback directly to Supabase
-    const { error } = await supabase
-      .from("courses")
-      .update({ is_active: false, is_published: false })
-      .eq("id", id);
-    if (error) throw error;
-    return { success: true };
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Xóa khóa học thất bại");
   },
 };
 
@@ -661,83 +523,36 @@ export const examsApi = {
   }) => {
     const page = params?.page || 1;
     const limit = params?.limit || 10;
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
 
-    const fetchFromSupabase = async () => {
-      try {
-        let query = supabase
-          .from("exams")
-          .select("*, courses(id, title), exam_sections(id)", { count: "exact" });
+    const token = await getAuthToken();
+    const query = new URLSearchParams();
+    if (params?.page) query.set("page", String(params.page));
+    if (params?.limit) query.set("limit", String(params.limit));
+    if (params?.courseId) query.set("courseId", params.courseId);
+    if (params?.search) query.set("search", params.search);
+    if (params?.sortBy) query.set("sortBy", params.sortBy);
+    if (params?.sortOrder) query.set("sortOrder", params.sortOrder);
+    if (params?.isPublished !== undefined) query.set("isPublished", String(params.isPublished));
+    if (params?.isActive !== undefined) query.set("isActive", String(params.isActive));
 
-        if (params?.courseId) {
-          query = query.eq("course_id", params.courseId);
-        }
-        if (params?.search) {
-          query = query.ilike("title", `%${params.search}%`);
-        }
-        if (params?.isPublished !== undefined) {
-          query = query.eq("is_published", params.isPublished);
-        }
-        if (params?.isActive !== undefined) {
-          query = query.eq("is_active", params.isActive);
-        }
+    const res = await fetchWithResilience(`${API_BASE_URL}/exams?${query.toString()}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
 
-        const sortFieldMap: Record<string, string> = {
-          newest: "created_at",
-          createdAt: "created_at",
-          title: "title",
-          week: "week",
-        };
-        const sortField = (params?.sortBy && sortFieldMap[params.sortBy]) || "created_at";
-        const ascending = params?.sortOrder === "asc";
-        query = query.order(sortField, { ascending }).range(from, to);
-
-        const { data, count, error } = await query;
-        if (error) throw error;
-
-        return {
-          data: (data || []).map((item: any) => normalizeExamData(item)),
-          meta: { total: count || 0, page, limit, totalPages: Math.ceil((count || 0) / limit) },
-        };
-      } catch (err) {
-        console.error("Supabase exams list fallback error:", err);
-        throw err;
-      }
-    };
-
-    try {
-      const token = await getAuthToken();
-      const query = new URLSearchParams();
-      if (params?.page) query.set("page", String(params.page));
-      if (params?.limit) query.set("limit", String(params.limit));
-      if (params?.courseId) query.set("courseId", params.courseId);
-      if (params?.search) query.set("search", params.search);
-      if (params?.sortBy) query.set("sortBy", params.sortBy);
-      if (params?.sortOrder) query.set("sortOrder", params.sortOrder);
-      if (params?.isPublished !== undefined) query.set("isPublished", String(params.isPublished));
-      if (params?.isActive !== undefined) query.set("isActive", String(params.isActive));
-
-      const res = await fetchWithResilience(`${API_BASE_URL}/exams?${query.toString()}`, {
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
-
-      if (res.ok) {
-        const result = await res.json();
-        const rawData = result.data || [];
-        return {
-          data: rawData.map((item: any) => normalizeExamData(item)),
-          meta: result.meta || { total: rawData.length, page: 1, limit: 10, totalPages: 1 },
-        };
-      }
-
-      return await fetchFromSupabase();
-    } catch {
-      return await fetchFromSupabase();
+    if (res.ok) {
+      const result = await res.json();
+      const rawData = result.data || [];
+      return {
+        data: rawData.map((item: any) => normalizeExamData(item)),
+        meta: result.meta || { total: rawData.length, page: 1, limit: 10, totalPages: 1 },
+      };
     }
+
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || errData.message || "Không thể tải danh sách bài thi");
   },
 
   getById: async (id: string) => {
@@ -749,80 +564,32 @@ export const examsApi = {
 
     const token = await getAuthToken();
 
-    // 1. Primary Path: Fastify API Gateway
-    try {
-      const res = await fetchWithResilience(`${API_BASE_URL}/exams/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
+    const res = await fetchWithResilience(`${API_BASE_URL}/exams/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
 
-      if (res.ok) {
-        const data = await res.json();
-        return normalizeExamData(data);
-      }
-
-      // INVARIANT: Do NOT fallback on 401, 403, 404!
-      if (res.status === 401 || res.status === 403 || res.status === 404) {
-        const errData = await res.json().catch(() => ({}));
-        const message =
-          errData.error ||
-          errData.message ||
-          (res.status === 401
-            ? "Phiên đăng nhập đã hết hạn"
-            : res.status === 403
-            ? "Bạn không có quyền truy cập bài thi này"
-            : "Không tìm thấy bài thi");
-        const err = new Error(message);
-        (err as any).httpStatus = res.status;
-        throw err;
-      }
-    } catch (networkErr: any) {
-      // If error already has an explicit client/auth status code, rethrow immediately (no fallback)
-      if (networkErr?.httpStatus === 401 || networkErr?.httpStatus === 403 || networkErr?.httpStatus === 404) {
-        throw networkErr;
-      }
-      // Otherwise (fetch failed, server offline, 5xx), proceed to Read-Only Supabase Fallback below
+    if (res.ok) {
+      const data = await res.json();
+      return normalizeExamData(data);
     }
 
-    // 2. Read-Only Resilience Fallback: Supabase Direct Query (Offline / Network Failure only)
-    const { data: rawExam, error: dbErr } = await supabase
-      .from("exams")
-      .select("*, courses(id, title), exam_sections(*, question_groups(*, questions(*)))")
-      .eq("id", id)
-      .single();
-
-    if (dbErr || !rawExam) {
-      const err = new Error("Không thể kết nối máy chủ để tải bài thi.");
-      (err as any).httpStatus = 503;
-      throw err;
-    }
-
-    // Security Sanitization: Zero Secret Leaks for students
-    const sanitizedSections = (rawExam.exam_sections || []).map((sec: any) => ({
-      ...sec,
-      audio_script: undefined,
-      audioScript: undefined,
-      question_groups: (sec.question_groups || []).map((grp: any) => ({
-        ...grp,
-        questions: (grp.questions || []).map((q: any) => ({
-          ...q,
-          answer_key: undefined,
-          answerKey: undefined,
-          correct_answer: null,
-          correctAnswer: null,
-        })),
-      })),
-    }));
-
-    const sanitizedExam = {
-      ...rawExam,
-      exam_sections: sanitizedSections,
-      sections: sanitizedSections,
-    };
-
-    return normalizeExamData(sanitizedExam);
+    const errData = await res.json().catch(() => ({}));
+    const message =
+      errData.error ||
+      errData.message ||
+      (res.status === 401
+        ? "Phiên đăng nhập đã hết hạn"
+        : res.status === 403
+        ? "Bạn không có quyền truy cập bài thi này"
+        : res.status === 404
+        ? "Không tìm thấy bài thi"
+        : "Không thể kết nối máy chủ để tải bài thi");
+    const err = new Error(message);
+    (err as any).httpStatus = res.status;
+    throw err;
   },
 
   create: async (exam: {
@@ -3354,94 +3121,20 @@ export interface SessionAttendanceContract {
 export const attendanceApi = {
   getSessionAttendance: async (classId: string, sessionId: string) => {
     const token = await getAuthToken();
-    try {
-      const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/attendance`, {
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
-      if (response.ok) {
-        const result = await response.json();
-        if (result?.success && result?.data) {
-          return result;
-        }
-      }
-    } catch {
-      // Backend offline
+    const response = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/${sessionId}/attendance`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      return result;
     }
 
-    try {
-      const [sessionRes, attendanceRes, studentsRes] = await Promise.all([
-        supabase.from("class_sessions").select("*").eq("id", sessionId).maybeSingle(),
-        supabase.from("class_attendance").select("*").eq("session_id", sessionId),
-        supabase.from("class_students").select("student_id").eq("class_id", classId),
-      ]);
-
-      const session = sessionRes.data;
-      const attendance = attendanceRes.data || [];
-      const studentIds = (studentsRes.data || []).map((s: any) => s.student_id).filter(Boolean);
-
-      let profiles: any[] = [];
-      if (studentIds.length > 0) {
-        const { data: profs } = await supabase
-          .from("profiles")
-          .select("user_id, full_name, email, avatar_url")
-          .in("user_id", studentIds);
-        profiles = profs || [];
-      }
-
-      const total = studentIds.length;
-      let present = 0;
-      let absent = 0;
-      let late = 0;
-      let excused = 0;
-      let unmarked = 0;
-
-      const studentList = studentIds.map((sId: string) => {
-        const prof = profiles.find((p: any) => (p.user_id || p.id) === sId);
-        const att = attendance.find((a: any) => a.student_id === sId);
-        const status: AttendanceStatus = att ? att.status : "UNMARKED";
-
-        if (status === "PRESENT") present++;
-        else if (status === "ABSENT") absent++;
-        else if (status === "LATE") late++;
-        else if (status === "EXCUSED") excused++;
-        else unmarked++;
-
-        return {
-          studentId: sId,
-          studentName: prof?.full_name || prof?.fullName || prof?.email || "Học viên",
-          avatarUrl: prof?.avatar_url || prof?.avatarUrl,
-          email: prof?.email || "",
-          status,
-          note: att?.note || null,
-        };
-      });
-
-      return {
-        success: true,
-        data: {
-          sessionNumber: session?.session_number || 1,
-          sessionDate: session?.session_date || session?.planned_date || new Date().toISOString(),
-          title: session?.title || `Buổi ${session?.session_number || 1}`,
-          status: session?.status || "SCHEDULED",
-          summary: { total, present, absent, late, excused, unmarked },
-          students: studentList,
-        },
-      };
-    } catch {
-      return {
-        success: true,
-        data: {
-          sessionNumber: 1,
-          sessionDate: new Date().toISOString(),
-          title: "Buổi học",
-          status: "SCHEDULED",
-          summary: { total: 0, present: 0, absent: 0, late: 0, excused: 0, unmarked: 0 },
-          students: [],
-        },
-      };
-    }
+    const errJson = await response.json().catch(() => ({}));
+    throw new Error(errJson.error || errJson.message || "Không thể tải điểm danh buổi học");
   },
 
   markAttendance: async (
@@ -3503,101 +3196,20 @@ export const attendanceApi = {
 
   getAttendanceMatrix: async (classId: string) => {
     const token = await getAuthToken();
-    try {
-      const response = await fetch(`${API_BASE_URL}/classes/${classId}/attendance-matrix`, {
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
-      if (response.ok) {
-        const result = await response.json();
-        if (result?.success && result?.data) {
-          return result;
-        }
-      }
-    } catch {
-      // Backend offline
+    const response = await fetch(`${API_BASE_URL}/classes/${classId}/attendance-matrix`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      return result;
     }
 
-    try {
-      const [sessionsRes, studentsRes, attendanceRes, classRes] = await Promise.all([
-        supabase.from("class_sessions").select("*").eq("class_id", classId).order("session_number", { ascending: true }),
-        supabase.from("class_students").select("student_id").eq("class_id", classId),
-        supabase.from("class_attendance").select("*").eq("class_id", classId),
-        supabase.from("classes").select("name").eq("id", classId).maybeSingle(),
-      ]);
-
-      const sessions = (sessionsRes.data || []).map((s: any) => ({
-        id: s.id,
-        sessionNumber: s.session_number,
-        sessionDate: s.session_date || s.planned_date,
-        lessonTitle: s.title || `Buổi ${s.session_number}`,
-        status: s.status,
-      }));
-
-      const studentIds = (studentsRes.data || []).map((cs: any) => cs.student_id).filter(Boolean);
-      let profiles: any[] = [];
-      if (studentIds.length > 0) {
-        const { data: profs } = await supabase.from("profiles").select("user_id, full_name, email, avatar_url").in("user_id", studentIds);
-        profiles = profs || [];
-      }
-
-      const allAttendance = attendanceRes.data || [];
-      const completedSessionsCount = sessions.filter((s: any) => s.status === "COMPLETED").length;
-
-      const studentRows = studentIds.map((sId: string) => {
-        const prof = profiles.find((p: any) => (p.user_id || p.id) === sId);
-        const studentAtt = allAttendance.filter((a: any) => a.student_id === sId);
-        const presentCount = studentAtt.filter((a: any) => a.status === "PRESENT").length;
-        const lateCount = studentAtt.filter((a: any) => a.status === "LATE").length;
-        const absentCount = studentAtt.filter((a: any) => a.status === "ABSENT").length;
-        const excusedCount = studentAtt.filter((a: any) => a.status === "EXCUSED").length;
-
-        const attendedScore = presentCount + lateCount * 0.8;
-        const attendanceRate = completedSessionsCount > 0 ? Math.round((attendedScore / completedSessionsCount) * 100) : 100;
-
-        return {
-          studentId: sId,
-          studentName: prof?.full_name || prof?.fullName || prof?.email || "Học viên",
-          avatarUrl: prof?.avatar_url || prof?.avatarUrl,
-          email: prof?.email || "",
-          presentCount,
-          lateCount,
-          absentCount,
-          excusedCount,
-          eligibleSessions: completedSessionsCount,
-          attendanceRate,
-          sessions: sessions.map((s: any) => {
-            const att = studentAtt.find((a: any) => a.session_id === s.id);
-            return {
-              sessionId: s.id,
-              sessionNumber: s.sessionNumber,
-              sessionDate: s.sessionDate,
-              status: s.status,
-              attendanceStatus: att ? att.status : "UNMARKED",
-              note: att?.note || null,
-            };
-          }),
-        };
-      });
-
-      return {
-        success: true,
-        data: {
-          classId,
-          className: classRes.data?.name || "Lớp học",
-          totalSessions: sessions.length,
-          completedSessions: completedSessionsCount,
-          sessionCoverage: sessions.length > 0 ? Math.round((completedSessionsCount / sessions.length) * 100) : 0,
-          recordCoverage: 100,
-          attendanceCoverage: sessions.length > 0 ? Math.round((completedSessionsCount / sessions.length) * 100) : 0,
-          sessions,
-          students: studentRows,
-        },
-      };
-    } catch {
-      return { success: false, error: "Không thể tải ma trận chuyên cần" };
-    }
+    const errJson = await response.json().catch(() => ({}));
+    throw new Error(errJson.error || errJson.message || "Không thể tải ma trận điểm danh");
   },
 };
 

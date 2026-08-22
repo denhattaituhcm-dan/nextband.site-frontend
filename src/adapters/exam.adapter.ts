@@ -6,12 +6,7 @@ import { adaptSection } from "./section.adapter";
  */
 export function adaptExam(raw: any): ExamDTO {
   if (!raw || typeof raw !== "object") {
-    console.warn("[CONTRACT_VIOLATION] Invalid raw exam payload:", raw);
-    return CanonicalExamSchema.parse({
-      id: "fallback-exam",
-      title: "Đề thi",
-      sections: [],
-    });
+    throw new Error(`[CONTRACT_VIOLATION] Invalid raw exam payload: expected object, got ${typeof raw}`);
   }
 
   const rawSections = Array.isArray(raw.sections || raw.exam_sections)

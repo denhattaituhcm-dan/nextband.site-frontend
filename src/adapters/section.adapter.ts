@@ -6,12 +6,7 @@ import { adaptQuestion } from "./question.adapter";
  */
 export function adaptQuestionGroup(raw: any): QuestionGroupDTO {
   if (!raw || typeof raw !== "object") {
-    console.warn("[CONTRACT_VIOLATION] Invalid raw question group:", raw);
-    return CanonicalQuestionGroupSchema.parse({
-      id: "fallback-group",
-      orderIndex: 0,
-      questions: [],
-    });
+    throw new Error(`[CONTRACT_VIOLATION] Invalid raw question group: expected object, got ${typeof raw}`);
   }
 
   const rawQuestions = Array.isArray(raw.questions) ? raw.questions : [];
@@ -42,14 +37,7 @@ export function adaptQuestionGroup(raw: any): QuestionGroupDTO {
  */
 export function adaptSection(raw: any): SectionDTO {
   if (!raw || typeof raw !== "object") {
-    console.warn("[CONTRACT_VIOLATION] Invalid raw section:", raw);
-    return CanonicalSectionSchema.parse({
-      id: "fallback-section",
-      title: "Section",
-      sectionType: "general",
-      orderIndex: 0,
-      questionGroups: [],
-    });
+    throw new Error(`[CONTRACT_VIOLATION] Invalid raw section: expected object, got ${typeof raw}`);
   }
 
   const rawGroups = Array.isArray(raw.questionGroups || raw.question_groups)

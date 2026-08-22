@@ -63,14 +63,9 @@ describe("🛡️ Step 6: Negative-Path & Contract Violation Matrix", () => {
       expect(Array.isArray(result.fillBlankAnswers)).toBe(true);
     });
 
-    it("Case 5: When entirely non-object or null passed to adaptQuestion, handles gracefully", () => {
-      const resultNull = adaptQuestion(null);
-      expect(resultNull.id).toBeDefined();
-      expect(resultNull.options).toEqual([]);
-
-      const resultString = adaptQuestion("corrupted-string");
-      expect(resultString.id).toBeDefined();
-      expect(resultString.options).toEqual([]);
+    it("Case 5: When entirely non-object or null passed to adaptQuestion, throws contract violation error", () => {
+      expect(() => adaptQuestion(null)).toThrow(/CONTRACT_VIOLATION/);
+      expect(() => adaptQuestion("corrupted-string")).toThrow(/CONTRACT_VIOLATION/);
     });
   });
 

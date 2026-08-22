@@ -94,69 +94,15 @@ describe("Exam Read Resilience & Security Invariants ('Read may degrade; write m
     });
   });
 
-  describe("Gate 5: Fastify Offline / 5xx -> Safe Read-Only Supabase Fallback", () => {
-    it("should trigger safe Read-Only Supabase Fallback when Fastify is offline (fetch failed)", async () => {
+  describe("Gate 5: Fastify Offline / 5xx -> Explicit Connection Error (No Silent Fallback)", () => {
+    it("should throw explicit connection error when Fastify is offline (fetch failed)", async () => {
       // Fastify offline
       global.fetch = vi.fn().mockRejectedValue(new TypeError("fetch failed: ECONNREFUSED"));
 
-      const mockSupabaseExam = {
-        id: validExamId,
-        title: "Final test",
-        course_id: "605d3bec-7a80-4cb7-ba7f-ecc74e77e1ab",
-        courses: { id: "605d3bec-7a80-4cb7-ba7f-ecc74e77e1ab", title: "DREAMER" },
-        exam_sections: [
-          {
-            id: "sec-1",
-            section_type: "listening",
-            title: "Listening Section",
-            audio_url: "audio/sample.mp3",
-            audio_script: "SECRET AUDIO TRANSCRIPT", // Should be stripped
-            question_groups: [
-              {
-                id: "grp-1",
-                passage: "Listen to the conversation",
-                questions: [
-                  {
-                    id: "q-1",
-                    prompt: "Question 1",
-                    options: ["Yes", "No"],
-                    answer_key: "Yes", // Should be stripped
-                    correct_answer: "Yes", // Should be stripped
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      };
+      const dbSpy = vi.spyOn(supabase, "from");
 
-      vi.spyOn(supabase, "from").mockImplementation((table: string) => {
-        if (table === "exams") {
-          return {
-            select: () => ({
-              eq: () => ({
-                single: async () => ({ data: mockSupabaseExam, error: null }),
-              }),
-            }),
-          } as any;
-        }
-        return {} as any;
-      });
-
-      const result = await examsApi.getById(validExamId);
-      expect(result.id).toBe(validExamId);
-      expect(result.title).toBe("Final test");
-
-      // ZERO SECRET LEAKS: answer keys and audio transcripts must be stripped!
-      const section = result.sections[0];
-      expect(section.audioScript).toBeUndefined();
-      expect(section.audio_script).toBeUndefined();
-
-      const question = section.questionGroups[0].questions[0];
-      expect(question.answerKey).toBeUndefined();
-      expect(question.answer_key).toBeUndefined();
-      expect(question.correctAnswer).toBeNull();
-      expect(question.correct_answer).toBeNull();
+      await expect(examsApi.getById(validExamId)).rejects.toThrow(/Không thể kết nối|máy chủ/i);
+      expect(dbSpy).not.toHaveBeenCalled();
     });
   });
 });
