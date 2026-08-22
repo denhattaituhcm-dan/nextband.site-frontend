@@ -577,7 +577,7 @@ export const examsApi = {
     }
 
     const errData = await res.json().catch(() => ({}));
-    const message =
+    const message = String(
       errData.error ||
       errData.message ||
       (res.status === 401
@@ -586,7 +586,8 @@ export const examsApi = {
         ? "Bạn không có quyền truy cập bài thi này"
         : res.status === 404
         ? "Không tìm thấy bài thi"
-        : "Không thể kết nối máy chủ để tải bài thi");
+        : "Không thể kết nối máy chủ để tải bài thi")
+    );
     const err = new Error(message);
     (err as any).httpStatus = res.status;
     throw err;
@@ -709,7 +710,7 @@ export const sectionsApi = {
     }
 
     const errData = await res.json().catch(() => ({}));
-    const message =
+    const message = String(
       errData.error ||
       errData.message ||
       (res.status === 401
@@ -718,7 +719,8 @@ export const sectionsApi = {
         ? "Bạn không có quyền truy cập phần thi này"
         : res.status === 404
         ? "Không tìm thấy phần thi"
-        : "Không thể tải thông tin phần thi");
+        : "Không thể tải thông tin phần thi")
+    );
     const err = new Error(message);
     (err as any).httpStatus = res.status;
     throw err;
