@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { SampleAnswers } from '@/services/forecast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Award, CheckCircle2 } from 'lucide-react';
-import DOMPurify from 'dompurify';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 interface SampleAnswerTabsProps {
   sampleAnswers: SampleAnswers;
@@ -20,8 +20,8 @@ export const SampleAnswerTabs: React.FC<SampleAnswerTabsProps> = ({ sampleAnswer
 
   const defaultTab = hasBand75 ? 'band75' : 'band65';
 
-  const cleanBand65 = DOMPurify.sanitize(rawBand65 || '');
-  const cleanBand75 = DOMPurify.sanitize(rawBand75 || '');
+  const cleanBand65 = sanitizeHtml(rawBand65 || '');
+  const cleanBand75 = sanitizeHtml(rawBand75 || '');
 
   return (
     <div className="space-y-3">

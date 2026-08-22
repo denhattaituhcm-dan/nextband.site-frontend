@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { assessmentApi } from "@/lib/api";
 import { AssessmentSessionState, AssessmentTestStructure } from "../domain/assessment.types";
-
-const LOCAL_STORAGE_PREFIX = "aris_placement_draft_";
+import {
+  saveAssessmentDraftLocally,
+  loadAssessmentDraftLocally,
+  clearAssessmentDraftLocally,
+} from "@/lib/assessmentDraftStore";
 
 export function useAssessmentSession(sessionId?: string) {
   const [session, setSession] = useState<AssessmentSessionState | null>(null);
@@ -10,13 +13,15 @@ export function useAssessmentSession(sessionId?: string) {
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "offline" | "syncing" | "error">("idle");
+  const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
 
   const answersRef = useRef<Record<string, any>>({});
   answersRef.current = answers;
+  const isPendingSyncRef = useRef<boolean>(false);
   const autosaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 1. Fetch Session & Sanitized Test Structure on mount
+  // 1. Fetch Session & Sanitized Test Structure on mount with Dual-Layer Offline Draft Recovery
   useEffect(() => {
     if (!sessionId) {
       setError("Không tìm thấy mã phiên khảo thí. Vui lòng đăng ký tham gia.");
@@ -29,6 +34,14 @@ export function useAssessmentSession(sessionId?: string) {
     setError(null);
 
     (async () => {
+      // Step 1: Immediately read from local durable store (0ms latency for offline/reloads)
+      const localDraft = await loadAssessmentDraftLocally(sessionId);
+      if (localDraft && isMounted) {
+        answersRef.current = localDraft;
+        setAnswers(localDraft);
+      }
+
+      // Step 2: Query Server
       try {
         const data = await assessmentApi.getTestPayload(sessionId);
         if (!isMounted) return;
@@ -36,20 +49,21 @@ export function useAssessmentSession(sessionId?: string) {
         setSession(data.session);
         setTestPayload(data.test);
 
-        // UI Recovery: Load local draft if available, otherwise server answers
-        let restoredAnswers = data.session.answers || {};
-        try {
-          const localDraftRaw = localStorage.getItem(`${LOCAL_STORAGE_PREFIX}${sessionId}`);
-          if (localDraftRaw) {
-            const parsed = JSON.parse(localDraftRaw);
-            restoredAnswers = { ...restoredAnswers, ...parsed };
-          }
-        } catch {}
+        // Merge server answers with any local unsynced edits (local edits take precedence)
+        const serverAnswers = data.session.answers || {};
+        const mergedAnswers = { ...serverAnswers, ...(localDraft || {}) };
 
-        setAnswers(restoredAnswers);
+        answersRef.current = mergedAnswers;
+        setAnswers(mergedAnswers);
+        await saveAssessmentDraftLocally(sessionId, mergedAnswers, false);
       } catch (err: any) {
         if (!isMounted) return;
-        setError(err.message || "Không thể tải nội dung bài khảo thí. Vui lòng kiểm tra lại kết nối.");
+        // If offline or network error, keep local draft if present
+        if (localDraft) {
+          setError(null);
+        } else {
+          setError(err.message || "Không thể tải nội dung bài khảo thí. Vui lòng kiểm tra lại kết nối.");
+        }
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -60,7 +74,58 @@ export function useAssessmentSession(sessionId?: string) {
     };
   }, [sessionId]);
 
-  // 2. Answer change handler with dual-layer persistence (localStorage + debounced server sync)
+  // 2. Perform background server sync
+  const performSync = useCallback(
+    async (payloadToSync: Record<string, any>) => {
+      if (!sessionId) return;
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        setSaveStatus("offline");
+        isPendingSyncRef.current = true;
+        await saveAssessmentDraftLocally(sessionId, payloadToSync, true);
+        return;
+      }
+
+      setSaveStatus("saving");
+      try {
+        await assessmentApi.autosave(sessionId, payloadToSync);
+        isPendingSyncRef.current = false;
+        await saveAssessmentDraftLocally(sessionId, payloadToSync, false);
+        setSaveStatus("saved");
+      } catch (err) {
+        console.warn("[Assessment Autosave Network Notice]", err);
+        isPendingSyncRef.current = true;
+        setSaveStatus("offline");
+        await saveAssessmentDraftLocally(sessionId, payloadToSync, true);
+      }
+    },
+    [sessionId],
+  );
+
+  // 3. Online / Offline Reconnection & Auto-Flush
+  useEffect(() => {
+    const handleOnline = async () => {
+      setIsOnline(true);
+      if (sessionId && isPendingSyncRef.current) {
+        setSaveStatus("syncing");
+        await performSync(answersRef.current);
+      }
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+      setSaveStatus("offline");
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, [sessionId, performSync]);
+
+  // 4. Answer change handler with immediate durable write + debounced server sync
   const setAnswer = useCallback(
     (questionId: string, value: any) => {
       if (!sessionId) return;
@@ -69,35 +134,25 @@ export function useAssessmentSession(sessionId?: string) {
       answersRef.current = nextAnswers;
       setAnswers(nextAnswers);
 
-      // Layer 1: Instant LocalStorage UI Recovery
-      try {
-        localStorage.setItem(`${LOCAL_STORAGE_PREFIX}${sessionId}`, JSON.stringify(nextAnswers));
-      } catch {}
+      // Layer 1: Instant Durable Write (IndexedDB + localStorage)
+      isPendingSyncRef.current = true;
+      saveAssessmentDraftLocally(sessionId, nextAnswers, true);
 
-      // Layer 2: Debounced Server Authoritative Sync (1500ms)
-      setSaveStatus("saving");
+      // Layer 2: Debounced Server Authoritative Sync (1200ms)
       if (autosaveTimerRef.current) {
         clearTimeout(autosaveTimerRef.current);
       }
 
-      autosaveTimerRef.current = setTimeout(async () => {
-        try {
-          await assessmentApi.autosave(sessionId, answersRef.current);
-          setSaveStatus("saved");
-        } catch (err) {
-          console.warn("[Assessment Autosave Notice]", err);
-          setSaveStatus("error");
-        }
-      }, 1500);
+      autosaveTimerRef.current = setTimeout(() => {
+        performSync(nextAnswers);
+      }, 1200);
     },
-    [sessionId],
+    [sessionId, performSync],
   );
 
   const clearLocalDraft = useCallback(() => {
     if (sessionId) {
-      try {
-        localStorage.removeItem(`${LOCAL_STORAGE_PREFIX}${sessionId}`);
-      } catch {}
+      clearAssessmentDraftLocally(sessionId);
     }
   }, [sessionId]);
 
@@ -110,5 +165,7 @@ export function useAssessmentSession(sessionId?: string) {
     isLoading,
     error,
     saveStatus,
+    isOnline,
+    flushPendingSync: () => performSync(answersRef.current),
   };
 }

@@ -3861,6 +3861,7 @@ export const assessmentApi = {
     fullName: string;
     phone: string;
     targetBand?: string;
+    email?: string;
   }) => {
     try {
       const res = await fetch(`${API_BASE_URL}/assessment/sessions`, {

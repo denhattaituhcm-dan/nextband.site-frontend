@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { useSpeakingRecorder } from "../hooks/useSpeakingRecorder";
 import { supabase } from "@/lib/supabase";
 import { API_BASE_URL } from "@/lib/api";
+import { savePendingAudioBlob, clearPendingAudioBlob } from "@/lib/assessmentDraftStore";
 
 interface SpeakingPanelProps {
   sessionId: string;
@@ -63,10 +64,20 @@ export function SpeakingPanel({
     setUploadState("uploading");
     setUploadError(null);
 
-    try {
-      const recordingId = crypto.randomUUID();
-      const storagePath = `speaking-recordings/${recordingId}.webm`;
+    const recordingId = crypto.randomUUID();
+    const storagePath = `speaking-recordings/${recordingId}.webm`;
 
+    // Layer 1: Save to Durable Local Audio Outbox FIRST (IndexedDB)
+    await savePendingAudioBlob(sessionId, recordingId, blob, recordSeconds * 1000);
+
+    // If device is offline, mark as pending and await reconnection
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      setUploadError("Thiết bị đang ngoại tuyến. Bản ghi âm đã được bảo toàn trong bộ nhớ an toàn và sẽ tự động tải lên khi có mạng.");
+      setUploadState("failed");
+      return;
+    }
+
+    try {
       // Step 1: Register Draft in Backend
       try {
         await fetch(`${API_BASE_URL}/speaking/register-draft`, {
@@ -112,7 +123,10 @@ export function SpeakingPanel({
         console.warn("[Speaking] Confirm upload notice:", confErr);
       }
 
-      // Step 4: Pass canonical storagePath (Never blob: URL!)
+      // Step 4: Clean up Local Outbox on confirmed server acknowledgment
+      await clearPendingAudioBlob(sessionId);
+
+      // Step 5: Pass canonical storagePath to answers state
       setUploadedStoragePath(storagePath);
       onAudioRecorded(storagePath);
       setUploadState("success");
@@ -122,6 +136,20 @@ export function SpeakingPanel({
       setUploadState("failed");
     }
   };
+
+  // Reconnection Auto-Retry listener
+  React.useEffect(() => {
+    const handleOnline = () => {
+      if (uploadState === "failed" && audioBlob) {
+        handleUploadRecording(audioBlob);
+      }
+    };
+
+    window.addEventListener("online", handleOnline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+    };
+  }, [uploadState, audioBlob]);
 
   const handleRetryUpload = () => {
     if (audioBlob) {
@@ -134,6 +162,7 @@ export function SpeakingPanel({
     setUploadState("idle");
     setUploadError(null);
     setUploadedStoragePath(null);
+    clearPendingAudioBlob(sessionId);
   };
 
   return (
