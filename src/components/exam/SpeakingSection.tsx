@@ -270,9 +270,8 @@ export function SpeakingSection({
                                     <FillBlankHtmlRenderer
                                       html={question.question_text}
                                       answers={answers[question.id] || {}}
-                                      onAnswerChange={(val) =>
-                                        onAnswerChange(question.id, val)
-                                      }
+                                      questionId={question.id}
+                                      onAnswerChange={onAnswerChange}
                                     />
                                   )}
                               </div>

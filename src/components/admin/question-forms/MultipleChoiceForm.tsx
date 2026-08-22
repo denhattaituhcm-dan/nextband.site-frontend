@@ -18,6 +18,12 @@ import FileUpload from "@/components/admin/FileUpload";
 import type { QuestionFormProps } from "./QuestionFormTypes";
 
 export function MultipleChoiceForm({ form, onChange }: QuestionFormProps) {
+  const options = useMemo(() => {
+    return Array.isArray(form.options) && form.options.length > 0
+      ? form.options
+      : ["", "", "", ""];
+  }, [form.options]);
+
   const currentAnswers = useMemo(
     () =>
       (form.correctAnswer || "")
@@ -31,13 +37,13 @@ export function MultipleChoiceForm({ form, onChange }: QuestionFormProps) {
   const [isMultiMode, setIsMultiMode] = useState(() => currentAnswers.length > 1);
 
   const addOption = () => {
-    onChange({ options: [...form.options, ""] });
+    onChange({ options: [...options, ""] });
   };
 
   const removeOption = (index: number) => {
-    if (form.options.length <= 2) return;
-    const removedValue = form.options[index];
-    const newOpts = form.options.filter((_, i) => i !== index);
+    if (options.length <= 2) return;
+    const removedValue = options[index];
+    const newOpts = options.filter((_, i) => i !== index);
     if (currentAnswers.includes(removedValue)) {
       const newAnswers = currentAnswers.filter((a) => a !== removedValue);
       onChange({ options: newOpts, correctAnswer: newAnswers.join(" | ") });
@@ -63,8 +69,8 @@ export function MultipleChoiceForm({ form, onChange }: QuestionFormProps) {
   };
 
   const updateOptionText = (index: number, newValue: string) => {
-    const newOpts = [...form.options];
-    const oldValue = newOpts[index].trim();
+    const newOpts = [...options];
+    const oldValue = (newOpts[index] || "").trim();
     newOpts[index] = newValue;
     const valTrimmed = newValue.trim();
     if (oldValue !== "" && currentAnswers.includes(oldValue)) {
@@ -185,7 +191,7 @@ export function MultipleChoiceForm({ form, onChange }: QuestionFormProps) {
           )}
 
           <div className="flex flex-col gap-2">
-            {form.options.map((opt, i) => {
+            {options.map((opt, i) => {
               const isCorrect =
                 opt.trim() !== "" && currentAnswers.includes(opt.trim());
               return (

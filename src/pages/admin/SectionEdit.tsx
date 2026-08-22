@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { sectionsApi, questionsApi, uploadsApi } from "@/lib/api";
@@ -1002,7 +1002,7 @@ export default function AdminSectionEdit() {
                                   onClick={() =>
                                     setDeleteQuestion({
                                       id: q.id,
-                                      text: q.questionText.replace(
+                                      text: (q.questionText || q.question_text || "").replace(
                                         /<[^>]*>/g,
                                         "",
                                       ),

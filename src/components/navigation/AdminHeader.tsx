@@ -16,7 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { NotificationBell } from './NotificationBell';
 
 export function AdminHeader() {
-  const { profile, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -41,9 +41,9 @@ export function AdminHeader() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                 <Avatar className="h-9 w-9">
-                  <AvatarImage src={profile?.avatar_url || undefined} />
+                  <AvatarImage src={user?.avatarUrl || undefined} />
                   <AvatarFallback className="bg-primary text-primary-foreground">
-                    {profile?.full_name?.charAt(0) || 'A'}
+                    {user?.fullName?.charAt(0) || 'A'}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -51,8 +51,8 @@ export function AdminHeader() {
             <DropdownMenuContent align="end" className="w-56">
               <div className="flex items-center justify-start gap-2 p-2">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium">{profile?.full_name || 'Admin'}</p>
-                  <p className="text-xs text-muted-foreground">{profile?.email}</p>
+                  <p className="text-sm font-medium">{user?.fullName || 'Admin'}</p>
+                  <p className="text-xs text-muted-foreground">{user?.email}</p>
                 </div>
               </div>
               <DropdownMenuSeparator />

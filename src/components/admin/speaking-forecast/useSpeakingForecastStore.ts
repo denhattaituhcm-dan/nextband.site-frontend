@@ -236,10 +236,11 @@ export function useSpeakingForecastStore() {
     const newSeason: Season = {
       ...seasonData,
       id: newSeasonId,
+      isCurrent: !!seasonData.isCurrent,
     };
 
     // If marked as current, unmark others
-    let updatedSeasons = seasons.map((s) => ({
+    let updatedSeasons: Season[] = seasons.map((s) => ({
       ...s,
       isCurrent: newSeason.isCurrent ? false : s.isCurrent,
     }));

@@ -96,7 +96,7 @@ export function FillBlankForm({ form, onChange }: QuestionFormProps) {
             </div>
           ) : (
             <div className="grid gap-3">
-              {form.fillBlankAnswers.map((answer, idx) => (
+              {(form.fillBlankAnswers || []).map((answer, idx) => (
                 <div
                   key={idx}
                   className="flex items-center gap-3 bg-white/50 p-2 rounded-lg border border-amber-100"
@@ -106,9 +106,9 @@ export function FillBlankForm({ form, onChange }: QuestionFormProps) {
                   </span>
                   <Input
                     placeholder={`Nhập đáp án đúng cho ô ${idx + 1}...`}
-                    value={answer}
+                    value={answer || ""}
                     onChange={(e) => {
-                      const updated = [...form.fillBlankAnswers];
+                      const updated = [...(form.fillBlankAnswers || [])];
                       updated[idx] = e.target.value;
                       onChange({ fillBlankAnswers: updated });
                     }}

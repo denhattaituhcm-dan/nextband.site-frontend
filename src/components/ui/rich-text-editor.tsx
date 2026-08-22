@@ -233,13 +233,17 @@ export function RichTextEditor({
   }, []);
 
   const detectEditorState = useCallback(() => {
-    // Detect Align Mode
-    if (document.queryCommandState("justifyCenter")) {
-      setAlignMode("center");
-    } else if (document.queryCommandState("justifyRight")) {
-      setAlignMode("right");
-    } else if (document.queryCommandState("justifyFull")) {
-      setAlignMode("justify");
+    // Detect Align Mode safely
+    if (typeof document !== "undefined" && typeof document.queryCommandState === "function") {
+      if (document.queryCommandState("justifyCenter")) {
+        setAlignMode("center");
+      } else if (document.queryCommandState("justifyRight")) {
+        setAlignMode("right");
+      } else if (document.queryCommandState("justifyFull")) {
+        setAlignMode("justify");
+      } else {
+        setAlignMode("left");
+      }
     } else {
       setAlignMode("left");
     }

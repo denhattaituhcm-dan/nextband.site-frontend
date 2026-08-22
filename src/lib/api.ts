@@ -2,6 +2,9 @@ import { supabase } from "./supabase";
 import { normalizeSiteSettings } from "./site-settings";
 import { isValidUUID } from "./classContext";
 import { normalizeSubmissionStatus } from "./submissionStatus";
+import { adaptExam } from "../adapters/exam.adapter";
+import { adaptSection } from "../adapters/section.adapter";
+import { adaptSession } from "../adapters/session.adapter";
 
 export const resolveApiBaseUrl = (): string => {
   const envUrl =
@@ -196,131 +199,12 @@ export const formatStorageUrl = (path: string | null | undefined) => {
 // =============================================
 export function normalizeExamData(exam: any): any {
   if (!exam) return exam;
-
-  const normalizeSections = (sections: any[]) =>
-    (sections || []).map((s: any) => ({
-      ...s,
-      // Normalize section fields
-      sectionType: s.sectionType || s.section_type,
-      section_type: s.section_type || s.sectionType,
-      examId: s.examId || s.exam_id,
-      orderIndex: s.orderIndex ?? s.order_index ?? 0,
-      audioUrl: formatStorageUrl(s.audioUrl || s.audio_url || ""),
-      audio_url: formatStorageUrl(s.audio_url || s.audioUrl || ""),
-      audioScript: s.audioScript ?? s.audio_script ?? undefined,
-      // Normalize nested question_groups / questionGroups
-      questionGroups: normalizeGroups(s.questionGroups || s.question_groups || []),
-      question_groups: normalizeGroups(s.questionGroups || s.question_groups || []),
-    }));
-
-  const normalizeGroups = (groups: any[]) =>
-    (groups || []).map((g: any) => ({
-      ...g,
-      sectionId: g.sectionId || g.section_id,
-      orderIndex: g.orderIndex ?? g.order_index ?? 0,
-      audioUrl: formatStorageUrl(g.audioUrl || g.audio_url || ""),
-      audio_url: formatStorageUrl(g.audio_url || g.audioUrl || ""),
-      questions: normalizeQuestions(g.questions || []),
-    }));
-
-  const normalizeQuestions = (questions: any[]) =>
-    (questions || []).map((q: any) => {
-      const selectionMode = q.selectionMode || (q.isMultiChoice ? "multiple" : "single");
-      const maxSelections = typeof q.maxSelections === "number" ? q.maxSelections : (selectionMode === "multiple" ? 2 : 1);
-      const isMultiChoice = selectionMode === "multiple" || Boolean(q.isMultiChoice);
-
-      return {
-        ...q,
-        questionType: q.questionType || q.question_type,
-        question_type: q.question_type || q.questionType,
-        questionText: q.questionText || q.question_text || "",
-        question_text: q.question_text || q.questionText || "",
-        selectionMode,
-        maxSelections,
-        isMultiChoice,
-        correctAnswer: q.correctAnswer ?? q.correct_answer ?? null,
-        correct_answer: q.correct_answer ?? q.correctAnswer ?? null,
-        groupId: q.groupId || q.group_id,
-        orderIndex: q.orderIndex ?? q.order_index ?? 0,
-        audioUrl: formatStorageUrl(q.audioUrl || q.audio_url || ""),
-        audio_url: formatStorageUrl(q.audio_url || q.audioUrl || ""),
-        // Normalize options: ensure array format
-        options: Array.isArray(q.options)
-          ? q.options
-          : (q.options ? (typeof q.options === "string" ? JSON.parse(q.options) : q.options) : []),
-      };
-    });
-
-  return {
-    ...exam,
-    courseId: exam.courseId || exam.course_id,
-    durationMinutes: exam.durationMinutes || exam.duration_minutes || 60,
-    isPublished: exam.isPublished ?? exam.is_published ?? false,
-    isActive: exam.isActive ?? exam.is_active ?? true,
-    sections: normalizeSections(exam.sections || exam.exam_sections || []),
-  };
+  return adaptExam(exam);
 }
 
 export function normalizeSectionData(section: any): any {
   if (!section) return section;
-
-  const normalizeQuestions = (questions: any[]) =>
-    (questions || []).map((q: any) => {
-      const selectionMode = q.selectionMode || (q.isMultiChoice ? "multiple" : "single");
-      const maxSelections = typeof q.maxSelections === "number" ? q.maxSelections : (selectionMode === "multiple" ? 2 : 1);
-      const isMultiChoice = selectionMode === "multiple" || Boolean(q.isMultiChoice);
-
-      return {
-        ...q,
-        id: q.id,
-        groupId: q.groupId || q.group_id,
-        questionType: q.questionType || q.question_type,
-        questionText: q.questionText || q.question_text || "",
-        selectionMode,
-        maxSelections,
-        isMultiChoice,
-        options: Array.isArray(q.options)
-          ? q.options
-          : q.options
-          ? typeof q.options === "string"
-            ? JSON.parse(q.options)
-            : q.options
-          : [],
-        correctAnswer: q.correctAnswer ?? q.correct_answer ?? null,
-        audioUrl: q.audioUrl ?? (q.audio_url ? formatStorageUrl(q.audio_url) : null),
-        points: q.points ?? 1,
-        orderIndex: q.orderIndex ?? q.order_index ?? 0,
-      };
-    });
-
-  const normalizeGroups = (groups: any[]) =>
-    (groups || []).map((g: any) => ({
-      ...g,
-      id: g.id,
-      sectionId: g.sectionId || g.section_id,
-      title: g.title ?? null,
-      passage: g.passage ?? null,
-      instructions: g.instructions ?? null,
-      audioUrl: g.audioUrl ?? (g.audio_url ? formatStorageUrl(g.audio_url) : null),
-      orderIndex: g.orderIndex ?? g.order_index ?? 0,
-      questions: normalizeQuestions(g.questions || []),
-    }));
-
-  return {
-    ...section,
-    id: section.id,
-    examId: section.examId || section.exam_id,
-    sectionType: section.sectionType || section.section_type,
-    title: section.title,
-    instructions: section.instructions ?? null,
-    content: section.content ?? [],
-    audioUrl: section.audioUrl ?? (section.audio_url ? formatStorageUrl(section.audio_url) : null),
-    audioScript: section.audioScript || section.audio_script || null,
-    durationMinutes: section.durationMinutes ?? section.duration_minutes ?? null,
-    orderIndex: section.orderIndex ?? section.order_index ?? 0,
-    questionGroups: normalizeGroups(section.questionGroups || section.question_groups || []),
-    question_groups: normalizeGroups(section.questionGroups || section.question_groups || []),
-  };
+  return adaptSection(section);
 }
 
 export function normalizeCourseData(course: any): any {
@@ -949,6 +833,8 @@ export const examsApi = {
     durationMinutes?: number;
     isPublished?: boolean;
     isActive?: boolean;
+    isOpen?: boolean;
+    maxParticipants?: number | null;
   }) => {
     const token = await getAuthToken();
     const res = await fetch(`${API_BASE_URL}/exams`, {
@@ -975,6 +861,7 @@ export const examsApi = {
       description: string;
       isPublished: boolean;
       isActive: boolean;
+      isLocked: boolean;
       week: number;
       durationMinutes: number;
     }>
@@ -2770,7 +2657,7 @@ export const classesApi = {
     return { added: addedProfiles.length, profiles: addedProfiles };
   },
 
-  claimProfileOnLogin: async (authUser: { id: string; email: string; user_metadata?: any }) => {
+  claimProfileOnLogin: async (authUser: { id: string; email?: string | null; user_metadata?: any }) => {
     if (!authUser.id) return;
 
     const email = authUser.email ? authUser.email.toLowerCase() : null;
@@ -2907,43 +2794,19 @@ export interface ClassSession extends CanonicalSessionDTO {
  */
 export function normalizeSession(s: any): CanonicalSessionDTO {
   if (!s) return s;
-  const rawStatus = s.status || "SCHEDULED";
-  let status: CanonicalSessionStatus = "SCHEDULED";
-  if (rawStatus === "COMPLETED") {
-    status = "COMPLETED";
-  } else if (rawStatus === "CANCELLED") {
-    status = "CANCELLED";
-  } else {
-    // "PLANNED", "RESCHEDULED", "SCHEDULED", or undefined -> "SCHEDULED"
-    status = "SCHEDULED";
-  }
-
-  const rawDate =
-    s.scheduledDate ||
-    s.plannedDate ||
-    s.sessionDate ||
-    s.session_date ||
-    s.planned_date ||
-    "";
-  const scheduledDate = typeof rawDate === "string" ? rawDate.slice(0, 10) : "";
-  const sessionNumber = s.sessionNumber ?? s.session_number ?? 1;
-
+  const adapted = adaptSession(s);
   return {
-    id: s.id,
-    classId: s.classId || s.class_id || "",
-    sessionNumber,
-    scheduledDate,
-    startTime: s.startTime || s.start_time || "00:00",
-    endTime: s.endTime || s.end_time || "00:00",
-    status,
-    rescheduleReason: s.rescheduleReason || s.reschedule_reason,
-    note: s.note,
-    lessonId: s.lessonId || s.lesson_id,
-    lessonTitle:
-      s.lessonTitle ||
-      s.lesson_title ||
-      (s.lessons?.title || `Lesson ${sessionNumber}`),
-    createdAt: s.createdAt || s.created_at,
+    id: adapted.id,
+    classId: adapted.classId,
+    sessionNumber: adapted.sessionNumber,
+    scheduledDate: adapted.plannedDate,
+    startTime: adapted.startTime || "00:00",
+    endTime: adapted.endTime || "00:00",
+    status: adapted.status === "COMPLETED" ? "COMPLETED" : adapted.status === "CANCELLED" ? "CANCELLED" : "SCHEDULED",
+    rescheduleReason: adapted.rescheduleReason || undefined,
+    note: adapted.note || undefined,
+    lessonTitle: adapted.lessonTitle || (s?.lessons?.title || `Buổi ${adapted.sessionNumber}`),
+    createdAt: adapted.createdAt,
   };
 }
 
@@ -3025,37 +2888,30 @@ export const sessionsApi = {
       startTime: string;
       endTime: string;
     }
-  ): Promise<ClassSession[]> => {
+  ): Promise<CanonicalSessionDTO[]> => {
     const token = await getAuthToken();
-    try {
-      const res = await fetch(`${API_BASE_URL}/classes/${classId}/sessions/generate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(options),
-      });
+    if (token) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/classes/${classId}/generate-sessions`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(options),
+        });
 
-      if (res.ok) {
-        const data = await res.json();
-        return (data || []).map((s: any) => ({
-          id: s.id,
-          classId: s.classId || s.class_id,
-          sessionNumber: s.sessionNumber || s.session_number,
-          plannedDate: s.plannedDate || s.planned_date,
-          startTime: s.startTime || s.start_time,
-          endTime: s.endTime || s.end_time,
-          status: (s.status as SessionStatus) || "PLANNED",
-          createdAt: s.createdAt || s.created_at,
-        }));
+        if (res.ok) {
+          const data = await res.json();
+          return (Array.isArray(data) ? data : []).map(normalizeSession);
+        }
+      } catch {
+        // Backend REST offline -> Fallback to direct Supabase creation
       }
-    } catch {
-      // Backend REST offline -> Fallback to direct Supabase creation
     }
 
     try {
-      const dates = calculateSessionDates(
+      const dates = generateSessionDates(
         options.startDate,
         options.weekdays,
         options.totalSessions
@@ -3078,16 +2934,7 @@ export const sessionsApi = {
         .select();
 
       if (error) throw error;
-      return (data || []).map((s: any) => ({
-        id: s.id,
-        classId: s.class_id,
-        sessionNumber: s.session_number,
-        plannedDate: s.session_date || s.planned_date,
-        startTime: s.start_time,
-        endTime: s.end_time,
-        status: s.status as SessionStatus,
-        createdAt: s.created_at,
-      }));
+      return (data || []).map(normalizeSession);
     } catch (err: any) {
       throw new Error(err.message || "Sinh buổi học thất bại");
     }
@@ -3098,7 +2945,7 @@ export const sessionsApi = {
     sessionId: string,
     newDate: string,
     reason: string
-  ): Promise<ClassSession> => {
+  ): Promise<CanonicalSessionDTO> => {
     const token = await getAuthToken();
     try {
       const res = await fetch(`${API_BASE_URL}/classes/sessions/${sessionId}/reschedule`, {
@@ -3112,16 +2959,7 @@ export const sessionsApi = {
 
       if (res.ok) {
         const s = await res.json();
-        return {
-          id: s.id,
-          classId: s.classId || s.class_id,
-          sessionNumber: s.sessionNumber || s.session_number,
-          plannedDate: s.plannedDate || s.planned_date,
-          startTime: s.startTime || s.start_time,
-          endTime: s.endTime || s.end_time,
-          status: (s.status as SessionStatus) || "PLANNED",
-          createdAt: s.createdAt || s.created_at,
-        };
+        return normalizeSession(s);
       }
     } catch {
       // Fallback
@@ -3141,31 +2979,22 @@ export const sessionsApi = {
         .single();
 
       if (!error && s) {
-        return {
-          id: s.id,
-          classId: s.class_id,
-          sessionNumber: s.session_number,
-          plannedDate: s.planned_date || s.session_date,
-          startTime: s.start_time,
-          endTime: s.end_time,
-          status: s.status,
-          createdAt: s.created_at,
-        };
+        return normalizeSession(s);
       }
     } catch {
       // ignore
     }
 
-    return {
+    return normalizeSession({
       id: sessionId,
       classId: "",
       sessionNumber: 1,
       plannedDate: newDate,
       startTime: "",
       endTime: "",
-      status: "PLANNED",
+      status: "SCHEDULED",
       createdAt: new Date().toISOString(),
-    };
+    });
   },
 
   /** Cập nhật trạng thái buổi học (COMPLETED, CANCELLED, PLANNED) */
@@ -3173,7 +3002,7 @@ export const sessionsApi = {
     sessionId: string,
     status: SessionStatus,
     note?: string
-  ): Promise<ClassSession> => {
+  ): Promise<CanonicalSessionDTO> => {
     const token = await getAuthToken();
     const res = await fetch(`${API_BASE_URL}/classes/sessions/${sessionId}/status`, {
       method: "PUT",
@@ -3186,21 +3015,10 @@ export const sessionsApi = {
 
     if (res.ok) {
       const data = await res.json();
-      return {
-        id: data.id,
-        classId: data.classId || data.class_id,
-        sessionNumber: data.sessionNumber || data.session_number,
-        plannedDate: data.plannedDate || data.planned_date,
-        startTime: data.startTime || data.start_time,
-        endTime: data.endTime || data.end_time,
-        status: data.status as SessionStatus,
-        rescheduleReason: data.rescheduleReason || data.reschedule_reason,
-        note: data.note,
-        createdAt: data.createdAt || data.created_at,
-      };
+      return normalizeSession(data);
     }
 
-    return {
+    return normalizeSession({
       id: sessionId,
       classId: "",
       sessionNumber: 1,
@@ -3209,7 +3027,7 @@ export const sessionsApi = {
       endTime: "",
       status,
       createdAt: new Date().toISOString(),
-    };
+    });
   },
 };
 

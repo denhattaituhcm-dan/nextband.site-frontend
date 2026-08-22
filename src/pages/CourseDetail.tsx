@@ -188,7 +188,7 @@ export default function CourseDetail() {
                       exitContext: {
                         destination: location.pathname,
                         source: "course_detail",
-                        courseId: id,
+                        courseId: course?.id || slug,
                       },
                       returnUrl: location.pathname,
                     }}

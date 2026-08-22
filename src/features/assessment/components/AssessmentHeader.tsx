@@ -9,7 +9,7 @@ interface AssessmentHeaderProps {
   targetBand: string;
   formattedTime: string;
   isUrgent: boolean;
-  saveStatus: "idle" | "saving" | "saved" | "error";
+  saveStatus: "idle" | "saving" | "saved" | "error" | "offline" | "syncing";
   onOpenSubmitDialog: () => void;
   isSubmitting: boolean;
 }
@@ -58,17 +58,17 @@ export function AssessmentHeader({
         {/* Right: Autosave Status & Submit Button */}
         <div className="flex items-center gap-3">
           <div className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground">
-            {saveStatus === "saving" ? (
+            {saveStatus === "saving" || saveStatus === "syncing" ? (
               <>
                 <RefreshCw className="w-3.5 h-3.5 animate-spin text-brand-blue" />
-                <span>Đang lưu nháp...</span>
+                <span>{saveStatus === "syncing" ? "Đang đồng bộ..." : "Đang lưu nháp..."}</span>
               </>
             ) : saveStatus === "saved" ? (
               <>
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                 <span className="text-emerald-600 dark:text-emerald-400 font-medium">Đã lưu nháp</span>
               </>
-            ) : saveStatus === "error" ? (
+            ) : saveStatus === "error" || saveStatus === "offline" ? (
               <>
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
                 <span className="text-amber-600 font-medium">Lưu offline</span>

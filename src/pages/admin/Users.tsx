@@ -274,9 +274,9 @@ export default function AdminUsers() {
 
   // Tận gốc rễ: API `usersApi.list` trả về cấu trúc `{ data: [...], meta: { total, totalPages } }`.
   // Sử dụng fallback an toàn (supports cả data.data, data.users, data) để không bao giờ bị rỗng khi API trả về thành công.
-  const usersList = data?.data || data?.users || (Array.isArray(data) ? data : []);
-  const total = data?.meta?.total ?? data?.total ?? usersList.length;
-  const totalPages = data?.meta?.totalPages ?? data?.totalPages ?? 1;
+  const usersList = (data as any)?.data || (data as any)?.users || (Array.isArray(data) ? data : []);
+  const total = (data as any)?.meta?.total ?? (data as any)?.total ?? usersList.length;
+  const totalPages = (data as any)?.meta?.totalPages ?? (data as any)?.totalPages ?? 1;
 
   // Render Operational Academic Health Badge (Calculated 100% at Server)
   const renderAcademicHealth = (score: number | null) => {

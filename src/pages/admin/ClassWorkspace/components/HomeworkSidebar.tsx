@@ -55,7 +55,9 @@ export const HomeworkSidebar: React.FC<HomeworkSidebarProps> = ({
                   {hw.title}
                 </span>
                 {isLowProgress && (
-                  <AlertTriangle className="h-3.5 w-3.5 text-rose-500" title="Tỷ lệ nộp bài thấp" />
+                  <span title="Tỷ lệ nộp bài thấp">
+                    <AlertTriangle className="h-3.5 w-3.5 text-rose-500" />
+                  </span>
                 )}
               </div>
 

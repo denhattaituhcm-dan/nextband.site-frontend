@@ -1,4 +1,5 @@
 import { MyClassEnrollment } from "@/lib/api";
+export type { MyClassEnrollment };
 
 /**
  * UUID v4 / General UUID strict validator regex.

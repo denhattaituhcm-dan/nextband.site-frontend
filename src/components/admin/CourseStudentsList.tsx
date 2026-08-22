@@ -49,7 +49,9 @@ export default function CourseStudentsList({
     enabled: !!courseId,
   });
 
-  const enrollments = enrollmentsData?.data || [];
+  const enrollments = Array.isArray(enrollmentsData)
+    ? enrollmentsData
+    : (enrollmentsData as any)?.data || [];
 
   // Fetch available users (not enrolled)
   const { data: usersData, isLoading: usersLoading } = useQuery({

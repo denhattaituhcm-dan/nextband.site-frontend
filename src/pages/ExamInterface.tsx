@@ -172,6 +172,7 @@ export default function ExamInterface() {
     data: submissionData,
     isLoading: submissionLoading,
     error: submissionError,
+    refetch: refetchSubmission,
   } = useQuery({
     queryKey: ["exam-submission", examId, user?.id, explicitSubmissionId],
     queryFn: async () => {
@@ -979,7 +980,7 @@ export default function ExamInterface() {
       <ActorAwareUnavailableScreen
         examTitle={exam.title}
         courseId={exam.courseId || exam.course?.id}
-        userRole={user?.role || "student"}
+        userRole={(user as any)?.role || user?.roles?.[0] || "student"}
         status={contractEvaluation.status}
         violations={contractEvaluation.violations}
       />

@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from "react";
 import { useQuery, useQueries } from "@tanstack/react-query";
 import { submissionsApi } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
+import { DataTablePagination } from "@/components/admin/DataTablePagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -117,13 +118,13 @@ export default function MySubmissions() {
       })
     : submissions;
 
-  const examIds = useMemo(
+  const examIds = useMemo<string[]>(
     () =>
       Array.from(
-        new Set(
+        new Set<string>(
           filteredSubmissions
             .map((submission: any) => submission.examId)
-            .filter(Boolean),
+            .filter((id: any): id is string => typeof id === "string" && Boolean(id)),
         ),
       ),
     [filteredSubmissions],

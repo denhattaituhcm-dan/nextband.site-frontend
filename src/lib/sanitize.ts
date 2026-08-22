@@ -1,4 +1,4 @@
-import DOMPurify from "dompurify";
+import DOMPurify, { Config } from "dompurify";
 
 const ALLOWED_APP_DATA_ATTRS = new Set([
   "data-fill-blank",
@@ -16,7 +16,7 @@ const ALLOWED_APP_DATA_ATTRS = new Set([
  * - Restricts URI protocols to https, http, relative URLs, mailto, tel (disallows javascript:, vbscript:, data:text/html)
  * - Strips all script, iframe, object, embed, form, and inline event handlers
  */
-const STRICT_CONFIG: DOMPurify.Config = {
+const STRICT_CONFIG: Config = {
   ALLOWED_TAGS: [
     "p",
     "br",
@@ -106,7 +106,7 @@ DOMPurify.addHook("afterSanitizeAttributes", (node) => {
  */
 export function sanitizeHtml(dirty: string | null | undefined): string {
   if (!dirty) return "";
-  return DOMPurify.sanitize(dirty, STRICT_CONFIG) as string;
+  return String(DOMPurify.sanitize(dirty, STRICT_CONFIG));
 }
 
 export default sanitizeHtml;

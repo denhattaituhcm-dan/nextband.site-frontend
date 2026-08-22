@@ -1,4 +1,4 @@
-import {
+import React, {
   useState,
   useEffect,
   useRef,
@@ -23,6 +23,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTextHighlight, Highlight } from "@/hooks/useTextHighlight";
 import { cn } from "@/lib/utils";
+import { formatStorageUrl } from "@/lib/api";
 import { DropdownSelect } from "./DropdownSelect";
 import { RichContent } from "./RichContent";
 

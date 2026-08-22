@@ -12,7 +12,7 @@ interface SpeechRecognitionHook {
 export function useSpeechRecognition(): SpeechRecognitionHook {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
-  const [recognition, setRecognition] = useState<SpeechRecognition | null>(
+  const [recognition, setRecognition] = useState<any | null>(
     null,
   );
 
@@ -29,7 +29,7 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
       recognitionInstance.interimResults = true;
       recognitionInstance.lang = "en-US"; // Default to English for IELTS
 
-      recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
+      recognitionInstance.onresult = (event: any) => {
         let currentTranscript = "";
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const transcriptPart = event.results[i][0].transcript;
@@ -46,8 +46,8 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
 
         // Let's try a simpler approach often used:
         // processing results array directly might be safer.
-        const transcriptArr = Array.from(event.results)
-          .map((result) => result[0].transcript)
+        const transcriptArr = Array.from(event.results as any[])
+          .map((result: any) => result[0].transcript)
           .join("");
         setTranscript(transcriptArr);
       };
@@ -56,7 +56,7 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
         setIsListening(false);
       };
 
-      recognitionInstance.onerror = (event: SpeechRecognitionErrorEvent) => {
+      recognitionInstance.onerror = (event: any) => {
         console.error("Speech recognition error", event.error);
         setIsListening(false);
       };

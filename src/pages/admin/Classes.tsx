@@ -286,6 +286,10 @@ export default function AdminClasses() {
         ? new Date(cls.endDate).toISOString().split("T")[0]
         : "",
       isActive: cls.isActive ?? true,
+      weekdays: Array.isArray(cls.weekdays) ? cls.weekdays : [],
+      startTime: cls.startTime || "18:00",
+      endTime: cls.endTime || "20:00",
+      totalSessions: cls.totalSessions ?? 27,
     });
     setDialogOpen(true);
   };
