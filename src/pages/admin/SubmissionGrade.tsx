@@ -167,24 +167,7 @@ export default function SubmissionGrade() {
     mutationFn: async ({ finalize }: { finalize: boolean }) => {
       const updates = Object.values(grades).filter((g) => g.answerId);
 
-      const speakingPointUpdates = allQuestions
-        .filter((q: any) => q._sectionType === "speaking")
-        .map((q: any) => ({
-          questionId: q.id,
-          currentPoints: Math.max(1, Number(q.points || 1)),
-          nextPoints: getEffectiveMaxScore(q),
-        }))
-        .filter((entry) => entry.nextPoints !== entry.currentPoints);
-
-      if (speakingPointUpdates.length > 0) {
-        await Promise.all(
-          speakingPointUpdates.map((entry) =>
-            questionsApi.update(entry.questionId, { points: entry.nextPoints }),
-          ),
-        );
-      }
-
-      // Calculate total score (exclude speaking/writing from auto calculation)
+      // Calculate total score (grading individual submission only - NEVER mutate question bank)
       const currentTotalValue = allQuestions.reduce((sum, q: any) => {
         const isManual = ["speaking", "writing"].includes(q._sectionType);
         if (isManual) {

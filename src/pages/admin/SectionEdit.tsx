@@ -55,6 +55,7 @@ import {
   parseFillBlankAnswers,
 } from "@/components/admin/question-forms";
 import { sanitizeQuestionPayload } from "@/lib/questionNormalizer";
+import { parseSmartBulkQuestions } from "@/lib/smartQuestionParser";
 import {
   Accordion,
   AccordionContent,
@@ -207,7 +208,8 @@ export default function AdminSectionEdit() {
     null,
   );
   const [bulkImportText, setBulkImportText] = useState("");
-  const [bulkImportType, setBulkImportType] = useState("short_answer");
+  const [bulkImportType, setBulkImportType] = useState("auto");
+  const [showBulkPreview, setShowBulkPreview] = useState(true);
 
   // Delete states
   const [deleteGroup, setDeleteGroup] = useState<{
@@ -393,17 +395,29 @@ export default function AdminSectionEdit() {
     },
   });
 
+  const parsedBulkQuestions = useMemo(() => {
+    return parseSmartBulkQuestions(bulkImportText, {
+      fallbackType: bulkImportType,
+      sectionType: section?.sectionType,
+    });
+  }, [bulkImportText, bulkImportType, section?.sectionType]);
+
   const bulkImportMutation = useMutation({
     mutationFn: async ({ groupId, text, questionType }: any) => {
-      const lines = text
-        .split("\n")
-        .map((l: string) => l.trim())
-        .filter(Boolean);
+      const parsed = parseSmartBulkQuestions(text, {
+        fallbackType: questionType,
+        sectionType: section?.sectionType,
+      });
+      if (parsed.length === 0) {
+        throw new Error("Không tìm thấy câu hỏi nào hợp lệ để nhập.");
+      }
       const startOrderIndex = getNextOrderIndexForGroup(groupId);
-      const payload = lines.map((line: string, idx: number) => ({
-        questionType,
-        questionText: line,
-        points: 1,
+      const payload = parsed.map((item, idx) => ({
+        questionType: item.questionType,
+        questionText: item.questionText,
+        options: item.options,
+        correctAnswer: item.correctAnswer,
+        points: item.points || 1,
         orderIndex: startOrderIndex + idx,
       }));
       return questionsApi.bulkCreate(groupId, payload);
@@ -658,18 +672,13 @@ export default function AdminSectionEdit() {
   };
 
   const handleBulkImport = () => {
-    if (!bulkImportGroupId) return;
+    if (!bulkImportGroupId || parsedBulkQuestions.length === 0) return;
     bulkImportMutation.mutate({
       groupId: bulkImportGroupId,
       text: bulkImportText,
       questionType: bulkImportType,
     });
   };
-
-  const bulkImportLineCount = bulkImportText
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean).length;
 
   if (sectionLoading) {
     return (
@@ -1019,15 +1028,10 @@ export default function AdminSectionEdit() {
                             variant="outline"
                             className="flex-1 border-dashed h-9"
                             onClick={() => {
-                              const defaultTypeForSection =
-                                section?.sectionType === "speaking"
-                                  ? "speaking"
-                                  : section?.sectionType === "writing"
-                                    ? "essay"
-                                    : "short_answer";
                               setBulkImportGroupId(group.id);
                               setBulkImportText("");
-                              setBulkImportType(defaultTypeForSection);
+                              setBulkImportType("auto");
+                              setShowBulkPreview(true);
                             }}
                           >
                             <Zap className="mr-2 h-4 w-4" /> Nhập nhanh
@@ -1036,44 +1040,123 @@ export default function AdminSectionEdit() {
 
                         {/* Bulk import inline panel */}
                         {bulkImportGroupId === group.id && (
-                          <Card className="border-2 border-primary/30 bg-primary/5 mt-3">
+                          <Card className="border-2 border-primary/30 bg-primary/5 mt-3 shadow-xs">
                             <CardContent className="p-4 space-y-4">
                               <div className="flex items-center justify-between">
-                                <h4 className="font-semibold text-sm flex items-center gap-2">
-                                  <Zap className="h-4 w-4 text-primary" />
-                                  Nhập nhanh câu hỏi
-                                </h4>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                                    <Zap className="h-4 w-4" />
+                                  </div>
+                                  <div>
+                                    <h4 className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                                      Nhập nhanh câu hỏi thông minh
+                                      <Badge variant="secondary" className="text-[10px] bg-primary/10 text-primary border-0">
+                                        Tự động nhận diện
+                                      </Badge>
+                                    </h4>
+                                    <p className="text-[11px] text-muted-foreground">
+                                      Hỗ trợ nhận diện số câu (1., 2.), các lựa chọn (a., b., c., d. hoặc A, B, C, D) và đáp án đúng.
+                                    </p>
+                                  </div>
+                                </div>
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-6 w-6"
+                                  className="h-7 w-7 p-0 rounded-full hover:bg-muted"
                                   onClick={() => setBulkImportGroupId(null)}
                                 >
                                   ✕
                                 </Button>
                               </div>
+
                               <Textarea
-                                placeholder="Paste mỗi dòng là 1 câu hỏi..."
+                                placeholder={`Ví dụ dán vào đây:\n2. I ___ this book three times, but I still find it interesting.\na. read\nb. am reading\n*c. have read\nd. had read\n\n3. She hasn't seen her cousin ___ last year.\nA. since\nB. for\nC. in\nD. from\nĐáp án: A`}
                                 value={bulkImportText}
-                                onChange={(e) =>
-                                  setBulkImportText(e.target.value)
-                                }
-                                rows={6}
-                                className="font-mono text-xs"
+                                onChange={(e) => setBulkImportText(e.target.value)}
+                                rows={8}
+                                className="font-mono text-xs bg-white resize-y"
                               />
+
+                              {/* Live Parser Statistics & Preview */}
+                              {bulkImportText.trim() && (
+                                <div className="bg-white rounded-lg p-3 border text-xs space-y-2">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-semibold text-foreground">
+                                        Đã nhận diện: {parsedBulkQuestions.length} câu hỏi
+                                      </span>
+                                      {parsedBulkQuestions.length > 0 && (
+                                        <span className="text-muted-foreground text-[11px]">
+                                          ({parsedBulkQuestions.filter((q) => q.questionType === "multiple_choice").length} trắc nghiệm,{" "}
+                                          {parsedBulkQuestions.filter((q) => q.questionType !== "multiple_choice").length} tự luận/khác)
+                                        </span>
+                                      )}
+                                    </div>
+                                    {parsedBulkQuestions.length > 0 && (
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-6 text-[11px] px-2 text-primary hover:bg-primary/5"
+                                        onClick={() => setShowBulkPreview(!showBulkPreview)}
+                                      >
+                                        {showBulkPreview ? "Ẩn xem trước" : "Xem trước chi tiết"}
+                                      </Button>
+                                    )}
+                                  </div>
+
+                                  {showBulkPreview && parsedBulkQuestions.length > 0 && (
+                                    <div className="max-h-48 overflow-y-auto space-y-2 pt-2 border-t border-border/50">
+                                      {parsedBulkQuestions.map((pq, idx) => (
+                                        <div key={idx} className="bg-muted/30 p-2 rounded border text-[11px] space-y-1">
+                                          <div className="flex items-center justify-between gap-2">
+                                            <span className="font-bold text-foreground">
+                                              Câu {pq.questionNumber || idx + 1}: {pq.questionText}
+                                            </span>
+                                            <Badge variant="outline" className="text-[9px] shrink-0 bg-background">
+                                              {ALL_QUESTION_TYPES.find((t) => t.value === pq.questionType)?.label || pq.questionType}
+                                            </Badge>
+                                          </div>
+                                          {pq.options && pq.options.length > 0 && (
+                                            <div className="grid grid-cols-2 gap-1 text-muted-foreground pl-2 text-[10px]">
+                                              {pq.options.map((opt, oIdx) => (
+                                                <div
+                                                  key={oIdx}
+                                                  className={`flex items-center gap-1 ${
+                                                    pq.correctAnswer === opt ? "text-emerald-600 font-semibold" : ""
+                                                  }`}
+                                                >
+                                                  <span>{String.fromCharCode(65 + oIdx)}. {opt}</span>
+                                                  {pq.correctAnswer === opt && (
+                                                    <span className="text-[9px] bg-emerald-100 text-emerald-700 px-1 rounded">✓ Đáp án</span>
+                                                  )}
+                                                </div>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
                               <div className="flex items-center gap-3">
                                 <div className="flex items-center gap-2 flex-1">
-                                  <Label className="text-xs whitespace-nowrap">
+                                  <Label className="text-xs whitespace-nowrap font-medium">
                                     Dạng:
                                   </Label>
                                   <Select
                                     value={bulkImportType}
                                     onValueChange={setBulkImportType}
                                   >
-                                    <SelectTrigger className="h-8 text-xs">
+                                    <SelectTrigger className="h-8 text-xs bg-white">
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
+                                      <SelectItem value="auto">
+                                        ✨ Tự động nhận diện (Khuyên dùng)
+                                      </SelectItem>
                                       {getQuestionTypesForSection(
                                         section.sectionType,
                                       ).map((t) => (
@@ -1091,14 +1174,15 @@ export default function AdminSectionEdit() {
                                   size="sm"
                                   onClick={handleBulkImport}
                                   disabled={
-                                    !bulkImportText ||
+                                    parsedBulkQuestions.length === 0 ||
                                     bulkImportMutation.isPending
                                   }
+                                  className="font-bold gap-1.5 shadow-xs"
                                 >
                                   {bulkImportMutation.isPending && (
                                     <Loader2 className="mr-2 h-3 w-3 animate-spin" />
                                   )}
-                                  Tạo {bulkImportLineCount} câu
+                                  Tạo {parsedBulkQuestions.length} câu
                                 </Button>
                               </div>
                             </CardContent>

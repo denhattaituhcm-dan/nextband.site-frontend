@@ -16,7 +16,7 @@ import {
   Award,
   BookOpen,
 } from "lucide-react";
-import { getPublishedEvidence, EvidenceItem } from "@/lib/evidenceStore";
+import { getPublishedEvidence, fetchEvidenceListAsync, EvidenceItem } from "@/lib/evidenceStore";
 import {
   Dialog,
   DialogContent,
@@ -26,12 +26,17 @@ import {
 
 export default function ResultsPage() {
   const navigate = useNavigate();
-  const [evidenceList, setEvidenceList] = useState<EvidenceItem[]>([]);
+  const [evidenceList, setEvidenceList] = useState<EvidenceItem[]>(getPublishedEvidence);
   const [activeBandFilter, setActiveBandFilter] = useState<string>("all");
   const [selectedStory, setSelectedStory] = useState<EvidenceItem | null>(null);
 
   useEffect(() => {
-    setEvidenceList(getPublishedEvidence());
+    fetchEvidenceListAsync().then((list) => {
+      const published = list
+        .filter((item) => item.published && item.consentConfirmed)
+        .sort((a, b) => a.displayOrder - b.displayOrder || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      setEvidenceList(published);
+    }).catch(() => {});
   }, []);
 
   const filteredList = evidenceList.filter((item) => {

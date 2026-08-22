@@ -1,13 +1,28 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { examsApi } from "@/lib/api";
+import { assessmentApi, examsApi } from "@/lib/api";
 import { SectionContainer } from "@/components/public/SectionContainer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { SEO } from "@/components/common/SEO";
 import {
   ShieldCheck,
@@ -30,6 +45,8 @@ import {
   Flame,
   HelpCircle,
   Play,
+  User,
+  Phone,
 } from "lucide-react";
 import { submitAssessmentBooking } from "@/lib/assessmentService";
 import { toast } from "sonner";
@@ -50,39 +67,66 @@ export default function AssessmentPage() {
     phone: string;
     targetBand: string;
     testFormat: string;
+    sessionId?: string;
   } | null>(null);
 
-  // Fetch published placement exams
+  // Quick Clean-Room Assessment Launch Modal State
+  const [isStartModalOpen, setIsStartModalOpen] = useState(false);
+  const [startExamTitle, setStartExamTitle] = useState("IELTS Clean-Room Assessment");
+  const [startCandidateName, setStartCandidateName] = useState("");
+  const [startCandidatePhone, setStartCandidatePhone] = useState("");
+  const [startTargetBand, setStartTargetBand] = useState("IELTS 6.5");
+  const [isStartingSession, setIsStartingSession] = useState(false);
+
+  // Fetch published placement exams (for reference/info)
   const { data: examsData, isLoading: isLoadingExams } = useQuery({
     queryKey: ["public-assessment-exams"],
     queryFn: () => examsApi.list({ isPublished: true, limit: 10 }).catch(() => ({ data: [] })),
   });
 
-  const availableExams = examsData?.data || [];
-  const primaryReadingExam = availableExams.find(
-    (e: any) =>
-      e.title?.toLowerCase().includes("reading") ||
-      (e.sections || []).some((s: any) => s.sectionType === "reading")
-  ) || availableExams[0];
+  const handleOpenStartModal = (title: string) => {
+    setStartExamTitle(title);
+    // Pre-fill from booking form if user already typed there
+    if (fullName.trim()) setStartCandidateName(fullName.trim());
+    if (phone.trim()) setStartCandidatePhone(phone.trim());
+    if (targetBand) setStartTargetBand(targetBand);
+    setIsStartModalOpen(true);
+  };
 
-  const primaryListeningExam = availableExams.find(
-    (e: any) =>
-      e.title?.toLowerCase().includes("listening") ||
-      (e.sections || []).some((s: any) => s.sectionType === "listening")
-  ) || (availableExams.length > 1 ? availableExams[1] : availableExams[0]);
+  const handleConfirmStartAssessment = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const cleanName = startCandidateName.trim();
+    const cleanPhone = startCandidatePhone.trim().replace(/\s+/g, "");
 
-  const handleStartExam = (examId?: string) => {
-    if (!examId) {
-      toast.info("Đang kết nối phòng thi khảo thí chuẩn...");
-      // If no specific exam id, pick available or route to first exam
-      if (availableExams.length > 0) {
-        navigate(`/exam/${availableExams[0].id}?isAssessment=true`);
-      } else {
-        navigate(`/assessment/result/demo`);
-      }
+    if (!cleanName) {
+      toast.error("Vui lòng nhập họ và tên của bạn");
       return;
     }
-    navigate(`/exam/${examId}?isAssessment=true`);
+    if (!cleanPhone || cleanPhone.length < 9) {
+      toast.error("Vui lòng nhập số điện thoại hợp lệ (tối thiểu 9 số)");
+      return;
+    }
+
+    setIsStartingSession(true);
+    try {
+      const res = await assessmentApi.createSession({
+        fullName: cleanName,
+        phone: cleanPhone,
+        targetBand: startTargetBand,
+      });
+
+      if (res && res.sessionId) {
+        toast.success("Khởi tạo phòng thi khảo thí thành công!");
+        setIsStartModalOpen(false);
+        navigate(`/assessment/take/${res.sessionId}`);
+      } else {
+        throw new Error("Không nhận được mã phiên thi hợp lệ");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Không thể kết nối phòng thi. Vui lòng thử lại!");
+    } finally {
+      setIsStartingSession(false);
+    }
   };
 
   const handleSubmitBooking = async (e: React.FormEvent) => {
@@ -101,6 +145,23 @@ export default function AssessmentPage() {
 
     setIsSubmitting(true);
     try {
+      let createdSessionId: string | null = null;
+      if (testFormat === "online") {
+        try {
+          const sessionRes = await assessmentApi.createSession({
+            fullName: fullName.trim(),
+            phone: cleanPhone,
+            targetBand,
+            email: email.trim() || undefined,
+          });
+          if (sessionRes?.sessionId) {
+            createdSessionId = sessionRes.sessionId;
+          }
+        } catch (sessionErr) {
+          console.warn("Failed to pre-create assessment session:", sessionErr);
+        }
+      }
+
       const res = await submitAssessmentBooking({
         fullName,
         phone: cleanPhone,
@@ -115,7 +176,8 @@ export default function AssessmentPage() {
           fullName,
           phone: cleanPhone,
           targetBand,
-          testFormat: testFormat === "online" ? "Online qua NextBand LMS" : "Trực tiếp tại cơ sở Dĩ An",
+          testFormat: testFormat === "online" ? "Online qua NextBand Clean-Room" : "Trực tiếp tại cơ sở Dĩ An",
+          sessionId: createdSessionId || undefined,
         });
         toast.success("Đăng ký bài khảo thí thành công!");
       }
@@ -230,7 +292,7 @@ export default function AssessmentPage() {
 
             <div className="p-6 pt-0">
               <Button
-                onClick={() => handleStartExam(primaryReadingExam?.id)}
+                onClick={() => handleOpenStartModal("IELTS Academic Reading Placement Test")}
                 className="w-full h-12 rounded-xl font-extrabold text-sm bg-brand-blue hover:bg-brand-blue-hover text-white gap-2 shadow-xs"
               >
                 <span>Bắt đầu thi Reading ngay</span>
@@ -278,7 +340,7 @@ export default function AssessmentPage() {
 
             <div className="p-6 pt-0">
               <Button
-                onClick={() => handleStartExam(primaryListeningExam?.id)}
+                onClick={() => handleOpenStartModal("IELTS Cambridge Listening Placement Test")}
                 className="w-full h-12 rounded-xl font-extrabold text-sm bg-brand-red hover:bg-brand-red-hover text-white gap-2 shadow-xs"
               >
                 <span>Bắt đầu thi Listening ngay</span>
@@ -326,7 +388,7 @@ export default function AssessmentPage() {
 
               <div className="p-6 pt-0">
                 <Button
-                  onClick={() => handleStartExam("cce291f7-d88b-4976-8ed3-cc21daca7023")}
+                  onClick={() => handleOpenStartModal("IELTS Entrance Test (Full 4 Kỹ Năng + Grammar)")}
                   className="w-full h-12 rounded-xl font-extrabold text-sm bg-emerald-600 hover:bg-emerald-700 text-white gap-2 shadow-xs"
                 >
                   <span>Bắt đầu thi 4 kỹ năng ngay</span>
@@ -363,7 +425,7 @@ export default function AssessmentPage() {
                       Đăng Ký Khảo Thí Thành Công!
                     </h3>
                     <p className="text-sm sm:text-base text-foreground/80 max-w-md mx-auto leading-relaxed">
-                      Cảm ơn <strong>{submittedBooking.fullName}</strong>. Ban Chuyên Môn ARIS đã tiếp nhận thông tin và sẽ gửi hướng dẫn làm bài qua số điện thoại <strong>{submittedBooking.phone}</strong>.
+                      Cảm ơn <strong>{submittedBooking.fullName}</strong>. Ban Chuyên Môn ARIS đã tiếp nhận thông tin và sẵn sàng phòng thi cho bạn.
                     </p>
                   </div>
 
@@ -379,16 +441,28 @@ export default function AssessmentPage() {
                   </div>
 
                   <div className="pt-2 flex flex-wrap justify-center gap-3">
+                    {submittedBooking.sessionId ? (
+                      <Button
+                        onClick={() => navigate(`/assessment/take/${submittedBooking.sessionId}`)}
+                        className="rounded-2xl px-6 h-12 font-extrabold text-sm bg-brand-red hover:bg-brand-red-hover text-white shadow-md gap-2"
+                      >
+                        <span>Vào Phòng Thi Khảo Thí Ngay</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    ) : null}
                     <Button
+                      variant={submittedBooking.sessionId ? "outline" : "default"}
                       onClick={() => navigate("/assessment/result/demo")}
-                      className="rounded-2xl px-6 h-12 font-bold text-sm bg-brand-blue hover:bg-brand-blue-hover text-white"
+                      className={`rounded-2xl px-6 h-12 font-bold text-sm ${
+                        submittedBooking.sessionId ? "border-2 border-border/80" : "bg-brand-blue hover:bg-brand-blue-hover text-white"
+                      }`}
                     >
                       Xem trước giao diện báo cáo
                     </Button>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       onClick={() => setSubmittedBooking(null)}
-                      className="rounded-2xl px-6 h-12 font-bold text-sm border-2 border-border/80"
+                      className="rounded-2xl px-6 h-12 font-bold text-sm text-muted-foreground hover:text-foreground"
                     >
                       Đăng ký người khác
                     </Button>
@@ -597,6 +671,103 @@ export default function AssessmentPage() {
           </div>
         </div>
       </SectionContainer>
+
+      {/* Quick Clean-Room Assessment Start Dialog Modal */}
+      <Dialog open={isStartModalOpen} onOpenChange={setIsStartModalOpen}>
+        <DialogContent className="sm:max-w-[460px] p-6 sm:p-8 rounded-3xl bg-background border border-border">
+          <DialogHeader className="space-y-2 text-left">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-blue-soft text-brand-blue border border-brand-blue/20 text-xs font-bold w-fit">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Clean-Room IELTS Assessment</span>
+            </div>
+            <DialogTitle className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+              {startExamTitle}
+            </DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm text-foreground/75 leading-relaxed">
+              Nhập thông tin thí sinh để khởi tạo phòng thi trực tuyến. Hệ thống sẽ tự động chấm điểm và lập báo cáo phân tích năng lực.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleConfirmStartAssessment} className="space-y-4 pt-2">
+            <div className="space-y-1.5 text-left">
+              <Label htmlFor="start-name" className="text-xs font-bold text-foreground uppercase tracking-wider">
+                Họ và tên thí sinh <span className="text-brand-red">*</span>
+              </Label>
+              <Input
+                id="start-name"
+                required
+                placeholder="Ví dụ: Nguyễn Văn A"
+                value={startCandidateName}
+                onChange={(e) => setStartCandidateName(e.target.value)}
+                className="h-11 rounded-xl border-border bg-card text-foreground"
+              />
+            </div>
+
+            <div className="space-y-1.5 text-left">
+              <Label htmlFor="start-phone" className="text-xs font-bold text-foreground uppercase tracking-wider">
+                Số điện thoại / Zalo <span className="text-brand-red">*</span>
+              </Label>
+              <Input
+                id="start-phone"
+                required
+                type="tel"
+                placeholder="Ví dụ: 0933 319 693"
+                value={startCandidatePhone}
+                onChange={(e) => setStartCandidatePhone(e.target.value)}
+                className="h-11 rounded-xl border-border bg-card text-foreground"
+              />
+            </div>
+
+            <div className="space-y-1.5 text-left">
+              <Label htmlFor="start-band" className="text-xs font-bold text-foreground uppercase tracking-wider">
+                Mục tiêu Band điểm
+              </Label>
+              <Select value={startTargetBand} onValueChange={setStartTargetBand}>
+                <SelectTrigger id="start-band" className="h-11 rounded-xl border-border bg-card text-foreground">
+                  <SelectValue placeholder="Chọn mục tiêu" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="IELTS 5.0">IELTS 5.0 (Cơ bản / Tốt nghiệp ĐH)</SelectItem>
+                  <SelectItem value="IELTS 5.5">IELTS 5.5 (Sơ trung cấp)</SelectItem>
+                  <SelectItem value="IELTS 6.0">IELTS 6.0 (Xét tuyển ĐH / Du học)</SelectItem>
+                  <SelectItem value="IELTS 6.5">IELTS 6.5 (Tiêu chuẩn đầu ra)</SelectItem>
+                  <SelectItem value="IELTS 7.0">IELTS 7.0 (Chuyên sâu)</SelectItem>
+                  <SelectItem value="IELTS 7.5+">IELTS 7.5+ (Xuất sắc / Định cư)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="pt-2 space-y-2">
+              <Button
+                type="submit"
+                disabled={isStartingSession}
+                className="w-full h-12 rounded-xl font-extrabold text-sm sm:text-base bg-brand-red hover:bg-brand-red-hover text-white shadow-sm transition-all gap-2"
+              >
+                {isStartingSession ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Đang kết nối phòng thi...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Vào phòng thi khảo thí ngay</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setIsStartModalOpen(false)}
+                disabled={isStartingSession}
+                className="w-full h-9 rounded-xl text-xs text-muted-foreground hover:text-foreground"
+              >
+                Hủy bỏ
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -50,17 +50,17 @@ export default function AssessmentResultPage() {
       try {
         const res = await assessmentApi.getResult(id);
         return res;
-      } catch {
+      } catch (err: any) {
         // Fallback to student submission query
         try {
           return await submissionsApi.getById(id);
         } catch {
-          return null;
+          throw err;
         }
       }
     },
     enabled: !isDemo && !!id,
-    retry: 1,
+    retry: false,
   });
 
   const [report, setReport] = useState<AssessmentResultDetail | null>(null);
@@ -116,28 +116,34 @@ export default function AssessmentResultPage() {
         return;
       }
     }
+
+    // Otherwise report stays null
+    setReport(null);
   }, [id, isDemo, submissionData]);
 
   const activeReport = report as any;
 
   const arisLevelTitle =
-    activeReport?.arisLevel?.levelTitle || activeReport?.rankTitle || "Cấp 3 — Học Sĩ (Builder)";
+    activeReport?.arisLevel?.levelTitle || activeReport?.rankTitle || "Chưa xác định";
   const arisEstimatedBand =
-    activeReport?.arisLevel?.estimatedIeltsRange || activeReport?.bandRange || "Band 5.0 – 5.5";
+    activeReport?.arisLevel?.estimatedIeltsRange || activeReport?.bandRange || (activeReport?.ieltsBandScore != null ? `Band ${activeReport.ieltsBandScore}` : "N/A");
   const rawScore =
     activeReport?.objectiveBreakdown?.rawScore ?? activeReport?.rawScore ?? 0;
   const totalQuestions =
-    activeReport?.objectiveBreakdown?.totalQuestions ?? activeReport?.totalQuestions ?? 35;
+    activeReport?.objectiveBreakdown?.totalQuestions ?? activeReport?.totalQuestions ?? 0;
   const accuracyPercent =
     activeReport?.objectiveBreakdown?.accuracyPercent ?? activeReport?.accuracyPercent ?? 0;
   const recommendedCourse =
     activeReport?.arisLevel?.recommendedCourse || activeReport?.recommendedCourse;
   const subjectiveEvaluation = activeReport?.subjectiveEvaluation;
+  const formattedSubmittedDate = activeReport?.submittedAt
+    ? new Date(activeReport.submittedAt).toLocaleString("vi-VN")
+    : null;
 
   return (
     <div className="flex flex-col">
       <SEO
-        title={`Báo Cáo Chẩn Đoán Năng Lực ARIS — ${arisLevelTitle}`}
+        title={activeReport ? `Báo Cáo Chẩn Đoán Năng Lực ARIS — ${arisLevelTitle}` : "Báo Cáo Chẩn Đoán Năng Lực IELTS — ARIS"}
         description="Báo cáo phân tích trình độ IELTS-style, chẩn đoán điểm mạnh điểm yếu và đề xuất lộ trình đào tạo theo khung phân hạng ARIS."
       />
 
@@ -161,10 +167,15 @@ export default function AssessmentResultPage() {
               <Badge variant="outline" className="bg-brand-red-soft text-brand-red border-brand-red/30 uppercase font-mono font-black text-xs px-3 py-1">
                 BẢN DEMO — Minh họa cấu trúc báo cáo
               </Badge>
-            ) : (
+            ) : activeReport ? (
               <Badge variant="outline" className="bg-success/15 text-success border-success/30 font-mono font-bold text-xs px-3 py-1 flex items-center gap-1.5">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 Kết quả khảo thí chẩn đoán
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/30 font-mono font-bold text-xs px-3 py-1 flex items-center gap-1.5">
+                <AlertTriangle className="h-3.5 w-3.5" />
+                Thông báo trạng thái hồ sơ
               </Badge>
             )}
             <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-brand-blue-soft text-brand-blue border border-brand-blue/20">
@@ -179,21 +190,23 @@ export default function AssessmentResultPage() {
           <p className="text-base sm:text-lg text-foreground/85 font-normal leading-relaxed">
             {isDemo
               ? "Dưới đây là bản mô phỏng cấu trúc báo cáo khảo thí chẩn đoán của ARIS. Sau khi hoàn thành bài làm thực tế, hệ thống sẽ tự động bóc tách dữ liệu theo kết quả của bạn."
-              : `Báo cáo phân tích tự động cho thí sinh ${activeReport?.candidateName || "Khảo thí"} hoàn thành lúc ${new Date(activeReport?.submittedAt || "").toLocaleString("vi-VN")}.`}
+              : activeReport
+              ? `Báo cáo phân tích tự động cho thí sinh ${activeReport?.candidateName || "Khảo thí"}${formattedSubmittedDate ? ` hoàn thành lúc ${formattedSubmittedDate}` : ""}.`
+              : "Vui lòng kiểm tra trạng thái xác thực hoặc mã phiên khảo thí bên dưới."}
           </p>
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* 02. DETAILED RESULT BREAKDOWN                                             */}
+      {/* 02. DETAILED RESULT BREAKDOWN / ERROR STATE                                */}
       {/* ========================================================================= */}
       <SectionContainer
         badge="Chẩn Đoán Năng Lực"
-        title="Định vị Cấp độ ARIS &amp; Đề xuất lộ trình"
-        description="Điểm số phần trắc nghiệm được chấm tự động và đối chiếu với Khung phân hạng ARIS Diagnostic Scale."
+        title={activeReport ? "Định vị Cấp độ ARIS & Đề xuất lộ trình" : "Trạng thái truy cập bài làm"}
+        description={activeReport ? "Điểm số phần trắc nghiệm được chấm tự động và đối chiếu với Khung phân hạng ARIS Diagnostic Scale." : "Thông tin tra cứu hồ sơ khảo thí."}
         background="muted"
       >
-        {isLoadingSubmission && !activeReport ? (
+        {isLoadingSubmission ? (
           <div className="py-20 text-center space-y-3">
             <div className="flex justify-center text-primary">
               <RotateCw className="h-8 w-8 animate-spin" />
@@ -201,6 +214,38 @@ export default function AssessmentResultPage() {
             <p className="text-sm font-semibold text-muted-foreground">
               Đang phân tích bài làm và thiết lập báo cáo...
             </p>
+          </div>
+        ) : !activeReport ? (
+          /* Proper Error / Unauthorized / Expired State (No Fake Scorecard) */
+          <div className="max-w-xl mx-auto py-12 px-4 text-center space-y-6">
+            <div className="w-16 h-16 rounded-3xl bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center mx-auto shadow-inner">
+              <AlertTriangle className="h-8 w-8" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-black text-foreground">
+                {isSubmissionError ? "Phiên Khảo Thí Hết Hạn hoặc Cần Xác Thực" : "Không Tìm Thấy Báo Cáo Khảo Thí"}
+              </h3>
+              <p className="text-sm text-foreground/75 leading-relaxed">
+                {isSubmissionError
+                  ? "Không thể truy xuất dữ liệu báo cáo chẩn đoán cho mã hồ sơ này. Phiên khảo thí có thể đã hết hạn hoặc liên kết được mở trên thiết bị chưa được xác thực."
+                  : "Không tìm thấy hồ sơ bài thi tương ứng trong hệ thống hoặc bài thi chưa hoàn tất nộp bài."}
+              </p>
+            </div>
+            <div className="flex flex-wrap justify-center gap-3 pt-2">
+              <Button
+                onClick={() => navigate("/assessment")}
+                className="rounded-2xl px-6 h-12 font-bold text-sm bg-brand-red hover:bg-brand-red-hover text-white shadow-sm"
+              >
+                Làm bài khảo thí mới
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => navigate("/assessment/result/demo")}
+                className="rounded-2xl px-6 h-12 font-bold text-sm border-2 border-border/80 text-foreground"
+              >
+                Xem trước báo cáo mẫu
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="max-w-4xl mx-auto space-y-8 text-left">

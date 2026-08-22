@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Season, ForecastTopic, SeasonMetrics } from './types';
 import { initialSeasons, initialTopics } from './mockData';
+import { speakingForecastApi } from '@/lib/api';
 
 const SEASONS_STORAGE_KEY = 'nb_speaking_forecast_seasons';
 const TOPICS_STORAGE_KEY = 'nb_speaking_forecast_topics';
@@ -84,6 +85,26 @@ export function useSpeakingForecastStore() {
     setSelectedSeasonIdState(getStoredSelectedSeason());
   }, []);
 
+  // Server sync on mount
+  useEffect(() => {
+    speakingForecastApi.getPublicData().then((serverData) => {
+      if (serverData && serverData.seasons && Array.isArray(serverData.seasons) && serverData.seasons.length > 0) {
+        setSeasons(serverData.seasons);
+        localStorage.setItem(SEASONS_STORAGE_KEY, JSON.stringify(serverData.seasons));
+      }
+      if (serverData && serverData.topics && Array.isArray(serverData.topics) && serverData.topics.length > 0) {
+        const normalized = serverData.topics.map(normalizeTopic);
+        setTopics(normalized);
+        localStorage.setItem(TOPICS_STORAGE_KEY, JSON.stringify(normalized));
+      }
+      if (serverData && serverData.selectedSeasonId) {
+        setSelectedSeasonIdState(serverData.selectedSeasonId);
+        localStorage.setItem(SELECTED_SEASON_STORAGE_KEY, serverData.selectedSeasonId);
+      }
+      emitStoreUpdate();
+    }).catch(() => {});
+  }, []);
+
   useEffect(() => {
     window.addEventListener(STORE_UPDATE_EVENT, refreshState);
     window.addEventListener('storage', refreshState);
@@ -93,22 +114,35 @@ export function useSpeakingForecastStore() {
     };
   }, [refreshState]);
 
+  const syncToServer = useCallback((nextSeasons: Season[], nextTopics: ForecastTopic[], nextSeasonId?: string) => {
+    speakingForecastApi.saveAdminData({
+      seasons: nextSeasons,
+      topics: nextTopics,
+      selectedSeasonId: nextSeasonId || selectedSeasonId,
+    }).catch((err) => {
+      console.warn("Forecast server sync notice:", err);
+    });
+  }, [selectedSeasonId]);
+
   const saveSeasons = (newSeasons: Season[]) => {
     setSeasons(newSeasons);
     localStorage.setItem(SEASONS_STORAGE_KEY, JSON.stringify(newSeasons));
     emitStoreUpdate();
+    syncToServer(newSeasons, topics, selectedSeasonId);
   };
 
   const saveTopics = (newTopics: ForecastTopic[]) => {
     setTopics(newTopics);
     localStorage.setItem(TOPICS_STORAGE_KEY, JSON.stringify(newTopics));
     emitStoreUpdate();
+    syncToServer(seasons, newTopics, selectedSeasonId);
   };
 
   const setSelectedSeasonId = (id: string) => {
     setSelectedSeasonIdState(id);
     localStorage.setItem(SELECTED_SEASON_STORAGE_KEY, id);
     emitStoreUpdate();
+    syncToServer(seasons, topics, id);
   };
 
   // Derived metrics calculation - never stored as raw attributes

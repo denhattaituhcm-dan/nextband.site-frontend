@@ -4077,6 +4077,41 @@ export const assessmentApi = {
   },
 };
 
+export const speakingForecastApi = {
+  getPublicData: async () => {
+    const response = await fetch(`${API_BASE_URL}/speaking-forecast`);
+    if (!response.ok) throw new Error("Không thể tải dữ liệu Speaking Forecast");
+    return response.json();
+  },
+
+  getAdminData: async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    const response = await fetch(`${API_BASE_URL}/speaking-forecast/admin`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error("Không thể tải dữ liệu Speaking Forecast (Admin)");
+    return response.json();
+  },
+
+  saveAdminData: async (payload: { seasons: any[]; topics: any[]; selectedSeasonId?: string }) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    const response = await fetch(`${API_BASE_URL}/speaking-forecast/admin`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) throw new Error("Không thể lưu dữ liệu Speaking Forecast");
+    return response.json();
+  },
+};
+
 export interface StudentWorkspaceViewModel {
   state: "NO_ENROLLMENT" | "PENDING_ACTIVATION" | "SUSPENDED_STUDENT" | "ACTIVE_STUDENT";
   student: { id: string; email: string; fullName: string; avatarUrl?: string };

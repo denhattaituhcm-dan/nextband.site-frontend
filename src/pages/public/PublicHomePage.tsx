@@ -20,7 +20,7 @@ import {
   UserCheck,
   Users,
 } from "lucide-react";
-import { getFeaturedEvidence, EvidenceItem } from "@/lib/evidenceStore";
+import { getFeaturedEvidence, fetchEvidenceListAsync, EvidenceItem } from "@/lib/evidenceStore";
 import {
   Dialog,
   DialogContent,
@@ -30,11 +30,15 @@ import {
 
 export default function PublicHomePage() {
   const navigate = useNavigate();
-  const [featuredItems, setFeaturedItems] = React.useState<EvidenceItem[]>([]);
+  const [featuredItems, setFeaturedItems] = React.useState<EvidenceItem[]>(getFeaturedEvidence);
   const [selectedEvidence, setSelectedEvidence] = React.useState<EvidenceItem | null>(null);
 
   React.useEffect(() => {
-    setFeaturedItems(getFeaturedEvidence());
+    fetchEvidenceListAsync().then((list) => {
+      const published = list.filter((item) => item.published && item.consentConfirmed);
+      const featured = published.filter((item) => item.featured);
+      setFeaturedItems(featured.length > 0 ? featured.slice(0, 4) : published.slice(0, 3));
+    }).catch(() => {});
   }, []);
 
   return (
