@@ -47,10 +47,7 @@ export function GrammarPanel({
               id={`question-${q.id}`}
               className="p-5 sm:p-6 rounded-3xl bg-card border border-border space-y-3.5 shadow-xs"
             >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wide">
-                  {q.sectionTitle}
-                </span>
+              <div className="flex items-center justify-end">
                 <span className="text-xs font-extrabold text-muted-foreground">
                   Câu {q.orderIndex}
                 </span>

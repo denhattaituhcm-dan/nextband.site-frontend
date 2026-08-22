@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { ProgressReportModal } from "@/components/admin/ProgressReportModal";
 import { mapToProgressReportData } from "@/lib/progressReportMapper";
+import { deriveSubmissionTiming } from "@/lib/homeworkStatusHelper";
 
 // Model Workbook Homework Item (Gắn với Buổi học / Lesson)
 interface WorkbookItem {
@@ -49,6 +50,10 @@ interface WorkbookItem {
   dueDate?: string;
   status: "unsubmitted" | "in_progress" | "submitted" | "graded" | "needs_revision";
   isOverdue: boolean;
+  submissionTiming?: {
+    isLate: boolean;
+    lateDays: number;
+  };
   score?: number;
   feedback?: string;
   primaryErrorCategory?: "CONCEPT" | "STRUCTURE" | "EXPRESSION" | "GRAMMAR" | null;
@@ -252,28 +257,35 @@ export default function TeacherWorkspace() {
   // 3. SỔ WORKBOOK DỮ LIỆU THẬT NHÓM THEO BUỔI HỌC (REAL WORKBOOK ITEMS)
   const workbookItems: WorkbookItem[] = useMemo(() => {
     if (!currentStudent || !currentStudent.homeworks) return [];
-    return currentStudent.homeworks.map((hw: any, idx: number) => ({
-      id: hw.id,
-      lessonNumber: hw.lessonNumber || Math.ceil((idx + 1) / 2),
-      lessonTitle: hw.lessonTitle || `Buổi ${Math.ceil((idx + 1) / 2)}`,
-      orderIndex: idx + 1,
-      title: hw.title,
-      type: (hw.type || "writing") as "writing" | "speaking" | "homework",
-      status: (hw.status || "unsubmitted") as any,
-      isOverdue: false,
-      submissionId: hw.submissionId,
-      answerId: hw.answerId,
-      submittedAt: hw.submittedAt,
-      answerText: hw.answerText,
-      audioUrl: hw.audioUrl,
-      objectiveScore: hw.objectiveScore,
-      bandScore: hw.bandScore,
-      criteriaScores: hw.criteriaScores,
-      feedback: hw.feedback,
-      primaryErrorCategory: hw.primaryErrorCategory,
-      revisionRequired: hw.revisionRequired,
-      score: hw.bandScore != null ? hw.bandScore : hw.objectiveScore,
-    }));
+    return currentStudent.homeworks.map((hw: any, idx: number) => {
+      const deadline = hw.dueDate || hw.deadline;
+      const timing = deriveSubmissionTiming(hw.submittedAt, deadline);
+
+      return {
+        id: hw.id,
+        lessonNumber: hw.lessonNumber || Math.ceil((idx + 1) / 2),
+        lessonTitle: hw.lessonTitle || `Buổi ${Math.ceil((idx + 1) / 2)}`,
+        orderIndex: idx + 1,
+        title: hw.title,
+        type: (hw.type || "writing") as "writing" | "speaking" | "homework",
+        dueDate: deadline,
+        status: (hw.status || "unsubmitted") as any,
+        isOverdue: false,
+        submissionTiming: timing,
+        submissionId: hw.submissionId,
+        answerId: hw.answerId,
+        submittedAt: hw.submittedAt,
+        answerText: hw.answerText,
+        audioUrl: hw.audioUrl,
+        objectiveScore: hw.objectiveScore,
+        bandScore: hw.bandScore,
+        criteriaScores: hw.criteriaScores,
+        feedback: hw.feedback,
+        primaryErrorCategory: hw.primaryErrorCategory,
+        revisionRequired: hw.revisionRequired,
+        score: hw.bandScore != null ? hw.bandScore : hw.objectiveScore,
+      };
+    });
   }, [currentStudent]);
 
   // Gom nhóm Workbook theo Buổi học (Lesson)
@@ -477,13 +489,13 @@ export default function TeacherWorkspace() {
       case "graded":
         return (
           <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
-            🟢 Band {item.score ?? "6.5"}
+            🟢 Band {item.score ?? "6.5"} {item.submissionTiming?.isLate ? `(Trễ ${item.submissionTiming.lateDays}d)` : ""}
           </Badge>
         );
       case "submitted":
         return (
           <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] animate-pulse">
-            🔵 Chờ chấm
+            🔵 Chờ chấm {item.submissionTiming?.isLate ? `(Trễ ${item.submissionTiming.lateDays}d)` : ""}
           </Badge>
         );
       case "in_progress":

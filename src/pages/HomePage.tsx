@@ -1,8 +1,7 @@
-// Student Welcome & Class Entry Portal — P0 Fix: lifecycle state machine
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import { submissionsApi } from "@/lib/api";
+import { submissionsApi, lessonsApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +9,12 @@ import { useNavigate } from "react-router-dom";
 import { HomeworkEmptyState } from "@/components/homework/HomeworkEmptyState";
 import { AnnouncementBanner } from "@/components/AnnouncementBanner";
 import { useStudentLifecycle } from "@/hooks/useStudentLifecycle";
+import {
+  deriveCanonicalVisualStatus,
+  deriveSubmissionTiming,
+  formatDeadlineCountdown,
+  sortStudentActionQueue,
+} from "@/lib/homeworkStatusHelper";
 import {
   BookOpen,
   ArrowRight,
@@ -20,6 +25,9 @@ import {
   WifiOff,
   AlertCircle,
   RefreshCw,
+  Sparkles,
+  AlertTriangle,
+  RotateCcw,
 } from "lucide-react";
 
 // ─── Lifecycle-derived sub-views ─────────────────────────────────────────────
@@ -100,6 +108,45 @@ export default function HomePage() {
   const pendingCount = userSubmissions.filter((s: any) =>
     ["submitted", "SUBMITTED"].includes(s.status)
   ).length;
+
+  // Lộ trình bài tập lớp học để suy ra Hàng đợi Hành động (Action Queue)
+  const { data: classLessonData } = useQuery({
+    queryKey: ["class-lessons-action-queue", enrolledClassId],
+    queryFn: () => lessonsApi.getClassLessons(enrolledClassId || ""),
+    enabled: !!enrolledClassId && state === "ENROLLED",
+    staleTime: 1000 * 60 * 2,
+  });
+
+  const rawLessons = classLessonData?.data?.lessons || [];
+
+  // Hàng đợi hành động 4 tầng ưu tiên sư phạm: Revision > Overdue > Due Soon > Upcoming
+  const actionQueue = useMemo(() => {
+    const formatted = rawLessons.map((item: any, idx: number) => {
+      const sub = userSubmissions.find((s: any) => (s.examId || s.exam_id) === item.id) || item.submission;
+      const deadline = item.homework?.deadline;
+      const status = deriveCanonicalVisualStatus({
+        submissionStatus: sub?.status,
+        revisionRequired: sub?.revisionRequired,
+        deadline,
+      });
+      const countdown = formatDeadlineCountdown(deadline);
+      const submissionTiming = deriveSubmissionTiming(sub?.submittedAt || sub?.createdAt, deadline);
+
+      return {
+        id: item.id,
+        examId: item.id,
+        title: item.title || `Bài tập Buổi ${idx + 1}`,
+        description: item.description,
+        status,
+        deadline,
+        countdown,
+        submissionTiming,
+        submission: sub,
+      };
+    });
+
+    return sortStudentActionQueue(formatted);
+  }, [rawLessons, userSubmissions]);
 
   // ── State machine render ─────────────────────────────────────────────────────
   return (
@@ -211,6 +258,115 @@ export default function HomePage() {
                 </div>
               )}
             </Card>
+
+            {/* ACTION QUEUE: VIỆC CẦN XỬ LÝ (Tối đa 3 việc ưu tiên nhất) */}
+            {actionQueue.length > 0 && (
+              <Card className="p-4 sm:p-5 rounded-2xl border border-border/80 bg-card space-y-3.5 shadow-xs">
+                <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
+                      <Clock className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-bold text-foreground flex items-center gap-1.5">
+                        Việc cần xử lý
+                        <Badge variant="secondary" className="text-[10px] h-4 px-1.5 font-bold">
+                          {actionQueue.length}
+                        </Badge>
+                      </h2>
+                      <p className="text-[11px] text-muted-foreground">
+                        Thứ tự ưu tiên: Cần sửa Attempt 2 ➔ Quá hạn ➔ Sắp hết hạn
+                      </p>
+                    </div>
+                  </div>
+                  {enrolledClassId && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => navigate(`/app/class/${enrolledClassId}/lessons`)}
+                      className="text-xs text-primary font-semibold hover:bg-primary/5 h-8 gap-1"
+                    >
+                      Xem tất cả <ArrowRight className="w-3.5 h-3.5" />
+                    </Button>
+                  )}
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {actionQueue.slice(0, 3).map((item) => {
+                    const isRevision = item.status === "REVISION_REQUIRED";
+                    const isOverdue = item.status === "OVERDUE";
+                    const isDueSoon = item.priority === 3;
+
+                    return (
+                      <div
+                        key={item.id}
+                        className={`p-3.5 rounded-xl border transition-all flex flex-col justify-between space-y-3 ${
+                          isRevision
+                            ? "bg-amber-500/5 border-amber-300 dark:border-amber-800 ring-1 ring-amber-500/20"
+                            : isOverdue
+                            ? "bg-rose-500/5 border-rose-300 dark:border-rose-800 ring-1 ring-rose-500/20"
+                            : isDueSoon
+                            ? "bg-amber-500/5 border-amber-200 dark:border-amber-900"
+                            : "bg-muted/20 border-border/60"
+                        }`}
+                      >
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between gap-1">
+                            {isRevision ? (
+                              <Badge variant="destructive" className="bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-300 text-[10px] font-bold">
+                                🔄 Cần sửa bài
+                              </Badge>
+                            ) : isOverdue ? (
+                              <Badge variant="destructive" className="bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-300 text-[10px] font-bold">
+                                ⚠️ Quá hạn
+                              </Badge>
+                            ) : isDueSoon ? (
+                              <Badge variant="warning" className="text-[10px] font-bold">
+                                ⏳ Sắp hết hạn
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-[10px] text-muted-foreground">
+                                📅 Tiếp theo
+                              </Badge>
+                            )}
+
+                            {item.countdown && (
+                              <span className="text-[10px] font-mono text-muted-foreground">
+                                {item.countdown.text}
+                              </span>
+                            )}
+                          </div>
+
+                          <h3 className="font-bold text-xs text-foreground line-clamp-1">
+                            {item.title}
+                          </h3>
+                        </div>
+
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            if (isRevision && item.submission?.id) {
+                              navigate(`/submission/${item.submission.id}`);
+                            } else {
+                              navigate(`/exam/${item.examId || item.id}`);
+                            }
+                          }}
+                          className={`w-full font-bold text-xs h-8 rounded-lg ${
+                            isRevision
+                              ? "bg-amber-600 hover:bg-amber-700 text-white shadow-xs"
+                              : isOverdue
+                              ? "bg-rose-600 hover:bg-rose-700 text-white shadow-xs"
+                              : ""
+                          }`}
+                        >
+                          {isRevision ? "Sửa bài ngay" : isOverdue ? "Làm bù ngay" : "Làm bài"}
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
+            )}
 
             {/* 3 KPI CARDS */}
             <div className="grid gap-3.5 sm:grid-cols-3">

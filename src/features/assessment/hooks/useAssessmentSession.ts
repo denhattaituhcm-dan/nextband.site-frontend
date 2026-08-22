@@ -5,6 +5,8 @@ import {
   saveAssessmentDraftLocally,
   loadAssessmentDraftLocally,
   clearAssessmentDraftLocally,
+  saveAssessmentPayloadLocally,
+  loadAssessmentPayloadLocally,
 } from "@/lib/assessmentDraftStore";
 
 export function useAssessmentSession(sessionId?: string) {
@@ -34,11 +36,20 @@ export function useAssessmentSession(sessionId?: string) {
     setError(null);
 
     (async () => {
-      // Step 1: Immediately read from local durable store (0ms latency for offline/reloads)
+      // Step 1: Immediately read draft and cached test structure from local durable store
       const localDraft = await loadAssessmentDraftLocally(sessionId);
-      if (localDraft && isMounted) {
-        answersRef.current = localDraft;
-        setAnswers(localDraft);
+      const cachedData = await loadAssessmentPayloadLocally(sessionId);
+
+      if (isMounted) {
+        if (localDraft) {
+          answersRef.current = localDraft;
+          setAnswers(localDraft);
+        }
+        if (cachedData?.session && cachedData?.test) {
+          setSession(cachedData.session);
+          setTestPayload(cachedData.test);
+          setIsLoading(false);
+        }
       }
 
       // Step 2: Query Server
@@ -48,6 +59,7 @@ export function useAssessmentSession(sessionId?: string) {
 
         setSession(data.session);
         setTestPayload(data.test);
+        await saveAssessmentPayloadLocally(sessionId, data);
 
         // Merge server answers with any local unsynced edits (local edits take precedence)
         const serverAnswers = data.session.answers || {};
@@ -58,8 +70,8 @@ export function useAssessmentSession(sessionId?: string) {
         await saveAssessmentDraftLocally(sessionId, mergedAnswers, false);
       } catch (err: any) {
         if (!isMounted) return;
-        // If offline or network error, keep local draft if present
-        if (localDraft) {
+        // If we already loaded cached test structure or local draft, do NOT crash the exam room
+        if (cachedData?.test || localDraft) {
           setError(null);
         } else {
           setError(err.message || "Không thể tải nội dung bài khảo thí. Vui lòng kiểm tra lại kết nối.");

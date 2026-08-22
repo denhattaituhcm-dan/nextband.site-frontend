@@ -1,7 +1,12 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { lessonsApi, submissionsApi, examsApi } from "@/lib/api";
-import { deriveCanonicalVisualStatus, formatDeadlineCountdown, CanonicalVisualStatus } from "@/lib/homeworkStatusHelper";
+import {
+  deriveCanonicalVisualStatus,
+  formatDeadlineCountdown,
+  deriveSubmissionTiming,
+  CanonicalVisualStatus,
+} from "@/lib/homeworkStatusHelper";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -185,6 +190,7 @@ export default function StudentLessonViewerPage() {
       deadline,
     });
     const countdown = formatDeadlineCountdown(deadline);
+    const submissionTiming = deriveSubmissionTiming(sub?.submittedAt || sub?.createdAt, deadline);
 
     return {
       id: item.id,
@@ -196,19 +202,24 @@ export default function StudentLessonViewerPage() {
       deadline,
       deadlineSource: item.homework?.deadlineSource,
       countdown,
+      submissionTiming,
       resources: item.resources || [],
       submission: sub,
     };
   });
 
-  const nextHomework = homeworkList.find((hw) => hw.status === "OVERDUE" || hw.status === "REVISION_REQUIRED" || hw.status === "UPCOMING" || hw.status === "IN_PROGRESS") || homeworkList[0];
+  const nextHomework = homeworkList.find((hw) => hw.status === "REVISION_REQUIRED" || hw.status === "OVERDUE" || hw.status === "UPCOMING" || hw.status === "IN_PROGRESS") || homeworkList[0];
 
   const overdueCount = homeworkList.filter((hw) => hw.status === "OVERDUE").length;
   const notStartedCount = homeworkList.filter((hw) => hw.status === "UPCOMING" || hw.status === "IN_PROGRESS").length;
   const submittedCount = homeworkList.filter((hw) => hw.status === "SUBMITTED").length;
   const reviewedCount = homeworkList.filter((hw) => hw.status === "GRADED").length;
 
-  const getStatusBadge = (status: CanonicalVisualStatus, countdown?: { text: string; isOverdue: boolean } | null) => {
+  const getStatusBadge = (
+    status: CanonicalVisualStatus,
+    countdown?: { text: string; isOverdue: boolean } | null,
+    timing?: { isLate: boolean; lateDays: number }
+  ) => {
     switch (status) {
       case "OVERDUE":
         return (
@@ -226,16 +237,16 @@ export default function StudentLessonViewerPage() {
         );
       case "GRADED":
         return (
-          <Badge variant="success">
+          <Badge variant="success" className="gap-1">
             <CheckCircle2 className="h-3 w-3" />
-            Đã hoàn thành
+            {timing?.isLate ? `Đã hoàn thành (Trễ ${timing.lateDays} ngày)` : "Đã hoàn thành"}
           </Badge>
         );
       case "SUBMITTED":
         return (
-          <Badge variant="warning">
+          <Badge variant="warning" className="gap-1">
             <Clock className="h-3 w-3" />
-            Chờ phản hồi
+            {timing?.isLate ? `Chờ phản hồi (Trễ ${timing.lateDays} ngày)` : "Chờ phản hồi"}
           </Badge>
         );
       case "IN_PROGRESS":
@@ -245,11 +256,16 @@ export default function StudentLessonViewerPage() {
             Đang làm
           </Badge>
         );
+      case "UPCOMING":
       default:
-        return (
-          <Badge variant="muted" className="text-slate-600 dark:text-slate-400 gap-1 font-medium">
-            <Circle className="h-2.5 w-2.5" />
-            {countdown ? countdown.text : "Chưa làm"}
+        return countdown ? (
+          <Badge variant="outline" className="font-mono text-muted-foreground gap-1">
+            <Calendar className="h-3 w-3" />
+            {countdown.text}
+          </Badge>
+        ) : (
+          <Badge variant="outline" className="text-muted-foreground">
+            Chưa làm
           </Badge>
         );
     }
@@ -457,7 +473,7 @@ export default function StudentLessonViewerPage() {
                         <h3 className={`font-bold text-sm ${isOverdue ? "text-rose-900 dark:text-rose-200" : "text-foreground"}`}>
                           {hw.title}
                         </h3>
-                        {getStatusBadge(hw.status, hw.countdown)}
+                        {getStatusBadge(hw.status, hw.countdown, hw.submissionTiming)}
                       </div>
 
                       {hw.resources && hw.resources.length > 0 ? (

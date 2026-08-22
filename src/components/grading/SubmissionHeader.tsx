@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, Clock, FileText } from 'lucide-react';
+import { User, Clock, FileText, CheckCircle2, AlertCircle } from 'lucide-react';
+import { deriveSubmissionTiming } from '@/lib/homeworkStatusHelper';
 
 interface SubmissionHeaderProps {
   student: {
@@ -14,15 +15,18 @@ interface SubmissionHeaderProps {
   } | null;
   status: string | null;
   submittedAt: string | null;
+  deadline?: string | null;
 }
 
-export function SubmissionHeader({ student, exam, status, submittedAt }: SubmissionHeaderProps) {
+export function SubmissionHeader({ student, exam, status, submittedAt, deadline }: SubmissionHeaderProps) {
+  const timing = deriveSubmissionTiming(submittedAt, deadline);
+
   const getStatusBadge = (status: string | null) => {
     switch (status) {
       case 'graded':
-        return <Badge className="bg-green-600 text-white">Đã chấm</Badge>;
+        return <Badge className="bg-emerald-600 text-white font-bold">Đã chấm</Badge>;
       case 'submitted':
-        return <Badge variant="outline">Đã nộp</Badge>;
+        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 font-bold">Đã nộp</Badge>;
       case 'in_progress':
         return <Badge variant="secondary">Đang làm</Badge>;
       default:
@@ -54,8 +58,22 @@ export function SubmissionHeader({ student, exam, status, submittedAt }: Submiss
             <span>{new Date(submittedAt).toLocaleString('vi-VN')}</span>
           </div>
         )}
+        {submittedAt && (
+          timing.isLate ? (
+            <Badge variant="destructive" className="bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-300 font-bold gap-1">
+              <AlertCircle className="h-3 w-3" />
+              Nộp trễ {timing.lateDays} ngày
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="text-emerald-700 bg-emerald-50 border-emerald-200 font-semibold gap-1">
+              <CheckCircle2 className="h-3 w-3" />
+              Nộp đúng hạn
+            </Badge>
+          )
+        )}
         {getStatusBadge(status)}
       </div>
     </div>
   );
 }
+

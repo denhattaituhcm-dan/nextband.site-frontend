@@ -1,7 +1,8 @@
 /**
  * Canonical Homework Status & Visual Priority Helper
- * Implements strict precedence order:
- * GRADED (Revision?) > SUBMITTED > OVERDUE (if not submitted & past deadline) > IN_PROGRESS > UPCOMING
+ * Implements strict pedagogical priority order:
+ * REVISION_REQUIRED (Priority 1) > OVERDUE (Priority 2) > DUE_SOON (Priority 3) > UPCOMING (Priority 4)
+ * Invariants: OVERDUE is derived only. SUBMITTED + LATE exist independently.
  */
 
 export type CanonicalVisualStatus =
@@ -17,6 +18,25 @@ export interface VisualStatusParams {
   revisionRequired?: boolean;
   deadline?: string | Date | null;
   now?: number;
+}
+
+export interface SubmissionTiming {
+  isLate: boolean;
+  lateDays: number;
+}
+
+export interface ActionQueueItem {
+  id: string;
+  examId?: string;
+  title: string;
+  description?: string;
+  status: CanonicalVisualStatus;
+  deadline?: string | Date | null;
+  countdown?: { text: string; isOverdue: boolean } | null;
+  submissionTiming?: SubmissionTiming;
+  resources?: any[];
+  submission?: any;
+  priority: number; // 1 = REVISION_REQUIRED, 2 = OVERDUE, 3 = DUE_SOON, 4 = UPCOMING
 }
 
 /**
@@ -51,6 +71,33 @@ export function deriveCanonicalVisualStatus(params: VisualStatusParams): Canonic
 
   // 5. UPCOMING / NOT_STARTED (Default)
   return "UPCOMING";
+}
+
+/**
+ * Determines whether a submitted attempt was late without altering SUBMITTED visual state.
+ */
+export function deriveSubmissionTiming(
+  submittedAt: string | Date | null | undefined,
+  deadline: string | Date | null | undefined
+): SubmissionTiming {
+  if (!submittedAt || !deadline) {
+    return { isLate: false, lateDays: 0 };
+  }
+
+  const subMs = new Date(submittedAt).getTime();
+  const deadMs = new Date(deadline).getTime();
+
+  if (isNaN(subMs) || isNaN(deadMs) || subMs <= deadMs) {
+    return { isLate: false, lateDays: 0 };
+  }
+
+  const diffMs = subMs - deadMs;
+  const lateDays = Math.max(1, Math.floor(diffMs / (24 * 60 * 60 * 1000)));
+
+  return {
+    isLate: true,
+    lateDays,
+  };
 }
 
 /**
@@ -98,11 +145,61 @@ export function formatDeadlineCountdown(
 export function calculateAutomaticDeadline(params: {
   classStartDate: Date | string | null | undefined;
   lessonOrder: number;
+  defaultOffsetDays?: number;
 }): Date {
   const baseDate = params.classStartDate ? new Date(params.classStartDate) : new Date();
   const order = Math.max(1, Math.floor(Number(params.lessonOrder) || 1));
-  const targetMs = baseDate.getTime() + order * 7 * 24 * 60 * 60 * 1000;
+  const offsetDays = Math.max(1, params.defaultOffsetDays || 7);
+  const targetMs = baseDate.getTime() + order * offsetDays * 24 * 60 * 60 * 1000;
   const deadline = new Date(targetMs);
   deadline.setHours(23, 59, 59, 999);
   return deadline;
+}
+
+/**
+ * Sorts student homework list into a strict pedagogical action queue:
+ * Priority 1: REVISION_REQUIRED (Cần sửa bài Attempt 2)
+ * Priority 2: OVERDUE (Quá hạn)
+ * Priority 3: DUE_SOON (Sắp hết hạn trong <= 48 giờ)
+ * Priority 4: UPCOMING (Bài tiếp theo)
+ */
+export function sortStudentActionQueue(
+  homeworks: any[],
+  now = Date.now()
+): ActionQueueItem[] {
+  const actionItems: ActionQueueItem[] = [];
+
+  homeworks.forEach((hw) => {
+    const status = hw.status as CanonicalVisualStatus;
+    // Skip already graded and pending review submissions from urgent action queue
+    if (status === "GRADED" || status === "SUBMITTED") {
+      return;
+    }
+
+    let priority = 4;
+    if (status === "REVISION_REQUIRED") {
+      priority = 1;
+    } else if (status === "OVERDUE") {
+      priority = 2;
+    } else if (hw.deadline) {
+      const diffMs = new Date(hw.deadline).getTime() - now;
+      if (diffMs > 0 && diffMs <= 48 * 60 * 60 * 1000) {
+        priority = 3; // DUE_SOON
+      }
+    }
+
+    actionItems.push({
+      ...hw,
+      priority,
+    });
+  });
+
+  return actionItems.sort((a, b) => {
+    if (a.priority !== b.priority) {
+      return a.priority - b.priority;
+    }
+    const deadA = a.deadline ? new Date(a.deadline).getTime() : Infinity;
+    const deadB = b.deadline ? new Date(b.deadline).getTime() : Infinity;
+    return deadA - deadB;
+  });
 }

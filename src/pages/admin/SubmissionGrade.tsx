@@ -288,6 +288,7 @@ export default function SubmissionGrade() {
         exam={submission.exam}
         status={submission.status}
         submittedAt={submission.submittedAt}
+        deadline={submission.homework?.deadline || submission.exam?.deadline}
       />
 
       <Separator />

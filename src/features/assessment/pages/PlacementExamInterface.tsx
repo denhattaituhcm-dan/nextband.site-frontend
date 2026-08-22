@@ -55,7 +55,7 @@ export default function PlacementExamInterface() {
       reading: { answered: 0, total: 0 },
       grammar: { answered: 0, total: 0 },
       writing: { answered: 0, total: 1 },
-      speaking: { answered: 0, total: 1 },
+      speaking: { answered: 0, total: 2 },
     };
 
     if (testPayload) {
@@ -89,7 +89,8 @@ export default function PlacementExamInterface() {
       counts.writing.answered =
         answers["writing_response"] && String(answers["writing_response"]).trim().length >= 30 ? 1 : 0;
       counts.speaking.answered =
-        answers["speaking_audio_url"] || answers["speaking_completed"] ? 1 : 0;
+        (answers["speaking_part1_audio_url"] ? 1 : 0) +
+        (answers["speaking_part2_audio_url"] ? 1 : 0);
     }
 
     return counts;
@@ -242,11 +243,8 @@ export default function PlacementExamInterface() {
               part1Questions={testPayload.skills.speaking.part1Questions}
               part2Topic={testPayload.skills.speaking.part2Topic}
               part2Cues={testPayload.skills.speaking.part2Cues}
-              maxDurationSeconds={120}
-              onAudioRecorded={(storagePath) => {
-                setAnswer("speaking_audio_url", storagePath);
-                setAnswer("speaking_completed", true);
-              }}
+              onPart1Recorded={(path) => setAnswer("speaking_part1_audio_url", path)}
+              onPart2Recorded={(path) => setAnswer("speaking_part2_audio_url", path)}
             />
           )}
         </div>

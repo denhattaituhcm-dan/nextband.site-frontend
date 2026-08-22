@@ -3691,15 +3691,29 @@ export const notificationsApi = {
   },
 };
 
-export const getAssessmentToken = (): string | null => {
+export const getAssessmentToken = (sessionId?: string): string | null => {
   if (typeof window === "undefined") return null;
-  return sessionStorage.getItem("nb_assessment_token") || localStorage.getItem("nb_assessment_token") || null;
+  if (sessionId) {
+    const sessionSpecific =
+      sessionStorage.getItem(`nb_assessment_token_${sessionId}`) ||
+      localStorage.getItem(`nb_assessment_token_${sessionId}`);
+    if (sessionSpecific) return sessionSpecific;
+  }
+  return (
+    sessionStorage.getItem("nb_assessment_token") ||
+    localStorage.getItem("nb_assessment_token") ||
+    null
+  );
 };
 
-export const setAssessmentToken = (token: string) => {
+export const setAssessmentToken = (token: string, sessionId?: string) => {
   if (typeof window === "undefined") return;
   sessionStorage.setItem("nb_assessment_token", token);
   localStorage.setItem("nb_assessment_token", token);
+  if (sessionId) {
+    sessionStorage.setItem(`nb_assessment_token_${sessionId}`, token);
+    localStorage.setItem(`nb_assessment_token_${sessionId}`, token);
+  }
 };
 
 export const assessmentApi = {
@@ -3719,7 +3733,7 @@ export const assessmentApi = {
       if (res.ok) {
         const data = await res.json();
         if (data.token) {
-          setAssessmentToken(data.token);
+          setAssessmentToken(data.token, data.sessionId);
         }
         return data as {
           success: boolean;
@@ -3764,7 +3778,7 @@ export const assessmentApi = {
   },
 
   getTestPayload: async (sessionId: string, customToken?: string) => {
-    const token = customToken || getAssessmentToken();
+    const token = customToken || getAssessmentToken(sessionId);
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
@@ -3774,6 +3788,7 @@ export const assessmentApi = {
     try {
       const res = await fetch(`${API_BASE_URL}/assessment/sessions/${sessionId}/test`, {
         headers,
+        credentials: "include",
       });
 
       if (res.ok) {
@@ -3819,7 +3834,7 @@ export const assessmentApi = {
   },
 
   autosave: async (sessionId: string, answers: any, customToken?: string) => {
-    const token = customToken || getAssessmentToken();
+    const token = customToken || getAssessmentToken(sessionId);
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
@@ -3830,6 +3845,7 @@ export const assessmentApi = {
       const res = await fetch(`${API_BASE_URL}/assessment/sessions/${sessionId}/answers`, {
         method: "PATCH",
         headers,
+        credentials: "include",
         body: JSON.stringify({ answers }),
       });
 
@@ -3841,7 +3857,7 @@ export const assessmentApi = {
   },
 
   submit: async (sessionId: string, answers: any, customToken?: string) => {
-    const token = customToken || getAssessmentToken();
+    const token = customToken || getAssessmentToken(sessionId);
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
@@ -3852,6 +3868,7 @@ export const assessmentApi = {
       const res = await fetch(`${API_BASE_URL}/assessment/sessions/${sessionId}/submit`, {
         method: "POST",
         headers,
+        credentials: "include",
         body: JSON.stringify({ answers }),
       });
 

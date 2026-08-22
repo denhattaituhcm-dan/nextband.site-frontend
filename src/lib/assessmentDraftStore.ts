@@ -28,12 +28,20 @@ function isIndexedDBAvailable(): boolean {
   return typeof window !== "undefined" && typeof window.indexedDB !== "undefined" && window.indexedDB !== null;
 }
 
+const STORE_PAYLOADS = "assessment_payloads";
+
+export interface AssessmentPayloadCache {
+  sessionId: string;
+  payload: any;
+  cachedAt: number;
+}
+
 function openAssessmentDB(): Promise<IDBDatabase | null> {
   if (!isIndexedDBAvailable()) return Promise.resolve(null);
 
   return new Promise((resolve) => {
     try {
-      const req = window.indexedDB.open(DB_NAME, DB_VERSION);
+      const req = window.indexedDB.open(DB_NAME, 2);
       req.onupgradeneeded = (e: any) => {
         const db = e.target.result;
         if (!db.objectStoreNames.contains(STORE_DRAFTS)) {
@@ -41,6 +49,9 @@ function openAssessmentDB(): Promise<IDBDatabase | null> {
         }
         if (!db.objectStoreNames.contains(STORE_AUDIO)) {
           db.createObjectStore(STORE_AUDIO, { keyPath: "sessionId" });
+        }
+        if (!db.objectStoreNames.contains(STORE_PAYLOADS)) {
+          db.createObjectStore(STORE_PAYLOADS, { keyPath: "sessionId" });
         }
       };
       req.onsuccess = () => resolve(req.result);
@@ -50,6 +61,69 @@ function openAssessmentDB(): Promise<IDBDatabase | null> {
       resolve(null);
     }
   });
+}
+
+// Save Test Structure Payload locally
+export async function saveAssessmentPayloadLocally(
+  sessionId: string,
+  payload: any,
+): Promise<boolean> {
+  try {
+    const db = await openAssessmentDB();
+    if (db) {
+      const record: AssessmentPayloadCache = {
+        sessionId,
+        payload,
+        cachedAt: Date.now(),
+      };
+      await new Promise<void>((resolve, reject) => {
+        const tx = db.transaction(STORE_PAYLOADS, "readwrite");
+        const store = tx.objectStore(STORE_PAYLOADS);
+        const req = store.put(record);
+        req.onsuccess = () => resolve();
+        req.onerror = (e) => reject(e);
+        tx.oncomplete = () => resolve();
+      });
+      db.close();
+    }
+  } catch {}
+
+  try {
+    if (typeof window !== "undefined" && window.localStorage) {
+      window.localStorage.setItem(`aris_placement_payload_${sessionId}`, JSON.stringify(payload));
+    }
+  } catch {}
+  return true;
+}
+
+// Load Test Structure Payload locally
+export async function loadAssessmentPayloadLocally(
+  sessionId: string,
+): Promise<any | null> {
+  try {
+    const db = await openAssessmentDB();
+    if (db) {
+      const record = await new Promise<AssessmentPayloadCache | null>((resolve, reject) => {
+        const tx = db.transaction(STORE_PAYLOADS, "readonly");
+        const store = tx.objectStore(STORE_PAYLOADS);
+        const req = store.get(sessionId);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = (e) => reject(e);
+      });
+      db.close();
+      if (record && record.payload) {
+        return record.payload;
+      }
+    }
+  } catch {}
+
+  try {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const raw = window.localStorage.getItem(`aris_placement_payload_${sessionId}`);
+      if (raw) return JSON.parse(raw);
+    }
+  } catch {}
+  return null;
 }
 
 // 1. Save Assessment Answers Draft
