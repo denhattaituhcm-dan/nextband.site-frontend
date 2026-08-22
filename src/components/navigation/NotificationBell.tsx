@@ -12,10 +12,8 @@ import {
   AlertCircle,
   RotateCw,
   ExternalLink,
-  ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Dialog,
@@ -86,7 +84,7 @@ export function NotificationBell({ scope: _scope }: NotificationBellProps) {
     };
   }, [user?.id, queryClient, navigate]);
 
-  // 1. Unread Count Query (N3-D: Authoritative unread count from DB)
+  // 1. Unread Count Query
   const {
     data: unreadData,
     isError: isUnreadError,
@@ -147,56 +145,49 @@ export function NotificationBell({ scope: _scope }: NotificationBellProps) {
     }
   };
 
-  const getNotificationMeta = (type: string) => {
+  const getNotificationIcon = (type: string) => {
     switch (type) {
       case "NEW_SUBMISSION":
         return {
+          icon: <FileText className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />,
+          containerBg: "bg-indigo-50 dark:bg-indigo-950/50",
           label: "Bài nộp mới",
-          icon: <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />,
-          bg: "bg-blue-500/10 border-blue-200/60 dark:border-blue-800/60 text-blue-700 dark:text-blue-300",
-          badgeClass: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300",
         };
       case "SUBMISSION_GRADED":
         return {
-          label: "Đã có điểm",
           icon: <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />,
-          bg: "bg-emerald-500/10 border-emerald-200/60 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300",
-          badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300",
+          containerBg: "bg-emerald-50 dark:bg-emerald-950/50",
+          label: "Kết quả chấm",
         };
       case "NEW_HOMEWORK":
         return {
-          label: "Bài tập mới",
-          icon: <BookOpen className="h-4 w-4 text-purple-600 dark:text-purple-400" />,
-          bg: "bg-purple-500/10 border-purple-200/60 dark:border-purple-800/60 text-purple-700 dark:text-purple-300",
-          badgeClass: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/50 dark:text-purple-300",
+          icon: <BookOpen className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />,
+          containerBg: "bg-indigo-50 dark:bg-indigo-950/50",
+          label: "Bài tập",
         };
       case "TEACHER_FEEDBACK":
         return {
-          label: "Nhận xét GV",
-          icon: <MessageSquare className="h-4 w-4 text-amber-600 dark:text-amber-400" />,
-          bg: "bg-amber-500/10 border-amber-200/60 dark:border-amber-800/60 text-amber-700 dark:text-amber-300",
-          badgeClass: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300",
+          icon: <MessageSquare className="h-4 w-4 text-blue-600 dark:text-blue-400" />,
+          containerBg: "bg-blue-50 dark:bg-blue-950/50",
+          label: "Nhận xét",
         };
       case "DEADLINE_APPROACHING":
         return {
-          label: "Hạn chót",
           icon: <Clock className="h-4 w-4 text-rose-600 dark:text-rose-400" />,
-          bg: "bg-rose-500/10 border-rose-200/60 dark:border-rose-800/60 text-rose-700 dark:text-rose-300",
-          badgeClass: "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/50 dark:text-rose-300",
+          containerBg: "bg-rose-50 dark:bg-rose-950/50",
+          label: "Hạn chót",
         };
       case "SYSTEM":
         return {
-          label: "Hệ thống",
           icon: <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />,
-          bg: "bg-amber-500/10 border-amber-200/60 dark:border-amber-800/60 text-amber-700 dark:text-amber-300",
-          badgeClass: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300",
+          containerBg: "bg-amber-50 dark:bg-amber-950/50",
+          label: "Hệ thống",
         };
       default:
         return {
+          icon: <Bell className="h-4 w-4 text-blue-600 dark:text-blue-400" />,
+          containerBg: "bg-blue-50 dark:bg-blue-950/50",
           label: "Thông báo",
-          icon: <Bell className="h-4 w-4 text-primary" />,
-          bg: "bg-primary/10 border-primary/20 text-primary",
-          badgeClass: "bg-primary/10 text-primary border-primary/20",
         };
     }
   };
@@ -208,7 +199,7 @@ export function NotificationBell({ scope: _scope }: NotificationBellProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="relative hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+            className="relative hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"
             aria-label="Thông báo"
           >
             <Bell className="h-5 w-5 text-slate-700 dark:text-slate-200" />
@@ -219,36 +210,33 @@ export function NotificationBell({ scope: _scope }: NotificationBellProps) {
               />
             ) : (
               unreadCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 min-w-5 px-1 flex items-center justify-center text-[11px] font-bold bg-rose-500 hover:bg-rose-600 text-white rounded-full border-2 border-background animate-pulse shadow-sm">
+                <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 flex items-center justify-center text-[11px] font-bold bg-rose-500 text-white rounded-full border-2 border-background">
                   {unreadCount > 99 ? "99+" : unreadCount}
-                </Badge>
+                </span>
               )
             )}
           </Button>
         </PopoverTrigger>
 
         <PopoverContent
-          className="w-80 sm:w-[420px] p-0 shadow-2xl border border-slate-200/90 dark:border-slate-800 rounded-2xl overflow-hidden bg-background/95 backdrop-blur-md"
+          className="w-80 sm:w-[400px] p-0 shadow-xl border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden"
           align="end"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3.5 bg-slate-50/90 dark:bg-slate-900/90 border-b border-slate-200/80 dark:border-slate-800">
+          <div className="flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
             <div className="flex items-center gap-2">
-              <div className="h-7 w-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold">
-                <Bell className="h-4 w-4" />
-              </div>
-              <h4 className="font-extrabold text-sm text-foreground tracking-tight">Thông báo</h4>
+              <h4 className="font-semibold text-sm text-foreground">Thông báo</h4>
               {unreadCount > 0 && (
-                <Badge variant="secondary" className="text-[11px] px-2 py-0.5 bg-rose-50 text-rose-600 font-bold border border-rose-200/80 dark:bg-rose-950/50 dark:border-rose-800">
-                  {unreadCount} mới
-                </Badge>
+                <span className="text-xs font-medium text-rose-600 dark:text-rose-400">
+                  {unreadCount} chưa đọc
+                </span>
               )}
             </div>
             {unreadCount > 0 && (
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-xs text-muted-foreground hover:text-primary font-medium h-7 px-2.5 rounded-lg transition-colors"
+                className="text-xs text-muted-foreground hover:text-foreground h-7 px-2 font-normal"
                 disabled={markAllReadMutation.isPending}
                 onClick={() => markAllReadMutation.mutate()}
               >
@@ -259,11 +247,11 @@ export function NotificationBell({ scope: _scope }: NotificationBellProps) {
           </div>
 
           {/* Content Body */}
-          <div className="max-h-[400px] overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/80">
+          <div className="max-h-[380px] overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
             {hasError ? (
               <div className="py-8 px-4 text-center space-y-3">
                 <div className="flex justify-center text-amber-500">
-                  <AlertCircle className="h-7 w-7" />
+                  <AlertCircle className="h-6 w-6" />
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Không thể tải thông báo. Vui lòng kiểm tra kết nối.
@@ -271,7 +259,7 @@ export function NotificationBell({ scope: _scope }: NotificationBellProps) {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs h-7 gap-1 rounded-lg"
+                  className="text-xs h-7 gap-1"
                   onClick={() => {
                     refetchUnread();
                     refetchList();
@@ -282,69 +270,60 @@ export function NotificationBell({ scope: _scope }: NotificationBellProps) {
                 </Button>
               </div>
             ) : isListLoading ? (
-              <div className="py-12 text-center text-xs text-muted-foreground flex flex-col items-center gap-2">
-                <div className="h-5 w-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                <span>Đang tải thông báo...</span>
+              <div className="py-10 text-center text-xs text-muted-foreground">
+                Đang tải thông báo...
               </div>
             ) : notifications.length === 0 ? (
               <div className="py-12 text-center text-xs text-muted-foreground flex flex-col items-center gap-2">
-                <div className="h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                  <Bell className="h-6 w-6 text-slate-400 stroke-[1.5]" />
-                </div>
-                <span className="font-semibold text-slate-700 dark:text-slate-300">Không có thông báo nào</span>
-                <span className="text-[11px] text-muted-foreground">Các tin tức mới sẽ xuất hiện ở đây</span>
+                <Bell className="h-8 w-8 text-slate-300 dark:text-slate-600 stroke-[1.5]" />
+                <span className="font-medium text-slate-600 dark:text-slate-400">Không có thông báo nào</span>
               </div>
             ) : (
               notifications.map((item) => {
-                const meta = getNotificationMeta(item.type);
+                const meta = getNotificationIcon(item.type);
                 const isUnread = !item.isRead;
                 return (
                   <div
                     key={item.id}
                     onClick={() => handleNotificationClick(item)}
-                    className={`group p-3.5 transition-all cursor-pointer text-left flex items-start gap-3 relative ${
+                    className={`p-3.5 transition-colors cursor-pointer text-left flex items-start gap-3 ${
                       isUnread
-                        ? "bg-primary/[0.04] dark:bg-primary/[0.08] hover:bg-primary/[0.08] dark:hover:bg-primary/[0.12] border-l-[3.5px] border-l-primary"
-                        : "hover:bg-slate-50 dark:hover:bg-slate-800/60 border-l-[3.5px] border-l-transparent"
+                        ? "bg-primary/5 hover:bg-primary/[0.08] border-l-2 border-l-primary"
+                        : "hover:bg-slate-50 dark:hover:bg-slate-800/60 border-l-2 border-l-transparent"
                     }`}
                   >
-                    {/* Icon Avatar */}
-                    <div className={`h-8 w-8 rounded-xl flex items-center justify-center shrink-0 border mt-0.5 shadow-xs ${meta.bg}`}>
+                    {/* Small solid icon container */}
+                    <div className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${meta.containerBg}`}>
                       {meta.icon}
                     </div>
 
-                    {/* Content */}
+                    {/* Text content */}
                     <div className="flex-1 min-w-0 space-y-1">
                       <div className="flex items-center justify-between gap-2">
                         <span
-                          className={`text-xs truncate ${
+                          className={`text-sm truncate ${
                             isUnread
-                              ? "font-extrabold text-slate-900 dark:text-slate-100"
-                              : "font-semibold text-slate-700 dark:text-slate-300"
+                              ? "font-semibold text-slate-900 dark:text-slate-100"
+                              : "font-medium text-slate-700 dark:text-slate-300"
                           }`}
                         >
                           {item.title}
                         </span>
                         {isUnread && (
-                          <span className="h-2 w-2 rounded-full bg-primary ring-4 ring-primary/20 shrink-0" />
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
                         )}
                       </div>
 
-                      <p className="text-[11.5px] text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                         {item.message}
                       </p>
 
-                      <div className="flex items-center justify-between pt-1 text-[10px] text-muted-foreground font-medium">
-                        <span>
-                          {new Date(item.createdAt).toLocaleString("vi-VN", {
-                            dateStyle: "short",
-                            timeStyle: "short",
-                          })}
-                        </span>
-                        <span className="text-primary font-bold inline-flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
-                          Chi tiết <ArrowRight className="h-3 w-3" />
-                        </span>
-                      </div>
+                      <span className="text-[11px] text-muted-foreground/80 block pt-0.5">
+                        {new Date(item.createdAt).toLocaleString("vi-VN", {
+                          dateStyle: "short",
+                          timeStyle: "short",
+                        })}
+                      </span>
                     </div>
                   </div>
                 );
@@ -354,73 +333,67 @@ export function NotificationBell({ scope: _scope }: NotificationBellProps) {
         </PopoverContent>
       </Popover>
 
-      {/* Detail Dialog Modal */}
+      {/* Detail Dialog */}
       <Dialog
         open={!!selectedNotification}
         onOpenChange={(open) => {
           if (!open) setSelectedNotification(null);
         }}
       >
-        <DialogContent className="sm:max-w-lg rounded-2xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
+        <DialogContent className="sm:max-w-md rounded-xl p-6">
           {selectedNotification && (() => {
-            const meta = getNotificationMeta(selectedNotification.type);
+            const meta = getNotificationIcon(selectedNotification.type);
             return (
               <>
-                <DialogHeader className="space-y-3 pb-3 border-b border-border/60">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <div className={`h-8 w-8 rounded-lg flex items-center justify-center border ${meta.bg}`}>
-                        {meta.icon}
-                      </div>
-                      <Badge variant="outline" className={`text-[11px] font-semibold ${meta.badgeClass}`}>
-                        {meta.label}
-                      </Badge>
+                <DialogHeader className="space-y-2 text-left pb-3 border-b border-border/60">
+                  <div className="flex items-center gap-2">
+                    <div className={`h-7 w-7 rounded-md flex items-center justify-center ${meta.containerBg}`}>
+                      {meta.icon}
                     </div>
-                    <span className="text-[11px] text-muted-foreground font-medium">
-                      {new Date(selectedNotification.createdAt).toLocaleString("vi-VN", {
+                    <span className="text-xs text-muted-foreground font-medium">
+                      {meta.label} · {new Date(selectedNotification.createdAt).toLocaleString("vi-VN", {
                         dateStyle: "short",
                         timeStyle: "short",
                       })}
                     </span>
                   </div>
-                  <DialogTitle className="text-base sm:text-lg font-black text-foreground leading-snug">
+                  <DialogTitle className="text-base font-semibold text-foreground leading-snug">
                     {selectedNotification.title}
                   </DialogTitle>
                   <DialogDescription className="sr-only">
-                    Chi tiết nội dung thông báo
+                    Chi tiết thông báo
                   </DialogDescription>
                 </DialogHeader>
 
-                <div className="py-4 text-sm text-foreground/90 leading-relaxed whitespace-pre-line max-h-[55vh] overflow-y-auto">
+                <div className="py-3 text-sm text-foreground/90 leading-relaxed whitespace-pre-line max-h-[50vh] overflow-y-auto">
                   {selectedNotification.message}
                 </div>
 
-                <DialogFooter className="gap-2 sm:gap-0 pt-2 border-t border-border/60">
+                <DialogFooter className="gap-2 sm:gap-2 pt-2 border-t border-border/60">
                   {selectedNotification.link ? (
-                    <div className="flex items-center justify-end gap-2 w-full">
+                    <>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setSelectedNotification(null)}
-                        className="rounded-xl font-medium"
                       >
                         Đóng
                       </Button>
                       <Button
                         size="sm"
                         onClick={() => handleActionClick(selectedNotification.link!)}
-                        className="gap-1.5 rounded-xl font-bold shadow-xs"
+                        className="gap-1.5"
                       >
                         Xem chi tiết <ExternalLink className="h-3.5 w-3.5" />
                       </Button>
-                    </div>
+                    </>
                   ) : (
                     <Button
                       size="sm"
                       onClick={() => setSelectedNotification(null)}
-                      className="w-full sm:w-auto rounded-xl font-bold px-6"
+                      className="w-full sm:w-auto"
                     >
-                      Đã hiểu
+                      Đã rõ
                     </Button>
                   )}
                 </DialogFooter>
