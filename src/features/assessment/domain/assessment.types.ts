@@ -9,13 +9,22 @@ export interface AssessmentQuestion {
   id: string;
   skill: AssessmentSkill;
   sectionTitle: string;
-  questionType: "multiple_choice" | "fill_blank" | "text_area" | "audio_record";
+  questionType:
+    | "multiple_choice"
+    | "fill_blank"
+    | "true_false_not_given"
+    | "short_answer"
+    | "matching"
+    | "essay"
+    | "text_area"
+    | "audio_record";
   prompt: string;
   passageText?: string;
   audioUrl?: string;
   options?: string[];
   placeholder?: string;
   orderIndex: number;
+  blankCount?: number;
 }
 
 export interface AssessmentTestStructure {

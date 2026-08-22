@@ -59,20 +59,32 @@ export default function PlacementExamInterface() {
     };
 
     if (testPayload) {
-      counts.listening.total = testPayload.skills.listening.questions.length;
-      counts.listening.answered = testPayload.skills.listening.questions.filter(
-        (q) => answers[q.id] != null && String(answers[q.id]).trim() !== "",
-      ).length;
+      const calcSkill = (skillQuestions: AssessmentQuestion[]) => {
+        let total = 0;
+        let answered = 0;
+        skillQuestions.forEach((q) => {
+          if (q.blankCount && q.blankCount > 1) {
+            total += q.blankCount;
+            const qAns = typeof answers[q.id] === "object" ? answers[q.id] || {} : {};
+            for (let b = 0; b < q.blankCount; b++) {
+              const val = qAns[b] ?? qAns[String(b)];
+              if (val != null && String(val).trim() !== "") {
+                answered++;
+              }
+            }
+          } else {
+            total += 1;
+            if (answers[q.id] != null && String(answers[q.id]).trim() !== "") {
+              answered++;
+            }
+          }
+        });
+        return { total, answered };
+      };
 
-      counts.reading.total = testPayload.skills.reading.questions.length;
-      counts.reading.answered = testPayload.skills.reading.questions.filter(
-        (q) => answers[q.id] != null && String(answers[q.id]).trim() !== "",
-      ).length;
-
-      counts.grammar.total = testPayload.skills.grammar.questions.length;
-      counts.grammar.answered = testPayload.skills.grammar.questions.filter(
-        (q) => answers[q.id] != null && String(answers[q.id]).trim() !== "",
-      ).length;
+      counts.listening = calcSkill(testPayload.skills.listening.questions);
+      counts.reading = calcSkill(testPayload.skills.reading.questions);
+      counts.grammar = calcSkill(testPayload.skills.grammar.questions);
 
       counts.writing.answered =
         answers["writing_response"] && String(answers["writing_response"]).trim().length >= 30 ? 1 : 0;
@@ -181,77 +193,72 @@ export default function PlacementExamInterface() {
           skillCounts={skillCounts}
         />
 
-        {/* Content Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Main Question Panel */}
-          <div className={currentSkillQuestions.length > 0 ? "lg:col-span-9 space-y-6" : "lg:col-span-12 space-y-6"}>
-            {activeSkill === "listening" && (
-              <ListeningPanel
-                title={testPayload.skills.listening.title}
-                audioUrl={testPayload.skills.listening.audioUrl}
-                questions={testPayload.skills.listening.questions}
-                answers={answers}
-                onAnswerChange={setAnswer}
-              />
-            )}
+        {/* Content Layout - Full Width for Maximum Reading & Question Comfort */}
+        <div className="w-full space-y-6 pb-24">
+          {activeSkill === "listening" && (
+            <ListeningPanel
+              title={testPayload.skills.listening.title}
+              audioUrl={testPayload.skills.listening.audioUrl}
+              questions={testPayload.skills.listening.questions}
+              answers={answers}
+              onAnswerChange={setAnswer}
+            />
+          )}
 
-            {activeSkill === "reading" && (
-              <ReadingPanel
-                title={testPayload.skills.reading.title}
-                passage={testPayload.skills.reading.passage}
-                questions={testPayload.skills.reading.questions}
-                answers={answers}
-                onAnswerChange={setAnswer}
-              />
-            )}
+          {activeSkill === "reading" && (
+            <ReadingPanel
+              title={testPayload.skills.reading.title}
+              passage={testPayload.skills.reading.passage}
+              questions={testPayload.skills.reading.questions}
+              answers={answers}
+              onAnswerChange={setAnswer}
+            />
+          )}
 
-            {activeSkill === "grammar" && (
-              <GrammarPanel
-                title={testPayload.skills.grammar.title}
-                questions={testPayload.skills.grammar.questions}
-                answers={answers}
-                onAnswerChange={setAnswer}
-              />
-            )}
+          {activeSkill === "grammar" && (
+            <GrammarPanel
+              title={testPayload.skills.grammar.title}
+              questions={testPayload.skills.grammar.questions}
+              answers={answers}
+              onAnswerChange={setAnswer}
+            />
+          )}
 
-            {activeSkill === "writing" && (
-              <WritingPanel
-                title={testPayload.skills.writing.title}
-                prompt={testPayload.skills.writing.prompt}
-                guidelines={testPayload.skills.writing.guidelines}
-                minWords={testPayload.skills.writing.minWords}
-                value={answers["writing_response"] || ""}
-                onChange={(val) => setAnswer("writing_response", val)}
-              />
-            )}
+          {activeSkill === "writing" && (
+            <WritingPanel
+              title={testPayload.skills.writing.title}
+              prompt={testPayload.skills.writing.prompt}
+              guidelines={testPayload.skills.writing.guidelines}
+              minWords={testPayload.skills.writing.minWords}
+              value={answers["writing_response"] || ""}
+              onChange={(val) => setAnswer("writing_response", val)}
+            />
+          )}
 
-            {activeSkill === "speaking" && (
-              <SpeakingPanel
-                title={testPayload.skills.speaking.title}
-                part1Questions={testPayload.skills.speaking.part1Questions}
-                part2Topic={testPayload.skills.speaking.part2Topic}
-                part2Cues={testPayload.skills.speaking.part2Cues}
-                onAudioRecorded={(audioUrl) => {
-                  setAnswer("speaking_audio_url", audioUrl);
-                  setAnswer("speaking_completed", true);
-                }}
-              />
-            )}
-          </div>
-
-          {/* Right Sidebar: Question Palette (for Objective Skills) */}
-          {currentSkillQuestions.length > 0 && (
-            <div className="lg:col-span-3 lg:sticky lg:top-24 space-y-4">
-              <QuestionPalette
-                questions={currentSkillQuestions}
-                answers={answers}
-                currentQuestionId={currentQuestionId}
-                onSelectQuestion={handleSelectQuestion}
-              />
-            </div>
+          {activeSkill === "speaking" && (
+            <SpeakingPanel
+              title={testPayload.skills.speaking.title}
+              part1Questions={testPayload.skills.speaking.part1Questions}
+              part2Topic={testPayload.skills.speaking.part2Topic}
+              part2Cues={testPayload.skills.speaking.part2Cues}
+              onAudioRecorded={(audioUrl) => {
+                setAnswer("speaking_audio_url", audioUrl);
+                setAnswer("speaking_completed", true);
+              }}
+            />
           )}
         </div>
       </main>
+
+      {/* Floating Bottom Question Palette Bar for Objective Skills */}
+      {currentSkillQuestions.length > 0 && (
+        <QuestionPalette
+          questions={currentSkillQuestions}
+          answers={answers}
+          currentQuestionId={currentQuestionId}
+          onSelectQuestion={handleSelectQuestion}
+        />
+      )}
 
       {/* Confirmation Dialog */}
       <AssessmentSubmitDialog

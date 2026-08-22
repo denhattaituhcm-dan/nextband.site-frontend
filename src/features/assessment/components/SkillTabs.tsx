@@ -10,12 +10,12 @@ interface SkillTabsProps {
 }
 
 export function SkillTabs({ activeSkill, onSelectSkill, skillCounts }: SkillTabsProps) {
-  const tabs: Array<{ id: AssessmentSkill; label: string; icon: any }> = [
-    { id: "listening", label: "Listening (10)", icon: Headphones },
-    { id: "reading", label: "Reading (10)", icon: BookOpen },
-    { id: "grammar", label: "Grammar (15)", icon: Sparkles },
-    { id: "writing", label: "Writing", icon: PenTool },
-    { id: "speaking", label: "Speaking", icon: Mic },
+  const tabs: Array<{ id: AssessmentSkill; baseLabel: string; icon: any }> = [
+    { id: "listening", baseLabel: "Listening", icon: Headphones },
+    { id: "reading", baseLabel: "Reading", icon: BookOpen },
+    { id: "grammar", baseLabel: "Grammar", icon: Sparkles },
+    { id: "writing", baseLabel: "Writing", icon: PenTool },
+    { id: "speaking", baseLabel: "Speaking", icon: Mic },
   ];
 
   return (
@@ -38,7 +38,7 @@ export function SkillTabs({ activeSkill, onSelectSkill, skillCounts }: SkillTabs
             )}
           >
             <Icon className={cn("w-4 h-4", isActive ? "text-brand-blue" : "text-muted-foreground")} />
-            <span>{tab.label}</span>
+            <span>{tab.baseLabel}{stat && stat.total > 0 ? ` (${stat.total})` : ""}</span>
             {stat && stat.total > 0 && (
               <span
                 className={cn(

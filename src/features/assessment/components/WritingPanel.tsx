@@ -1,7 +1,8 @@
 import React from "react";
-import { PenTool, CheckCircle2 } from "lucide-react";
+import { PenTool } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 interface WritingPanelProps {
   title: string;
@@ -28,6 +29,7 @@ export function WritingPanel({
     : 0;
 
   const isWordCountMet = wordsCount >= minWords;
+  const hasHtml = prompt && prompt.includes("<") && prompt.includes(">");
 
   return (
     <div className="space-y-6">
@@ -61,9 +63,16 @@ export function WritingPanel({
           <span className="text-xs font-bold text-indigo-600 uppercase tracking-wide">
             Đề bài khảo thí
           </span>
-          <p className="text-sm sm:text-base font-bold text-foreground leading-relaxed">
-            {prompt}
-          </p>
+          {hasHtml ? (
+            <div
+              className="text-sm sm:text-base font-bold text-foreground leading-relaxed prose prose-sm max-w-none"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(prompt) }}
+            />
+          ) : (
+            <p className="text-sm sm:text-base font-bold text-foreground leading-relaxed">
+              {prompt}
+            </p>
+          )}
         </div>
 
         {/* Guidelines */}
