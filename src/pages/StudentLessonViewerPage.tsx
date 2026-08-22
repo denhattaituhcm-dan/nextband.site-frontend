@@ -75,7 +75,7 @@ export default function StudentLessonViewerPage() {
   } = useQuery({
     queryKey: ["class-lessons", classId],
     queryFn: () => lessonsApi.getClassLessons(classId!),
-    enabled: !!classId && isUUIDValid && lifecycleState === "ENROLLED",
+    enabled: !!classId && isUUIDValid,
   });
 
   const { data: submissionsData } = useQuery({
@@ -130,7 +130,7 @@ export default function StudentLessonViewerPage() {
     );
   }
 
-  if (isLoadingLessons || lifecycleState === "LOADING") {
+  if (isLoadingLessons) {
     return (
       <div className="max-w-5xl mx-auto p-12 text-center space-y-4">
         <div className="w-9 h-9 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
@@ -313,9 +313,9 @@ export default function StudentLessonViewerPage() {
                 <WifiOff className="w-4 h-4" />
               </div>
               <div>
-                <p className="font-bold text-foreground">Máy chủ phòng thi đang khởi động (Render cold-start)</p>
+                <p className="font-bold text-foreground">Đang kết nối đến máy chủ phòng thi</p>
                 <p className="text-muted-foreground text-[11px] mt-0.5">
-                  Dịch vụ chấm điểm & phòng thi đang được đánh thức. Bạn vẫn có thể xem danh sách bài học, nhưng bắt đầu làm bài có thể cần đợi vài giây.
+                  Dịch vụ phòng thi đang được chuẩn bị. Bạn vẫn có thể xem danh sách bài học, nhưng bắt đầu làm bài có thể cần đợi vài giây.
                 </p>
               </div>
             </div>

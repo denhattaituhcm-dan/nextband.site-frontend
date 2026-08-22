@@ -111,10 +111,39 @@ export default function AdminExams() {
   const deleteMutation = useMutation({
     mutationFn: async ({ id, password }: { id: string; password: string }) =>
       examsApi.delete(id, password),
-    onSuccess: () => {
+    onSuccess: (result: any) => {
       queryClient.invalidateQueries({ queryKey: ["admin-exams"] });
-      toast({ title: "Đã xóa", description: "bài tập đã được xóa" });
+      if (result?.action === "archived") {
+        toast({
+          title: "Đã chuyển sang Lưu trữ (Archived)",
+          description:
+            result.message ||
+            "Đề thi đã có bài làm nên được chuyển sang chế độ Lưu trữ để bảo toàn dữ liệu.",
+        });
+      } else {
+        toast({ title: "Đã xóa", description: "Đề thi đã được xóa thành công" });
+      }
       setDeleteExam(null);
+    },
+    onError: (err: any) => {
+      const errData = err.response?.data;
+      if (err.response?.status === 409 && errData?.action === "archived") {
+        queryClient.invalidateQueries({ queryKey: ["admin-exams"] });
+        toast({
+          title: "Đã chuyển sang Lưu trữ (Archived)",
+          description:
+            errData.message ||
+            "Đề thi đã có bài làm nên được chuyển sang chế độ Lưu trữ để bảo toàn dữ liệu.",
+        });
+        setDeleteExam(null);
+        return;
+      }
+      toast({
+        title: "Lỗi xóa đề thi",
+        description:
+          errData?.error || errData?.message || err.message || "Không thể xóa đề thi",
+        variant: "destructive",
+      });
     },
   });
 

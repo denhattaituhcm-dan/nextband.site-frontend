@@ -70,14 +70,16 @@ export default function Profile() {
     try {
       const response = await uploadsApi.uploadImage(file);
       setAvatarUrl(response.url);
+      await authApi.updateProfile({ avatarUrl: response.url });
+      await refreshUser();
       toast({
         title: "Tải ảnh lên thành công",
-        description: "Ảnh đại diện đã được thay đổi.",
+        description: "Ảnh đại diện của bạn đã được cập nhật và lưu thành công.",
       });
     } catch (error: any) {
       toast({
         title: "Lỗi",
-        description: "Không thể tải ảnh lên.",
+        description: error?.message || "Không thể tải ảnh lên.",
         variant: "destructive",
       });
     } finally {

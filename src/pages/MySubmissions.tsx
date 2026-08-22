@@ -32,28 +32,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DataTablePagination } from "@/components/admin/DataTablePagination";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import {
+  CanonicalSubmissionStatus,
+  normalizeSubmissionStatus,
+} from "@/lib/submissionStatus";
 
 const statusConfig: Record<
-  string,
+  CanonicalSubmissionStatus,
   {
     label: string;
     variant: "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "info" | "muted";
     icon: React.ElementType;
   }
 > = {
-  in_progress: { label: "Đang làm", variant: "info", icon: Clock },
-  submitted: { label: "Chờ chấm", variant: "warning", icon: AlertCircle },
-  graded: { label: "Đã chấm", variant: "success", icon: CheckCircle2 },
+  IN_PROGRESS: { label: "Đang làm", variant: "info", icon: Clock },
+  SUBMITTED: { label: "Chờ chấm", variant: "warning", icon: AlertCircle },
+  GRADED: { label: "Đã chấm", variant: "success", icon: CheckCircle2 },
+  EXPIRED: { label: "Hết giờ", variant: "destructive", icon: AlertCircle },
+  ABANDONED: { label: "Đã hủy", variant: "outline", icon: AlertCircle },
 };
 
 const STATUS_OPTIONS = [
   { value: "all", label: "Tất cả trạng thái" },
-  { value: "in_progress", label: "Đang làm" },
-  { value: "submitted", label: "Chờ chấm" },
-  { value: "graded", label: "Đã chấm" },
+  { value: "IN_PROGRESS", label: "Đang làm" },
+  { value: "SUBMITTED", label: "Chờ chấm" },
+  { value: "GRADED", label: "Đã chấm" },
 ];
 
 export default function MySubmissions() {
@@ -220,18 +225,8 @@ export default function MySubmissions() {
               </TableHeader>
               <TableBody>
                 {filteredSubmissions.map((submission: any) => {
-                  const normalizedStatus =
-                    submission?.submittedAt != null
-                      ? "filled"
-                      : submission.status || "in_progress";
-                  const status =
-                    normalizedStatus === "filled"
-                      ? {
-                          label: "Filled",
-                          variant: "default" as const,
-                          icon: CheckCircle2,
-                        }
-                      : statusConfig[normalizedStatus] || statusConfig.in_progress;
+                  const canonicalStatus = normalizeSubmissionStatus(submission?.status);
+                  const status = statusConfig[canonicalStatus] || statusConfig.IN_PROGRESS;
                   const StatusIcon = status.icon;
                   const latestReviewSubmission = submission.examId
                     ? latestSubmissionByExam[submission.examId]

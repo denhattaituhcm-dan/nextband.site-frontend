@@ -13,15 +13,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowUpDown, Eye, User, Filter, ClipboardCheck } from "lucide-react";
+import { isSubmissionSubmitted, normalizeSubmissionStatus } from "@/lib/submissionStatus";
 
 type SortField = "submittedAt" | "status";
 type SortOrder = "asc" | "desc";
@@ -66,7 +61,7 @@ export default function AdminCheckAttempt() {
   });
 
   const submissions = (submissionsData?.data || []).filter(
-    (submission: any) => submission?.status === "submitted",
+    (submission: any) => isSubmissionSubmitted(submission?.status),
   );
 
   // Client-side sorting
@@ -109,14 +104,17 @@ export default function AdminCheckAttempt() {
     </TableHead>
   );
 
-  const getStatusBadge = (status: string | null) => {
+  const getStatusBadge = (rawStatus: string | null) => {
+    const status = normalizeSubmissionStatus(rawStatus);
     switch (status) {
-      case "graded":
+      case "GRADED":
         return <Badge className="bg-green-500">Đã chấm</Badge>;
-      case "in_progress":
+      case "IN_PROGRESS":
         return <Badge variant="secondary">Đang làm</Badge>;
-      case "submitted":
+      case "SUBMITTED":
         return <Badge variant="outline">Chờ chấm</Badge>;
+      case "EXPIRED":
+        return <Badge variant="destructive">Hết giờ</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }

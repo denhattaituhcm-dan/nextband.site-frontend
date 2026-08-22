@@ -22,6 +22,7 @@ import {
   ChevronRight,
   ChevronDown,
 } from "lucide-react";
+import { isSubmissionCompleted } from "@/lib/submissionStatus";
 
 export default function CourseDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -71,7 +72,7 @@ export default function CourseDetail() {
 
   exams.forEach((exam: any) => {
     const sub = submissionMap.get(exam.id);
-    if (sub && (sub.status === "graded" || sub.status === "submitted")) {
+    if (sub && isSubmissionCompleted(sub.status)) {
       completedExams.push({ ...exam, submission: sub });
     } else if (!currentExam) {
       currentExam = { ...exam, submission: sub };

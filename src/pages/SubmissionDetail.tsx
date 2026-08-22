@@ -29,22 +29,30 @@ import { RichContent } from "@/components/exam/RichContent";
 import { getFillBlankBlankCount } from "@/lib/fillBlank";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import {
+  CanonicalSubmissionStatus,
+  normalizeSubmissionStatus,
+  isSubmissionGraded,
+  isSubmissionCompleted,
+} from "@/lib/submissionStatus";
 
 const statusConfig: Record<
-  string,
+  CanonicalSubmissionStatus,
   {
     label: string;
-    variant: "default" | "secondary" | "outline";
+    variant: "default" | "secondary" | "outline" | "destructive";
     icon: React.ElementType;
   }
 > = {
-  in_progress: { label: "Đang làm", variant: "secondary", icon: Clock },
-  submitted: {
+  IN_PROGRESS: { label: "Đang làm", variant: "secondary", icon: Clock },
+  SUBMITTED: {
     label: "Chờ chấm",
     variant: "outline",
     icon: AlertCircle,
   },
-  graded: { label: "Đã chấm điểm", variant: "default", icon: CheckCircle2 },
+  GRADED: { label: "Đã chấm điểm", variant: "default", icon: CheckCircle2 },
+  EXPIRED: { label: "Hết giờ", variant: "destructive", icon: AlertCircle },
+  ABANDONED: { label: "Đã hủy", variant: "outline", icon: AlertCircle },
 };
 
 const getOrderValue = (item: any) => {
@@ -163,7 +171,7 @@ export default function SubmissionDetail() {
     0,
   );
   const totalPoints = totalQuestionsCount;
-  const isGraded = submission?.status === "graded";
+  const isGraded = isSubmissionGraded(submission?.status);
   const answeredCount = useMemo(() => {
     return allQuestions.reduce((sum: number, q: any) => {
       const answer = answerMap[q.id];
@@ -347,7 +355,8 @@ export default function SubmissionDetail() {
     );
   }
 
-  const status = statusConfig[submission.status || "in_progress"];
+  const canonicalStatus = normalizeSubmissionStatus(submission?.status);
+  const status = statusConfig[canonicalStatus] || statusConfig.IN_PROGRESS;
   const StatusIcon = status.icon;
 
   let questionCounter = 0;
@@ -677,10 +686,7 @@ export default function SubmissionDetail() {
                         score={answer?.score ?? null}
                         feedback={answer?.feedback ?? null}
                         isGraded={isGraded}
-                        isSubmitted={
-                          submission?.status === "submitted" ||
-                          submission?.status === "graded"
-                        }
+                        isSubmitted={isSubmissionCompleted(submission?.status)}
                         sectionType={section.sectionType}
                       />
                     );

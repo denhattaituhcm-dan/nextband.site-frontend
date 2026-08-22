@@ -1,6 +1,7 @@
 import { supabase } from "./supabase";
 import { normalizeSiteSettings } from "./site-settings";
 import { isValidUUID } from "./classContext";
+import { normalizeSubmissionStatus } from "./submissionStatus";
 
 export const resolveApiBaseUrl = (): string => {
   const envUrl =
@@ -1008,11 +1009,23 @@ export const examsApi = {
     });
 
     if (res.ok) {
-      return { success: true };
+      const data = await res.json().catch(() => ({ success: true }));
+      return data || { success: true };
     }
 
     const errData = await res.json().catch(() => ({}));
-    throw new Error(errData.error || "Xóa bài thi thất bại");
+    if (res.status === 409 && (errData.action === "archived" || errData.action === "ARCHIVED")) {
+      return {
+        success: true,
+        action: "archived",
+        message:
+          errData.message ||
+          "Đề thi đã có bài làm của học viên. Hệ thống đã tự động chuyển sang chế độ Lưu trữ (Archived) để bảo vệ dữ liệu.",
+      };
+    }
+    const err: any = new Error(errData.error || errData.message || "Xóa bài thi thất bại");
+    err.response = { status: res.status, data: errData };
+    throw err;
   },
 };
 
@@ -1365,7 +1378,7 @@ export function normalizeSubmissionData(data: any, examData?: any): any {
     id: data.id,
     examId: data.exam_id || data.examId,
     studentId: data.student_id || data.studentId,
-    status: data.status || "in_progress",
+    status: normalizeSubmissionStatus(data.status),
     startedAt: data.started_at || data.startedAt,
     submittedAt: data.submitted_at || data.submittedAt,
     totalScore:

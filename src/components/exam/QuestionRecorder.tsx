@@ -6,7 +6,7 @@ import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { AudioWaveform } from "./AudioWaveform";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
-import { API_BASE_URL } from "@/lib/api";
+import { API_BASE_URL, getAuthToken } from "@/lib/api";
 
 interface QuestionRecorderProps {
   questionId: string;
@@ -191,12 +191,14 @@ export function QuestionRecorder({
     try {
       const recordingId = crypto.randomUUID();
       const storagePath = `speaking-recordings/${recordingId}.webm`;
+      const token = await getAuthToken();
+      const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
       // 1. Register Draft Asset in Backend
       try {
         await fetch(`${API_BASE_URL}/speaking/register-draft`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...authHeaders },
           body: JSON.stringify({
             id: recordingId,
             referenceType: "EXAM_SUBMISSION",
@@ -224,7 +226,7 @@ export function QuestionRecorder({
       try {
         await fetch(`${API_BASE_URL}/speaking/confirm-upload`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...authHeaders },
           body: JSON.stringify({
             id: recordingId,
             storagePath,
