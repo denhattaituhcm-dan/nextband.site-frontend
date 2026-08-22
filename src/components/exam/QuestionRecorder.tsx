@@ -1,16 +1,19 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Mic, Square, CheckCircle2, Play, Pause, RotateCcw, Loader2 } from "lucide-react";
+import { Mic, Square, CheckCircle2, Play, Pause, RotateCcw, Loader2, AlertCircle, RefreshCw } from "lucide-react";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { AudioWaveform } from "./AudioWaveform";
 import { cn } from "@/lib/utils";
-import { uploadsApi } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
+import { API_BASE_URL } from "@/lib/api";
 
 interface QuestionRecorderProps {
   questionId: string;
   answer: string;
-  onAnswerChange: (questionId: string, answer: string) => void;
+  submissionId?: string;
+  maxDurationSeconds?: number;
+  onAnswerChange: (questionId: string, storagePath: string) => void;
   onRecordingStateChange?: (isRecording: boolean) => void;
   className?: string;
 }
@@ -20,6 +23,27 @@ function CustomAudioPlayer({ src }: { src: string }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [resolvedSrc, setResolvedSrc] = useState<string>(src);
+
+  useEffect(() => {
+    if (!src) return;
+    if (src.startsWith("speaking-recordings/")) {
+      const cleanPath = src.replace(/^speaking-recordings\//, "");
+      supabase.storage
+        .from("speaking-recordings")
+        .createSignedUrl(cleanPath, 3600)
+        .then(({ data }) => {
+          if (data?.signedUrl) {
+            setResolvedSrc(data.signedUrl);
+          }
+        })
+        .catch(() => {
+          setResolvedSrc(src);
+        });
+    } else {
+      setResolvedSrc(src);
+    }
+  }, [src]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -38,7 +62,7 @@ function CustomAudioPlayer({ src }: { src: string }) {
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, [src]);
+  }, [resolvedSrc]);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
@@ -68,7 +92,7 @@ function CustomAudioPlayer({ src }: { src: string }) {
 
   return (
     <div className="flex items-center gap-3 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-neutral-900 dark:to-neutral-800 border border-orange-200/80 dark:border-orange-900/40 p-2 px-3.5 rounded-2xl shadow-xs max-w-xs w-full">
-      <audio ref={audioRef} src={src} preload="metadata" />
+      <audio ref={audioRef} src={resolvedSrc} preload="metadata" />
       <button
         type="button"
         onClick={togglePlay}
@@ -102,14 +126,17 @@ function CustomAudioPlayer({ src }: { src: string }) {
 export function QuestionRecorder({
   questionId,
   answer,
+  submissionId = "temp_exam_session",
+  maxDurationSeconds = 180,
   onAnswerChange,
   onRecordingStateChange,
   className,
 }: QuestionRecorderProps) {
-  const [phase, setPhase] = useState<"idle" | "recording" | "processing" | "review">(
+  const [phase, setPhase] = useState<"idle" | "recording" | "processing" | "review" | "failed">(
     answer ? "review" : "idle",
   );
   const [recordTime, setRecordTime] = useState(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const {
     isRecording,
@@ -123,10 +150,8 @@ export function QuestionRecorder({
     analyserData,
   } = useAudioRecorder();
 
-  const { transcript, startListening, stopListening, resetTranscript } =
+  const { startListening, stopListening, resetTranscript } =
     useSpeechRecognition();
-
-  const [isUploading, setIsUploading] = useState(false);
 
   // Notify parent of recording state
   useEffect(() => {
@@ -140,47 +165,93 @@ export function QuestionRecorder({
     }
   }, [answer, phase]);
 
-  // Recording timer
+  // Recording timer with auto-stop
   useEffect(() => {
     if (isRecording) {
       const timer = setInterval(() => {
-        setRecordTime((prev) => prev + 1);
+        setRecordTime((prev) => {
+          const next = prev + 1;
+          if (next >= maxDurationSeconds) {
+            stopRecording();
+            stopListening();
+            setPhase("processing");
+          }
+          return next;
+        });
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [isRecording]);
+  }, [isRecording, maxDurationSeconds, stopRecording, stopListening]);
 
-  // Handle recorded audio upload
-  useEffect(() => {
-    const uploadAudio = async () => {
-      if (audioBlob && phase === "processing") {
-        setIsUploading(true);
-        try {
-          await new Promise((resolve) => setTimeout(resolve, 300));
-          const file = new File([audioBlob], `speaking_${questionId}.webm`, {
-            type: "audio/webm",
-          });
-          const response = await uploadsApi.uploadAudio(file);
+  // Direct Supabase Storage Upload
+  const handleUploadAudio = async (blob: Blob) => {
+    setPhase("processing");
+    setUploadError(null);
 
-          if (response?.url) {
-            onAnswerChange(questionId, response.url);
-          } else {
-            onAnswerChange(questionId, audioUrl || "");
-          }
-        } catch (error) {
-          console.error("Upload error:", error);
-          onAnswerChange(questionId, audioUrl || "");
-        } finally {
-          setIsUploading(false);
-          setPhase("review");
-        }
+    try {
+      const recordingId = crypto.randomUUID();
+      const storagePath = `speaking-recordings/${recordingId}.webm`;
+
+      // 1. Register Draft Asset in Backend
+      try {
+        await fetch(`${API_BASE_URL}/speaking/register-draft`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: recordingId,
+            referenceType: "EXAM_SUBMISSION",
+            referenceId: submissionId,
+            questionId,
+          }),
+        });
+      } catch (regErr) {
+        console.warn("[Speaking] Draft register notice:", regErr);
       }
-    };
 
-    if (audioBlob && phase === "processing") {
-      uploadAudio();
+      // 2. Direct Upload to Supabase Storage
+      const { error: storageErr } = await supabase.storage
+        .from("speaking-recordings")
+        .upload(`${recordingId}.webm`, blob, {
+          contentType: blob.type || "audio/webm",
+          upsert: true,
+        });
+
+      if (storageErr) {
+        throw new Error(storageErr.message || "Tải lên Supabase Storage thất bại");
+      }
+
+      // 3. Confirm Asset in Backend
+      try {
+        await fetch(`${API_BASE_URL}/speaking/confirm-upload`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: recordingId,
+            storagePath,
+            sizeBytes: blob.size,
+            durationMs: recordTime * 1000,
+            mimeType: blob.type || "audio/webm",
+          }),
+        });
+      } catch (confErr) {
+        console.warn("[Speaking] Confirm upload notice:", confErr);
+      }
+
+      // 4. Save canonical storagePath (Never blob: URL!)
+      onAnswerChange(questionId, storagePath);
+      setPhase("review");
+    } catch (err: any) {
+      console.error("[QuestionRecorder] Upload error:", err);
+      setUploadError(err?.message || "Tải lên bài nói thất bại. Vui lòng bấm Thử lại.");
+      setPhase("failed");
     }
-  }, [audioBlob, phase, questionId, onAnswerChange, audioUrl]);
+  };
+
+  useEffect(() => {
+    if (audioBlob && phase === "processing") {
+      handleUploadAudio(audioBlob);
+    }
+  }, [audioBlob, phase]);
 
   const handleStartRecording = async () => {
     if (permissionStatus !== "granted") {
@@ -191,6 +262,7 @@ export function QuestionRecorder({
     resetRecording();
     resetTranscript();
     setRecordTime(0);
+    setUploadError(null);
     setPhase("recording");
 
     await startRecording();
@@ -201,6 +273,20 @@ export function QuestionRecorder({
     setPhase("processing");
     stopRecording();
     stopListening();
+  };
+
+  const handleRetry = () => {
+    if (audioBlob) {
+      handleUploadAudio(audioBlob);
+    }
+  };
+
+  const handleReset = () => {
+    resetRecording();
+    setRecordTime(0);
+    setUploadError(null);
+    setPhase("idle");
+    onAnswerChange(questionId, "");
   };
 
   const formatTime = (seconds: number) => {
@@ -219,7 +305,7 @@ export function QuestionRecorder({
 
   return (
     <div className={cn("space-y-3 pt-1", className)}>
-      {/* State 1: Idle (Not recording) */}
+      {/* State 1: Idle */}
       {!answer && phase === "idle" && (
         <div className="flex items-center gap-3">
           <Button
@@ -231,7 +317,7 @@ export function QuestionRecorder({
             Bắt đầu ghi âm
           </Button>
           <span className="text-xs text-muted-foreground font-medium italic hidden sm:inline">
-            Nhấn nút để thực hiện câu trả lời nói của bạn
+            Tối đa: {Math.floor(maxDurationSeconds / 60)} phút. Nhấn để bắt đầu.
           </span>
         </div>
       )}
@@ -239,7 +325,6 @@ export function QuestionRecorder({
       {/* State 2: Active Recording */}
       {phase === "recording" && (
         <div className="bg-gradient-to-b from-white to-orange-50/50 dark:from-neutral-900 dark:to-neutral-800/80 rounded-2xl p-4 border-2 border-orange-400/60 dark:border-orange-600/60 shadow-lg space-y-4 animate-in zoom-in-95 fill-mode-both">
-          {/* Status Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-destructive font-extrabold animate-pulse">
               <div className="w-3 h-3 rounded-full bg-destructive shadow-sm shadow-destructive/50" />
@@ -252,7 +337,6 @@ export function QuestionRecorder({
             </span>
           </div>
 
-          {/* Dynamic Audio Visualizer Waveform */}
           <AudioWaveform
             data={analyserData}
             isRecording={true}
@@ -260,35 +344,60 @@ export function QuestionRecorder({
           />
 
           <div className="text-xs text-muted-foreground italic text-center font-medium">
-            Hệ thống đang lắng nghe giọng nói của bạn... Hãy trả lời tự nhiên nhé!
+            Hệ thống đang ghi âm... Nhấn nút dưới đây khi hoàn tất câu trả lời.
           </div>
 
-          {/* Primary Action Button - Stop & Complete */}
           <Button
             onClick={handleStopRecording}
             className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold py-3.5 rounded-2xl shadow-md shadow-orange-500/20 text-sm transition-all"
           >
             <Square className="h-4 w-4 fill-current mr-2" />
-            Dừng ghi & hoàn tất
+            Dừng ghi & Lưu bài nói
           </Button>
         </div>
       )}
 
-      {/* State 3: Processing / Uploading */}
-      {(phase === "processing" || isUploading) && (
+      {/* State 3: Processing */}
+      {phase === "processing" && (
         <div className="bg-orange-50/80 dark:bg-neutral-900 rounded-2xl p-5 border border-orange-200/80 dark:border-neutral-800 shadow-sm flex flex-col items-center justify-center space-y-3 animate-in fade-in">
           <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400 font-extrabold text-sm">
             <Loader2 className="h-5 w-5 animate-spin" />
-            <span>ĐANG XỬ LÝ & LƯU BÀI NÓI...</span>
+            <span>ĐANG TẢI BÀI NÓI LÊN STORAGE...</span>
           </div>
           <p className="text-xs text-muted-foreground font-medium text-center">
-            Đang chuyển giọng nói thành văn bản và lưu file ghi âm lên máy chủ...
+            Vui lòng chờ trong giây lát để hệ thống lưu tệp ghi âm.
           </p>
         </div>
       )}
 
-      {/* State 4: Completed / Review */}
-      {answer && phase === "review" && !isUploading && (
+      {/* State 4: Failed with Retry */}
+      {phase === "failed" && (
+        <div className="bg-red-50 dark:bg-red-950/40 rounded-2xl p-4 border border-red-200 text-center space-y-3">
+          <div className="flex items-center justify-center gap-2 text-destructive font-bold text-sm">
+            <AlertCircle className="w-4 h-4" />
+            <span>{uploadError || "Tải lên bài nói thất bại"}</span>
+          </div>
+          <div className="flex items-center justify-center gap-2">
+            <Button
+              onClick={handleRetry}
+              className="bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs rounded-xl h-9 px-4 gap-1.5"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Thử tải lên lại</span>
+            </Button>
+            <Button
+              onClick={handleReset}
+              variant="outline"
+              className="font-bold text-xs rounded-xl h-9 px-3"
+            >
+              Ghi âm lại
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* State 5: Completed / Review */}
+      {answer && phase === "review" && (
         <div className="flex flex-wrap items-center gap-3 pt-1">
           <CustomAudioPlayer src={answer} />
 

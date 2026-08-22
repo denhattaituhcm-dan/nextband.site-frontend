@@ -237,12 +237,14 @@ export default function PlacementExamInterface() {
 
           {activeSkill === "speaking" && (
             <SpeakingPanel
+              sessionId={sessionId!}
               title={testPayload.skills.speaking.title}
               part1Questions={testPayload.skills.speaking.part1Questions}
               part2Topic={testPayload.skills.speaking.part2Topic}
               part2Cues={testPayload.skills.speaking.part2Cues}
-              onAudioRecorded={(audioUrl) => {
-                setAnswer("speaking_audio_url", audioUrl);
+              maxDurationSeconds={120}
+              onAudioRecorded={(storagePath) => {
+                setAnswer("speaking_audio_url", storagePath);
                 setAnswer("speaking_completed", true);
               }}
             />
