@@ -92,7 +92,7 @@ export function WritingPanel({
             onChange={(e) => onChange(e.target.value)}
             placeholder="Type your essay / paragraph response here in English..."
             rows={10}
-            className="w-full rounded-2xl border-border text-sm leading-relaxed p-4 font-mono focus:border-indigo-500"
+            className="w-full rounded-2xl border-border text-sm leading-relaxed p-4 focus:border-indigo-500 font-sans"
           />
           <div className="flex justify-between items-center text-xs text-muted-foreground pt-1">
             <span>Bài viết sẽ được ghi nhận và chuyển cho Giảng viên/AI chấm chuyên sâu.</span>

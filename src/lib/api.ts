@@ -28,7 +28,34 @@ export const API_BASE_URL = resolveApiBaseUrl();
 export const getAuthToken = async (): Promise<string | null> => {
   try {
     const { data: { session } } = await supabase.auth.getSession();
-    return session?.access_token || null;
+    if (session?.access_token) {
+      // Auto-refresh token if it expires in less than 2 minutes
+      const expiresAt = session.expires_at; // timestamp in seconds
+      if (expiresAt && Date.now() / 1000 > expiresAt - 120) {
+        try {
+          const { data: refreshed } = await supabase.auth.refreshSession();
+          if (refreshed?.session?.access_token) {
+            return refreshed.session.access_token;
+          }
+        } catch (refreshErr) {
+          console.warn("[Auth] Token refresh notice:", refreshErr);
+        }
+      }
+      return session.access_token;
+    }
+
+    // Fallback: Check localStorage for cached Supabase session
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("sb-") && key.endsWith("-auth-token")) {
+        const raw = localStorage.getItem(key);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.access_token) return parsed.access_token;
+        }
+      }
+    }
+    return null;
   } catch {
     return null;
   }

@@ -62,7 +62,7 @@ export function GrammarPanel({
                   dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.prompt) }}
                 />
               ) : (
-                <p className="text-sm sm:text-base font-bold text-foreground leading-relaxed font-mono">
+                <p className="text-sm sm:text-base font-bold text-foreground leading-relaxed">
                   {q.prompt}
                 </p>
               )}
