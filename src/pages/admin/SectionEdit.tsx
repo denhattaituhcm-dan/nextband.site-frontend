@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { sectionsApi, questionsApi, uploadsApi } from "@/lib/api";
+import { sectionsApi, questionsApi, uploadsApi, formatStorageUrl } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -903,7 +903,7 @@ export default function AdminSectionEdit() {
                           <Headphones className="h-5 w-5 text-primary" />
                           <div className="flex-1">
                             <audio
-                              src={group.audioUrl || group.audio_url}
+                              src={formatStorageUrl(group.audioUrl || group.audio_url)}
                               controls
                               className="h-8 w-full outline-none"
                             />

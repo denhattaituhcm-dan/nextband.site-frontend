@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FillBlankHtmlRenderer, hasFillBlankPlaceholders } from "@/components/exam/FillBlankHtmlRenderer";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { formatStorageUrl } from "@/lib/api";
 
 interface ListeningPanelProps {
   title: string;
@@ -48,7 +49,7 @@ export function ListeningPanel({
           {/* HTML5 Audio Player */}
           <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-inner flex items-center gap-3">
             <Volume2 className="w-5 h-5 text-brand-blue shrink-0" />
-            <audio controls src={audioUrl} className="w-full h-10 outline-hidden" preload="auto">
+            <audio controls src={formatStorageUrl(audioUrl)} className="w-full h-10 outline-hidden" preload="auto">
               Trình duyệt của bạn không hỗ trợ phát âm thanh HTML5.
             </audio>
           </div>

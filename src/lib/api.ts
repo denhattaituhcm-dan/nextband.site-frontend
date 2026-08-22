@@ -187,7 +187,14 @@ export async function fetchWithResilience(
 export const formatStorageUrl = (path: string | null | undefined) => {
   if (!path) return "";
   if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("blob:") || path.startsWith("data:")) return path;
-  const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+  let cleanPath = path.startsWith("/") ? path.slice(1) : path;
+  if (!cleanPath.includes("/")) {
+    if (/\.(mp3|wav|ogg|webm|m4a|aac)$/i.test(cleanPath)) {
+      cleanPath = `uploads/audio/${cleanPath}`;
+    } else if (/\.(jpg|jpeg|png|webp|gif|svg)$/i.test(cleanPath)) {
+      cleanPath = `uploads/images/${cleanPath}`;
+    }
+  }
   const { data } = supabase.storage.from("exam-assets").getPublicUrl(cleanPath);
   return data.publicUrl;
 };

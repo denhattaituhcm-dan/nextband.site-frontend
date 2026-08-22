@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useSpeakingRecorder } from "../hooks/useSpeakingRecorder";
 import { supabase } from "@/lib/supabase";
-import { API_BASE_URL } from "@/lib/api";
+import { API_BASE_URL, formatStorageUrl } from "@/lib/api";
 import { savePendingAudioBlob, clearPendingAudioBlob } from "@/lib/assessmentDraftStore";
 
 interface SpeakingPanelProps {
@@ -303,7 +303,7 @@ export function SpeakingPanel({
 
               <div className="p-3 rounded-2xl bg-muted/60 border border-border flex items-center gap-3">
                 <Volume2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                <audio controls src={audioUrl} className="w-full h-10 outline-hidden" />
+                <audio controls src={formatStorageUrl(audioUrl)} className="w-full h-10 outline-hidden" />
               </div>
 
               <Button

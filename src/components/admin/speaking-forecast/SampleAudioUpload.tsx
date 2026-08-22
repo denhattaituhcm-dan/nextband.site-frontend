@@ -13,6 +13,7 @@ import {
   HardDrive,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { formatStorageUrl } from '@/lib/api';
 
 interface SampleAudioUploadProps {
   value?: AudioSample | null;
@@ -292,7 +293,7 @@ export const SampleAudioUpload: React.FC<SampleAudioUploadProps> = ({
           {/* Audio HTML element (hidden controller) */}
           <audio
             ref={audioRef}
-            src={value.fileUrl}
+            src={formatStorageUrl(value.fileUrl)}
             onTimeUpdate={handleTimeUpdate}
             onEnded={handleAudioEnded}
             onLoadedMetadata={handleLoadedMetadata}

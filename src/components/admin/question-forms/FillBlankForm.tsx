@@ -45,17 +45,17 @@ export function FillBlankForm({ form, onChange }: QuestionFormProps) {
             Nội dung câu hỏi (chứa ô trống)
           </Label>
           <RichTextEditor
-            placeholder="Ví dụ: I live in [BLANK] which is a big city."
+            placeholder="Ví dụ: I live in [1] which is a big city with [2] people."
             value={form.questionText}
             onChange={(html) => onChange({ questionText: html })}
             minHeight={120}
           />
           <div className="flex flex-wrap gap-2 text-[10px] text-muted-foreground mt-1 px-1">
             <span>Placeholder hợp lệ:</span>
-            <code className="bg-muted px-1 rounded text-primary">[BLANK]</code>
-            <code className="bg-muted px-1 rounded text-primary">
-              [BLANK_1]
-            </code>
+            <code className="bg-muted px-1 rounded text-primary font-bold">[1]</code>
+            <code className="bg-muted px-1 rounded text-primary font-bold">[2]</code>
+            <code className="bg-muted px-1 rounded text-muted-foreground">[BLANK]</code>
+            <code className="bg-muted px-1 rounded text-muted-foreground">[BLANK_1]</code>
           </div>
         </div>
 
@@ -90,8 +90,8 @@ export function FillBlankForm({ form, onChange }: QuestionFormProps) {
           {fillBlankTokenCount === 0 ? (
             <div className="rounded-lg border border-dashed border-amber-200 p-4 text-center bg-white/50">
               <p className="text-xs text-amber-600 italic">
-                Chưa có placeholder nào trong nội dung câu hỏi. Hãy thêm [BLANK]
-                để tạo ô đáp án.
+                Chưa có placeholder nào trong nội dung câu hỏi. Hãy thêm [1], [2]
+                hoặc [BLANK] để tạo ô đáp án.
               </p>
             </div>
           ) : (

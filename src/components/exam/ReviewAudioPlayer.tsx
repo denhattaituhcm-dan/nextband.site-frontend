@@ -8,6 +8,7 @@ import {
   Volume2,
   ExternalLink,
 } from "lucide-react";
+import { formatStorageUrl } from "@/lib/api";
 
 interface ReviewAudioPlayerProps {
   src: string;
@@ -83,7 +84,7 @@ export function ReviewAudioPlayer({ src, className }: ReviewAudioPlayerProps) {
     <div className={`rounded-md border bg-muted/30 p-3 space-y-3 ${className || ""}`.trim()}>
       <audio
         ref={audioRef}
-        src={src}
+        src={formatStorageUrl(src)}
         preload="metadata"
         onTimeUpdate={(e) => {
           const audio = e.currentTarget;
@@ -138,7 +139,7 @@ export function ReviewAudioPlayer({ src, className }: ReviewAudioPlayerProps) {
       </div>
 
       <a
-        href={src}
+        href={formatStorageUrl(src)}
         target="_blank"
         rel="noreferrer"
         className="inline-flex items-center gap-1 text-xs text-primary hover:underline"

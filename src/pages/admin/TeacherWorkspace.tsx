@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { classesApi, examsApi, submissionsApi } from "@/lib/api";
+import { classesApi, examsApi, submissionsApi, formatStorageUrl } from "@/lib/api";
 import { deriveHomeworkStatus, HomeworkStatus } from "@/types/homework";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -770,7 +770,7 @@ export default function TeacherWorkspace() {
               {currentHomework?.type === "speaking" && currentHomework?.audioUrl ? (
                 <div className="p-3 rounded-lg bg-white border border-slate-200 space-y-1.5">
                   <p className="text-xs text-slate-600 font-medium">Bản thu âm Speaking của học viên:</p>
-                  <audio controls src={currentHomework.audioUrl} className="w-full h-8" />
+                  <audio controls src={formatStorageUrl(currentHomework.audioUrl)} className="w-full h-8" />
                 </div>
               ) : (
                 <div className="text-xs text-slate-800 leading-relaxed p-3 rounded-lg bg-white border border-slate-200 min-h-[100px] whitespace-pre-wrap">

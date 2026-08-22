@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { QuestionRecorder } from "./QuestionRecorder";
 import { RichContent } from "./RichContent";
+import { formatStorageUrl } from "@/lib/api";
 
 import {
   FillBlankHtmlRenderer,
@@ -207,7 +208,7 @@ export function SpeakingSection({
                               {question.question_audio_url && (
                                 <div className="bg-orange-50/80 dark:bg-gray-800/80 p-3 rounded-2xl border border-orange-200/60 dark:border-gray-700 flex items-center gap-3 max-w-md">
                                   <audio
-                                    src={question.question_audio_url}
+                                    src={formatStorageUrl(question.question_audio_url)}
                                     controls
                                     className="h-8 w-full"
                                   />

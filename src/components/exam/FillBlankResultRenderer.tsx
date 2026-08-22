@@ -31,9 +31,9 @@ export function FillBlankResultRenderer({
 
   const processedHtml = useMemo(() => {
     let autoCursor = 0;
-    const rawResult = html.replace(FILL_BLANK_PLACEHOLDER_REGEX, (match) => {
-      const indexMatch = match.match(/^\[BLANK_(\d+)\]$/);
-      const explicitIndex = indexMatch ? Number(indexMatch[1]) - 1 : null;
+    const rawResult = html.replace(FILL_BLANK_PLACEHOLDER_REGEX, (_match, blankNum, directNum) => {
+      const numStr = blankNum || directNum;
+      const explicitIndex = numStr ? Number(numStr) - 1 : null;
       const blankIndex =
         explicitIndex !== null && explicitIndex >= 0
           ? explicitIndex

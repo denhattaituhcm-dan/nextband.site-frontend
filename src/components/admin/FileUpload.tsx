@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { uploadsApi } from "@/lib/api";
+import { uploadsApi, formatStorageUrl } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -43,14 +43,7 @@ export default function FileUpload({
       : "File";
 
   const getFullUrl = (url: string) => {
-    // If URL starts with /uploads, prepend API base URL
-    if (url.startsWith("/uploads")) {
-      const apiUrl =
-        import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1";
-      const baseUrl = apiUrl.replace("/api/v1", "");
-      return `${baseUrl}${url}`;
-    }
-    return url;
+    return formatStorageUrl(url);
   };
 
   const handleFileSelect = useCallback(

@@ -17,6 +17,7 @@ import {
   Check,
   RotateCcw,
   Palette,
+  Table as TableIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -31,6 +32,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { uploadsApi } from "@/lib/api";
 
@@ -88,7 +91,7 @@ function normalizeColor(colorStr: string): string {
 
 /**
  * Whitelist HTML Sanitizer for Pasted Content
- * Preserves semantic tags (bold, italic, underline, color, highlight, links, lists)
+ * Preserves semantic tags (bold, italic, underline, color, highlight, links, lists, tables)
  * Strips font-family, font-size, layout/margin/padding, and MS Word/Docs junk.
  */
 function sanitizePastedHtml(rawHtml: string): string {
@@ -99,7 +102,8 @@ function sanitizePastedHtml(rawHtml: string): string {
     const body = doc.body;
 
     const ALLOWED_TAGS = new Set([
-      "P", "BR", "STRONG", "B", "EM", "I", "U", "S", "SPAN", "MARK", "A", "UL", "OL", "LI", "IMG"
+      "P", "BR", "STRONG", "B", "EM", "I", "U", "S", "SPAN", "MARK", "A", "UL", "OL", "LI", "IMG",
+      "TABLE", "THEAD", "TBODY", "TFOOT", "TR", "TH", "TD", "CAPTION", "COLGROUP", "COL"
     ]);
 
     const cleanNode = (node: Node): Node | null => {
@@ -155,6 +159,11 @@ function sanitizePastedHtml(rawHtml: string): string {
         newEl.className = "rounded-md my-2 max-w-full h-auto";
       }
 
+      if (["TH", "TD"].includes(targetTagName)) {
+        if (el.hasAttribute("colspan")) newEl.setAttribute("colspan", el.getAttribute("colspan") || "1");
+        if (el.hasAttribute("rowspan")) newEl.setAttribute("rowspan", el.getAttribute("rowspan") || "1");
+      }
+
       // Preserve normalized color & background-color only
       if (styleColor && styleColor !== "#000000" && styleColor !== "inherit") {
         newEl.style.color = styleColor;
@@ -197,6 +206,9 @@ export function RichTextEditor({
 
   const [textColorPopoverOpen, setTextColorPopoverOpen] = useState(false);
   const [highlightPopoverOpen, setHighlightPopoverOpen] = useState(false);
+  const [tablePopoverOpen, setTablePopoverOpen] = useState(false);
+  const [tableRows, setTableRows] = useState(5);
+  const [tableCols, setTableCols] = useState(2);
 
   const editorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -442,6 +454,33 @@ export function RichTextEditor({
     if (editorRef.current) {
       onChange(editorRef.current.innerHTML);
     }
+  };
+
+  const insertTable = (rows: number, cols: number) => {
+    restoreSelection();
+    const cleanRows = Math.max(1, Math.min(30, rows || 5));
+    const cleanCols = Math.max(1, Math.min(10, cols || 2));
+
+    let tableHtml = `<table style="width: 100%; border-collapse: collapse; margin: 10px 0;"><thead><tr>`;
+    for (let c = 0; c < cleanCols; c++) {
+      tableHtml += `<th style="border: 1px solid #cbd5e1; padding: 8px; background-color: #f1f5f9; font-weight: 600;">Cột ${c + 1}</th>`;
+    }
+    tableHtml += `</tr></thead><tbody>`;
+    for (let r = 0; r < cleanRows; r++) {
+      tableHtml += `<tr>`;
+      for (let c = 0; c < cleanCols; c++) {
+        tableHtml += `<td style="border: 1px solid #cbd5e1; padding: 8px;">${c === 1 && r === 0 ? "• Ví dụ: Điền [1] vào đây" : "Nội dung..."}</td>`;
+      }
+      tableHtml += `</tr>`;
+    }
+    tableHtml += `</tbody></table><p></p>`;
+
+    document.execCommand("insertHTML", false, tableHtml);
+    if (editorRef.current) {
+      onChange(editorRef.current.innerHTML);
+      editorRef.current.focus();
+    }
+    setTablePopoverOpen(false);
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -872,6 +911,90 @@ export function RichTextEditor({
           onChange={handleImageUpload}
         />
 
+        {/* --- TABLE POPOVER --- */}
+        <Popover
+          open={tablePopoverOpen}
+          onOpenChange={(open) => {
+            if (open) saveSelection();
+            setTablePopoverOpen(open);
+          }}
+        >
+          <PopoverTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              title="Chèn bảng (Table)"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                saveSelection();
+              }}
+            >
+              <TableIcon className="h-4 w-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-64 p-3" align="start" sideOffset={6}>
+            <div className="border-b pb-2 mb-3">
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <TableIcon className="h-3.5 w-3.5 text-primary" />
+                Chèn bảng mới
+              </span>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Tạo bảng cho dạng bài Table Completion
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 mb-3">
+              <div className="space-y-1">
+                <Label className="text-[11px] font-medium text-muted-foreground">
+                  Số cột (Columns)
+                </Label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={10}
+                  value={tableCols}
+                  onChange={(e) => setTableCols(parseInt(e.target.value) || 2)}
+                  className="h-8 text-xs bg-background"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[11px] font-medium text-muted-foreground">
+                  Số hàng (Rows)
+                </Label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={30}
+                  value={tableRows}
+                  onChange={(e) => setTableRows(parseInt(e.target.value) || 5)}
+                  className="h-8 text-xs bg-background"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Button
+                type="button"
+                size="sm"
+                className="w-full text-xs h-8 font-medium"
+                onClick={() => insertTable(tableRows, tableCols)}
+              >
+                Tạo bảng ({tableCols} cột x {tableRows} hàng)
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="w-full text-[11px] h-7 text-muted-foreground"
+                onClick={() => insertTable(5, 2)}
+              >
+                Mẫu IELTS chuẩn (2 cột x 5 hàng)
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+
         <div className="h-4 w-px bg-border mx-1" />
 
         <Select
@@ -953,6 +1076,23 @@ export function RichTextEditor({
         .rich-content-editor mark {
           border-radius: 2px;
           padding: 0 2px;
+        }
+        .rich-content-editor table {
+          border-collapse: collapse;
+          width: 100%;
+          margin: 10px 0;
+        }
+        .rich-content-editor th,
+        .rich-content-editor td {
+          border: 1px solid hsl(var(--border));
+          padding: 8px 12px;
+          min-width: 60px;
+          vertical-align: top;
+        }
+        .rich-content-editor th {
+          background-color: hsl(var(--muted) / 0.6);
+          font-weight: 600;
+          text-align: left;
         }
       `}</style>
     </div>

@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { sanitizeHtml } from "../../lib/sanitize";
 
-const FILL_BLANK_PLACEHOLDER_REGEX = /(\[BLANK(?:_\d+)?\])/g;
+const FILL_BLANK_PLACEHOLDER_REGEX = /(?:\[BLANK(?:_(\d+))?\]|\[(\d+)\])/gi;
 
 interface FillBlankHtmlRendererProps {
   html: string;
@@ -41,9 +41,9 @@ export function FillBlankHtmlRenderer({
 
   // Memoize and sanitize processed HTML to avoid unnecessary re-renders
   const processedHtml = useMemo(() => {
-    const rawReplaced = html.replace(FILL_BLANK_PLACEHOLDER_REGEX, (match) => {
-      const indexMatch = match.match(/^\[BLANK_(\d+)\]$/);
-      const blankIndex = indexMatch ? Number(indexMatch[1]) - 1 : -1;
+    const rawReplaced = html.replace(FILL_BLANK_PLACEHOLDER_REGEX, (_match, blankNum, directNum) => {
+      const numStr = blankNum || directNum;
+      const blankIndex = numStr ? Number(numStr) - 1 : -1;
       return `<span data-fill-blank="${blankIndex}" class="fill-blank-slot"></span>`;
     });
     return sanitizeHtml(rawReplaced);
@@ -176,5 +176,5 @@ export { FILL_BLANK_PLACEHOLDER_REGEX };
 export const hasFillBlankPlaceholders = (text: string) => {
   if (!text) return false;
   const plain = text.replace(/<[^>]*>/g, "");
-  return /(\[BLANK(?:_\d+)?\])/.test(plain);
+  return /(?:\[BLANK(?:_\d+)?\]|\[\d+\])/i.test(plain);
 };

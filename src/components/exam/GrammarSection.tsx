@@ -19,6 +19,7 @@ import {
 import { DropdownSelect } from "./DropdownSelect";
 import { MatchingRenderer } from "./MatchingRenderer";
 import { RichContent } from "./RichContent";
+import { formatStorageUrl } from "@/lib/api";
 
 interface GrammarSectionProps {
   section: any;
@@ -210,7 +211,7 @@ export function GrammarSection({
                                     {question.question_audio_url && (
                                       <div className="bg-teal-50/80 dark:bg-gray-800/80 p-3 rounded-2xl border border-teal-200/60 dark:border-gray-700 flex items-center gap-3 max-w-md">
                                         <audio
-                                          src={question.question_audio_url}
+                                          src={formatStorageUrl(question.question_audio_url)}
                                           controls
                                           className="h-8 w-full"
                                         />
