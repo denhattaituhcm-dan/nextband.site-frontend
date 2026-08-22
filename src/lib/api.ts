@@ -3233,6 +3233,46 @@ export interface NotificationItem {
   readAt?: string | null;
 }
 
+export interface BroadcastPayload {
+  title: string;
+  message: string;
+  type?: "ANNOUNCEMENT" | "SYSTEM" | "DEADLINE_APPROACHING" | "TEACHER_FEEDBACK";
+  targetType: "ALL" | "STUDENTS" | "TEACHERS" | "CLASS";
+  targetClassId?: string;
+  link?: string;
+  expiresAt?: string;
+}
+
+export interface AdminAnnouncementItem {
+  id: string;
+  broadcastId: string;
+  title: string;
+  message: string;
+  type: string;
+  targetType: "ALL" | "STUDENTS" | "TEACHERS" | "CLASS";
+  targetClassId?: string | null;
+  link?: string | null;
+  createdBy?: string | null;
+  createdAt: string;
+  publishedAt: string;
+  expiresAt?: string | null;
+  totalRecipients: number;
+  readCount: number;
+  readRate: number;
+}
+
+export interface BroadcastRecipientItem {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  userAvatar?: string | null;
+  userRoles: string[];
+  isRead: boolean;
+  readAt?: string | null;
+  createdAt: string;
+}
+
 export const notificationsApi = {
   list: async (params?: { page?: number; limit?: number }) => {
     const token = await getAuthToken();
@@ -3287,6 +3327,95 @@ export const notificationsApi = {
       throw new Error(`Failed to mark all notifications as read: ${res.status}`);
     }
     return res.json() as Promise<{ success: boolean; markedCount: number }>;
+  },
+
+  // Admin Broadcast & Announcements APIs
+  broadcast: async (payload: BroadcastPayload) => {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/notifications/admin/broadcast`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: "Lỗi phát thông báo" }));
+      throw new Error(err?.error || `Broadcast API error: ${res.status}`);
+    }
+    return res.json() as Promise<{
+      success: boolean;
+      broadcastId: string;
+      recipientCount: number;
+      message: string;
+    }>;
+  },
+
+  listAdminBroadcasts: async (params?: { page?: number; limit?: number; search?: string; type?: string }) => {
+    const token = await getAuthToken();
+    const query = new URLSearchParams();
+    if (params?.page) query.append("page", String(params.page));
+    if (params?.limit) query.append("limit", String(params.limit));
+    if (params?.search) query.append("search", params.search);
+    if (params?.type) query.append("type", params.type);
+
+    const res = await fetch(`${API_BASE_URL}/notifications/admin/broadcasts?${query.toString()}`, {
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    });
+    if (!res.ok) {
+      throw new Error(`Admin Broadcast list error: ${res.status}`);
+    }
+    return res.json() as Promise<{
+      success: boolean;
+      data: AdminAnnouncementItem[];
+      pagination: { total: number; page: number; limit: number };
+    }>;
+  },
+
+  getBroadcastRecipients: async (params: {
+    broadcastId: string;
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: "ALL" | "READ" | "UNREAD";
+  }) => {
+    const token = await getAuthToken();
+    const query = new URLSearchParams();
+    if (params?.page) query.append("page", String(params.page));
+    if (params?.limit) query.append("limit", String(params.limit));
+    if (params?.search) query.append("search", params.search);
+    if (params?.status && params.status !== "ALL") query.append("status", params.status);
+
+    const res = await fetch(
+      `${API_BASE_URL}/notifications/admin/broadcasts/${params.broadcastId}/recipients?${query.toString()}`,
+      {
+        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      }
+    );
+    if (!res.ok) {
+      throw new Error(`Broadcast recipients error: ${res.status}`);
+    }
+    return res.json() as Promise<{
+      success: boolean;
+      data: BroadcastRecipientItem[];
+      pagination: { total: number; page: number; limit: number };
+    }>;
+  },
+
+  deleteBroadcast: async (broadcastId: string) => {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/notifications/admin/broadcasts/${broadcastId}`, {
+      method: "DELETE",
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    });
+    if (!res.ok) {
+      throw new Error(`Delete broadcast error: ${res.status}`);
+    }
+    return res.json() as Promise<{
+      success: boolean;
+      message: string;
+    }>;
   },
 };
 

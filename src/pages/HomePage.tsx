@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { HomeworkEmptyState } from "@/components/homework/HomeworkEmptyState";
+import { AnnouncementBanner } from "@/components/AnnouncementBanner";
 import { useStudentLifecycle } from "@/hooks/useStudentLifecycle";
 import {
   BookOpen,
@@ -104,6 +105,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 space-y-6">
+        <AnnouncementBanner scopeRole="student" />
 
         {/* LOADING */}
         {state === "LOADING" && <LifecycleLoadingSkeleton />}

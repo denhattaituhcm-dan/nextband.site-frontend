@@ -13,6 +13,7 @@ import {
   Award,
   Mic,
   UserPlus,
+  Bell,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -93,6 +94,11 @@ const adminItems = [
     title: "Quản trị viên",
     url: "/admin/admins",
     icon: ShieldCheck,
+  },
+  {
+    title: "Thông báo",
+    url: "/admin/notifications",
+    icon: Bell,
   },
   {
     title: "Cài đặt",
