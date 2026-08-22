@@ -176,13 +176,13 @@ export function RoadmapConsultationModal({ isOpen, onOpenChange }: ModalBaseProp
               {/* Số điện thoại / Zalo */}
               <div className="space-y-1 text-left">
                 <Label htmlFor="roadmap-phone" className="text-xs font-bold text-foreground">
-                  Số điện thoại / Zalo <span className="text-brand-red">*</span>
+                  Số điện thoại có Zalo <span className="text-brand-red">*</span>
                 </Label>
                 <Input
                   id="roadmap-phone"
                   required
                   type="tel"
-                  placeholder="Ví dụ: 0933 319 693"
+                  placeholder="Nhập SĐT có Zalo (Ví dụ: 0933 319 693)"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   className="h-10 rounded-xl border-border bg-card text-foreground text-sm"
@@ -411,17 +411,20 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
               {/* Số điện thoại / Zalo */}
               <div className="space-y-1 text-left">
                 <Label htmlFor="assessment-phone" className="text-xs font-bold text-foreground">
-                  Số điện thoại / Zalo (Nhận báo cáo điểm) <span className="text-brand-red">*</span>
+                  Số điện thoại có Zalo (để nhận kết quả test) <span className="text-brand-red">*</span>
                 </Label>
                 <Input
                   id="assessment-phone"
                   required
                   type="tel"
-                  placeholder="Ví dụ: 0933 319 693"
+                  placeholder="Nhập SĐT có Zalo (Ví dụ: 0933 319 693)"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   className="h-10 rounded-xl border-border bg-card text-foreground text-sm"
                 />
+                <p className="text-[11px] text-muted-foreground leading-normal">
+                  * Giáo viên ARIS sẽ gửi bài chấm chi tiết và nhận xét qua Zalo theo số này.
+                </p>
               </div>
 
               {/* Mục tiêu IELTS */}
@@ -624,13 +627,13 @@ export function TrialClassModal({ isOpen, onOpenChange }: ModalBaseProps) {
               {/* Số điện thoại / Zalo */}
               <div className="space-y-1 text-left">
                 <Label htmlFor="trial-phone" className="text-xs font-bold text-foreground">
-                  Số điện thoại / Zalo <span className="text-brand-red">*</span>
+                  Số điện thoại có Zalo <span className="text-brand-red">*</span>
                 </Label>
                 <Input
                   id="trial-phone"
                   required
                   type="tel"
-                  placeholder="Ví dụ: 0933 319 693"
+                  placeholder="Nhập SĐT có Zalo (Ví dụ: 0933 319 693)"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   className="h-10 rounded-xl border-border bg-card text-foreground text-sm"

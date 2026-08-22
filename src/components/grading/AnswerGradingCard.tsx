@@ -8,6 +8,7 @@ import { CheckCircle, XCircle, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RichContent } from "@/components/exam/RichContent";
 import { ReviewAudioPlayer } from "@/components/exam/ReviewAudioPlayer";
+import { SpeakingTranscriptViewer } from "@/components/admin/SpeakingTranscriptViewer";
 import { getFillBlankBlankCount, parseFillBlankCorrectAnswers } from "@/lib/fillBlank";
 
 interface AnswerGradingCardProps {
@@ -265,12 +266,19 @@ export function AnswerGradingCard({
                   }
                 })()
               ) : isSpeakingSection && isLikelyMediaUrl(answerText) ? (
-                <ReviewAudioPlayer src={answerText} />
+                <SpeakingTranscriptViewer
+                  audioUrl={answerText}
+                  initialTranscript={audioUrl && audioUrl !== answerText ? audioUrl : undefined}
+                  readOnly={readOnly}
+                />
               ) : (
                 <p className="text-sm whitespace-pre-wrap">{answerText}</p>
               )
             ) : audioUrl ? (
-              <ReviewAudioPlayer src={audioUrl} />
+              <SpeakingTranscriptViewer
+                audioUrl={audioUrl}
+                readOnly={readOnly}
+              />
             ) : (
               <p className="text-sm text-muted-foreground italic">
                 Chưa trả lời

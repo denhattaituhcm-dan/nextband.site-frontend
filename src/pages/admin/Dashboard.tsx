@@ -16,6 +16,13 @@ import {
   Phone,
   ChevronRight,
   CalendarRange,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  FileCheck,
+  School,
+  ArrowRight,
+  TrendingUp,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -38,44 +45,13 @@ export default function AdminDashboard() {
     String(new Date().getMonth() + 1).padStart(2, "0"),
   );
 
-  const { data: attendanceSummary } = useQuery({
+  const { data: attendanceSummary, isLoading: isAttendanceLoading } = useQuery({
     queryKey: ["admin-attendance-monthly", currentYear, period],
-    queryFn: async () => {
-      if (period === "year") {
-        const monthly = await Promise.all(
-          Array.from({ length: 12 }, async (_, i) => {
-            const month = `${currentYear}-${String(i + 1).padStart(2, "0")}`;
-            try {
-              return await statsApi.getMonthlyAttendance({ month });
-            } catch {
-              return { totalPresent: 0, totalAbsent: 0, attendanceRate: 0 };
-            }
-          }),
-        );
-
-        const totalPresent = monthly.reduce(
-          (sum, item) => sum + (item?.totalPresent ?? 0),
-          0,
-        );
-        const totalAbsent = monthly.reduce(
-          (sum, item) => sum + (item?.totalAbsent ?? 0),
-          0,
-        );
-        const attendanceRate =
-          totalPresent + totalAbsent > 0
-            ? totalPresent / (totalPresent + totalAbsent)
-            : 0;
-
-        return { totalPresent, totalAbsent, attendanceRate };
-      }
-
-      const month = `${currentYear}-${period}`;
-      return statsApi.getMonthlyAttendance({ month });
-    },
+    queryFn: () => statsApi.getMonthlyAttendance({ year: currentYear, month: period }),
   });
 
   const monthLabel = useMemo(() => {
-    if (period === "year") return `Cả năm ${currentYear}`;
+    if (period === "year" || period === "all") return `Cả năm ${currentYear}`;
     return `Tháng ${Number(period)}/${currentYear}`;
   }, [currentYear, period]);
 
@@ -167,21 +143,35 @@ export default function AdminDashboard() {
       </div>
 
       {/* Attendance Monthly Card */}
-      <Card className="overflow-hidden">
-        <CardHeader className="flex items-center justify-between gap-3">
+      <Card className="overflow-hidden border shadow-sm">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b bg-muted/20">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10">
-              <CalendarRange className="h-5 w-5 text-emerald-600" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600">
+              <CalendarRange className="h-5 w-5" />
             </div>
             <div>
-              <CardTitle className="text-lg">Điểm danh theo tháng</CardTitle>
-              <CardDescription>Tổng lượt có mặt (mọi lớp)</CardDescription>
+              <CardTitle className="text-lg flex items-center gap-2">
+                Điểm danh theo tháng
+                <Badge variant="outline" className="text-xs font-normal text-emerald-700 bg-emerald-50 border-emerald-200">
+                  {monthLabel}
+                </Badge>
+              </CardTitle>
+              <CardDescription>
+                Tổng hợp lịch học, lượt có mặt, vắng và tỷ lệ chuyên cần của toàn bộ các lớp
+              </CardDescription>
             </div>
           </div>
+          <Button variant="outline" size="sm" asChild className="hidden sm:inline-flex text-xs">
+            <Link to="/admin/classes">
+              Quản lý lớp học
+              <ChevronRight className="ml-1 h-3.5 w-3.5" />
+            </Link>
+          </Button>
         </CardHeader>
-        <CardContent className="flex flex-col gap-3">
-          <div className="overflow-x-auto pb-1">
-            <div className="flex items-center gap-2 min-w-max">
+        <CardContent className="flex flex-col gap-5 pt-4">
+          {/* Period selector buttons */}
+          <div className="overflow-x-auto pb-1 -mx-1 px-1">
+            <div className="flex items-center gap-1.5 min-w-max">
               {periods.map((item) => (
                 <Button
                   key={item.key}
@@ -189,8 +179,10 @@ export default function AdminDashboard() {
                   size="sm"
                   variant={period === item.key ? "default" : "outline"}
                   className={cn(
-                    "h-8 rounded-full px-3 text-xs",
-                    period === item.key && "bg-emerald-600 hover:bg-emerald-600/90",
+                    "h-8 rounded-full px-3 text-xs transition-all font-medium",
+                    period === item.key
+                      ? "bg-emerald-600 hover:bg-emerald-600/90 text-white shadow-xs"
+                      : "hover:bg-muted text-muted-foreground",
                   )}
                   onClick={() => setPeriod(item.key)}
                 >
@@ -199,17 +191,184 @@ export default function AdminDashboard() {
               ))}
             </div>
           </div>
-          <div className="text-sm text-muted-foreground">{monthLabel}</div>
-          <div className="text-3xl font-bold">
-            {attendanceSummary?.totalPresent ?? 0} lượt
+
+          {/* KPI Cards Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {/* 1. Tổng buổi học */}
+            <div className="p-3.5 rounded-xl border bg-slate-50/70 space-y-1">
+              <div className="flex items-center justify-between text-xs text-muted-foreground font-medium">
+                <span>Số buổi học</span>
+                <School className="h-3.5 w-3.5 text-slate-500" />
+              </div>
+              <div className="text-xl font-bold text-slate-900">
+                {attendanceSummary?.totalSessions ?? 0} <span className="text-xs font-normal text-muted-foreground">buổi</span>
+              </div>
+              <div className="text-[11px] text-muted-foreground">
+                {attendanceSummary?.completedSessions ?? 0} buổi đã chốt
+              </div>
+            </div>
+
+            {/* 2. Có mặt */}
+            <div className="p-3.5 rounded-xl border border-emerald-200 bg-emerald-50/50 space-y-1">
+              <div className="flex items-center justify-between text-xs text-emerald-700 font-medium">
+                <span>Lượt có mặt</span>
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+              </div>
+              <div className="text-xl font-bold text-emerald-700">
+                {attendanceSummary?.totalPresent ?? 0} <span className="text-xs font-normal text-emerald-600/80">lượt</span>
+              </div>
+              <div className="text-[11px] text-emerald-600/80">
+                {attendanceSummary?.lateCount ? `${attendanceSummary.lateCount} đi muộn` : "Tham gia đầy đủ"}
+              </div>
+            </div>
+
+            {/* 3. Vắng không phép */}
+            <div className="p-3.5 rounded-xl border border-rose-200 bg-rose-50/50 space-y-1">
+              <div className="flex items-center justify-between text-xs text-rose-700 font-medium">
+                <span>Lượt vắng</span>
+                <XCircle className="h-3.5 w-3.5 text-rose-600" />
+              </div>
+              <div className="text-xl font-bold text-rose-700">
+                {attendanceSummary?.totalAbsent ?? 0} <span className="text-xs font-normal text-rose-600/80">lượt</span>
+              </div>
+              <div className="text-[11px] text-rose-600/80">
+                Vắng không phép
+              </div>
+            </div>
+
+            {/* 4. Nghỉ có phép */}
+            <div className="p-3.5 rounded-xl border border-purple-200 bg-purple-50/50 space-y-1">
+              <div className="flex items-center justify-between text-xs text-purple-700 font-medium">
+                <span>Nghỉ có phép</span>
+                <FileCheck className="h-3.5 w-3.5 text-purple-600" />
+              </div>
+              <div className="text-xl font-bold text-purple-700">
+                {attendanceSummary?.totalExcused ?? 0} <span className="text-xs font-normal text-purple-600/80">lượt</span>
+              </div>
+              <div className="text-[11px] text-purple-600/80">
+                Có đơn xin phép
+              </div>
+            </div>
+
+            {/* 5. Đi muộn */}
+            <div className="p-3.5 rounded-xl border border-amber-200 bg-amber-50/50 space-y-1">
+              <div className="flex items-center justify-between text-xs text-amber-700 font-medium">
+                <span>Đi muộn</span>
+                <Clock className="h-3.5 w-3.5 text-amber-600" />
+              </div>
+              <div className="text-xl font-bold text-amber-700">
+                {attendanceSummary?.lateCount ?? 0} <span className="text-xs font-normal text-amber-600/80">lượt</span>
+              </div>
+              <div className="text-[11px] text-amber-600/80">
+                Được tính có mặt
+              </div>
+            </div>
+
+            {/* 6. Tỷ lệ chuyên cần */}
+            <div className="p-3.5 rounded-xl border border-blue-200 bg-blue-50/50 space-y-1">
+              <div className="flex items-center justify-between text-xs text-blue-700 font-medium">
+                <span>Chuyên cần</span>
+                <TrendingUp className="h-3.5 w-3.5 text-blue-600" />
+              </div>
+              <div className="text-xl font-bold text-blue-700">
+                {attendanceSummary?.attendanceRate != null
+                  ? Math.round(attendanceSummary.attendanceRate * 100)
+                  : 100}
+                %
+              </div>
+              <div className="text-[11px] text-blue-600/80">
+                {attendanceSummary?.activeClassesCount ?? 0} lớp có lịch học
+              </div>
+            </div>
           </div>
-          <div className="text-sm text-muted-foreground">
-            Vắng: {attendanceSummary?.totalAbsent ?? 0} ·
-            Tỷ lệ chuyên cần:{" "}
-            {attendanceSummary?.attendanceRate != null
-              ? Math.round(attendanceSummary.attendanceRate * 100)
-              : 0}
-            %
+
+          {/* Breakdown By Class in this month */}
+          <div className="space-y-2.5 pt-1">
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Tổng hợp theo từng lớp ({attendanceSummary?.byClass?.length || 0} lớp trong {monthLabel})
+              </h4>
+            </div>
+
+            {isAttendanceLoading ? (
+              <div className="p-8 text-center text-xs text-muted-foreground">
+                Đang tải dữ liệu điểm danh...
+              </div>
+            ) : !attendanceSummary?.byClass || attendanceSummary.byClass.length === 0 ? (
+              <div className="p-8 border border-dashed rounded-xl text-center text-xs text-muted-foreground bg-muted/10">
+                Không có buổi học hoặc bản ghi điểm danh nào trong {monthLabel}.
+              </div>
+            ) : (
+              <div className="border rounded-xl overflow-hidden bg-card">
+                <div className="grid grid-cols-12 bg-muted/40 p-2.5 px-3.5 text-xs font-semibold text-muted-foreground border-b">
+                  <span className="col-span-4 sm:col-span-4">Lớp học</span>
+                  <span className="col-span-2 text-center">Số buổi</span>
+                  <span className="col-span-2 text-center text-emerald-700">Có mặt</span>
+                  <span className="col-span-2 text-center text-rose-700">Vắng</span>
+                  <span className="col-span-2 text-right">Chuyên cần</span>
+                </div>
+                <div className="divide-y text-xs">
+                  {attendanceSummary.byClass.map((cls) => (
+                    <div
+                      key={cls.classId}
+                      className="grid grid-cols-12 p-3 px-3.5 items-center hover:bg-muted/30 transition-colors gap-1"
+                    >
+                      <div className="col-span-4 sm:col-span-4 min-w-0 pr-2">
+                        <Link
+                          to={`/admin/classes/${cls.classId}`}
+                          className="font-semibold text-foreground hover:text-emerald-600 hover:underline truncate block"
+                          title={cls.className}
+                        >
+                          {cls.className}
+                        </Link>
+                        <div className="text-[11px] text-muted-foreground truncate">
+                          GV: {cls.teacherName} · {cls.totalStudents} học viên
+                        </div>
+                      </div>
+                      <div className="col-span-2 text-center">
+                        <span className="font-semibold text-foreground">{cls.totalSessions}</span>
+                        <span className="text-[10px] text-muted-foreground block">
+                          ({cls.completedSessions} đã chốt)
+                        </span>
+                      </div>
+                      <div className="col-span-2 text-center font-semibold text-emerald-600">
+                        {cls.totalPresent}
+                        {cls.lateCount > 0 && (
+                          <span className="text-[10px] text-amber-600 block">
+                            ({cls.lateCount} muộn)
+                          </span>
+                        )}
+                      </div>
+                      <div className="col-span-2 text-center">
+                        <span className={cls.totalAbsent > 0 ? "font-semibold text-rose-600" : "text-muted-foreground"}>
+                          {cls.totalAbsent}
+                        </span>
+                        {cls.totalExcused > 0 && (
+                          <span className="text-[10px] text-purple-600 block">
+                            ({cls.totalExcused} phép)
+                          </span>
+                        )}
+                      </div>
+                      <div className="col-span-2 text-right">
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            "text-[11px] font-bold",
+                            cls.attendanceRate >= 0.9
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                              : cls.attendanceRate >= 0.75
+                              ? "bg-amber-50 text-amber-700 border-amber-200"
+                              : "bg-rose-50 text-rose-700 border-rose-200",
+                          )}
+                        >
+                          {Math.round(cls.attendanceRate * 100)}%
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

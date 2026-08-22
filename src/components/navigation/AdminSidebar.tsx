@@ -14,6 +14,7 @@ import {
   Mic,
   UserPlus,
   Bell,
+  FileCheck,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -42,9 +43,14 @@ const teachingItems = [
     icon: School,
   },
   {
-    title: "Chấm bài",
+    title: "Chấm bài lớp",
     url: "/admin/teacher-workspace",
     icon: ClipboardCheck,
+  },
+  {
+    title: "Khảo thí thử",
+    url: "/admin/assessments",
+    icon: FileCheck,
   },
   {
     title: "Ngân hàng bài",

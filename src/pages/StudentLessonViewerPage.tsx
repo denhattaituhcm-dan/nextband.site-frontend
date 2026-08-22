@@ -1,7 +1,7 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { lessonsApi, submissionsApi, examsApi } from "@/lib/api";
-import { deriveHomeworkStatus, HomeworkStatus } from "@/types/homework";
+import { deriveCanonicalVisualStatus, formatDeadlineCountdown, CanonicalVisualStatus } from "@/lib/homeworkStatusHelper";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ import {
   RefreshCw,
   Sparkles,
   WifiOff,
+  Calendar,
 } from "lucide-react";
 
 export default function StudentLessonViewerPage() {
@@ -35,7 +36,7 @@ export default function StudentLessonViewerPage() {
   const location = useLocation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const { state: lifecycleState, resolveClass, retry: retryLifecycle } = useStudentLifecycle();
+  const { state: lifecycleState, resolveClass } = useStudentLifecycle();
   const { isHealthy: isGatewayHealthy, isWarmingUp: isGatewayWarmingUp, checkHealthNow } = useGatewayHealth();
 
   const handlePrefetchExam = (targetExamId?: string) => {
@@ -62,88 +63,74 @@ export default function StudentLessonViewerPage() {
     });
   };
 
-  // 1. Boundary Guard & Authorization Resolution (Pure Client Boundary)
-  const isUUIDValid = isValidUUID(classId);
-  const resolvedClass = isUUIDValid ? resolveClass(classId) : null;
-
-  // 2. Fetch Lessons Query (Only enabled when UUID is strictly valid)
   const {
     data: classLessonData,
-    isLoading: isLoadingLessons,
+    isLoading: isLessonsLoading,
+    isError: isLessonsError,
     error: lessonsError,
     refetch: refetchLessons,
   } = useQuery({
     queryKey: ["class-lessons", classId],
-    queryFn: () => lessonsApi.getClassLessons(classId!),
-    enabled: !!classId && isUUIDValid,
+    queryFn: () => lessonsApi.getClassLessons(classId || ""),
+    enabled: !!classId && isValidUUID(classId),
+    retry: 2,
+    staleTime: 1000 * 60 * 2,
   });
 
-  const { data: submissionsData } = useQuery({
-    queryKey: ["my-recent-submissions", user?.id],
-    queryFn: () => submissionsApi.list({ studentId: user?.id, limit: 100 }).catch(() => ({ data: [] })),
+  const {
+    data: submissionsData,
+    isLoading: isSubmissionsLoading,
+  } = useQuery({
+    queryKey: ["my-submissions", user?.id],
+    queryFn: () => submissionsApi.list({ studentId: user?.id, limit: 100 }),
     enabled: !!user?.id,
+    staleTime: 1000 * 60 * 2,
   });
 
-  // Client Boundary Failure: Invalid UUID parameter (e.g. ":classId" or garbage)
-  if (!isUUIDValid) {
+  const isLoading = isLessonsLoading || isSubmissionsLoading;
+
+  if (!classId || !isValidUUID(classId)) {
     return (
-      <div className="max-w-2xl mx-auto p-8 pt-16 text-center space-y-5">
-        <div className="w-14 h-14 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto">
-          <AlertCircle className="w-7 h-7" />
-        </div>
-        <div className="space-y-2">
-          <h2 className="text-2xl font-extrabold text-foreground tracking-tight">
-            Đường dẫn lớp học không hợp lệ
-          </h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Mã nhận diện lớp học trên thanh địa chỉ không đúng định dạng chuẩn. Vui lòng quay lại danh sách lớp học để chọn lại.
+      <div className="container max-w-4xl py-12 px-4 text-center space-y-4">
+        <div className="p-4 rounded-2xl bg-destructive/10 text-destructive max-w-md mx-auto space-y-2 border border-destructive/20">
+          <AlertCircle className="w-8 h-8 mx-auto" />
+          <h2 className="text-lg font-bold">Mã lớp học không hợp lệ</h2>
+          <p className="text-xs text-muted-foreground">
+            Đường dẫn không hợp lệ hoặc lớp học không tồn tại trên hệ thống.
           </p>
         </div>
-        <Button onClick={() => navigate("/app")} className="font-bold rounded-xl gap-2 shadow-sm">
-          <ArrowLeft className="w-4 h-4" />
+        <Button onClick={() => navigate("/app")} variant="outline" className="font-bold rounded-xl">
           Quay lại Bàn làm việc
         </Button>
       </div>
     );
   }
 
-  // Authorization Check: Student is enrolled, but targetClassId does not belong to student
-  if (lifecycleState === "ENROLLED" && resolvedClass && resolvedClass.status === "CLASS_ACCESS_DENIED") {
+  if (isLoading) {
     return (
-      <div className="max-w-2xl mx-auto p-8 pt-16 text-center space-y-5">
-        <div className="w-14 h-14 rounded-2xl bg-warning/10 text-warning flex items-center justify-center mx-auto">
-          <AlertCircle className="w-7 h-7" />
+      <div className="container max-w-4xl py-8 px-4 space-y-6 animate-pulse">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-muted" />
+          <div className="space-y-2 flex-1">
+            <div className="h-6 bg-muted rounded-md w-1/3" />
+            <div className="h-4 bg-muted rounded-md w-1/4" />
+          </div>
         </div>
-        <div className="space-y-2">
-          <h2 className="text-2xl font-extrabold text-foreground tracking-tight">
-            Từ chối quyền truy cập lớp học
-          </h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Tài khoản của bạn không nằm trong danh sách học viên của lớp học này. Vui lòng liên hệ giáo viên phụ trách để được hỗ trợ.
-          </p>
+        <div className="h-36 bg-muted rounded-2xl" />
+        <div className="space-y-3 pt-4">
+          <div className="h-20 bg-muted rounded-xl" />
+          <div className="h-20 bg-muted rounded-xl" />
+          <div className="h-20 bg-muted rounded-xl" />
         </div>
-        <Button onClick={() => navigate("/app")} variant="outline" className="font-bold rounded-xl gap-2">
-          <ArrowLeft className="w-4 h-4" />
-          Quay lại Bàn làm việc
-        </Button>
       </div>
     );
   }
 
-  if (isLoadingLessons) {
-    return (
-      <div className="max-w-5xl mx-auto p-12 text-center space-y-4">
-        <div className="w-9 h-9 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-        <p className="text-sm text-muted-foreground font-medium">Đang tải không gian luyện tập lớp học...</p>
-      </div>
-    );
-  }
-
-  if (lessonsError || !classLessonData?.data) {
+  if (isLessonsError || !classLessonData?.data) {
     const errorDetails = classifyClassError(lessonsError);
     return (
-      <div className="max-w-2xl mx-auto p-8 pt-16 text-center space-y-5">
-        <div className="w-14 h-14 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto">
+      <div className="container max-w-md py-16 px-4 text-center space-y-6 mx-auto">
+        <div className="w-14 h-14 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto shadow-xs border border-destructive/20">
           <AlertCircle className="w-7 h-7" />
         </div>
         <div className="space-y-2">
@@ -175,14 +162,12 @@ export default function StudentLessonViewerPage() {
   const lessons = classData.lessons || [];
   const userSubmissions = Array.isArray(submissionsData?.data) ? submissionsData.data : [];
 
-  // Sort submissions by createdAt DESC (latest attempt ordering)
   const sortedSubmissions = [...userSubmissions].sort((a: any, b: any) => {
     const timeA = new Date(a.createdAt || a.created_at || a.submittedAt || 0).getTime();
     const timeB = new Date(b.createdAt || b.created_at || b.submittedAt || 0).getTime();
     return timeB - timeA;
   });
 
-  // Map latest submission per homework/exam
   const submissionsMap: Record<string, any> = {};
   sortedSubmissions.forEach((s: any) => {
     const targetId = s.homework_id || s.homeworkId || s.exam_id || s.examId;
@@ -191,12 +176,15 @@ export default function StudentLessonViewerPage() {
     }
   });
 
-  // Homework items formatted for Practice Platform
   const homeworkList = lessons.map((item: any, idx: number) => {
     const sub = submissionsMap[item.id] || item.submission;
-    const derived = deriveHomeworkStatus(sub);
-    const status: "NOT_STARTED" | "IN_PROGRESS" | "SUBMITTED" | "REVIEWED" | "REVISION_REQUIRED" =
-      derived === "GRADED" ? "REVIEWED" : derived === "GRADING" ? "SUBMITTED" : derived;
+    const deadline = item.homework?.deadline;
+    const visualStatus = deriveCanonicalVisualStatus({
+      submissionStatus: sub?.status,
+      revisionRequired: sub?.revisionRequired,
+      deadline,
+    });
+    const countdown = formatDeadlineCountdown(deadline);
 
     return {
       id: item.id,
@@ -204,29 +192,39 @@ export default function StudentLessonViewerPage() {
       hwNum: String(idx + 1).padStart(2, "0"),
       title: item.title || `Homework ${String(idx + 1).padStart(2, "0")}`,
       description: item.description || `Bài tập buổi ${idx + 1}`,
-      status,
+      status: visualStatus,
+      deadline,
+      deadlineSource: item.homework?.deadlineSource,
+      countdown,
       resources: item.resources || [],
       submission: sub,
     };
   });
 
-  const nextHomework = homeworkList.find((hw) => hw.status === "NOT_STARTED" || hw.status === "IN_PROGRESS" || hw.status === "REVISION_REQUIRED") || homeworkList[0];
+  const nextHomework = homeworkList.find((hw) => hw.status === "OVERDUE" || hw.status === "REVISION_REQUIRED" || hw.status === "UPCOMING" || hw.status === "IN_PROGRESS") || homeworkList[0];
 
-  const notStartedCount = homeworkList.filter((hw) => hw.status === "NOT_STARTED").length;
+  const overdueCount = homeworkList.filter((hw) => hw.status === "OVERDUE").length;
+  const notStartedCount = homeworkList.filter((hw) => hw.status === "UPCOMING" || hw.status === "IN_PROGRESS").length;
   const submittedCount = homeworkList.filter((hw) => hw.status === "SUBMITTED").length;
-  const reviewedCount = homeworkList.filter((hw) => hw.status === "REVIEWED").length;
+  const reviewedCount = homeworkList.filter((hw) => hw.status === "GRADED").length;
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: CanonicalVisualStatus, countdown?: { text: string; isOverdue: boolean } | null) => {
     switch (status) {
+      case "OVERDUE":
+        return (
+          <Badge variant="destructive" className="bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-300 dark:border-rose-800 font-bold gap-1 animate-pulse">
+            <AlertCircle className="h-3 w-3 text-rose-600 dark:text-rose-400" />
+            {countdown?.text || "Quá hạn nộp"}
+          </Badge>
+        );
       case "REVISION_REQUIRED":
         return (
-          <Badge variant="destructive" className="bg-amber-500/10 text-amber-800 border-amber-300 font-bold gap-1">
-            <AlertTriangle className="h-3 w-3 text-amber-600" />
+          <Badge variant="destructive" className="bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800 font-bold gap-1">
+            <AlertTriangle className="h-3 w-3 text-amber-600 dark:text-amber-400" />
             Cần sửa bài (Attempt 2)
           </Badge>
         );
       case "GRADED":
-      case "REVIEWED":
         return (
           <Badge variant="success">
             <CheckCircle2 className="h-3 w-3" />
@@ -234,7 +232,6 @@ export default function StudentLessonViewerPage() {
           </Badge>
         );
       case "SUBMITTED":
-      case "GRADING":
         return (
           <Badge variant="warning">
             <Clock className="h-3 w-3" />
@@ -250,9 +247,9 @@ export default function StudentLessonViewerPage() {
         );
       default:
         return (
-          <Badge variant="muted">
-            <Circle className="h-3 w-3" />
-            Chưa làm
+          <Badge variant="muted" className="text-slate-600 dark:text-slate-400 gap-1 font-medium">
+            <Circle className="h-2.5 w-2.5" />
+            {countdown ? countdown.text : "Chưa làm"}
           </Badge>
         );
     }
@@ -377,23 +374,33 @@ export default function StudentLessonViewerPage() {
               <FileText className="w-4 h-4 text-primary" />
             </div>
 
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="p-3 rounded-xl bg-muted/30 border border-border/50">
+            <div className={`grid ${overdueCount > 0 ? "grid-cols-4" : "grid-cols-3"} gap-2 text-center`}>
+              {overdueCount > 0 && (
+                <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-300 dark:border-rose-800">
+                  <span className="text-[10px] text-rose-700 dark:text-rose-400 font-bold block">Quá hạn</span>
+                  <div className="font-bold text-rose-700 dark:text-rose-400 text-base mt-0.5">{overdueCount}</div>
+                </div>
+              )}
+              <div className="p-2.5 rounded-xl bg-muted/30 border border-border/50">
                 <span className="text-[10px] text-muted-foreground font-medium block">Chưa làm</span>
-                <div className="font-bold text-foreground text-base mt-1">{notStartedCount}</div>
+                <div className="font-bold text-foreground text-base mt-0.5">{notStartedCount}</div>
               </div>
-              <div className="p-3 rounded-xl bg-warning/5 border border-warning/20">
+              <div className="p-2.5 rounded-xl bg-warning/5 border border-warning/20">
                 <span className="text-[10px] text-warning font-semibold block">Đã nộp</span>
-                <div className="font-bold text-warning text-base mt-1">{submittedCount}</div>
+                <div className="font-bold text-warning text-base mt-0.5">{submittedCount}</div>
               </div>
-              <div className="p-3 rounded-xl bg-success/5 border border-success/20">
+              <div className="p-2.5 rounded-xl bg-success/5 border border-success/20">
                 <span className="text-[10px] text-success font-semibold block">Đã chấm</span>
-                <div className="font-bold text-success text-base mt-1">{reviewedCount}</div>
+                <div className="font-bold text-success text-base mt-0.5">{reviewedCount}</div>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-primary-soft border border-primary/20 text-xs text-primary font-medium leading-relaxed">
-              <strong>Gợi ý:</strong> Nộp bài tập sớm để nhận bài chấm chi tiết từ Giáo viên.
+            <div className={`p-3 rounded-xl text-xs font-medium leading-relaxed ${overdueCount > 0 ? "bg-rose-500/10 border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-300" : "bg-primary-soft border border-primary/20 text-primary"}`}>
+              {overdueCount > 0 ? (
+                <span><strong>Lưu ý khẩn:</strong> Bạn có {overdueCount} bài tập đã quá hạn. Hãy làm bù ngay để kịp tiến độ lớp.</span>
+              ) : (
+                <span><strong>Gợi ý:</strong> Nộp bài tập sớm để nhận bài chấm chi tiết từ Giáo viên.</span>
+              )}
             </div>
           </div>
         </div>
@@ -429,62 +436,83 @@ export default function StudentLessonViewerPage() {
             </Card>
           ) : (
             <div className="grid gap-3">
-              {homeworkList.map((hw) => (
-                <Card
-                  key={hw.id}
-                  onMouseEnter={() => handlePrefetchExam(hw.examId || hw.id)}
-                  className="p-4 rounded-xl border border-border bg-card hover:border-primary/40 hover:shadow-xs transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                >
-                  <div className="space-y-1.5 flex-1">
-                    <div className="flex items-center gap-2.5">
-                      <h3 className="font-bold text-sm text-foreground">{hw.title}</h3>
-                      {getStatusBadge(hw.status)}
+              {homeworkList.map((hw) => {
+                const isOverdue = hw.status === "OVERDUE";
+                const isRevision = hw.status === "REVISION_REQUIRED";
+
+                return (
+                  <Card
+                    key={hw.id}
+                    onMouseEnter={() => handlePrefetchExam(hw.examId || hw.id)}
+                    className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                      isOverdue
+                        ? "border-rose-300 dark:border-rose-800 bg-rose-500/5 hover:border-rose-500 shadow-xs"
+                        : isRevision
+                        ? "border-amber-300 dark:border-amber-800 bg-amber-500/5 hover:border-amber-500"
+                        : "border-border bg-card hover:border-primary/40 hover:shadow-xs"
+                    }`}
+                  >
+                    <div className="space-y-1.5 flex-1">
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <h3 className={`font-bold text-sm ${isOverdue ? "text-rose-900 dark:text-rose-200" : "text-foreground"}`}>
+                          {hw.title}
+                        </h3>
+                        {getStatusBadge(hw.status, hw.countdown)}
+                      </div>
+
+                      {hw.resources && hw.resources.length > 0 ? (
+                        <div className="flex flex-wrap items-center gap-2 pt-1">
+                          <span className="text-[11px] font-medium text-muted-foreground">Hoạt động:</span>
+                          {hw.resources.map((res: any, idx: number) => (
+                            <span
+                              key={idx}
+                              className="inline-flex items-center gap-1 text-[11px] font-semibold bg-muted text-foreground px-2 py-0.5 rounded-md"
+                            >
+                              {getSkillIcon(res.type)}
+                              {res.type?.toUpperCase()}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground">{hw.description}</p>
+                      )}
                     </div>
 
-                    {hw.resources && hw.resources.length > 0 ? (
-                      <div className="flex flex-wrap items-center gap-2 pt-1">
-                        <span className="text-[11px] font-medium text-muted-foreground">Hoạt động:</span>
-                        {hw.resources.map((res: any, idx: number) => (
-                          <span
-                            key={idx}
-                            className="inline-flex items-center gap-1 text-[11px] font-semibold bg-muted text-foreground px-2 py-0.5 rounded-md"
-                          >
-                            {getSkillIcon(res.type)}
-                            {res.type?.toUpperCase()}
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-muted-foreground">{hw.description}</p>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2 shrink-0">
-                    <Button
-                      size="sm"
-                      variant={hw.status === "REVIEWED" ? "outline" : "default"}
-                      className={`font-bold text-xs gap-1.5 ${hw.status === "REVISION_REQUIRED" ? "bg-amber-600 hover:bg-amber-700 text-white shadow-xs" : ""}`}
-                      onMouseEnter={() => handlePrefetchExam(hw.examId || hw.id)}
-                      onFocus={() => handlePrefetchExam(hw.examId || hw.id)}
-                      onClick={() => {
-                        if (hw.submission?.id && (hw.status === "REVIEWED" || hw.status === "REVISION_REQUIRED")) {
-                          navigate(`/submission/${hw.submission.id}`);
-                        } else {
-                          handleOpenExam(hw.examId || hw.id);
-                        }
-                      }}
-                    >
-                      {hw.status === "REVISION_REQUIRED"
-                        ? "Làm bài sửa (Attempt 2)"
-                        : hw.status === "REVIEWED"
-                        ? "Xem phản hồi"
-                        : hw.status === "SUBMITTED"
-                        ? "Xem bài làm"
-                        : "Làm bài ngay"}
-                    </Button>
-                  </div>
-                </Card>
-              ))}
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Button
+                        size="sm"
+                        variant={hw.status === "GRADED" ? "outline" : "default"}
+                        className={`font-bold text-xs gap-1.5 rounded-xl ${
+                          isOverdue
+                            ? "bg-rose-600 hover:bg-rose-700 text-white shadow-xs"
+                            : isRevision
+                            ? "bg-amber-600 hover:bg-amber-700 text-white shadow-xs"
+                            : ""
+                        }`}
+                        onMouseEnter={() => handlePrefetchExam(hw.examId || hw.id)}
+                        onFocus={() => handlePrefetchExam(hw.examId || hw.id)}
+                        onClick={() => {
+                          if (hw.submission?.id && (hw.status === "GRADED" || hw.status === "REVISION_REQUIRED")) {
+                            navigate(`/submission/${hw.submission.id}`);
+                          } else {
+                            handleOpenExam(hw.examId || hw.id);
+                          }
+                        }}
+                      >
+                        {isOverdue
+                          ? "🚨 Làm bù ngay"
+                          : isRevision
+                          ? "Làm bài sửa (Attempt 2)"
+                          : hw.status === "GRADED"
+                          ? "Xem phản hồi"
+                          : hw.status === "SUBMITTED"
+                          ? "Xem bài làm"
+                          : "Làm bài ngay"}
+                      </Button>
+                    </div>
+                  </Card>
+                );
+              })}
             </div>
           )}
         </div>

@@ -31,7 +31,10 @@ import {
   ChevronRight,
   FolderOpen,
   AlertTriangle,
+  FileText,
 } from "lucide-react";
+import { ProgressReportModal } from "@/components/admin/ProgressReportModal";
+import { mapToProgressReportData } from "@/lib/progressReportMapper";
 
 // Model Workbook Homework Item (Gắn với Buổi học / Lesson)
 interface WorkbookItem {
@@ -80,6 +83,7 @@ export default function TeacherWorkspace() {
   const [primaryErrorCategory, setPrimaryErrorCategory] = useState<"CONCEPT" | "STRUCTURE" | "EXPRESSION" | "GRAMMAR">("STRUCTURE");
   const [revisionRequired, setRevisionRequired] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
 
   // 1. Fetch danh sách Lớp học phụ trách
   const { data: classesData, isLoading: isClassesLoading } = useQuery({
@@ -354,6 +358,16 @@ export default function TeacherWorkspace() {
     };
   }, [currentStudent]);
 
+  // Data Map cho Báo Cáo Tiến Độ Phụ Huynh
+  const reportData = useMemo(() => {
+    return mapToProgressReportData({
+      studentName: currentStudent?.fullName || "Học viên",
+      className: currentClass?.name || "Lớp học",
+      teacherName: currentClass?.teacher?.fullName || null,
+      homeworks: currentStudent?.homeworks || [],
+    });
+  }, [currentStudent, currentClass]);
+
   // THAO TÁC TRẢ BÀI & TỰ ĐỘNG CHUYỂN BÀI THEO QUEUE CHỜ CHẤM
   const handleGradeSubmit = async () => {
     setIsSubmitting(true);
@@ -420,8 +434,8 @@ export default function TeacherWorkspace() {
     }
   };
 
-  // Thao tác Gia hạn ngày
-  const handleConfirmReopen = (item: WorkbookItem) => {
+  // Thao tác Gia hạn ngày cho Lớp học
+  const handleConfirmReopen = async (item: WorkbookItem) => {
     if (!reopenDate) {
       toast({
         title: "Vui lòng chọn ngày gia hạn",
@@ -429,11 +443,24 @@ export default function TeacherWorkspace() {
       });
       return;
     }
-    toast({
-      title: "Đã gia hạn thành công 📅",
-      description: `Bài ${item.title} đã gia hạn đến ngày ${reopenDate} cho ${currentStudent?.fullName}.`,
-    });
-    setReopenTargetId(null);
+
+    try {
+      if (selectedClassId && item.id) {
+        await classesApi.setHomeworkDeadline(selectedClassId, item.id, new Date(reopenDate).toISOString());
+        toast({
+          title: "Đã cập nhật hạn nộp bài tập 📅",
+          description: `Bài ${item.title} đã gia hạn đến ngày ${reopenDate} cho lớp học.`,
+        });
+        refetchWorkspace();
+        setReopenTargetId(null);
+      }
+    } catch (err: any) {
+      toast({
+        title: "Không thể lưu hạn nộp",
+        description: err.message || "Đã xảy ra lỗi khi lưu gia hạn.",
+        variant: "destructive",
+      });
+    }
   };
 
   // Render Status Badge
@@ -633,23 +660,36 @@ export default function TeacherWorkspace() {
                 <p className="text-[10px] text-slate-400">Workbook lớp {currentClass?.name || "IELTS"}</p>
               </div>
 
-              {/* THỐNG KÊ NHANH BADGES */}
+              {/* THỐNG KÊ NHANH BADGES & BÁO CÁO TIẾN ĐỘ */}
               {currentStudent && (
-                <div className="flex items-center gap-1">
-                  <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] px-1.5 py-0.2">
-                    🟢 {workbookSummary.graded}
-                  </Badge>
-                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] px-1.5 py-0.2">
-                    🔵 {workbookSummary.pending}
-                  </Badge>
-                  <Badge variant="outline" className="bg-slate-100 text-slate-600 border-slate-200 text-[10px] px-1.5 py-0.2">
-                    ⚪ {workbookSummary.inProgress}
-                  </Badge>
-                  {workbookSummary.overdue > 0 && (
-                    <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 text-[10px] px-1.5 py-0.2">
-                      ⚫ {workbookSummary.overdue}
+                <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
+                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] px-1.5 py-0.2">
+                      🟢 {workbookSummary.graded}
                     </Badge>
-                  )}
+                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] px-1.5 py-0.2">
+                      🔵 {workbookSummary.pending}
+                    </Badge>
+                    <Badge variant="outline" className="bg-slate-100 text-slate-600 border-slate-200 text-[10px] px-1.5 py-0.2">
+                      ⚪ {workbookSummary.inProgress}
+                    </Badge>
+                    {workbookSummary.overdue > 0 && (
+                      <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 text-[10px] px-1.5 py-0.2">
+                        ⚫ {workbookSummary.overdue}
+                      </Badge>
+                    )}
+                  </div>
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsReportModalOpen(true)}
+                    className="h-7 text-[11px] font-bold gap-1 rounded-lg border-blue-200 text-blue-700 bg-blue-50/70 hover:bg-blue-100 shrink-0"
+                    title="Tạo báo cáo tiến độ gửi Zalo cho phụ huynh"
+                  >
+                    <FileText className="h-3 w-3" />
+                    Báo Cáo
+                  </Button>
                 </div>
               )}
             </div>
@@ -914,6 +954,13 @@ export default function TeacherWorkspace() {
           )}
         </div>
       </div>
+
+      {/* MODAL BÁO CÁO TIẾN ĐỘ HỌC TẬP (PHỤ HUYNH) */}
+      <ProgressReportModal
+        open={isReportModalOpen}
+        onOpenChange={setIsReportModalOpen}
+        data={reportData}
+      />
     </div>
   );
 }

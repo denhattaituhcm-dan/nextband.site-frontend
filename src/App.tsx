@@ -118,6 +118,7 @@ const AdminSpeakingForecastCreate = lazyWithRetry(() => import("@/pages/admin/Sp
 const AdminSpeakingForecastEdit = lazyWithRetry(() => import("@/pages/admin/SpeakingForecastEdit"));
 const AdminLeads = lazyWithRetry(() => import("@/pages/admin/Leads"));
 const AdminNotifications = lazyWithRetry(() => import("@/pages/admin/Notifications"));
+const AdminAssessments = lazyWithRetry(() => import("@/pages/admin/Assessments"));
 
 const PageLoader = () => (
   <div className="min-h-[400px] w-full flex flex-col items-center justify-center space-y-3 p-12">
@@ -460,6 +461,14 @@ const App = () => (
                   element={
                     <ProtectedRoute requiredRoles={["admin"]}>
                       <AdminLeads />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/assessments"
+                  element={
+                    <ProtectedRoute requiredRoles={["admin", "teacher"]}>
+                      <AdminAssessments />
                     </ProtectedRoute>
                   }
                 />

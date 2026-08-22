@@ -497,7 +497,7 @@ export default function AssessmentPage() {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="assess-phone" className="text-sm font-bold">
-                          Số điện thoại *
+                          Số điện thoại có Zalo (để nhận kết quả test) <span className="text-brand-red">*</span>
                         </Label>
                         <Input
                           id="assess-phone"
@@ -505,7 +505,7 @@ export default function AssessmentPage() {
                           type="tel"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
-                          placeholder="Ví dụ: 0912 345 678"
+                          placeholder="Ví dụ: 0912 345 678 (SĐT có Zalo)"
                           className="rounded-xl h-12 text-sm font-bold"
                         />
                       </div>
@@ -705,17 +705,20 @@ export default function AssessmentPage() {
 
             <div className="space-y-1.5 text-left">
               <Label htmlFor="start-phone" className="text-xs font-bold text-foreground uppercase tracking-wider">
-                Số điện thoại / Zalo <span className="text-brand-red">*</span>
+                Số điện thoại có Zalo (để nhận kết quả test) <span className="text-brand-red">*</span>
               </Label>
               <Input
                 id="start-phone"
                 required
                 type="tel"
-                placeholder="Ví dụ: 0933 319 693"
+                placeholder="Nhập SĐT có Zalo (Ví dụ: 0933 319 693)"
                 value={startCandidatePhone}
                 onChange={(e) => setStartCandidatePhone(e.target.value)}
                 className="h-11 rounded-xl border-border bg-card text-foreground"
               />
+              <p className="text-[11px] text-muted-foreground leading-normal">
+                * Giáo viên ARIS sẽ gửi bài chấm chi tiết và nhận xét qua Zalo theo số này.
+              </p>
             </div>
 
             <div className="space-y-1.5 text-left">
