@@ -411,14 +411,23 @@ export default function PublicHomePage() {
       >
         <AcademicRankSystem initialRank={5} />
 
-        <div className="mt-10 text-center">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-4 text-center">
+          <Button
+            size="lg"
+            onClick={() => navigate("/assessment")}
+            className="rounded-2xl px-8 h-13 text-sm sm:text-base font-extrabold bg-brand-red hover:bg-brand-red-hover text-white shadow-md gap-2"
+          >
+            <span>Khảo thí kiểm tra Rank hiện tại của bạn ngay (45 Phút)</span>
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+
           <Button
             variant="outline"
             onClick={() => navigate("/academic-system")}
-            className="rounded-2xl px-7 h-12 text-sm sm:text-base font-bold border-2 border-border/80 hover:bg-muted"
+            className="rounded-2xl px-6 h-13 text-sm sm:text-base font-bold border-2 border-border/80 hover:bg-muted text-foreground"
           >
-            <span>Xem toàn bộ tiêu chuẩn 7 cấp bậc &amp; 4 giai đoạn tiến trình</span>
-            <ArrowRight className="h-4 w-4 ml-2" />
+            <span>Xem chi tiết 7 cấp bậc &amp; 4 giai đoạn</span>
+            <ArrowRight className="h-4 w-4 ml-1.5" />
           </Button>
         </div>
       </SectionContainer>
@@ -604,81 +613,22 @@ export default function PublicHomePage() {
       </SectionContainer>
 
       {/* ========================================================================= */}
-      {/* SECTION 7: EVIDENCE OF PROGRESS (BẰNG CHỨNG TIẾN BỘ TẠI ARIS)             */}
+      {/* SECTION 7: EVIDENCE OF PROGRESS (MINH CHỨNG TIẾN BỘ)                       */}
       {/* ========================================================================= */}
       <SectionContainer
         id="evidence"
         badge="Minh Chứng Tiến Bộ"
-        title="Bằng chứng tiến bộ tại Học Viện ARIS"
-        description="Mỗi câu chuyện là một hành trình rèn luyện kỷ luật thật, giải phẫu điểm nghẽn và đạt kết quả có thể kiểm chứng."
+        title="Tiến bộ thực tế từ sự rèn luyện nghiêm túc"
+        description="Toàn bộ bảng vàng thành tích, lịch sử nâng band và các bước bứt phá năng lực của học viên được lưu vết chi tiết tại chuyên trang Tiến Bộ."
         background="default"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 text-left">
-          {featuredItems.map((item) => (
-            <div
-              key={item.id}
-              className="p-6 sm:p-7 rounded-3xl border-2 border-border/80 bg-card hover:border-brand-red/40 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
-            >
-              <div className="flex gap-4 sm:gap-5 items-start justify-between">
-                {/* Left Text Info */}
-                <div className="space-y-2.5 flex-1 min-w-0">
-                  <h3 className="font-black text-foreground text-base sm:text-lg leading-snug line-clamp-2">
-                    {item.title}
-                  </h3>
-
-                  <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed line-clamp-3">
-                    "{item.story}"
-                  </p>
-
-                  <button
-                    onClick={() => setSelectedEvidence(item)}
-                    className="text-xs font-extrabold text-brand-blue hover:text-brand-red transition-colors inline-block pt-1"
-                  >
-                    Nhấn để xem thêm
-                  </button>
-                </div>
-
-                {/* Right Image with Score Badge */}
-                <div className="relative shrink-0">
-                  <img
-                    src={item.imageUrl}
-                    alt={item.studentName}
-                    className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl object-cover border border-border/80"
-                  />
-                  <div className="absolute top-2 right-2 px-2 py-0.5 rounded-lg bg-brand-red text-white font-black text-xs shadow-xs tracking-tight">
-                    {item.overallScore} IELTS
-                  </div>
-                </div>
-              </div>
-
-              {/* Card Footer: Student Info & Duration */}
-              <div className="pt-3 border-t border-border/60 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5 font-bold text-foreground">
-                  <span>{item.studentName}</span>
-                  {item.studentSchool && (
-                    <>
-                      <span className="text-muted-foreground">•</span>
-                      <span className="text-muted-foreground font-medium">{item.studentSchool}</span>
-                    </>
-                  )}
-                </div>
-
-                <div className="text-muted-foreground font-bold font-mono">
-                  {item.studyDuration}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Bottom Banner: Vẫn còn rất nhiều câu chuyện khác */}
-        <div className="mt-12 p-8 sm:p-10 rounded-3xl bg-muted/40 border border-border/80 text-center space-y-5">
+        <div className="p-8 sm:p-12 rounded-3xl bg-muted/40 border border-border/80 text-center space-y-6 max-w-4xl mx-auto">
           <div className="space-y-2">
-            <h4 className="text-xl sm:text-2xl font-black text-foreground">
-              Vẫn còn rất nhiều câu chuyện tiến bộ khác
+            <h4 className="text-2xl sm:text-3xl font-black text-foreground">
+              Khám Phá Các Câu Chuyện Nâng Band &amp; Hồ Sơ Thực Nghiệm
             </h4>
-            <p className="text-sm sm:text-base text-foreground/75 max-w-xl mx-auto">
-              Khám phá toàn bộ hồ sơ năng lực và các bước tiến bộ thực nghiệm của học viên tại ARIS.
+            <p className="text-sm sm:text-base text-foreground/75 max-w-2xl mx-auto leading-relaxed">
+              Mỗi câu chuyện là một hành trình rèn luyện kỷ luật thật, giải phẫu từng điểm nghẽn học thuật và đạt kết quả có thể kiểm chứng tại Học Viện ARIS.
             </p>
           </div>
 
@@ -687,7 +637,7 @@ export default function PublicHomePage() {
             onClick={() => navigate("/results")}
             className="rounded-2xl px-8 h-14 font-extrabold text-base bg-brand-red hover:bg-brand-red-hover text-white shadow-md gap-2"
           >
-            <span>Xem toàn bộ bằng chứng tiến bộ</span>
+            <span>Xem toàn bộ hồ sơ bằng chứng tiến bộ</span>
             <ArrowRight className="h-5 w-5" />
           </Button>
         </div>

@@ -416,6 +416,17 @@ export default function AcademicSystemPage() {
           {/* Interactive Rank Component */}
           <AcademicRankSystem initialRank={5} />
 
+          <div className="mt-8 flex justify-center">
+            <Button
+              size="lg"
+              onClick={() => navigate("/assessment")}
+              className="rounded-2xl px-8 h-13 font-black text-sm sm:text-base bg-brand-red hover:bg-brand-red-hover text-white shadow-md gap-2"
+            >
+              <span>Làm bài khảo thí để xác định chính xác Rank của bạn (45 Phút)</span>
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+
           {/* 4 Progression Stages */}
           <div className="pt-14 space-y-6 text-left">
             <div className="text-center max-w-2xl mx-auto space-y-2">

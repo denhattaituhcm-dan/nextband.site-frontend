@@ -145,27 +145,10 @@ export default function AssessmentPage() {
 
     setIsSubmitting(true);
     try {
-      let createdSessionId: string | null = null;
-      if (testFormat === "online") {
-        try {
-          const sessionRes = await assessmentApi.createSession({
-            fullName: fullName.trim(),
-            phone: cleanPhone,
-            targetBand,
-            email: email.trim() || undefined,
-          });
-          if (sessionRes?.sessionId) {
-            createdSessionId = sessionRes.sessionId;
-          }
-        } catch (sessionErr) {
-          console.warn("Failed to pre-create assessment session:", sessionErr);
-        }
-      }
-
       const res = await submitAssessmentBooking({
-        fullName,
+        fullName: fullName.trim(),
         phone: cleanPhone,
-        email,
+        email: email.trim(),
         currentLevel,
         targetBand,
         testFormat,
@@ -173,13 +156,12 @@ export default function AssessmentPage() {
 
       if (res.success) {
         setSubmittedBooking({
-          fullName,
+          fullName: fullName.trim(),
           phone: cleanPhone,
           targetBand,
-          testFormat: testFormat === "online" ? "Online qua NextBand Clean-Room" : "Trực tiếp tại cơ sở Dĩ An",
-          sessionId: createdSessionId || undefined,
+          testFormat: testFormat === "online" ? "Online 1:1 qua Google Meet" : "Trực tiếp tại cơ sở Dĩ An",
         });
-        toast.success("Đăng ký bài khảo thí thành công!");
+        toast.success("Đăng ký nhận tư vấn và đặt lịch khảo thí thành công!");
       }
     } catch (err: any) {
       toast.error("Có lỗi xảy ra, vui lòng thử lại hoặc gọi Hotline 0933.319.693");
@@ -248,154 +230,97 @@ export default function AssessmentPage() {
       <SectionContainer
         id="online-tests-section"
         badge="Khảo Thí Trực Tuyến Chuẩn Cambridge"
-        title="Chọn bộ đề khảo thí IELTS để bắt đầu làm bài"
-        description="Toàn bộ đề thi được thiết kế chuẩn cấu trúc phòng thi IELTS quốc tế với đồng hồ bấm giờ, âm thanh Audio bản ngữ và hệ thống tính điểm tự động."
+        title="Bài Khảo Thí Năng Lực IELTS Toàn Diện (4 Kỹ Năng + Grammar)"
+        description="Đề thi chẩn đoán chuẩn hóa được thiết kế trên phòng thi số Clean-Room NextBand, tích hợp đồng hồ kiểm soát, âm thanh bản ngữ và hệ thống định vị Rank ARIS-7 tự động."
         background="default"
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left">
-          {/* Card 1: IELTS Academic Reading */}
-          <Card className="rounded-3xl border-2 border-border/80 bg-card hover:border-brand-blue/60 hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
-            <div className="p-6 sm:p-7 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="p-3 rounded-2xl bg-brand-blue-soft text-brand-blue">
-                  <BookOpen className="h-6 w-6" />
+        <div className="max-w-4xl mx-auto">
+          <Card className="rounded-3xl border-2 border-brand-blue/30 bg-card hover:border-brand-blue/60 shadow-lg transition-all overflow-hidden">
+            <div className="p-7 sm:p-9 space-y-6">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/70 pb-5">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-2xl bg-brand-blue-soft text-brand-blue">
+                    <Award className="h-7 w-7" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl sm:text-3xl font-black text-foreground">
+                      IELTS Clean-Room Placement Test
+                    </h3>
+                    <p className="text-xs sm:text-sm text-foreground/75 mt-0.5">
+                      Khảo thí chuẩn đoán đa tầng: Đo lường chính xác từ nền tảng phản xạ đến tư duy học thuật.
+                    </p>
+                  </div>
                 </div>
-                <Badge variant="outline" className="bg-brand-blue/10 text-brand-blue border-brand-blue/20 font-bold text-xs">
-                  Academic Reading
+                <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-300 font-extrabold text-xs px-3 py-1">
+                  Full 4 Kỹ Năng + Ngữ Pháp
                 </Badge>
               </div>
 
-              <div>
-                <h3 className="text-xl sm:text-2xl font-black text-foreground">
-                  IELTS Academic Reading Placement
-                </h3>
-                <p className="text-xs sm:text-sm text-foreground/75 mt-1 leading-relaxed">
-                  Trọn bộ 2 đoạn văn học thuật chuẩn Cambridge. Đo lường kỹ năng Skimming, Scanning và xử lý câu hỏi suy luận logic.
-                </p>
-              </div>
-
-              <div className="space-y-2 pt-2 border-t border-border/60 text-xs font-semibold text-muted-foreground">
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-primary" /> Thời gian làm bài:</span>
-                  <strong className="text-foreground">40 Phút</strong>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5"><Target className="h-3.5 w-3.5 text-primary" /> Số lượng câu hỏi:</span>
-                  <strong className="text-foreground">26 Câu hỏi</strong>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5"><Award className="h-3.5 w-3.5 text-primary" /> Thang điểm đo lường:</span>
-                  <strong className="text-brand-blue font-bold">Band 3.0 – 9.0</strong>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 pt-0">
-              <Button
-                onClick={() => handleOpenStartModal("IELTS Academic Reading Placement Test")}
-                className="w-full h-12 rounded-xl font-extrabold text-sm bg-brand-blue hover:bg-brand-blue-hover text-white gap-2 shadow-xs"
-              >
-                <span>Bắt đầu thi Reading ngay</span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </Card>
-
-          {/* Card 2: IELTS Cambridge Listening */}
-          <Card className="rounded-3xl border-2 border-border/80 bg-card hover:border-brand-red/60 hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
-            <div className="p-6 sm:p-7 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="p-3 rounded-2xl bg-brand-red-soft text-brand-red">
-                  <Headphones className="h-6 w-6" />
-                </div>
-                <Badge variant="outline" className="bg-brand-red/10 text-brand-red border-brand-red/20 font-bold text-xs">
-                  Cambridge Listening
-                </Badge>
-              </div>
-
-              <div>
-                <h3 className="text-xl sm:text-2xl font-black text-foreground">
-                  IELTS Listening Placement Test
-                </h3>
-                <p className="text-xs sm:text-sm text-foreground/75 mt-1 leading-relaxed">
-                  Khảo thí kỹ năng nghe hiểu qua 2 Sections có Audio bản ngữ chuẩn (Hội thoại xã hội &amp; Thuyết trình học thuật).
-                </p>
-              </div>
-
-              <div className="space-y-2 pt-2 border-t border-border/60 text-xs font-semibold text-muted-foreground">
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-primary" /> Thời gian làm bài:</span>
-                  <strong className="text-foreground">25 Phút</strong>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5"><Target className="h-3.5 w-3.5 text-primary" /> Số lượng câu hỏi:</span>
-                  <strong className="text-foreground">20 Câu hỏi</strong>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5"><Award className="h-3.5 w-3.5 text-primary" /> Thang điểm đo lường:</span>
-                  <strong className="text-brand-red font-bold">Band 3.0 – 9.0</strong>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 pt-0">
-              <Button
-                onClick={() => handleOpenStartModal("IELTS Cambridge Listening Placement Test")}
-                className="w-full h-12 rounded-xl font-extrabold text-sm bg-brand-red hover:bg-brand-red-hover text-white gap-2 shadow-xs"
-              >
-                <span>Bắt đầu thi Listening ngay</span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </Card>
-
-            {/* Card 3: Full-Skills Assessment */}
-            <Card className="rounded-3xl border-2 border-border/80 bg-card hover:border-brand-cyan/60 hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
-              <div className="p-6 sm:p-7 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="p-3 rounded-2xl bg-brand-cyan/15 text-brand-blue">
-                    <Award className="h-6 w-6" />
+              {/* 4 Skills Breakdown in 1 test */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5">
+                <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-1 text-left">
+                  <div className="flex items-center gap-2 text-brand-red font-bold text-xs">
+                    <Headphones className="h-4 w-4" />
+                    <span>01. Listening</span>
                   </div>
-                  <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 font-bold text-xs">
-                    Full 4 Kỹ Năng + Grammar
-                  </Badge>
+                  <div className="text-xs text-foreground/80">Audio bản ngữ, bẫy phát âm &amp; từ khóa</div>
                 </div>
 
-                <div>
-                  <h3 className="text-xl sm:text-2xl font-black text-foreground">
-                    IELTS Entrance Test (4 Skills)
-                  </h3>
-                  <p className="text-xs sm:text-sm text-foreground/75 mt-1 leading-relaxed">
-                    Khảo thí toàn diện Listening, Reading, Writing, Speaking và Grammar trên phòng thi số NextBand.
-                  </p>
+                <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-1 text-left">
+                  <div className="flex items-center gap-2 text-brand-blue font-bold text-xs">
+                    <BookOpen className="h-4 w-4" />
+                    <span>02. Reading</span>
+                  </div>
+                  <div className="text-xs text-foreground/80">Đo Skimming, Scanning &amp; Logic T/F/NG</div>
                 </div>
 
-                <div className="space-y-2 pt-2 border-t border-border/60 text-xs font-semibold text-muted-foreground">
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-primary" /> Thời gian làm bài:</span>
-                    <strong className="text-foreground">45 Phút</strong>
+                <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-1 text-left">
+                  <div className="flex items-center gap-2 text-amber-600 font-bold text-xs">
+                    <PenTool className="h-4 w-4" />
+                    <span>03. Grammar &amp; W</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5"><Target className="h-3.5 w-3.5 text-primary" /> Kỹ năng khảo thí:</span>
-                    <strong className="text-foreground">L + R + W + S + Grammar</strong>
+                  <div className="text-xs text-foreground/80">Cấu trúc câu &amp; triển khai lập luận Task 2</div>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-1 text-left">
+                  <div className="flex items-center gap-2 text-emerald-600 font-bold text-xs">
+                    <Brain className="h-4 w-4" />
+                    <span>04. Speaking</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5"><Award className="h-3.5 w-3.5 text-primary" /> Định vị cấp bậc:</span>
-                    <strong className="text-emerald-600 font-bold">Khung ARIS-7</strong>
-                  </div>
+                  <div className="text-xs text-foreground/80">Ghi âm phản xạ Part 1 &amp; Part 2 trực tiếp</div>
                 </div>
               </div>
 
-              <div className="p-6 pt-0">
+              {/* Key Specs */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-border/60 text-xs sm:text-sm font-semibold">
+                <div className="flex items-center gap-2.5">
+                  <Clock className="h-4 w-4 text-primary shrink-0" />
+                  <span>Thời lượng: <strong className="text-foreground">45 Phút (Bấm giờ tự động)</strong></span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <Target className="h-4 w-4 text-primary shrink-0" />
+                  <span>Định lượng: <strong className="text-foreground">Band 3.0 – 9.0</strong></span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
+                  <span>Chuẩn đầu ra: <strong className="text-brand-blue font-bold">Khung ARIS-7 Cấp Bậc</strong></span>
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <div className="pt-2">
                 <Button
-                  onClick={() => handleOpenStartModal("IELTS Entrance Test (Full 4 Kỹ Năng + Grammar)")}
-                  className="w-full h-12 rounded-xl font-extrabold text-sm bg-emerald-600 hover:bg-emerald-700 text-white gap-2 shadow-xs"
+                  size="lg"
+                  onClick={() => handleOpenStartModal("IELTS Clean-Room Placement Test (Full 4 Kỹ Năng)")}
+                  className="w-full h-14 rounded-2xl font-black text-base sm:text-lg bg-brand-red hover:bg-brand-red-hover text-white gap-3 shadow-md transition-all cursor-pointer"
                 >
-                  <span>Bắt đầu thi 4 kỹ năng ngay</span>
-                  <ArrowRight className="h-4 w-4" />
+                  <Play className="h-5 w-5 fill-current" />
+                  <span>Bắt đầu bài khảo thí trực tuyến ngay (45 Phút)</span>
+                  <ArrowRight className="h-5 w-5" />
                 </Button>
               </div>
-            </Card>
+            </div>
+          </Card>
         </div>
       </SectionContainer>
 
@@ -441,30 +366,18 @@ export default function AssessmentPage() {
                   </div>
 
                   <div className="pt-2 flex flex-wrap justify-center gap-3">
-                    {submittedBooking.sessionId ? (
-                      <Button
-                        onClick={() => navigate(`/assessment/take/${submittedBooking.sessionId}`)}
-                        className="rounded-2xl px-6 h-12 font-extrabold text-sm bg-brand-red hover:bg-brand-red-hover text-white shadow-md gap-2"
-                      >
-                        <span>Vào Phòng Thi Khảo Thí Ngay</span>
-                        <ArrowRight className="h-4 w-4" />
-                      </Button>
-                    ) : null}
                     <Button
-                      variant={submittedBooking.sessionId ? "outline" : "default"}
-                      onClick={() => navigate("/assessment/result/demo")}
-                      className={`rounded-2xl px-6 h-12 font-bold text-sm ${
-                        submittedBooking.sessionId ? "border-2 border-border/80" : "bg-brand-blue hover:bg-brand-blue-hover text-white"
-                      }`}
+                      onClick={() => setSubmittedBooking(null)}
+                      className="rounded-2xl px-6 h-12 font-bold text-sm bg-brand-blue hover:bg-brand-blue-hover text-white shadow-xs"
                     >
-                      Xem trước giao diện báo cáo
+                      Đăng ký cho người khác
                     </Button>
                     <Button
-                      variant="ghost"
-                      onClick={() => setSubmittedBooking(null)}
-                      className="rounded-2xl px-6 h-12 font-bold text-sm text-muted-foreground hover:text-foreground"
+                      variant="outline"
+                      onClick={() => navigate("/")}
+                      className="rounded-2xl px-6 h-12 font-bold text-sm border-2 border-border/80 text-foreground"
                     >
-                      Đăng ký người khác
+                      Quay về trang chủ
                     </Button>
                   </div>
                 </div>
