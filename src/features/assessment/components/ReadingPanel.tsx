@@ -25,34 +25,16 @@ interface ReadingPanelProps {
 const cleanSectionTag = (title?: string) => {
   if (!title) return null;
   let clean = title.trim();
-  clean = clean.replace(/^(Kỹ năng\s+(Nghe|Đọc|Đọc hiểu|Viết|Nói)\s*(\([^)]*\))?:?\s*)/i, "");
-  clean = clean.replace(/^(Ngữ pháp\s*(&|và)\s*Từ vựng\s*(\([^)]*\))?:?\s*)/i, "");
-  clean = clean.replace(/^(Chẩn đoán\s+Ngữ pháp\s*(&|và)?\s*Từ vựng:?\s*)/i, "");
-  clean = clean.replace(/^(Listening|Reading|Grammar|Writing|Speaking)\s*:\s*/i, "");
-  clean = clean.trim();
-  if (!clean || /^(Listening|Reading|Grammar|Writing|Speaking)$/i.test(clean)) {
+  clean = clean.replace(/^(Kỹ\s+năng\s+)?(Đọc\s+hiểu|Đọc|Nghe|Viết|Nói)\s*(\([^)]*\))?:?\s*/i, "");
+  clean = clean.replace(/^(Hiểu|Reading|Listening|Grammar|Writing|Speaking)\s*(\([^)]*\))?:?\s*/i, "");
+  clean = clean.replace(/\(?(Reading|Listening|Grammar|Writing|Speaking)\)?/gi, "");
+  clean = clean.replace(/^(Ngữ\s+pháp\s*(&|và)?\s*Từ\s+vựng)\s*(\([^)]*\))?:?\s*/i, "");
+  clean = clean.replace(/^(Chẩn\s+đoán\s+Ngữ\s+pháp\s*(&|và)?\s*Từ\s+vựng)\s*(\([^)]*\))?:?\s*/i, "");
+  clean = clean.replace(/\s+/g, " ").trim();
+  if (!clean || /^(Đọc\s*hiểu|Đọc|Hiểu|Nghe|Viết|Nói|Listening|Reading|Grammar|Writing|Speaking)$/i.test(clean)) {
     return null;
   }
   return clean;
-};
-
-const mergeHighlights = (hls: HighlightItem[]): HighlightItem[] => {
-  if (hls.length <= 1) return hls;
-  const sorted = [...hls].sort((a, b) => a.startIndex - b.startIndex);
-  const result: HighlightItem[] = [{ ...sorted[0] }];
-
-  for (let i = 1; i < sorted.length; i++) {
-    const current = sorted[i];
-    const prev = result[result.length - 1];
-
-    if (current.startIndex <= prev.endIndex) {
-      // Overlap or adjacent - merge into a single continuous range
-      prev.endIndex = Math.max(prev.endIndex, current.endIndex);
-    } else {
-      result.push({ ...current });
-    }
-  }
-  return result;
 };
 
 export function ReadingPanel({
@@ -69,7 +51,7 @@ export function ReadingPanel({
     return [...questions].sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
   }, [questions]);
 
-  // Formatted passage HTML for consistent DOM structure across highlighted and unhighlighted states
+  // Formatted passage HTML for consistent DOM structure
   const formattedPassageHtml = useMemo(() => {
     if (!passage) return "";
     if (/<[a-z][\s\S]*>/i.test(passage)) {
@@ -81,23 +63,31 @@ export function ReadingPanel({
       .join("");
   }, [passage]);
 
-  // Highlighter Tool State (Classic Lemon Yellow only)
+  // Highlighter Tool State (Zero-jitter native highlight)
   const [isHighlightActive, setIsHighlightActive] = useState(false);
-  const [highlights, setHighlights] = useState<HighlightItem[]>([]);
+  const [highlightCount, setHighlightCount] = useState(0);
   const passageContentRef = useRef<HTMLDivElement>(null);
+  const activeRangesRef = useRef<Range[]>([]);
 
-  // Helper to calculate character offset from text selection inside container
-  const getRangeOffsets = useCallback((range: Range) => {
-    if (!passageContentRef.current) return null;
-    if (!passageContentRef.current.contains(range.commonAncestorContainer)) return null;
-
-    const preRange = range.cloneRange();
-    preRange.selectNodeContents(passageContentRef.current);
-    preRange.setEnd(range.startContainer, range.startOffset);
-    const startIndex = preRange.toString().length;
-    const selected = range.toString();
-    const endIndex = startIndex + selected.length;
-    return { startIndex, endIndex, text: selected };
+  // Clear all highlights
+  const handleClearHighlights = useCallback(() => {
+    activeRangesRef.current = [];
+    if (typeof CSS !== "undefined" && "highlights" in CSS && (CSS as any).highlights) {
+      try {
+        (CSS as any).highlights.delete("aris-reading-highlight");
+      } catch {}
+    }
+    if (passageContentRef.current) {
+      const marks = passageContentRef.current.querySelectorAll("mark.aris-hl");
+      marks.forEach((m) => {
+        const parent = m.parentNode;
+        while (m.firstChild) {
+          parent?.insertBefore(m.firstChild, m);
+        }
+        parent?.removeChild(m);
+      });
+    }
+    setHighlightCount(0);
   }, []);
 
   const handleTextSelection = useCallback(() => {
@@ -109,151 +99,56 @@ export function ReadingPanel({
     if (!text) return;
 
     const range = selection.getRangeAt(0);
-    const offsets = getRangeOffsets(range);
-    if (!offsets || offsets.endIndex <= offsets.startIndex) return;
+    if (!passageContentRef.current.contains(range.commonAncestorContainer)) return;
 
-    // Add highlight and merge overlapping ranges
-    const newHighlight: HighlightItem = {
-      id: `hl-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      startIndex: offsets.startIndex,
-      endIndex: offsets.endIndex,
-    };
-
-    setHighlights((prev) => mergeHighlights([...prev, newHighlight]));
-    selection.removeAllRanges();
-  }, [isHighlightActive, getRangeOffsets]);
-
-  // Render passage with lemon-yellow highlights
-  const renderHighlightedPassage = useCallback(() => {
-    if (!formattedPassageHtml) return null;
-
-    // Fast path: if no highlights, render sanitized HTML directly without DOM tree reconstruction
-    if (!highlights || highlights.length === 0) {
-      return (
-        <div
-          className="prose prose-sm max-w-none text-justify select-text"
-          dangerouslySetInnerHTML={{ __html: sanitizeHtml(formattedPassageHtml) }}
-        />
-      );
-    }
-
-    try {
-      if (typeof window === "undefined" || typeof DOMParser === "undefined") {
-        return (
-          <div
-            className="prose prose-sm max-w-none text-justify select-text"
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(formattedPassageHtml) }}
-          />
-        );
+    if (typeof CSS !== "undefined" && "highlights" in CSS && (CSS as any).highlights && typeof (window as any).Highlight !== "undefined") {
+      try {
+        activeRangesRef.current.push(range.cloneRange());
+        const hl = new (window as any).Highlight(...activeRangesRef.current);
+        (CSS as any).highlights.set("aris-reading-highlight", hl);
+        setHighlightCount(activeRangesRef.current.length);
+        selection.removeAllRanges();
+        return;
+      } catch (e) {
+        console.warn("[ReadingPanel] CSS.highlights notice:", e);
       }
-
-      const sortedHls = [...highlights].sort((a, b) => a.startIndex - b.startIndex);
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(formattedPassageHtml, "text/html");
-      const body = doc.body;
-
-      let globalOffset = 0;
-
-      const renderNode = (node: ChildNode, pathKey: string): React.ReactNode => {
-        if (node.nodeType === Node.TEXT_NODE) {
-          const text = node.textContent || "";
-          const parts: React.ReactNode[] = [];
-          const start = globalOffset;
-          const end = start + text.length;
-          let cursor = start;
-
-          sortedHls.forEach((h) => {
-            const hStart = Math.max(h.startIndex, start);
-            const hEnd = Math.min(h.endIndex, end);
-            if (hStart >= hEnd) return;
-
-            const safeStart = Math.max(hStart, cursor);
-            if (safeStart > cursor) {
-              parts.push(text.slice(cursor - start, safeStart - start));
-            }
-
-            if (safeStart < hEnd) {
-              parts.push(
-                <mark
-                  key={`${h.id}-${safeStart}`}
-                  className="bg-yellow-200/90 dark:bg-yellow-400/30 text-stone-900 dark:text-yellow-100 rounded-xs px-0.5 py-0 cursor-pointer font-inherit hover:bg-yellow-300 dark:hover:bg-yellow-400/50 transition-colors shadow-xs"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // Click highlight to remove it
-                    setHighlights((prev) => prev.filter((item) => item.id !== h.id));
-                  }}
-                  title="Nhấp để xóa highlight này"
-                >
-                  {text.slice(safeStart - start, hEnd - start)}
-                </mark>
-              );
-              cursor = hEnd;
-            }
-          });
-
-          if (cursor < end) {
-            parts.push(text.slice(cursor - start));
-          }
-          globalOffset = end;
-          if (parts.length === 1 && typeof parts[0] === "string") {
-            return parts[0];
-          }
-          return <React.Fragment key={pathKey}>{parts}</React.Fragment>;
-        }
-
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          const el = node as HTMLElement;
-          const children = Array.from(el.childNodes).map((child, idx) => (
-            renderNode(child, `${pathKey}-${idx}`)
-          ));
-
-          const props: Record<string, any> = {
-            key: pathKey,
-          };
-          Array.from(el.attributes).forEach((attr) => {
-            if (attr.name === "class") {
-              props.className = attr.value;
-            } else if (attr.name !== "style" && !attr.name.startsWith("on")) {
-              props[attr.name] = attr.value;
-            }
-          });
-
-          const tag = el.tagName.toLowerCase();
-          return React.createElement(tag, props, children);
-        }
-
-        return null;
-      };
-
-      const rendered = Array.from(body.childNodes).map((child, idx) => (
-        renderNode(child, `root-${idx}`)
-      ));
-
-      return <>{rendered}</>;
-    } catch (err) {
-      console.warn("[ReadingPanel] Highlight render fallback:", err);
-      return (
-        <div
-          className="prose prose-sm max-w-none text-justify select-text"
-          dangerouslySetInnerHTML={{ __html: sanitizeHtml(formattedPassageHtml) }}
-        />
-      );
     }
-  }, [formattedPassageHtml, highlights]);
+
+    // Fallback: DOM Range wrapping without re-rendering the whole tree
+    try {
+      const mark = document.createElement("mark");
+      mark.className = "aris-hl bg-yellow-200/90 dark:bg-yellow-400/30 text-stone-900 dark:text-yellow-100 rounded-xs px-0.5 py-0 font-inherit";
+      range.surroundContents(mark);
+      setHighlightCount((prev) => prev + 1);
+      selection.removeAllRanges();
+    } catch (e) {
+      console.warn("[ReadingPanel] surroundContents fallback notice:", e);
+    }
+  }, [isHighlightActive]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <style>{`
+        ::highlight(aris-reading-highlight) {
+          background-color: #fef08a;
+          color: #1c1917;
+        }
+      `}</style>
       {/* Left Column: Academic Reading Passage */}
       {hasPassage && (
         <div className="lg:col-span-6 lg:sticky lg:top-20 space-y-4">
           <div className="p-5 sm:p-6 rounded-3xl bg-card border border-border space-y-4 shadow-xs">
             <div className="flex items-center justify-between pb-3 border-b border-border gap-2">
-              <div className="flex items-center gap-2 text-foreground font-extrabold text-sm sm:text-base">
-                <BookOpen className="w-4 h-4 text-brand-blue shrink-0" />
-                <span>{title || "Reading Passage"}</span>
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-2xl bg-brand-blue text-white flex items-center justify-center shadow-xs">
+                  <BookOpen className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-sm sm:text-base text-foreground">Reading</h3>
+                </div>
               </div>
 
-              {/* Toolbar: Highlighter Tool positioned to the left of Passage Text Badge */}
+              {/* Toolbar */}
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border">
                   <Button
@@ -264,20 +159,20 @@ export function ReadingPanel({
                     className={`h-7 px-2.5 rounded-lg text-xs font-bold gap-1.5 transition-all ${
                       isHighlightActive
                         ? "bg-amber-500 hover:bg-amber-600 text-white shadow-xs"
-                        : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
-                    title={isHighlightActive ? "Tắt chế độ Highlight" : "Bật bút Highlight màu vàng chanh"}
+                    title={isHighlightActive ? "Bôi đen văn bản để highlight (Đang bật)" : "Bật tính năng Highlight"}
                   >
                     <Highlighter className="w-3.5 h-3.5" />
                     <span>Highlight</span>
                   </Button>
 
-                  {highlights.length > 0 && (
+                  {highlightCount > 0 && (
                     <Button
                       type="button"
                       size="sm"
                       variant="ghost"
-                      onClick={() => setHighlights([])}
+                      onClick={handleClearHighlights}
                       className="h-7 w-7 p-0 rounded-lg text-muted-foreground hover:text-destructive"
                       title="Xóa tất cả highlight"
                     >
@@ -303,9 +198,8 @@ export function ReadingPanel({
               onMouseUp={handleTextSelection}
               onKeyUp={handleTextSelection}
               className="text-xs sm:text-sm text-foreground/90 leading-relaxed space-y-4 max-h-[68vh] overflow-y-auto pr-2 text-justify select-text"
-            >
-              {renderHighlightedPassage()}
-            </div>
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(formattedPassageHtml) }}
+            />
           </div>
         </div>
       )}
@@ -344,6 +238,7 @@ export function ReadingPanel({
                     html={promptText}
                     answers={typeof answers?.[q.id] === "object" ? answers[q.id] || {} : {}}
                     questionId={q.id}
+                    startNumber={q.orderIndex || 1}
                     onAnswerChange={onAnswerChange}
                   />
                 </div>

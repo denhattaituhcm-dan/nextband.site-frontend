@@ -15,12 +15,13 @@ interface GrammarPanelProps {
 const cleanSectionTag = (title?: string) => {
   if (!title) return null;
   let clean = title.trim();
-  clean = clean.replace(/^(Kỹ năng\s+(Nghe|Đọc|Đọc hiểu|Viết|Nói)\s*(\([^)]*\))?:?\s*)/i, "");
-  clean = clean.replace(/^(Ngữ pháp\s*(&|và)\s*Từ vựng\s*(\([^)]*\))?:?\s*)/i, "");
-  clean = clean.replace(/^(Chẩn đoán\s+Ngữ pháp\s*(&|và)?\s*Từ vựng:?\s*)/i, "");
-  clean = clean.replace(/^(Listening|Reading|Grammar|Writing|Speaking)\s*:\s*/i, "");
-  clean = clean.trim();
-  if (!clean || /^(Listening|Reading|Grammar|Writing|Speaking)$/i.test(clean)) {
+  clean = clean.replace(/^(Kỹ\s+năng\s+)?(Đọc\s+hiểu|Đọc|Nghe|Viết|Nói)\s*(\([^)]*\))?:?\s*/i, "");
+  clean = clean.replace(/^(Hiểu|Reading|Listening|Grammar|Writing|Speaking)\s*(\([^)]*\))?:?\s*/i, "");
+  clean = clean.replace(/\(?(Reading|Listening|Grammar|Writing|Speaking)\)?/gi, "");
+  clean = clean.replace(/^(Ngữ\s+pháp\s*(&|và)?\s*Từ\s+vựng)\s*(\([^)]*\))?:?\s*/i, "");
+  clean = clean.replace(/^(Chẩn\s+đoán\s+Ngữ\s+pháp\s*(&|và)?\s*Từ\s+vựng)\s*(\([^)]*\))?:?\s*/i, "");
+  clean = clean.replace(/\s+/g, " ").trim();
+  if (!clean || /^(Đọc\s*hiểu|Đọc|Hiểu|Nghe|Viết|Nói|Listening|Reading|Grammar|Writing|Speaking)$/i.test(clean)) {
     return null;
   }
   return clean;

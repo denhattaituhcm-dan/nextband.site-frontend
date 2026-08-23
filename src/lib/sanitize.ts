@@ -57,9 +57,15 @@ const STRICT_CONFIG: Config = {
     "audio",
     "source",
     "a",
+    "font",
+    "mark",
   ],
   ALLOWED_ATTR: [
     "class",
+    "style",
+    "color",
+    "face",
+    "size",
     "src",
     "alt",
     "title",
@@ -76,9 +82,9 @@ const STRICT_CONFIG: Config = {
     "align",
     "valign",
   ],
-  ADD_ATTR: ["target", "rel"],
-  FORBID_TAGS: ["style", "script", "iframe", "object", "embed", "form", "svg"],
-  FORBID_ATTR: ["style"],
+  ADD_ATTR: ["target", "rel", "style", "color"],
+  FORBID_TAGS: ["script", "iframe", "object", "embed", "form", "svg"],
+  FORBID_ATTR: [],
   ALLOWED_URI_REGEXP:
     /^(?:(?:https?|mailto|tel):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
   ALLOW_DATA_ATTR: false, // Disallow arbitrary data-*

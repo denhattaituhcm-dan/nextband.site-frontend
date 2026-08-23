@@ -13,6 +13,7 @@ interface FillBlankHtmlRendererProps {
   html: string;
   answers: Record<string, any>;
   questionId: string;
+  startNumber?: number;
   onAnswerChange: (questionId: string, answer: any) => void;
   questionRefs?: MutableRefObject<Map<string, HTMLElement>>;
   currentQuestionId?: string;
@@ -22,6 +23,7 @@ export function FillBlankHtmlRenderer({
   html,
   answers,
   questionId,
+  startNumber = 1,
   onAnswerChange,
   questionRefs,
   currentQuestionId,
@@ -32,19 +34,22 @@ export function FillBlankHtmlRenderer({
   const answersRef = useRef(answers);
   const questionIdRef = useRef(questionId);
   const onAnswerChangeRef = useRef(onAnswerChange);
+  const startNumberRef = useRef(startNumber);
 
   useEffect(() => {
     answersRef.current = answers;
     questionIdRef.current = questionId;
     onAnswerChangeRef.current = onAnswerChange;
-  }, [answers, questionId, onAnswerChange]);
+    startNumberRef.current = startNumber;
+  }, [answers, questionId, onAnswerChange, startNumber]);
 
   // Memoize and sanitize processed HTML to avoid unnecessary re-renders
   const processedHtml = useMemo(() => {
     const rawReplaced = html.replace(FILL_BLANK_PLACEHOLDER_REGEX, (_match, blankNum, directNum) => {
       const numStr = blankNum || directNum;
       const blankIndex = numStr ? Number(numStr) - 1 : -1;
-      return `<span data-fill-blank="${blankIndex}" class="fill-blank-slot"></span>`;
+      const explicitNum = numStr ? Number(numStr) : -1;
+      return `<span data-fill-blank="${blankIndex}" data-explicit-num="${explicitNum}" class="fill-blank-slot"></span>`;
     });
     return sanitizeHtml(rawReplaced);
   }, [html]);
@@ -55,14 +60,24 @@ export function FillBlankHtmlRenderer({
     let cursor = 0;
     slots.forEach((slot) => {
       const idx = slot.getAttribute("data-fill-blank");
+      const explicitNum = slot.getAttribute("data-explicit-num");
+
+      let slotNumber = startNumber + cursor;
+      if (explicitNum && explicitNum !== "-1") {
+        slotNumber = Number(explicitNum);
+      } else if (idx !== "-1" && idx !== null) {
+        slotNumber = Number(idx) + 1;
+      }
+
       if (idx === "-1" || idx === null) {
         slot.setAttribute("data-fill-blank", String(cursor));
       } else {
         cursor = Number(idx);
       }
+      slot.setAttribute("data-slot-number", String(slotNumber));
       cursor++;
     });
-  }, []);
+  }, [startNumber]);
 
   // Main Effect: DOM Manipulation and Event Listeners
   useEffect(() => {
@@ -75,20 +90,22 @@ export function FillBlankHtmlRenderer({
     const registeredFocusIds: string[] = [];
 
     // 2. Clear out any existing inputs that might be lingering from previous renders
-    // although dangerouslySetInnerHTML usually handles this, we ensure a clean state
     const slots = container.querySelectorAll(".fill-blank-slot");
     slots.forEach((slot) => {
       const blankKey = slot.getAttribute("data-fill-blank") || "0";
+      const slotNumber = slot.getAttribute("data-slot-number") || String(startNumberRef.current + Number(blankKey));
       const focusId = `${questionIdRef.current}::blank:${blankKey}`;
       let input = slot.querySelector("input") as HTMLInputElement | null;
 
       if (!input) {
         input = document.createElement("input");
         input.type = "text";
-        input.placeholder = "...";
+        input.placeholder = slotNumber;
         input.className =
-          "inline-flex items-center min-w-[120px] max-w-[200px] h-8 sm:h-9 px-3 mx-1.5 my-0.5 rounded-xl border border-brand-blue/50 bg-background text-foreground text-center text-sm sm:text-base font-bold shadow-2xs focus:outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/25 placeholder:text-muted-foreground/60 transition-all";
+          "inline-flex items-center min-w-[100px] max-w-[180px] h-8 sm:h-9 px-3 mx-1.5 my-0.5 rounded-xl border border-brand-blue/50 bg-background text-foreground text-center text-sm sm:text-base font-bold shadow-2xs focus:outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/25 placeholder:text-muted-foreground/35 placeholder:font-bold focus:placeholder:text-transparent transition-all";
         slot.appendChild(input);
+      } else {
+        input.placeholder = slotNumber;
       }
 
       // Crucial: Set a unique identifier for this input instance to prevent cross-contamination
