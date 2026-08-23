@@ -10,12 +10,12 @@ interface SkillTabsProps {
 }
 
 export function SkillTabs({ activeSkill, onSelectSkill, skillCounts }: SkillTabsProps) {
-  const tabs: Array<{ id: AssessmentSkill; baseLabel: string; icon: any }> = [
-    { id: "listening", baseLabel: "Listening", icon: Headphones },
-    { id: "reading", baseLabel: "Reading", icon: BookOpen },
-    { id: "grammar", baseLabel: "Grammar", icon: Sparkles },
-    { id: "writing", baseLabel: "Writing", icon: PenTool },
-    { id: "speaking", baseLabel: "Speaking", icon: Mic },
+  const tabs: Array<{ id: AssessmentSkill; baseLabel: string; duration: string; icon: any }> = [
+    { id: "listening", baseLabel: "Listening", duration: "~10p", icon: Headphones },
+    { id: "reading", baseLabel: "Reading", duration: "~15p", icon: BookOpen },
+    { id: "grammar", baseLabel: "Grammar", duration: "~5p", icon: Sparkles },
+    { id: "writing", baseLabel: "Writing", duration: "~20p", icon: PenTool },
+    { id: "speaking", baseLabel: "Speaking", duration: "~10p", icon: Mic },
   ];
 
   return (
@@ -39,6 +39,9 @@ export function SkillTabs({ activeSkill, onSelectSkill, skillCounts }: SkillTabs
           >
             <Icon className={cn("w-4 h-4", isActive ? "text-brand-blue" : "text-muted-foreground")} />
             <span>{tab.baseLabel}{stat && stat.total > 0 ? ` (${stat.total})` : ""}</span>
+            <span className={cn("text-[10px] font-semibold opacity-75", isActive ? "text-brand-blue" : "text-muted-foreground")}>
+              {tab.duration}
+            </span>
             {stat && stat.total > 0 && (
               <span
                 className={cn(

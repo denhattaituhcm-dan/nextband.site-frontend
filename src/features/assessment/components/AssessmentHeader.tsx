@@ -1,7 +1,7 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, ShieldCheck, CheckCircle2, RefreshCw, Send, AlertTriangle } from "lucide-react";
+import { Clock, ShieldCheck, CheckCircle2, RefreshCw, Send, AlertTriangle, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AssessmentHeaderProps {
@@ -11,6 +11,7 @@ interface AssessmentHeaderProps {
   isUrgent: boolean;
   saveStatus: "idle" | "saving" | "saved" | "error" | "offline" | "syncing";
   onOpenSubmitDialog: () => void;
+  onOpenExitDialog: () => void;
   isSubmitting: boolean;
 }
 
@@ -21,6 +22,7 @@ export function AssessmentHeader({
   isUrgent,
   saveStatus,
   onOpenSubmitDialog,
+  onOpenExitDialog,
   isSubmitting,
 }: AssessmentHeaderProps) {
   return (
@@ -55,9 +57,9 @@ export function AssessmentHeader({
           <span className="text-sm font-mono tracking-wider">{formattedTime}</span>
         </div>
 
-        {/* Right: Autosave Status & Submit Button */}
-        <div className="flex items-center gap-3">
-          <div className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground">
+        {/* Right: Autosave Status, Exit & Submit Button */}
+        <div className="flex items-center gap-2.5">
+          <div className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground mr-1">
             {saveStatus === "saving" || saveStatus === "syncing" ? (
               <>
                 <RefreshCw className="w-3.5 h-3.5 animate-spin text-brand-blue" />
@@ -75,6 +77,18 @@ export function AssessmentHeader({
               </>
             ) : null}
           </div>
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={onOpenExitDialog}
+            className="h-10 px-3 rounded-xl font-bold text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-1.5 transition-colors cursor-pointer border border-border sm:border-transparent"
+            title="Thoát và hủy bài làm hiện tại"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Thoát bài</span>
+          </Button>
 
           <Button
             onClick={onOpenSubmitDialog}

@@ -369,8 +369,13 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
               <DialogTitle className="text-xl sm:text-2xl font-black text-foreground tracking-tight text-center">
                 ĐÁNH GIÁ NĂNG LỰC 4 KỸ NĂNG
               </DialogTitle>
-              <DialogDescription className="text-xs text-foreground/75 leading-relaxed text-center max-w-sm mx-auto">
-                Bài test chẩn đoán gồm <strong>Listening, Reading, Writing, Speaking &amp; Grammar</strong>. Tính điểm tự động và định vị trình độ phù hợp.
+              <DialogDescription className="text-xs text-foreground/75 leading-relaxed text-center max-w-sm mx-auto space-y-1">
+                <p>
+                  Bài test chẩn đoán gồm <strong>Listening, Reading, Writing, Speaking &amp; Grammar</strong>.
+                </p>
+                <p className="text-[11px] font-bold text-brand-blue">
+                  Thời lượng: 60 phút (Nghe ~10p • Đọc ~15p • Ngữ pháp ~5p • Viết ~20p • Nói ~10p)
+                </p>
               </DialogDescription>
             </DialogHeader>
 

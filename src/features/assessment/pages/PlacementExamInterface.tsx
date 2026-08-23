@@ -14,7 +14,14 @@ import { SpeakingPanel } from "../components/SpeakingPanel";
 import { AssessmentSubmitDialog } from "../components/AssessmentSubmitDialog";
 import { AssessmentSkill, AssessmentQuestion } from "../domain/assessment.types";
 import { Button } from "@/components/ui/button";
-import { Loader2, AlertCircle, RefreshCw, ArrowLeft, FileQuestion } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Loader2, AlertCircle, RefreshCw, ArrowLeft, FileQuestion, AlertTriangle, LogOut } from "lucide-react";
 import { assessmentApi } from "@/lib/api";
 import { toast } from "sonner";
 
@@ -25,6 +32,7 @@ export default function PlacementExamInterface() {
   const [activeSkill, setActiveSkill] = useState<AssessmentSkill>("listening");
   const [currentQuestionId, setCurrentQuestionId] = useState<string | undefined>();
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
+  const [isExitDialogOpen, setIsExitDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -179,6 +187,7 @@ export default function PlacementExamInterface() {
         isUrgent={isUrgent}
         saveStatus={saveStatus}
         onOpenSubmitDialog={() => setIsSubmitDialogOpen(true)}
+        onOpenExitDialog={() => setIsExitDialogOpen(true)}
         isSubmitting={isSubmitting}
       />
 
@@ -268,6 +277,48 @@ export default function PlacementExamInterface() {
         isSubmitting={isSubmitting}
         onConfirmSubmit={handleFinalSubmit}
       />
+
+      {/* Exit & Cancel Confirmation Dialog */}
+      <Dialog open={isExitDialogOpen} onOpenChange={setIsExitDialogOpen}>
+        <DialogContent className="sm:max-w-[420px] p-6 rounded-3xl bg-background border border-border">
+          <div className="text-center space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto shadow-xs">
+              <LogOut className="w-7 h-7" />
+            </div>
+            <div className="space-y-1.5">
+              <DialogTitle className="text-lg font-bold text-foreground text-center">
+                Thoát &amp; Hủy Kết Quả Bài Làm?
+              </DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground leading-relaxed text-center">
+                Nếu bạn thoát bây giờ, toàn bộ bài làm và câu trả lời tạm thời sẽ bị hủy bỏ. Bạn sẽ không nhận được kết quả chẩn đoán của phiên này.
+              </DialogDescription>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsExitDialogOpen(false)}
+                className="h-10 rounded-xl font-bold text-xs border-border"
+              >
+                Tiếp tục làm bài
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => {
+                  clearLocalDraft();
+                  toast.info("Đã thoát và hủy kết quả bài làm.");
+                  navigate("/");
+                }}
+                className="h-10 rounded-xl font-bold text-xs bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-xs"
+              >
+                Hủy &amp; Thoát
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

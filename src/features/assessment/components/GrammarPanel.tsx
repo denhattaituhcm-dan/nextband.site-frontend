@@ -1,5 +1,5 @@
 import React from "react";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Clock } from "lucide-react";
 import { AssessmentQuestion } from "../domain/assessment.types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,20 @@ interface GrammarPanelProps {
   answers: Record<string, any>;
   onAnswerChange: (questionId: string, value: any) => void;
 }
+
+const cleanSectionTag = (title?: string) => {
+  if (!title) return null;
+  let clean = title.trim();
+  clean = clean.replace(/^(Kỹ năng\s+(Nghe|Đọc|Đọc hiểu|Viết|Nói)\s*(\([^)]*\))?:?\s*)/i, "");
+  clean = clean.replace(/^(Ngữ pháp\s*(&|và)\s*Từ vựng\s*(\([^)]*\))?:?\s*)/i, "");
+  clean = clean.replace(/^(Chẩn đoán\s+Ngữ pháp\s*(&|và)?\s*Từ vựng:?\s*)/i, "");
+  clean = clean.replace(/^(Listening|Reading|Grammar|Writing|Speaking)\s*:\s*/i, "");
+  clean = clean.trim();
+  if (!clean || /^(Listening|Reading|Grammar|Writing|Speaking)$/i.test(clean)) {
+    return null;
+  }
+  return clean;
+};
 
 export function GrammarPanel({
   title,
@@ -27,21 +41,28 @@ export function GrammarPanel({
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-extrabold text-base text-foreground">{title}</h3>
+            <h3 className="font-extrabold text-base text-foreground">Grammar</h3>
             <p className="text-xs text-muted-foreground">
               Đánh giá phản xạ ngữ pháp học thuật, mệnh đề câu phức và collocations
             </p>
           </div>
         </div>
-        <Badge variant="outline" className="text-xs font-bold bg-background">
-          {questions.length} Câu hỏi
-        </Badge>
+        <div className="flex items-center gap-2">
+          <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-brand-blue/10 text-brand-blue border border-brand-blue/20">
+            <Clock className="w-3 h-3" />
+            Gợi ý: ~5 phút
+          </span>
+          <Badge variant="outline" className="text-xs font-bold bg-background">
+            {questions.length} Câu hỏi
+          </Badge>
+        </div>
       </div>
 
       <div className="space-y-4">
         {questions.map((q) => {
           const promptText = q?.prompt || "";
           const hasHtml = promptText.includes("<") && promptText.includes(">");
+          const subTag = cleanSectionTag(q.sectionTitle);
 
           return (
             <div
@@ -50,9 +71,13 @@ export function GrammarPanel({
               className="p-5 sm:p-6 rounded-3xl bg-card border border-border space-y-3.5 shadow-xs"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-brand-blue uppercase tracking-wide">
-                  {q.sectionTitle || "Chẩn đoán Ngữ pháp & Từ vựng"}
-                </span>
+                {subTag ? (
+                  <span className="text-xs font-bold text-brand-blue uppercase tracking-wide">
+                    {subTag}
+                  </span>
+                ) : (
+                  <span />
+                )}
                 <span className="text-xs font-extrabold text-muted-foreground">
                   Câu {q.orderIndex || 1}
                 </span>

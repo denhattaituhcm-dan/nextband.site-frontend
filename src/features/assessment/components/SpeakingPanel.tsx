@@ -1,5 +1,5 @@
 import React from "react";
-import { Mic } from "lucide-react";
+import { Mic, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PartRecorder } from "./PartRecorder";
 
@@ -31,15 +31,21 @@ export function SpeakingPanel({
             <Mic className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-extrabold text-base text-foreground">{title}</h3>
+            <h3 className="font-extrabold text-base text-foreground">Speaking</h3>
             <p className="text-xs text-muted-foreground">
               Ghi âm riêng từng phần — Giáo viên nhận 2 file audio để chấm phát âm &amp; độ trôi chảy
             </p>
           </div>
         </div>
-        <Badge variant="outline" className="text-xs font-bold bg-background">
-          2 file ghi âm
-        </Badge>
+        <div className="flex items-center gap-2">
+          <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-brand-blue/10 text-brand-blue border border-brand-blue/20">
+            <Clock className="w-3 h-3" />
+            Gợi ý: ~10 phút
+          </span>
+          <Badge variant="outline" className="text-xs font-bold bg-background">
+            2 file ghi âm
+          </Badge>
+        </div>
       </div>
 
       {/* ── Part 1 card ── */}

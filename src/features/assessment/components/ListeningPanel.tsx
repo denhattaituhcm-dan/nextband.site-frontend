@@ -1,5 +1,5 @@
-import React from "react";
-import { Headphones, Volume2 } from "lucide-react";
+import React, { useRef, useCallback } from "react";
+import { Headphones, Volume2, Clock } from "lucide-react";
 import { AssessmentQuestion } from "../domain/assessment.types";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -17,6 +17,20 @@ interface ListeningPanelProps {
   onAnswerChange: (questionId: string, value: any) => void;
 }
 
+const cleanSectionTag = (title?: string) => {
+  if (!title) return null;
+  let clean = title.trim();
+  clean = clean.replace(/^(Kỹ năng\s+(Nghe|Đọc|Đọc hiểu|Viết|Nói)\s*(\([^)]*\))?:?\s*)/i, "");
+  clean = clean.replace(/^(Ngữ pháp\s*(&|và)\s*Từ vựng\s*(\([^)]*\))?:?\s*)/i, "");
+  clean = clean.replace(/^(Chẩn đoán\s+Ngữ pháp\s*(&|và)?\s*Từ vựng:?\s*)/i, "");
+  clean = clean.replace(/^(Listening|Reading|Grammar|Writing|Speaking)\s*:\s*/i, "");
+  clean = clean.trim();
+  if (!clean || /^(Listening|Reading|Grammar|Writing|Speaking)$/i.test(clean)) {
+    return null;
+  }
+  return clean;
+};
+
 export function ListeningPanel({
   title,
   audioUrl,
@@ -24,29 +38,31 @@ export function ListeningPanel({
   answers,
   onAnswerChange,
 }: ListeningPanelProps) {
-  const totalItemCount = questions.reduce((acc, q) => acc + (q.blankCount && q.blankCount > 1 ? q.blankCount : 1), 0);
-  const audioRef = React.useRef<HTMLAudioElement | null>(null);
-  const maxPlayTimeRef = React.useRef<number>(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const maxTimeRef = useRef<number>(0);
 
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      if (audioRef.current.currentTime > maxPlayTimeRef.current) {
-        maxPlayTimeRef.current = audioRef.current.currentTime;
-      }
+  // Prevent seeking forward beyond listened threshold
+  const handleSeeking = useCallback(() => {
+    if (!audioRef.current) return;
+    if (audioRef.current.currentTime > maxTimeRef.current + 1) {
+      audioRef.current.currentTime = maxTimeRef.current;
     }
-  };
+  }, []);
 
-  const handleSeeking = () => {
-    if (audioRef.current) {
-      // If user tries to seek, snap back to max continuously played time
-      if (audioRef.current.currentTime !== maxPlayTimeRef.current) {
-        audioRef.current.currentTime = maxPlayTimeRef.current;
-      }
+  const handleTimeUpdate = useCallback(() => {
+    if (!audioRef.current) return;
+    if (audioRef.current.currentTime > maxTimeRef.current) {
+      maxTimeRef.current = audioRef.current.currentTime;
     }
-  };
+  }, []);
+
+  const totalItemCount = questions.reduce(
+    (acc, q) => acc + (q.blankCount && q.blankCount > 1 ? q.blankCount : 1),
+    0,
+  );
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
       {/* Audio Player Card */}
       <Card className="rounded-3xl border-border bg-gradient-to-br from-brand-blue-soft/30 to-background shadow-xs overflow-hidden">
         <CardContent className="p-5 sm:p-6 space-y-4">
@@ -56,13 +72,17 @@ export function ListeningPanel({
                 <Headphones className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-extrabold text-base text-foreground">{title}</h3>
+                <h3 className="font-extrabold text-base text-foreground">Listening</h3>
                 <p className="text-xs text-muted-foreground">
                   Nghe đoạn audio và trả lời các câu hỏi bên dưới (Audio phát 1 lần theo tiến độ)
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-brand-blue/10 text-brand-blue border border-brand-blue/20">
+                <Clock className="w-3 h-3" />
+                Gợi ý: ~10 phút
+              </span>
               <span className="hidden sm:inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-600 border border-amber-500/20">
                 Không tua
               </span>
@@ -97,6 +117,7 @@ export function ListeningPanel({
           const promptText = q?.prompt || "";
           const isFillBlankWithSlots = q?.questionType === "fill_blank" && hasFillBlankPlaceholders(promptText);
           const hasHtml = promptText.includes("<") && promptText.includes(">");
+          const subTag = cleanSectionTag(q.sectionTitle);
 
           return (
             <div
@@ -105,11 +126,15 @@ export function ListeningPanel({
               className="p-5 sm:p-6 rounded-3xl bg-card border border-border space-y-3.5 transition-all shadow-xs"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-brand-blue uppercase tracking-wide">
-                  {q.sectionTitle || "Listening"}
-                </span>
+                {subTag ? (
+                  <span className="text-xs font-bold text-brand-blue uppercase tracking-wide">
+                    {subTag}
+                  </span>
+                ) : (
+                  <span />
+                )}
                 <span className="text-xs font-extrabold text-muted-foreground">
-                  {q.blankCount && q.blankCount > 1 ? `${q.blankCount} chỗ trống` : `Câu ${q.orderIndex || 1}`}
+                  {q.blankCount && q.blankCount > 1 ? `${q.blankCount} chỗ trống • ` : ""}Câu {q.orderIndex || 1}
                 </span>
               </div>
 

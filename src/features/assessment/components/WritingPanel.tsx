@@ -1,5 +1,5 @@
 import React from "react";
-import { PenTool, AlertCircle, CheckCircle2 } from "lucide-react";
+import { PenTool, AlertCircle, CheckCircle2, Clock } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { sanitizeHtml } from "@/lib/sanitize";
@@ -46,22 +46,28 @@ export function WritingPanel({
             </p>
           </div>
         </div>
-        <Badge
-          variant="outline"
-          className={`text-xs font-bold ${
-            isOverLimit
-              ? "bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 border-red-300 dark:border-red-800"
+        <div className="flex items-center gap-2">
+          <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-brand-blue/10 text-brand-blue border border-brand-blue/20">
+            <Clock className="w-3 h-3" />
+            Gợi ý: ~20 phút
+          </span>
+          <Badge
+            variant="outline"
+            className={`text-xs font-bold ${
+              isOverLimit
+                ? "bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 border-red-300 dark:border-red-800"
+                : wordsCount > 0
+                ? "bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 border-emerald-300 dark:border-emerald-800"
+                : "bg-background text-muted-foreground"
+            }`}
+          >
+            {isOverLimit
+              ? `Vượt giới hạn: ${wordsCount}/${maxWords} từ`
               : wordsCount > 0
-              ? "bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 border-emerald-300 dark:border-emerald-800"
-              : "bg-background text-muted-foreground"
-          }`}
-        >
-          {isOverLimit
-            ? `Vượt giới hạn: ${wordsCount}/${maxWords} từ`
-            : wordsCount > 0
-            ? `${wordsCount} từ (Tối đa ${maxWords})`
-            : `0 / tối đa ${maxWords} từ`}
-        </Badge>
+              ? `${wordsCount} từ (Tối đa ${maxWords})`
+              : `0 / tối đa ${maxWords} từ`}
+          </Badge>
+        </div>
       </div>
 
       {/* Writing Prompt Card */}
