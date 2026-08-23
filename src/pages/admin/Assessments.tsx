@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { assessmentAdminApi, AdminAssessmentItem } from "@/lib/api";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -48,8 +49,230 @@ import {
   UserCheck,
   Check,
   Award,
+  Play,
+  Pause,
 } from "lucide-react";
 import { toast } from "sonner";
+
+interface SpeakingReviewPlayerProps {
+  title: string;
+  audioUrl: string;
+  onInsertTimestampTag?: (tagText: string) => void;
+}
+
+function SpeakingReviewPlayer({ title, audioUrl, onInsertTimestampTag }: SpeakingReviewPlayerProps) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [notes, setNotes] = useState("");
+
+  const formatTime = (secs: number) => {
+    if (isNaN(secs) || secs < 0) return "00:00";
+    const m = Math.floor(secs / 60);
+    const s = Math.floor(secs % 60);
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const jump = (seconds: number) => {
+    if (!audioRef.current) return;
+    audioRef.current.currentTime = Math.max(0, Math.min(duration || 9999, audioRef.current.currentTime + seconds));
+  };
+
+  const changeSpeed = (rate: number) => {
+    if (!audioRef.current) return;
+    audioRef.current.playbackRate = rate;
+    setPlaybackRate(rate);
+  };
+
+  const handleTag = (type: string) => {
+    const timeStr = formatTime(currentTime);
+    const tag = `[${timeStr} - ${type}: ]`;
+    setNotes((prev) => (prev ? `${prev}\n${tag}` : tag));
+    if (onInsertTimestampTag) {
+      onInsertTimestampTag(`[${timeStr} - ${type}]`);
+    }
+    toast.success(`Đã gắn mốc ${timeStr} (${type})`);
+  };
+
+  return (
+    <div className="p-5 rounded-2xl bg-card border border-border space-y-4 shadow-xs">
+      <audio
+        ref={audioRef}
+        src={audioUrl}
+        onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)}
+        onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}
+        onEnded={() => setIsPlaying(false)}
+      />
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Mic className="w-4 h-4 text-brand-blue" />
+          <h4 className="font-extrabold text-sm text-foreground">{title}</h4>
+        </div>
+        <a
+          href={audioUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="text-xs font-bold text-primary hover:underline inline-flex items-center gap-1"
+        >
+          <span>Tải file gốc</span>
+          <ExternalLink className="w-3 h-3" />
+        </a>
+      </div>
+
+      {/* Scrubber & Time */}
+      <div className="space-y-1.5 bg-muted/40 p-3.5 rounded-xl border border-border">
+        <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
+          <span className="font-bold text-foreground">{formatTime(currentTime)}</span>
+          <span>{formatTime(duration)}</span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={duration || 100}
+          value={currentTime}
+          onChange={(e) => {
+            const val = Number(e.target.value);
+            setCurrentTime(val);
+            if (audioRef.current) audioRef.current.currentTime = val;
+          }}
+          className="w-full h-1.5 bg-border rounded-lg appearance-none cursor-pointer accent-primary"
+        />
+
+        {/* Player Controls */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
+          <div className="flex items-center gap-1.5">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => jump(-5)}
+              className="h-8 px-2.5 text-xs font-bold gap-1 rounded-lg"
+              title="Lùi 5 giây"
+            >
+              -5s
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={isPlaying ? "default" : "outline"}
+              onClick={togglePlay}
+              className="h-8 px-4 text-xs font-bold gap-1.5 rounded-lg"
+            >
+              {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+              <span>{isPlaying ? "Tạm dừng" : "Phát"}</span>
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => jump(5)}
+              className="h-8 px-2.5 text-xs font-bold gap-1 rounded-lg"
+              title="Tiến 5 giây"
+            >
+              +5s
+            </Button>
+          </div>
+
+          {/* Speed selector */}
+          <div className="flex items-center gap-1 bg-background p-0.5 rounded-lg border border-border text-xs font-mono">
+            {[0.75, 1, 1.25, 1.5].map((rate) => (
+              <button
+                key={rate}
+                type="button"
+                onClick={() => changeSpeed(rate)}
+                className={`px-2 py-1 rounded-md font-bold transition-all ${
+                  playbackRate === rate
+                    ? "bg-primary text-primary-foreground shadow-xs"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {rate}x
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Timestamp Error Tagging */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-extrabold text-foreground uppercase tracking-wider">
+            Gắn mốc thời gian đánh giá lỗi ({formatTime(currentTime)}):
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => handleTag("Phát âm (Pronunciation)")}
+            className="h-7 text-xs font-semibold rounded-lg hover:border-amber-500 hover:text-amber-600 dark:hover:text-amber-400"
+          >
+            + Phát âm
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => handleTag("Ngữ pháp (Grammar)")}
+            className="h-7 text-xs font-semibold rounded-lg hover:border-red-500 hover:text-red-600 dark:hover:text-red-400"
+          >
+            + Ngữ pháp
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => handleTag("Từ vựng (Vocabulary)")}
+            className="h-7 text-xs font-semibold rounded-lg hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
+          >
+            + Từ vựng
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => handleTag("Độ trôi chảy (Fluency)")}
+            className="h-7 text-xs font-semibold rounded-lg hover:border-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400"
+          >
+            + Độ trôi chảy
+          </Button>
+        </div>
+      </div>
+
+      {/* Teacher Dictation / Transcript / Notes Box */}
+      <div className="space-y-1.5">
+        <Label className="text-xs font-bold text-muted-foreground flex items-center justify-between">
+          <span>Ghi chú / Transcript bài nói của giáo viên (Draft Note):</span>
+          {notes.trim().length > 0 && (
+            <span className="text-[11px] text-emerald-600 font-semibold">Đã ghi chú</span>
+          )}
+        </Label>
+        <Textarea
+          rows={3}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder={`Gõ lại câu nói cần chú ý hoặc bấm các nút gắn mốc thời gian ở trên...\nVí dụ: [00:15 - Phát âm: Nuốt đuôi /s/ ở từ 'students']`}
+          className="rounded-xl text-xs font-mono leading-relaxed"
+        />
+      </div>
+    </div>
+  );
+}
 
 const GRADING_STATUS_CONFIG: Record<
   string,
@@ -478,7 +701,7 @@ Nếu bạn cần tư vấn chi tiết hơn về bài sửa hoặc lộ trình h
       {/* DETAILED SUBMISSION INSPECTION DIALOG                                      */}
       {/* ========================================================================= */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent className="max-w-4xl max-h-[92vh] flex flex-col p-6 rounded-3xl overflow-hidden">
+        <DialogContent className="max-w-5xl max-h-[92vh] flex flex-col p-6 rounded-3xl overflow-hidden">
           <DialogHeader className="border-b border-border pb-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-left">
               <div>
@@ -503,7 +726,7 @@ Nếu bạn cần tư vấn chi tiết hơn về bài sửa hoặc lộ trình h
                     onClick={() =>
                       window.open(`https://zalo.me/${cleanZaloPhone(detailData.session.phone)}`, "_blank")
                     }
-                    className="h-9 px-3.5 bg-[#0068FF] hover:bg-[#0057d9] text-white font-bold text-xs gap-1.5 rounded-xl"
+                    className="h-9 px-3.5 bg-[#0068FF] hover:bg-[#0057d9] text-white font-bold text-xs gap-1.5 rounded-xl shadow-xs"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>Mở Zalo Thí Sinh</span>
@@ -529,7 +752,7 @@ Nếu bạn cần tư vấn chi tiết hơn về bài sửa hoặc lộ trình h
                 </div>
                 <div>
                   <span className="text-muted-foreground block">Mục tiêu Band:</span>
-                  <strong className="text-brand-red text-sm">{detailData.session?.targetBand || "N/A"}</strong>
+                  <strong className="text-brand-red text-sm">{detailData.session?.targetBand || "Chưa xác định"}</strong>
                 </div>
                 <div>
                   <span className="text-muted-foreground block">Điểm Trắc Nghiệm:</span>
@@ -546,28 +769,252 @@ Nếu bạn cần tư vấn chi tiết hơn về bài sửa hoặc lộ trình h
                 </div>
               </div>
 
-              {/* Tabs for Section Inspection */}
+              {/* Tabs for All 5 Skills + Dedicated Grading Tab */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid grid-cols-4 h-11 p-1 rounded-2xl bg-muted">
-                  <TabsTrigger value="writing" className="rounded-xl text-xs font-bold gap-1.5">
-                    <FileText className="w-3.5 h-3.5" />
-                    <span>1. Writing</span>
+                <TabsList className="grid grid-cols-6 h-11 p-1 rounded-2xl bg-muted">
+                  <TabsTrigger value="listening" className="rounded-xl text-xs font-bold gap-1">
+                    <Volume2 className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">1. Nghe</span>
+                    <span className="sm:hidden">Nghe</span>
                   </TabsTrigger>
-                  <TabsTrigger value="speaking" className="rounded-xl text-xs font-bold gap-1.5">
-                    <Mic className="w-3.5 h-3.5" />
-                    <span>2. Speaking</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="objective" className="rounded-xl text-xs font-bold gap-1.5">
+                  <TabsTrigger value="reading" className="rounded-xl text-xs font-bold gap-1">
                     <BookOpen className="w-3.5 h-3.5" />
-                    <span>3. Trắc nghiệm</span>
+                    <span className="hidden sm:inline">2. Đọc</span>
+                    <span className="sm:hidden">Đọc</span>
                   </TabsTrigger>
-                  <TabsTrigger value="grading" className="rounded-xl text-xs font-bold gap-1.5 text-brand-red data-[state=active]:text-brand-red">
+                  <TabsTrigger value="grammar" className="rounded-xl text-xs font-bold gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">3. Ngữ pháp</span>
+                    <span className="sm:hidden">NP</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="writing" className="rounded-xl text-xs font-bold gap-1">
+                    <FileText className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">4. Viết</span>
+                    <span className="sm:hidden">Viết</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="speaking" className="rounded-xl text-xs font-bold gap-1">
+                    <Mic className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">5. Nói</span>
+                    <span className="sm:hidden">Nói</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="grading" className="rounded-xl text-xs font-bold gap-1 text-brand-red data-[state=active]:text-brand-red">
                     <Award className="w-3.5 h-3.5" />
-                    <span>4. Chấm &amp; Trả Zalo</span>
+                    <span className="hidden sm:inline">Chấm &amp; Trả Zalo</span>
+                    <span className="sm:hidden">Chấm</span>
                   </TabsTrigger>
                 </TabsList>
 
-                {/* ✍️ TAB 1: WRITING */}
+                {/* 🎧 TAB 1: LISTENING */}
+                <TabsContent value="listening" className="space-y-4 pt-3 text-left">
+                  {detailData.testPayload?.skills?.listening?.audioUrl && (
+                    <div className="p-4 rounded-2xl bg-card border border-border space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-extrabold uppercase text-muted-foreground flex items-center gap-1.5">
+                          <Volume2 className="w-4 h-4 text-brand-blue" />
+                          Audio Bài Nghe (Listening)
+                        </span>
+                        <Badge variant="outline" className="text-[11px] font-mono">
+                          Section Audio
+                        </Badge>
+                      </div>
+                      <audio controls className="w-full h-10" src={detailData.testPayload.skills.listening.audioUrl}>
+                        Trình duyệt không hỗ trợ phát audio.
+                      </audio>
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    {detailData.questionBreakdown?.filter((q: any) => q.skill === "listening").map((q: any, idx: number) => (
+                      <div
+                        key={q.id || idx}
+                        className={`p-4 rounded-2xl border text-xs space-y-2.5 ${
+                          q.isCorrect
+                            ? "bg-emerald-500/5 border-emerald-500/20"
+                            : q.studentAnswer != null
+                            ? "bg-destructive/5 border-destructive/20"
+                            : "bg-muted/40 border-border"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-extrabold text-foreground text-sm">
+                            Câu {idx + 1}
+                          </span>
+                          {q.isCorrect ? (
+                            <Badge className="bg-emerald-600 text-white text-[10px] font-bold">
+                              Chính xác (+1)
+                            </Badge>
+                          ) : q.studentAnswer != null ? (
+                            <Badge variant="destructive" className="text-[10px] font-bold">
+                              Chưa chính xác
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-[10px] text-muted-foreground">
+                              Chưa làm
+                            </Badge>
+                          )}
+                        </div>
+
+                        <div
+                          className="text-xs text-foreground font-medium leading-relaxed prose prose-sm max-w-none"
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.prompt) }}
+                        />
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                          <div className="p-2.5 rounded-xl bg-background border border-border">
+                            <span className="text-[11px] text-muted-foreground block font-semibold">Thí sinh chọn/điền:</span>
+                            <strong className={q.isCorrect ? "text-emerald-600 font-mono text-xs" : "text-destructive font-mono text-xs"}>
+                              {q.studentAnswer != null && typeof q.studentAnswer === "object"
+                                ? JSON.stringify(q.studentAnswer)
+                                : q.studentAnswer ? String(q.studentAnswer) : "(Chưa chọn)"}
+                            </strong>
+                          </div>
+                          <div className="p-2.5 rounded-xl bg-background border border-border">
+                            <span className="text-[11px] text-muted-foreground block font-semibold">Đáp án chuẩn:</span>
+                            <strong className="text-foreground font-mono text-xs">{q.correctAnswer}</strong>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </TabsContent>
+
+                {/* 📖 TAB 2: READING (Split screen with passage text) */}
+                <TabsContent value="reading" className="space-y-4 pt-3 text-left">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                    {/* Left Column: Passage Text */}
+                    {detailData.testPayload?.skills?.reading?.passage && (
+                      <div className="lg:col-span-6 space-y-3">
+                        <div className="p-5 rounded-2xl bg-card border border-border space-y-3 shadow-xs">
+                          <div className="flex items-center justify-between pb-2 border-b border-border">
+                            <span className="text-xs font-extrabold uppercase text-foreground flex items-center gap-1.5">
+                              <BookOpen className="w-4 h-4 text-brand-blue" />
+                              Passage Text
+                            </span>
+                            <Badge variant="outline" className="text-[11px]">
+                              Bài đọc
+                            </Badge>
+                          </div>
+                          <div
+                            className="text-xs text-foreground/90 leading-relaxed space-y-3 max-h-[60vh] overflow-y-auto pr-2 text-justify select-text"
+                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(detailData.testPayload.skills.reading.passage) }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Right Column: Reading Questions */}
+                    <div className={detailData.testPayload?.skills?.reading?.passage ? "lg:col-span-6 space-y-3" : "lg:col-span-12 space-y-3"}>
+                      {detailData.questionBreakdown?.filter((q: any) => q.skill === "reading").map((q: any, idx: number) => (
+                        <div
+                          key={q.id || idx}
+                          className={`p-4 rounded-2xl border text-xs space-y-2.5 ${
+                            q.isCorrect
+                              ? "bg-emerald-500/5 border-emerald-500/20"
+                              : q.studentAnswer != null
+                              ? "bg-destructive/5 border-destructive/20"
+                              : "bg-muted/40 border-border"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-extrabold text-foreground text-sm">
+                              Câu {idx + 1}
+                            </span>
+                            {q.isCorrect ? (
+                              <Badge className="bg-emerald-600 text-white text-[10px] font-bold">
+                                Chính xác (+1)
+                              </Badge>
+                            ) : q.studentAnswer != null ? (
+                              <Badge variant="destructive" className="text-[10px] font-bold">
+                                Chưa chính xác
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-[10px] text-muted-foreground">
+                                Chưa làm
+                              </Badge>
+                            )}
+                          </div>
+
+                          <div
+                            className="text-xs text-foreground font-medium leading-relaxed prose prose-sm max-w-none"
+                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.prompt) }}
+                          />
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                            <div className="p-2.5 rounded-xl bg-background border border-border">
+                              <span className="text-[11px] text-muted-foreground block font-semibold">Thí sinh chọn/điền:</span>
+                              <strong className={q.isCorrect ? "text-emerald-600 font-mono text-xs" : "text-destructive font-mono text-xs"}>
+                                {q.studentAnswer != null && typeof q.studentAnswer === "object"
+                                  ? JSON.stringify(q.studentAnswer)
+                                  : q.studentAnswer ? String(q.studentAnswer) : "(Chưa chọn)"}
+                              </strong>
+                            </div>
+                            <div className="p-2.5 rounded-xl bg-background border border-border">
+                              <span className="text-[11px] text-muted-foreground block font-semibold">Đáp án chuẩn:</span>
+                              <strong className="text-foreground font-mono text-xs">{q.correctAnswer}</strong>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* 📝 TAB 3: GRAMMAR & VOCABULARY */}
+                <TabsContent value="grammar" className="space-y-4 pt-3 text-left">
+                  <div className="space-y-3">
+                    {detailData.questionBreakdown?.filter((q: any) => q.skill === "grammar").map((q: any, idx: number) => (
+                      <div
+                        key={q.id || idx}
+                        className={`p-4 rounded-2xl border text-xs space-y-2.5 ${
+                          q.isCorrect
+                            ? "bg-emerald-500/5 border-emerald-500/20"
+                            : q.studentAnswer != null
+                            ? "bg-destructive/5 border-destructive/20"
+                            : "bg-muted/40 border-border"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-extrabold text-foreground text-sm">
+                            Câu {idx + 1}
+                          </span>
+                          {q.isCorrect ? (
+                            <Badge className="bg-emerald-600 text-white text-[10px] font-bold">
+                              Chính xác (+1)
+                            </Badge>
+                          ) : q.studentAnswer != null ? (
+                            <Badge variant="destructive" className="text-[10px] font-bold">
+                              Chưa chính xác
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-[10px] text-muted-foreground">
+                              Chưa làm
+                            </Badge>
+                          )}
+                        </div>
+
+                        <div
+                          className="text-xs text-foreground font-medium leading-relaxed prose prose-sm max-w-none"
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.prompt) }}
+                        />
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                          <div className="p-2.5 rounded-xl bg-background border border-border">
+                            <span className="text-[11px] text-muted-foreground block font-semibold">Thí sinh chọn:</span>
+                            <strong className={q.isCorrect ? "text-emerald-600 font-mono text-xs" : "text-destructive font-mono text-xs"}>
+                              {q.studentAnswer ? String(q.studentAnswer) : "(Chưa chọn)"}
+                            </strong>
+                          </div>
+                          <div className="p-2.5 rounded-xl bg-background border border-border">
+                            <span className="text-[11px] text-muted-foreground block font-semibold">Đáp án chuẩn:</span>
+                            <strong className="text-foreground font-mono text-xs">{q.correctAnswer}</strong>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </TabsContent>
+
+                {/* ✍️ TAB 4: WRITING */}
                 <TabsContent value="writing" className="space-y-4 pt-3 text-left">
                   <div className="p-4 rounded-2xl bg-card border border-border space-y-2">
                     <div className="flex items-center justify-between">
@@ -578,9 +1025,10 @@ Nếu bạn cần tư vấn chi tiết hơn về bài sửa hoặc lộ trình h
                         Yêu cầu: Tối thiểu 80 từ
                       </Badge>
                     </div>
-                    <p className="text-sm font-semibold text-foreground leading-relaxed">
-                      {detailData.testPayload?.skills?.writing?.prompt || "Viết đoạn văn ngắn nêu quan điểm học tập."}
-                    </p>
+                    <div
+                      className="text-sm font-semibold text-foreground leading-relaxed prose prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(detailData.testPayload?.skills?.writing?.prompt || "Viết một bài văn ngắn.") }}
+                    />
                   </div>
 
                   <div className="p-5 rounded-2xl bg-card border-2 border-border/80 space-y-3">
@@ -606,114 +1054,62 @@ Nếu bạn cần tư vấn chi tiết hơn về bài sửa hoặc lộ trình h
                   </div>
                 </TabsContent>
 
-                {/* 🎙️ TAB 2: SPEAKING */}
+                {/* 🎙️ TAB 5: SPEAKING WITH TEACHER REVIEW PLAYER & TIMESTAMP TAGGING */}
                 <TabsContent value="speaking" className="space-y-4 pt-3 text-left">
                   <div className="p-4 rounded-2xl bg-card border border-border space-y-2">
                     <span className="text-xs font-extrabold uppercase text-muted-foreground tracking-wider">
                       Chủ đề Speaking
                     </span>
                     <p className="text-sm font-bold text-foreground">
-                      {detailData.testPayload?.skills?.speaking?.part2Topic || "Speaking Part 2 Topic"}
+                      {detailData.testPayload?.skills?.speaking?.part2Topic || "Speaking Topic"}
                     </p>
                   </div>
 
-                  <div className="p-5 rounded-2xl bg-card border border-border space-y-4">
-                    <h4 className="text-sm font-bold text-foreground flex items-center gap-1.5">
-                      <Mic className="w-4 h-4 text-primary" />
-                      <span>Bản Ghi Âm Của Thí Sinh</span>
-                    </h4>
-
-                    {detailData.answers?.["speaking_audio_url"] ? (
-                      <div className="space-y-3 p-4 rounded-xl bg-muted/50 border border-border">
-                        <span className="text-xs text-muted-foreground font-semibold block">
-                          File thu âm bài nói (Speaking Recording):
-                        </span>
-                        <audio
-                          controls
-                          className="w-full h-10"
-                          src={detailData.answers["speaking_audio_url"]}
-                        >
-                          Trình duyệt không hỗ trợ phát audio.
-                        </audio>
-                        <div className="pt-1">
-                          <a
-                            href={detailData.answers["speaking_audio_url"]}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-xs font-bold text-primary hover:underline inline-flex items-center gap-1"
-                          >
-                            <span>Tải xuống file âm thanh</span>
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="py-8 text-center text-muted-foreground text-sm italic">
-                        Thí sinh chưa gửi bản ghi âm Speaking.
-                      </div>
+                  <div className="space-y-4">
+                    {/* Part 1 Review Player */}
+                    {detailData.answers?.["speaking_part1_audio_url"] && (
+                      <SpeakingReviewPlayer
+                        title="Part 1 — Ghi Âm Phỏng Vấn (Part 1 Recording)"
+                        audioUrl={detailData.answers["speaking_part1_audio_url"]}
+                        onInsertTimestampTag={(tag) => {
+                          setEditTeacherNotes((prev) => (prev ? `${prev}\n• ${tag}` : `• ${tag}`));
+                        }}
+                      />
                     )}
+
+                    {/* Part 2 Review Player */}
+                    {detailData.answers?.["speaking_part2_audio_url"] && (
+                      <SpeakingReviewPlayer
+                        title="Part 2 — Ghi Âm Thuyết Trình (Part 2 Recording)"
+                        audioUrl={detailData.answers["speaking_part2_audio_url"]}
+                        onInsertTimestampTag={(tag) => {
+                          setEditTeacherNotes((prev) => (prev ? `${prev}\n• ${tag}` : `• ${tag}`));
+                        }}
+                      />
+                    )}
+
+                    {/* Legacy / Single Audio fallback */}
+                    {detailData.answers?.["speaking_audio_url"] && !detailData.answers?.["speaking_part1_audio_url"] && (
+                      <SpeakingReviewPlayer
+                        title="File Thu Âm Bài Nói (Speaking Audio)"
+                        audioUrl={detailData.answers["speaking_audio_url"]}
+                        onInsertTimestampTag={(tag) => {
+                          setEditTeacherNotes((prev) => (prev ? `${prev}\n• ${tag}` : `• ${tag}`));
+                        }}
+                      />
+                    )}
+
+                    {!detailData.answers?.["speaking_part1_audio_url"] &&
+                      !detailData.answers?.["speaking_part2_audio_url"] &&
+                      !detailData.answers?.["speaking_audio_url"] && (
+                        <div className="py-12 text-center text-muted-foreground text-sm italic bg-card rounded-2xl border border-border">
+                          Thí sinh chưa gửi bản ghi âm Speaking.
+                        </div>
+                      )}
                   </div>
                 </TabsContent>
 
-                {/* 📊 TAB 3: OBJECTIVE QUESTIONS (LISTENING, READING, GRAMMAR) */}
-                <TabsContent value="objective" className="space-y-4 pt-3 text-left">
-                  {detailData.questionBreakdown && detailData.questionBreakdown.length > 0 ? (
-                    <div className="space-y-3">
-                      {detailData.questionBreakdown.map((q: any, idx: number) => (
-                        <div
-                          key={q.id || idx}
-                          className={`p-3.5 rounded-xl border text-xs space-y-2 ${
-                            q.isCorrect
-                              ? "bg-emerald-500/5 border-emerald-500/20"
-                              : q.studentAnswer != null
-                              ? "bg-destructive/5 border-destructive/20"
-                              : "bg-muted/40 border-border"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold text-foreground">
-                              Câu {idx + 1} ({q.skill?.toUpperCase()} - {q.id})
-                            </span>
-                            {q.isCorrect ? (
-                              <Badge className="bg-emerald-600 text-white text-[10px] font-bold">
-                                Chính xác (+1)
-                              </Badge>
-                            ) : q.studentAnswer != null ? (
-                              <Badge variant="destructive" className="text-[10px] font-bold">
-                                Sai
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline" className="text-[10px] text-muted-foreground">
-                                Chưa trả lời
-                              </Badge>
-                            )}
-                          </div>
-
-                          <p className="text-xs text-foreground font-medium">{q.prompt}</p>
-
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                            <div className="p-2 rounded-lg bg-background border border-border">
-                              <span className="text-[11px] text-muted-foreground block">Thí sinh chọn:</span>
-                              <strong className={q.isCorrect ? "text-emerald-600" : "text-destructive"}>
-                                {q.studentAnswer ? String(q.studentAnswer) : "(Chưa chọn)"}
-                              </strong>
-                            </div>
-                            <div className="p-2 rounded-lg bg-background border border-border">
-                              <span className="text-[11px] text-muted-foreground block">Đáp án chuẩn:</span>
-                              <strong className="text-foreground">{q.correctAnswer}</strong>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="p-6 rounded-2xl bg-muted/40 text-center text-sm text-muted-foreground">
-                      Không có chi tiết từng câu hỏi trắc nghiệm.
-                    </div>
-                  )}
-                </TabsContent>
-
-                {/* 📝 TAB 4: GRADING & ZALO FEEDBACK */}
+                {/* 📝 TAB 6: GRADING & ZALO FEEDBACK */}
                 <TabsContent value="grading" className="space-y-4 pt-3 text-left">
                   <div className="p-5 rounded-2xl bg-card border border-border space-y-4">
                     <h4 className="text-sm font-extrabold uppercase text-foreground tracking-wider">
