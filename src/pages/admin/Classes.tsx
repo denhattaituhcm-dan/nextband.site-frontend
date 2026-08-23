@@ -97,7 +97,7 @@ const emptyForm = {
 
 export default function AdminClasses() {
   const { isAdmin } = useAuth();
-  const { selectedBranch, branches } = useBranch();
+  const { selectedBranch, branches, primaryBranch } = useBranch();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -138,9 +138,8 @@ export default function AdminClasses() {
     queryFn: () =>
       classesApi.list({
         search: debouncedSearch || undefined,
-        branchId: selectedBranch,
-        sortBy: sortField,
-        sortOrder,
+        isActive: statusFilter === "all" ? undefined : statusFilter === "active",
+        branchId: selectedBranch !== "ALL" ? selectedBranch : undefined,
         page,
         limit: pageSize,
       }),
@@ -156,62 +155,74 @@ export default function AdminClasses() {
     queryFn: () => usersApi.list({ role: "teacher", limit: 100 }),
   });
 
-  const classes = data?.data || [];
-  const total = data?.meta?.total || 0;
-  const totalPages = data?.meta?.totalPages || 1;
   const courses = coursesData?.data || [];
   const teachers = teachersData?.data || [];
 
-  const filteredClasses = classes.filter((cls: any) => {
-    if (statusFilter === "active") return cls.isActive !== false;
-    if (statusFilter === "inactive") return cls.isActive === false;
-    if (statusFilter === "no_teacher") return !cls.teacherId && !cls.teacher;
-    return true;
-  });
+  const rawClasses = data?.data || [];
+  const classes = rawClasses;
 
-  const activeClassesCount = classes.filter((c: any) => c.isActive !== false).length;
-  const totalStudentsCount = classes.reduce((sum: number, c: any) => sum + (c._count?.students || 0), 0);
+  const total = data?.meta?.total || 0;
+
+  const totalPages = data?.meta?.totalPages || 1;
+
+  const activeClassesCount = useMemo(() => {
+    return rawClasses.filter((c: any) => c.isActive !== false).length;
+  }, [rawClasses]);
+
+  const totalStudentsCount = useMemo(() => {
+    return rawClasses.reduce((acc: number, c: any) => {
+      const studentCount = c.studentsCount || c.student_count || c._count?.students || (c.students ? c.students.length : 0);
+      return acc + (typeof studentCount === "number" ? studentCount : 0);
+    }, 0);
+  }, [rawClasses]);
+
+  const filteredClasses = useMemo(() => {
+    return [...rawClasses].sort((a: any, b: any) => {
+      const mult = sortOrder === "asc" ? 1 : -1;
+      if (sortField === "name") {
+        return (a.name || "").localeCompare(b.name || "") * mult;
+      }
+      if (sortField === "createdAt") {
+        return (
+          (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) *
+          mult
+        );
+      }
+      return 0;
+    });
+  }, [rawClasses, sortField, sortOrder]);
 
   const createMutation = useMutation({
-    mutationFn: async (body: any) => {
-      // 1. Tạo lớp
-      const cls = await classesApi.create(body);
-      // 2. Nếu có lịch học → tự động sinh sessions
-      if (
-        cls.id &&
-        body.weekdays?.length > 0 &&
-        body.startDate &&
-        body.startTime &&
-        body.endTime
-      ) {
-        await sessionsApi.generateForClass(cls.id, {
-          startDate: body.startDate,
-          weekdays: body.weekdays,
-          totalSessions: body.totalSessions || 27,
-          startTime: body.startTime,
-          endTime: body.endTime,
-        });
-      }
-      return cls;
-    },
+    mutationFn: (body: typeof emptyForm) =>
+      classesApi.create({
+        name: body.name,
+        description: body.description,
+        courseId: body.courseId || null,
+        branchId: body.branchId || null,
+        roomId: body.roomId || null,
+        teacherId: body.teacherId || null,
+        startDate: body.startDate || null,
+        endDate: body.endDate || null,
+        isActive: body.isActive,
+      }),
     onSuccess: async () => {
       await queryClient.refetchQueries({ queryKey: ["admin-classes"] });
-      toast({ title: "Tạo lớp học thành công", description: "Buổi học đã được tự động sinh theo lịch" });
+      toast({ title: "Đã tạo lớp học thành công" });
       setDialogOpen(false);
       setForm(emptyForm);
     },
     onError: (err: any) => {
       toast({
         title: "Lỗi",
-        description: err.message || "Không thể tạo lớp",
+        description: err?.message || "Không thể tạo lớp học",
         variant: "destructive",
       });
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, ...body }: any) =>
-      classesApi.update(id, {
+    mutationFn: (body: typeof emptyForm & { id: string }) =>
+      classesApi.update(body.id, {
         name: body.name,
         description: body.description,
         courseId: body.courseId || null,
@@ -229,10 +240,10 @@ export default function AdminClasses() {
       setEditingClass(null);
       setForm(emptyForm);
     },
-    onError: () => {
+    onError: (err: any) => {
       toast({
         title: "Lỗi",
-        description: "Không thể cập nhật",
+        description: err?.message || "Không thể cập nhật",
         variant: "destructive",
       });
     },
@@ -278,9 +289,10 @@ export default function AdminClasses() {
 
   const openCreate = () => {
     setEditingClass(null);
+    const defaultBranchId = selectedBranch !== "ALL" ? selectedBranch : (primaryBranch?.id || branches[0]?.id || "");
     setForm({
       ...emptyForm,
-      branchId: selectedBranch !== "ALL" ? selectedBranch : "",
+      branchId: defaultBranchId,
     });
     setDialogOpen(true);
   };
@@ -752,27 +764,38 @@ function CreateEditClassDialog({
                 <MapPin className="h-3.5 w-3.5 text-emerald-600" />
                 Cơ sở / Chi nhánh *
               </Label>
-              <Select
-                value={form.branchId || "__none__"}
-                onValueChange={(v) => {
-                  const val = v === "__none__" ? "" : v;
-                  setForm({ ...form, branchId: val, roomId: "" });
-                }}
-              >
-                <SelectTrigger className="bg-slate-50 border-slate-200">
-                  <SelectValue placeholder="Chọn cơ sở..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">
-                    <span className="text-muted-foreground">— Chọn cơ sở —</span>
-                  </SelectItem>
-                  {branches.map((b: any) => (
-                    <SelectItem key={b.id} value={b.id}>
-                      <span className="font-medium text-slate-800">{b.name}</span>
+              {branches.length === 0 ? (
+                <div className="rounded-lg border border-dashed p-2 text-xs text-muted-foreground bg-slate-50">
+                  Chưa có cơ sở nào.{" "}
+                  <Link to="/admin/settings" className="text-primary underline font-medium hover:text-primary/80">
+                    Thêm cơ sở tại Cài đặt
+                  </Link>
+                </div>
+              ) : (
+                <Select
+                  value={form.branchId || "__none__"}
+                  onValueChange={(v) => {
+                    const val = v === "__none__" ? "" : v;
+                    setForm({ ...form, branchId: val, roomId: "" });
+                  }}
+                >
+                  <SelectTrigger className="bg-slate-50 border-slate-200">
+                    <SelectValue placeholder="Chọn cơ sở..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">
+                      <span className="text-muted-foreground">— Chọn cơ sở —</span>
                     </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                    {branches.map((b: any) => (
+                      <SelectItem key={b.id} value={b.id}>
+                        <span className="font-medium text-slate-800">
+                          {b.name} {b.isPrimary && "★ (Cơ sở chính)"}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -786,7 +809,7 @@ function CreateEditClassDialog({
                 disabled={!form.branchId || form.branchId === "__none__"}
               >
                 <SelectTrigger className="bg-slate-50 border-slate-200">
-                  <SelectValue placeholder={!form.branchId ? "Chọn cơ sở trước" : "Chọn phòng học..."} />
+                  <SelectValue placeholder={!form.branchId || form.branchId === "__none__" ? "Chọn cơ sở trước" : "Chọn phòng học..."} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__none__">
@@ -797,10 +820,19 @@ function CreateEditClassDialog({
                       <span>{r.name} {r.capacity ? `(${r.capacity} chỗ)` : ""}</span>
                     </SelectItem>
                   ))}
+                  {form.branchId && form.branchId !== "__none__" && rooms.length === 0 && (
+                    <div className="p-2 text-xs text-muted-foreground text-center">
+                      Cơ sở này chưa có phòng học.{" "}
+                      <Link to="/admin/settings" className="text-primary underline font-medium">
+                        Thêm phòng
+                      </Link>
+                    </div>
+                  )}
                 </SelectContent>
               </Select>
             </div>
           </div>
+
 
           {/* Khóa học */}
           <div className="space-y-2">

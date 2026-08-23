@@ -43,6 +43,7 @@ import {
   WifiOff,
   AlertCircle,
   RefreshCw,
+  ShieldAlert,
 } from "lucide-react";
 import { ListeningSection } from "@/components/exam/ListeningSection";
 import { ReadingSection } from "@/components/exam/ReadingSection";
@@ -52,6 +53,7 @@ import { GrammarSection } from "@/components/exam/GrammarSection";
 import { ExamTimer } from "@/components/exam/ExamTimer";
 import { QuestionPagination } from "@/components/exam/QuestionPagination";
 import { ExamReviewDialog } from "@/components/exam/ExamReviewDialog";
+import { parseStructuredFeedback } from "@/lib/sentenceFeedback";
 import { ActorAwareUnavailableScreen } from "@/components/exam/ActorAwareUnavailableScreen";
 import { evaluateContentContract } from "@/lib/contentContract";
 import { SEO } from "@/components/common/SEO";
@@ -120,6 +122,9 @@ export default function ExamInterface() {
   const [syncVisualState, setSyncVisualState] = useState<SyncVisualState>("LOCAL_SAVED");
   const [hasTabLease, setHasTabLease] = useState(true);
   const [activeTabLease, setActiveTabLease] = useState<TabLeaseRecord | null>(null);
+  const [tabSwitchCount, setTabSwitchCount] = useState<number>(0);
+
+  const isRevision = searchParams.get("isRevision") === "true";
 
   const autoSubmitTriggeredRef = useRef(false);
   const autosaveTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -150,6 +155,24 @@ export default function ExamInterface() {
     queryKey: ["exam", examId],
     queryFn: () => examsApi.getById(examId!),
     enabled: !!examId,
+  });
+
+  const { data: previousAttemptFeedback } = useQuery({
+    queryKey: ["previous-attempt-feedback", examId, user?.id],
+    queryFn: async () => {
+      const res = await submissionsApi.list({ examId, studentId: user?.id, limit: 5 });
+      const graded = (res.data || []).find(
+        (s: any) => s.id !== submission?.id && String(s.status).toUpperCase() === "GRADED"
+      );
+      if (graded?.answers?.[0]?.feedback) {
+        return parseStructuredFeedback(graded.answers[0].feedback);
+      }
+      if (graded?.feedback) {
+        return parseStructuredFeedback(graded.feedback);
+      }
+      return null;
+    },
+    enabled: isRevision && !!examId && !!user?.id,
   });
 
   const exam = examData;
@@ -253,11 +276,28 @@ export default function ExamInterface() {
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
 
+    // 4. Tab switch / Blur tracking (Anti-cheat & integrity)
+    const handleWindowBlur = () => {
+      if (!isSubmissionCompletedRef.current) {
+        setTabSwitchCount((prev) => {
+          const nextCount = prev + 1;
+          toast({
+            title: `Cảnh báo rời tab (#${nextCount})`,
+            description: "Hệ thống ghi nhận sự kiện chuyển tab để đảm bảo tính trung thực bài thi.",
+            variant: "destructive",
+          });
+          return nextCount;
+        });
+      }
+    };
+    window.addEventListener("blur", handleWindowBlur);
+
     return () => {
       unsubLease();
       leaseMgr.destroy();
       syncEngine.destroy();
       window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("blur", handleWindowBlur);
     };
   }, [submission?.id, user?.id, examId]);
 
@@ -1041,6 +1081,12 @@ export default function ExamInterface() {
                   Bài Sửa (Attempt 2)
                 </span>
               )}
+              {tabSwitchCount > 0 && (
+                <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800 items-center gap-1" title={`Đã rời khỏi tab ${tabSwitchCount} lần trong buổi làm bài`}>
+                  <ShieldAlert className="w-3 h-3 text-amber-600" />
+                  Rời tab: {tabSwitchCount}
+                </span>
+              )}
               <h1 className="font-bold text-sm md:text-base tracking-tight truncate max-w-[160px] sm:max-w-[220px] md:max-w-none">
                 {exam.title}
               </h1>
@@ -1199,6 +1245,9 @@ export default function ExamInterface() {
             section={currentSection}
             answers={answers}
             onAnswerChange={handleAnswerChange}
+            isRevision={isRevision}
+            previousFeedback={previousAttemptFeedback}
+            tabSwitchCount={tabSwitchCount}
           />
         )}
         {currentSection && activeSection === "speaking" && (

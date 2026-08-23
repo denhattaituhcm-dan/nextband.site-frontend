@@ -36,6 +36,11 @@ import {
 import { ProgressReportModal } from "@/components/admin/ProgressReportModal";
 import { mapToProgressReportData } from "@/lib/progressReportMapper";
 import { deriveSubmissionTiming } from "@/lib/homeworkStatusHelper";
+import { SentenceLevelGrader } from "@/components/grading/SentenceLevelGrader";
+import {
+  SentenceFeedbackItem,
+  parseStructuredFeedback,
+} from "@/lib/sentenceFeedback";
 
 // Model Workbook Homework Item (Gắn với Buổi học / Lesson)
 interface WorkbookItem {
@@ -58,6 +63,7 @@ interface WorkbookItem {
   feedback?: string;
   primaryErrorCategory?: "CONCEPT" | "STRUCTURE" | "EXPRESSION" | "GRAMMAR" | null;
   revisionRequired?: boolean;
+  sentenceFeedbacks?: SentenceFeedbackItem[];
   submittedAt?: string;
   answerText?: string;
   audioUrl?: string;
@@ -87,6 +93,7 @@ export default function TeacherWorkspace() {
   const [feedback, setFeedback] = useState<string>("");
   const [primaryErrorCategory, setPrimaryErrorCategory] = useState<"CONCEPT" | "STRUCTURE" | "EXPRESSION" | "GRAMMAR">("STRUCTURE");
   const [revisionRequired, setRevisionRequired] = useState<boolean>(false);
+  const [sentenceFeedbacks, setSentenceFeedbacks] = useState<SentenceFeedbackItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
 
@@ -153,7 +160,10 @@ export default function TeacherWorkspace() {
             (s: any) => s.examId === ex.id || s.exam_id === ex.id,
           );
           const firstAnswer = sub?.answers?.[0];
-          const isRevision = !!(firstAnswer?.revisionRequired ?? sub?.revisionRequired ?? sub?.revision_required);
+          const rawFeedback = firstAnswer?.feedback || sub?.feedback || "";
+          const structured = parseStructuredFeedback(rawFeedback);
+
+          const isRevision = !!(structured.revisionRequired ?? firstAnswer?.revisionRequired ?? sub?.revisionRequired ?? sub?.revision_required);
           const canonicalStatus = deriveHomeworkStatus(
             sub ? { ...sub, revisionRequired: isRevision } : null,
           );
@@ -182,10 +192,11 @@ export default function TeacherWorkspace() {
             score: sub?.totalScore ?? sub?.total_score ?? sub?.bandScore ?? null,
             bandScore: sub?.bandScore ?? sub?.band_score ?? null,
             objectiveScore: sub?.objectiveScore ?? sub?.objective_score ?? null,
-            criteriaScores: firstAnswer?.criteriaScores || sub?.criteriaScores || null,
-            feedback: firstAnswer?.feedback || sub?.feedback || "",
-            primaryErrorCategory: firstAnswer?.primaryErrorCategory || sub?.primaryErrorCategory || null,
-            revisionRequired: firstAnswer?.revisionRequired ?? sub?.revisionRequired ?? false,
+            criteriaScores: structured.criteriaScores || firstAnswer?.criteriaScores || sub?.criteriaScores || null,
+            feedback: structured.text || rawFeedback,
+            primaryErrorCategory: structured.primaryErrorCategory || firstAnswer?.primaryErrorCategory || sub?.primaryErrorCategory || null,
+            revisionRequired: isRevision,
+            sentenceFeedbacks: structured.sentenceFeedbacks || [],
             submittedAt: sub?.submittedAt || sub?.submitted_at,
             answerText: firstAnswer?.answerText || firstAnswer?.studentAnswer || "",
             audioUrl: firstAnswer?.audioUrl || "",
@@ -283,6 +294,7 @@ export default function TeacherWorkspace() {
         feedback: hw.feedback,
         primaryErrorCategory: hw.primaryErrorCategory,
         revisionRequired: hw.revisionRequired,
+        sentenceFeedbacks: hw.sentenceFeedbacks || [],
         score: hw.bandScore != null ? hw.bandScore : hw.objectiveScore,
       };
     });
@@ -334,6 +346,7 @@ export default function TeacherWorkspace() {
       }
       setRevisionRequired(!!currentHomework.revisionRequired);
       setFeedback(currentHomework.feedback || "");
+      setSentenceFeedbacks(currentHomework.sentenceFeedbacks || []);
     } else {
       setTaskResponse("");
       setCoherence("");
@@ -341,6 +354,7 @@ export default function TeacherWorkspace() {
       setGrammar("");
       setFeedback("");
       setRevisionRequired(false);
+      setSentenceFeedbacks([]);
     }
   }, [currentHomework]);
 
@@ -407,6 +421,7 @@ export default function TeacherWorkspace() {
             primaryErrorCategory: revisionRequired ? primaryErrorCategory : null,
             revisionRequired,
             criteriaScores,
+            sentenceFeedbacks,
           }
         );
 
@@ -825,9 +840,11 @@ export default function TeacherWorkspace() {
                   <audio controls src={formatStorageUrl(currentHomework.audioUrl)} className="w-full h-8" />
                 </div>
               ) : (
-                <div className="text-xs text-slate-800 leading-relaxed p-3 rounded-lg bg-white border border-slate-200 min-h-[100px] whitespace-pre-wrap">
-                  {currentHomework?.answerText || "Chưa có văn bản nộp bài."}
-                </div>
+                <SentenceLevelGrader
+                  essayText={currentHomework?.answerText || ""}
+                  sentenceFeedbacks={sentenceFeedbacks}
+                  onChange={setSentenceFeedbacks}
+                />
               )}
             </Card>
 

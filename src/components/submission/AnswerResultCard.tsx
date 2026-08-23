@@ -18,6 +18,8 @@ import {
   parseFillBlankCorrectAnswers,
 } from "@/lib/fillBlank";
 import { convertOptionValToIndex } from "@/components/exam/MatchingRenderer";
+import { SentenceLevelGrader } from "@/components/grading/SentenceLevelGrader";
+import { parseStructuredFeedback } from "@/lib/sentenceFeedback";
 
 interface AnswerResultCardProps {
   questionIndex: number;
@@ -544,6 +546,16 @@ export function AnswerResultCard({
                               trimmedAnswer.startsWith("/") ||
                               (trimmedAnswer.includes(".") && !trimmedAnswer.includes(" ") && !trimmedAnswer.includes("<"));
                 if (isUrl) return <ReviewAudioPlayer src={trimmedAnswer} />;
+                if (questionType === "essay" && trimmedAnswer) {
+                  const parsedFeedback = parseStructuredFeedback(feedback);
+                  return (
+                    <SentenceLevelGrader
+                      essayText={trimmedAnswer}
+                      sentenceFeedbacks={parsedFeedback.sentenceFeedbacks || []}
+                      readOnly={true}
+                    />
+                  );
+                }
                 if (trimmedAnswer) return <p className="text-sm font-medium whitespace-pre-wrap text-foreground">{trimmedAnswer}</p>;
                 if (audioUrl) return <ReviewAudioPlayer src={audioUrl} />;
                 return <p className="text-sm text-muted-foreground italic">Chưa trả lời</p>;
@@ -676,17 +688,22 @@ export function AnswerResultCard({
           )}
 
           {/* Feedback */}
-          {isGraded && feedback && (
-            <div className="rounded-md border border-blue-200 bg-blue-50 dark:bg-blue-950/20 dark:border-blue-900 p-3">
-              <div className="flex items-center gap-1.5 mb-1">
-                <MessageSquare className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-                <Label className="text-xs text-blue-700 dark:text-blue-400">
-                  Nhận xét từ giáo viên
-                </Label>
+          {isGraded && feedback && (() => {
+            const parsed = parseStructuredFeedback(feedback);
+            const displayText = parsed.text || (typeof feedback === "string" && !feedback.startsWith("{") ? feedback : "");
+            if (!displayText) return null;
+            return (
+              <div className="rounded-xl border border-blue-200 bg-blue-50/70 dark:bg-blue-950/20 dark:border-blue-900 p-3.5 space-y-1">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <MessageSquare className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                  <Label className="text-xs font-bold text-blue-700 dark:text-blue-400">
+                    Nhận xét tổng quan từ giáo viên
+                  </Label>
+                </div>
+                <p className="text-sm whitespace-pre-wrap leading-relaxed text-foreground">{displayText}</p>
               </div>
-              <p className="text-sm whitespace-pre-wrap">{feedback}</p>
-            </div>
-          )}
+            );
+          })()}
         </div>
       </CardContent>
     </Card>

@@ -54,6 +54,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 const STATUS_CONFIG: Record<
   string,
@@ -132,7 +133,7 @@ const SOURCE_CONFIG: Record<
 };
 
 export default function AdminLeads() {
-  const { selectedBranch, branches } = useBranch();
+  const { selectedBranch, branches, primaryBranch } = useBranch();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [selectedLead, setSelectedLead] = useState<ContactLead | null>(null);
@@ -334,13 +335,14 @@ export default function AdminLeads() {
   };
 
   const handleOpenCreate = () => {
+    const defaultBranchId = selectedBranch !== "ALL" ? selectedBranch : (primaryBranch?.id || branches[0]?.id || "");
     setCreateForm({
       fullName: "",
       phone: "",
       email: "",
       goal: "",
       source: "offline_walkin",
-      preferredBranchId: selectedBranch !== "ALL" ? selectedBranch : branches[0]?.id || "",
+      preferredBranchId: defaultBranchId,
       notes: "",
     });
     setDuplicateWarnings([]);
@@ -348,16 +350,18 @@ export default function AdminLeads() {
   };
 
   const handleOpenConvert = (lead: ContactLead) => {
+    const defaultBranchId = lead.preferredBranchId || (selectedBranch !== "ALL" ? selectedBranch : (primaryBranch?.id || branches[0]?.id || ""));
     setConvertingLead(lead);
     setConvertForm({
       fullName: lead.fullName,
       phone: lead.phone,
       email: lead.email || "",
-      branchId: lead.preferredBranchId || (selectedBranch !== "ALL" ? selectedBranch : branches[0]?.id || ""),
+      branchId: defaultBranchId,
       password: "",
       status: "ENROLLED",
     });
   };
+
 
   // Filter leads
   const filteredLeads = leads.filter((lead) => {
@@ -738,23 +742,33 @@ export default function AdminLeads() {
                 <Label className="text-xs font-bold uppercase tracking-wider">
                   Cơ sở mong muốn học
                 </Label>
-                <Select
-                  value={createForm.preferredBranchId}
-                  onValueChange={(val) => setCreateForm({ ...createForm, preferredBranchId: val })}
-                >
-                  <SelectTrigger className="rounded-xl h-10">
-                    <SelectValue placeholder="Chọn cơ sở..." />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl text-xs">
-                    {branches.map((b) => (
-                      <SelectItem key={b.id} value={b.id}>
-                        {b.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {branches.length === 0 ? (
+                  <div className="rounded-xl border border-dashed p-2.5 text-xs text-muted-foreground bg-muted/30">
+                    Chưa có cơ sở nào.{" "}
+                    <Link to="/admin/settings" className="text-primary underline font-medium hover:text-primary/80">
+                      Thiết lập tại Cài đặt
+                    </Link>
+                  </div>
+                ) : (
+                  <Select
+                    value={createForm.preferredBranchId}
+                    onValueChange={(val) => setCreateForm({ ...createForm, preferredBranchId: val })}
+                  >
+                    <SelectTrigger className="rounded-xl h-10">
+                      <SelectValue placeholder="Chọn cơ sở..." />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl text-xs">
+                      {branches.map((b) => (
+                        <SelectItem key={b.id} value={b.id}>
+                          {b.name} {b.isPrimary && "★ (Cơ sở chính)"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
             </div>
+
 
             <div className="space-y-1.5">
               <Label className="text-xs font-bold uppercase tracking-wider">
@@ -883,25 +897,40 @@ export default function AdminLeads() {
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-wider">
-                  Cơ sở trực thuộc (User Branch)
-                </Label>
-                <Select
-                  value={convertForm.branchId}
-                  onValueChange={(val) => setConvertForm({ ...convertForm, branchId: val })}
-                >
-                  <SelectTrigger className="rounded-xl h-10">
-                    <SelectValue placeholder="Chọn cơ sở..." />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl text-xs">
-                    {branches.map((b) => (
-                      <SelectItem key={b.id} value={b.id}>
-                        {b.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-bold uppercase tracking-wider">
+                    Cơ sở phụ trách
+                  </Label>
+                  <span className="text-[11px] text-muted-foreground">
+                    (Dùng thống kê, không giới hạn lớp học)
+                  </span>
+                </div>
+                {branches.length === 0 ? (
+                  <div className="rounded-xl border border-dashed p-2.5 text-xs text-muted-foreground bg-muted/30">
+                    Chưa có cơ sở nào được thiết lập.{" "}
+                    <Link to="/admin/settings" className="text-primary underline font-medium hover:text-primary/80">
+                      Vào Cài đặt hệ thống
+                    </Link>
+                  </div>
+                ) : (
+                  <Select
+                    value={convertForm.branchId}
+                    onValueChange={(val) => setConvertForm({ ...convertForm, branchId: val })}
+                  >
+                    <SelectTrigger className="rounded-xl h-10">
+                      <SelectValue placeholder="Chọn cơ sở phụ trách..." />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl text-xs">
+                      {branches.map((b) => (
+                        <SelectItem key={b.id} value={b.id}>
+                          {b.name} {b.isPrimary && "★ (Cơ sở chính)"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
+
 
               <div className="space-y-1.5">
                 <Label className="text-xs font-bold uppercase tracking-wider">

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { PenTool, BookOpen, CheckCircle2, FileText, AlertCircle } from "lucide-react";
+import { PenTool, BookOpen, CheckCircle2, FileText, AlertCircle, ShieldAlert } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DropdownSelect } from "./DropdownSelect";
 import {
@@ -18,12 +18,22 @@ import { RichContent } from "./RichContent";
 import { isValidMCQOptions } from "@/lib/questionNormalizer";
 import { QuestionGroupHeader } from "./QuestionGroupHeader";
 import { WritingAnswerBox } from "./controls/WritingAnswerBox";
+import { CorrectionChecklist } from "@/components/exam/CorrectionChecklist";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
 interface WritingSectionProps {
   section: any;
   answers: Record<string, any>;
   onAnswerChange: (questionId: string, answer: any) => void;
   timeRemaining?: number;
+  isRevision?: boolean;
+  previousFeedback?: {
+    text?: string;
+    primaryErrorCategory?: string | null;
+    sentenceFeedbacks?: any[];
+  } | null;
+  tabSwitchCount?: number;
 }
 
 const cleanHtmlText = (html?: string) => {
@@ -45,6 +55,9 @@ export function WritingSection({
   section,
   answers,
   onAnswerChange,
+  isRevision = false,
+  previousFeedback,
+  tabSwitchCount = 0,
 }: WritingSectionProps) {
   const rawGroups = section.question_groups || section.questionGroups || [];
 
@@ -132,18 +145,36 @@ export function WritingSection({
     // Essay block with word progress
     if (question.question_type === "essay") {
       const progress = Math.min((wordCount / minWords) * 100, 100);
+
+      const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+        e.preventDefault();
+        toast.warning("Hành vi dán văn bản (Paste) bị vô hiệu hóa trong phòng thi để đảm bảo tính trung thực bài làm.", {
+          description: "Vui lòng tự gõ nội dung bài luận trực tiếp bằng bàn phím.",
+        });
+      };
+
       return (
         <div className="space-y-4">
+          {/* Attempt 2 Correction Checklist if previous teacher feedback exists */}
+          {isRevision && previousFeedback && (
+            <CorrectionChecklist
+              sentenceFeedbacks={previousFeedback.sentenceFeedbacks || []}
+              primaryErrorCategory={previousFeedback.primaryErrorCategory}
+              teacherGeneralFeedback={previousFeedback.text}
+            />
+          )}
+
           <Textarea
             placeholder="Viết bài luận của bạn tại đây..."
             value={value}
             onChange={(e) => onAnswerChange(question.id, e.target.value)}
-            rows={12}
+            onPaste={handlePaste}
+            rows={14}
             className="resize-y rounded-2xl p-4 text-base border-gray-200/80 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 shadow-xs font-sans leading-relaxed"
           />
 
           <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-50 dark:bg-slate-900/60 p-3 px-4 rounded-2xl border border-slate-200/60 dark:border-slate-800">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800 dark:text-gray-200">
                 <span>Số từ:</span>
                 <span
@@ -166,6 +197,13 @@ export function WritingSection({
                   style={{ width: `${progress}%` }}
                 />
               </div>
+
+              {tabSwitchCount > 0 && (
+                <Badge variant="outline" className="text-[11px] text-amber-700 bg-amber-50 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800 gap-1 font-semibold">
+                  <ShieldAlert className="h-3 w-3" />
+                  Rời tab: {tabSwitchCount} lần
+                </Badge>
+              )}
             </div>
 
             {lastSaved && (

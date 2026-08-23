@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,6 +10,12 @@ import { RichContent } from "@/components/exam/RichContent";
 import { ReviewAudioPlayer } from "@/components/exam/ReviewAudioPlayer";
 import { SpeakingTranscriptViewer } from "@/components/admin/SpeakingTranscriptViewer";
 import { getFillBlankBlankCount, parseFillBlankCorrectAnswers } from "@/lib/fillBlank";
+import { SentenceLevelGrader } from "@/components/grading/SentenceLevelGrader";
+import {
+  SentenceFeedbackItem,
+  parseStructuredFeedback,
+  serializeStructuredFeedback,
+} from "@/lib/sentenceFeedback";
 
 interface AnswerGradingCardProps {
   questionIndex: number;
@@ -65,12 +71,29 @@ export function AnswerGradingCard({
   const [score, setScore] = useState<string>(
     currentScore != null ? String(currentScore) : "",
   );
-  const [feedback, setFeedback] = useState(currentFeedback || "");
+  
+  const structured = useMemo(() => parseStructuredFeedback(currentFeedback), [currentFeedback]);
+  const [feedback, setFeedback] = useState(structured.text || currentFeedback || "");
+  const [sentenceFeedbacks, setSentenceFeedbacks] = useState<SentenceFeedbackItem[]>(
+    structured.sentenceFeedbacks || []
+  );
 
   useEffect(() => {
     setScore(currentScore != null ? String(currentScore) : "");
-    setFeedback(currentFeedback || "");
+    const parsed = parseStructuredFeedback(currentFeedback);
+    setFeedback(parsed.text || currentFeedback || "");
+    setSentenceFeedbacks(parsed.sentenceFeedbacks || []);
   }, [currentScore, currentFeedback]);
+
+  const handleSentenceFeedbackChange = (updated: SentenceFeedbackItem[]) => {
+    setSentenceFeedbacks(updated);
+    const newFeedback = serializeStructuredFeedback({
+      ...structured,
+      text: feedback,
+      sentenceFeedbacks: updated,
+    });
+    onFeedbackChange(newFeedback);
+  };
 
   const handleScoreChange = (value: string) => {
     let sanitizedValue = value;
@@ -269,6 +292,13 @@ export function AnswerGradingCard({
                 <SpeakingTranscriptViewer
                   audioUrl={answerText}
                   initialTranscript={audioUrl && audioUrl !== answerText ? audioUrl : undefined}
+                  readOnly={readOnly}
+                />
+              ) : questionType === "essay" ? (
+                <SentenceLevelGrader
+                  essayText={answerText}
+                  sentenceFeedbacks={sentenceFeedbacks}
+                  onChange={handleSentenceFeedbackChange}
                   readOnly={readOnly}
                 />
               ) : (

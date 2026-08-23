@@ -22,7 +22,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Users, Building2, MapPin, Plus, Phone, School } from "lucide-react";
+import { BookOpen, Users, Building2, MapPin, Plus, Phone, School, Star, Power, PowerOff } from "lucide-react";
+
 import {
   DEFAULT_SITE_SETTINGS,
   normalizeSiteSettings,
@@ -731,7 +732,7 @@ function BranchRoomManagement() {
   const queryClient = useQueryClient();
   const { data: branches = [], refetch } = useQuery({
     queryKey: ["branches-settings"],
-    queryFn: () => branchesApi.list(),
+    queryFn: () => branchesApi.list(true), // Load cả active lẫn inactive
   });
 
   const [createBranchOpen, setCreateBranchOpen] = useState(false);
@@ -757,6 +758,46 @@ function BranchRoomManagement() {
       setCreateBranchOpen(false);
       setBranchForm({ code: "", name: "", address: "", phone: "" });
       queryClient.invalidateQueries({ queryKey: ["branches-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["branches"] });
+      refetch();
+    },
+    onError: (err: any) => {
+      toast({ title: "Lỗi", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const setPrimaryMutation = useMutation({
+    mutationFn: (id: string) => branchesApi.setPrimary(id),
+    onSuccess: () => {
+      toast({ title: "Đã đổi Cơ sở chính thành công" });
+      queryClient.invalidateQueries({ queryKey: ["branches-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["branches"] });
+      refetch();
+    },
+    onError: (err: any) => {
+      toast({ title: "Lỗi", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const deactivateBranchMutation = useMutation({
+    mutationFn: (id: string) => branchesApi.deactivate(id),
+    onSuccess: () => {
+      toast({ title: "Đã tạm dừng chi nhánh" });
+      queryClient.invalidateQueries({ queryKey: ["branches-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["branches"] });
+      refetch();
+    },
+    onError: (err: any) => {
+      toast({ title: "Lỗi", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const activateBranchMutation = useMutation({
+    mutationFn: (id: string) => branchesApi.activate(id),
+    onSuccess: () => {
+      toast({ title: "Đã kích hoạt lại chi nhánh" });
+      queryClient.invalidateQueries({ queryKey: ["branches-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["branches"] });
       refetch();
     },
     onError: (err: any) => {
@@ -784,10 +825,10 @@ function BranchRoomManagement() {
         <div>
           <CardTitle className="text-lg flex items-center gap-2">
             <Building2 className="h-5 w-5 text-primary" />
-            Hệ thống Cơ sở & Phòng học (Multi-Branch)
+            Hệ thống Cơ sở & Phòng học
           </CardTitle>
           <CardDescription>
-            Quản lý danh sách các chi nhánh trung tâm và phòng học vật lý
+            Quản lý danh sách các điểm cơ sở và phòng học vật lý trong học viện
           </CardDescription>
         </div>
         <Button size="sm" onClick={() => setCreateBranchOpen(true)} className="gap-1.5 text-xs">
@@ -798,57 +839,145 @@ function BranchRoomManagement() {
       <CardContent className="p-6 space-y-6">
         {branches.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground text-sm">
-            Chưa có cơ sở nào. Bấm "Thêm cơ sở" để thiết lập chi nhánh đầu tiên.
+            Chưa có cơ sở nào. Bấm "Thêm cơ sở" để thiết lập chi nhánh đầu tiên (mặc định là Cơ sở chính).
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {branches.map((b) => (
-              <div
-                key={b.id}
-                className="rounded-xl border bg-card p-4 space-y-3 shadow-xs hover:border-primary/40 transition-colors"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="font-bold text-sm text-foreground">{b.name}</h4>
-                    <p className="text-xs text-primary font-medium">{b.code}</p>
+            {branches.map((b) => {
+              const isInactive = !b.isActive;
+              return (
+                <div
+                  key={b.id}
+                  className={`rounded-xl border p-4 space-y-3 shadow-xs transition-colors ${
+                    isInactive
+                      ? "bg-muted/30 border-muted opacity-75"
+                      : b.isPrimary
+                      ? "bg-amber-500/5 border-amber-500/30 hover:border-amber-500/50"
+                      : "bg-card hover:border-primary/40"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="font-bold text-sm text-foreground">{b.name}</h4>
+                        {b.isPrimary && (
+                          <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950 dark:text-amber-300 font-bold gap-1">
+                            <Star className="h-3 w-3 fill-amber-500 text-amber-500" />
+                            Cơ sở chính
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-primary font-medium">{b.code}</p>
+                    </div>
+
+                    <div>
+                      {isInactive ? (
+                        <Badge variant="outline" className="text-[10px] bg-muted text-muted-foreground border-muted-foreground/30 font-semibold">
+                          Tạm dừng
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold">
+                          Hoạt động
+                        </Badge>
+                      )}
+                    </div>
                   </div>
-                  <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold">
-                    Hoạt động
-                  </Badge>
-                </div>
 
-                <div className="space-y-1 text-xs text-muted-foreground">
-                  <p className="flex items-center gap-1.5">
-                    <MapPin className="h-3.5 w-3.5 text-muted-foreground/70 shrink-0" />
-                    <span className="truncate">{b.address}</span>
-                  </p>
-                  {b.phone && (
+                  <div className="space-y-1 text-xs text-muted-foreground">
                     <p className="flex items-center gap-1.5">
-                      <Phone className="h-3.5 w-3.5 text-muted-foreground/70 shrink-0" />
-                      <span>{b.phone}</span>
+                      <MapPin className="h-3.5 w-3.5 text-muted-foreground/70 shrink-0" />
+                      <span className="truncate">{b.address}</span>
                     </p>
-                  )}
-                </div>
+                    {b.phone && (
+                      <p className="flex items-center gap-1.5">
+                        <Phone className="h-3.5 w-3.5 text-muted-foreground/70 shrink-0" />
+                        <span>{b.phone}</span>
+                      </p>
+                    )}
+                  </div>
 
-                <div className="pt-2 border-t flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">
-                    {b._count?.rooms || 0} phòng • {b._count?.classes || 0} lớp
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-7 text-xs px-2 gap-1"
-                    onClick={() => {
-                      setSelectedBranchId(b.id);
-                      setCreateRoomOpen(true);
-                    }}
-                  >
-                    <Plus className="h-3 w-3" />
-                    Thêm phòng
-                  </Button>
+                  <div className="pt-2 border-t flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-xs text-muted-foreground">
+                      {b._count?.rooms || 0} phòng • {b._count?.classes || 0} lớp
+                    </span>
+
+                    <div className="flex items-center gap-1">
+                      {/* Thêm phòng (chỉ khi active) */}
+                      {!isInactive && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs px-2 gap-1"
+                          onClick={() => {
+                            setSelectedBranchId(b.id);
+                            setCreateRoomOpen(true);
+                          }}
+                        >
+                          <Plus className="h-3 w-3" />
+                          Thêm phòng
+                        </Button>
+                      )}
+
+                      {/* Đặt làm cơ sở chính (chỉ khi active & chưa phải primary) */}
+                      {!isInactive && !b.isPrimary && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 text-[11px] px-2 text-amber-700 hover:text-amber-800 hover:bg-amber-50"
+                          disabled={setPrimaryMutation.isPending}
+                          onClick={() => setPrimaryMutation.mutate(b.id)}
+                          title="Đặt cơ sở này làm Cơ sở chính của học viện"
+                        >
+                          <Star className="h-3 w-3 mr-1" />
+                          Làm CS chính
+                        </Button>
+                      )}
+
+                      {/* Ngừng hoạt động (chỉ khi active & không phải primary) */}
+                      {!isInactive && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`h-7 text-[11px] px-2 ${
+                            b.isPrimary
+                              ? "text-muted-foreground opacity-50 cursor-not-allowed"
+                              : "text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                          }`}
+                          disabled={b.isPrimary || deactivateBranchMutation.isPending}
+                          onClick={() => {
+                            if (!b.isPrimary) {
+                              deactivateBranchMutation.mutate(b.id);
+                            }
+                          }}
+                          title={
+                            b.isPrimary
+                              ? "Không thể tạm dừng Cơ sở chính. Hãy đổi cơ sở khác làm cơ sở chính trước."
+                              : "Tạm dừng hoạt động cơ sở này"
+                          }
+                        >
+                          <PowerOff className="h-3 w-3 mr-1" />
+                          Tạm dừng
+                        </Button>
+                      )}
+
+                      {/* Kích hoạt lại (khi inactive) */}
+                      {isInactive && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs px-2 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 gap-1"
+                          disabled={activateBranchMutation.isPending}
+                          onClick={() => activateBranchMutation.mutate(b.id)}
+                        >
+                          <Power className="h-3 w-3" />
+                          Kích hoạt lại
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
@@ -862,7 +991,7 @@ function BranchRoomManagement() {
               <div className="space-y-1.5">
                 <Label>Mã chi nhánh (Code) *</Label>
                 <Input
-                  placeholder="VD: THU_DUC, QUAN_1"
+                  placeholder="VD: THU_DUC, DI_AN"
                   value={branchForm.code}
                   onChange={(e) => setBranchForm({ ...branchForm, code: e.target.value })}
                 />
@@ -870,7 +999,7 @@ function BranchRoomManagement() {
               <div className="space-y-1.5">
                 <Label>Tên chi nhánh *</Label>
                 <Input
-                  placeholder="VD: Cơ sở Thủ Đức"
+                  placeholder="VD: Cơ sở Dĩ An, Cơ sở Thủ Đức"
                   value={branchForm.name}
                   onChange={(e) => setBranchForm({ ...branchForm, name: e.target.value })}
                 />
@@ -878,7 +1007,7 @@ function BranchRoomManagement() {
               <div className="space-y-1.5">
                 <Label>Địa chỉ chi tiết *</Label>
                 <Input
-                  placeholder="VD: 123 Võ Văn Ngân, TP. Thủ Đức"
+                  placeholder="VD: 68B Phan Bội Châu, P. Dĩ An"
                   value={branchForm.address}
                   onChange={(e) => setBranchForm({ ...branchForm, address: e.target.value })}
                 />
@@ -951,3 +1080,4 @@ function BranchRoomManagement() {
     </Card>
   );
 }
+

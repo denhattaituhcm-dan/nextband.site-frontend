@@ -2,11 +2,23 @@ import React, { createContext, useContext, useEffect, useState, useMemo } from "
 import { branchesApi, Branch } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 
+// ─── MVP Multi-Location Invariants ───────────────────────────────────────────
+// 1. selectedBranch = UI filter/view state ONLY. NOT a security boundary.
+//    → KHÔNG được dùng selectedBranch để derive authorization scope.
+//    → KHÔNG được restrict Teacher/Student dựa trên selectedBranch.
+// 2. primaryBranch = Branch có isPrimary = true (Cơ sở chính).
+//    → Đọc từ server, không suy luận từ vị trí index (branches[0]).
+//    → Dùng cho auto-select trên form tạo lớp, modal chuyển Lead, v.v.
+// 3. branches = danh sách active branches toàn hệ thống (global pool).
+//    → Admin, Teacher, Student đều thấy toàn bộ danh sách.
+// ─────────────────────────────────────────────────────────────────────────────
+
 interface BranchContextType {
   branches: Branch[];
-  selectedBranch: string; // 'ALL' or branchId
+  selectedBranch: string; // 'ALL' hoặc branchId — chỉ là filter UI, không phải security scope
   setSelectedBranch: (branchId: string) => void;
   currentBranch: Branch | null;
+  primaryBranch: Branch | null; // Cơ sở chính (isPrimary = true)
   isLoading: boolean;
   canSelectAll: boolean;
   refetchBranches: () => Promise<void>;
@@ -35,7 +47,8 @@ export function BranchProvider({ children }: { children: React.ReactNode }) {
       const data = await branchesApi.list();
       setBranches(data);
 
-      // Rule: Nếu không phải Admin và selectedBranch đang là 'ALL', tự động chuyển sang branch đầu tiên
+      // Non-admin không được dùng "ALL" — tự động chọn branch đầu tiên nếu cần.
+      // Lưu ý: đây chỉ là UX convenience, không phải security enforcement.
       if (!isAdmin && selectedBranch === "ALL" && data.length > 0) {
         setSelectedBranchState(data[0].id);
         if (typeof window !== "undefined") {
@@ -54,7 +67,7 @@ export function BranchProvider({ children }: { children: React.ReactNode }) {
   }, [isAuthenticated, user?.id]);
 
   const setSelectedBranch = (branchId: string) => {
-    // Non-admin cannot select ALL
+    // Non-admin không được chọn ALL (UX convenience, không phải security)
     if (!isAdmin && branchId === "ALL") {
       if (branches.length > 0) {
         branchId = branches[0].id;
@@ -71,6 +84,11 @@ export function BranchProvider({ children }: { children: React.ReactNode }) {
     return branches.find((b) => b.id === selectedBranch) || null;
   }, [selectedBranch, branches]);
 
+  // primaryBranch: đọc từ isPrimary flag, KHÔNG suy luận từ index
+  const primaryBranch = useMemo(() => {
+    return branches.find((b) => b.isPrimary && b.isActive) || null;
+  }, [branches]);
+
   return (
     <BranchContext.Provider
       value={{
@@ -78,6 +96,7 @@ export function BranchProvider({ children }: { children: React.ReactNode }) {
         selectedBranch,
         setSelectedBranch,
         currentBranch,
+        primaryBranch,
         isLoading,
         canSelectAll: isAdmin,
         refetchBranches: loadBranches,

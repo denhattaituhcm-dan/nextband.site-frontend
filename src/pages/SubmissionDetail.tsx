@@ -25,6 +25,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { AnswerResultCard } from "@/components/submission/AnswerResultCard";
+import { VisualDiffViewer } from "@/components/submission/VisualDiffViewer";
+import { parseStructuredFeedback } from "@/lib/sentenceFeedback";
 import { RichContent } from "@/components/exam/RichContent";
 import { getFillBlankBlankCount } from "@/lib/fillBlank";
 import { format } from "date-fns";
@@ -106,6 +108,7 @@ export default function SubmissionDetail() {
   const { isAuthenticated, isAdmin, isTeacher } = useAuth();
   const submissionId = id || searchParams.get("submissionId") || undefined;
   const [showCorrectAnswers, setShowCorrectAnswers] = useState(false);
+  const [showVisualDiff, setShowVisualDiff] = useState(true);
   const [isStartingRevision, setIsStartingRevision] = useState(false);
 
   const handleStartRevision = async () => {
@@ -131,6 +134,45 @@ export default function SubmissionDetail() {
     queryFn: () => submissionsApi.getById(submissionId!),
     enabled: !!submissionId && isAuthenticated,
   });
+
+  const targetExamId = submission?.examId || submission?.exam_id;
+  const targetStudentId = submission?.studentId || submission?.student_id;
+
+  const { data: siblingSubmissionsData } = useQuery({
+    queryKey: ["sibling-submissions", targetExamId, targetStudentId],
+    queryFn: () => submissionsApi.list({ examId: targetExamId, studentId: targetStudentId, limit: 10 }),
+    enabled: !!targetExamId && !!targetStudentId && isAuthenticated,
+  });
+
+  const siblingSubmissions = siblingSubmissionsData?.data || [];
+  const sortedAttempts = useMemo(() => {
+    return [...siblingSubmissions].sort(
+      (a: any, b: any) =>
+        new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()
+    );
+  }, [siblingSubmissions]);
+
+  // Attempt 1 vs Attempt 2 texts for diff comparison
+  const diffComparisonData = useMemo(() => {
+    if (sortedAttempts.length < 2) return null;
+    const attempt1 = sortedAttempts[0];
+    const attempt2 = sortedAttempts[sortedAttempts.length - 1];
+
+    const essayAns1 = (attempt1.answers || []).find(
+      (a: any) => typeof a.answerText === "string" && a.answerText.trim().length > 20
+    );
+    const essayAns2 = (attempt2.answers || []).find(
+      (a: any) => typeof a.answerText === "string" && a.answerText.trim().length > 20
+    );
+
+    if (!essayAns1?.answerText || !essayAns2?.answerText) return null;
+    if (essayAns1.answerText === essayAns2.answerText) return null; // No difference
+
+    return {
+      attempt1Text: essayAns1.answerText,
+      attempt2Text: essayAns2.answerText,
+    };
+  }, [sortedAttempts]);
 
   const exam = submission?.exam;
   const sections = useMemo(() => {
@@ -520,49 +562,66 @@ export default function SubmissionDetail() {
           )}
 
           {/* TEACHER QUALITATIVE FEEDBACK & REVISION REQUIRED BLOCK (P1 Lean Learning Loop) */}
-          {(submission.feedback || submission.revisionRequired) && (
-            <Card className="mt-3 border border-amber-200/90 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/80 p-4 rounded-xl space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-amber-700 dark:text-amber-400" />
-                  <span className="font-bold text-sm text-amber-950 dark:text-amber-200">
-                    Phản Hồi & Đánh Giá Của Giáo Viên
-                  </span>
-                </div>
-                {submission.primaryErrorCategory && (
-                  <Badge variant="outline" className="bg-amber-100 dark:bg-amber-900/50 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-300 font-bold text-xs">
-                    Lỗi chính: {submission.primaryErrorCategory}
-                  </Badge>
-                )}
-              </div>
+          {(() => {
+            const parsed = parseStructuredFeedback(submission.feedback);
+            const feedbackText = parsed.text || (typeof submission.feedback === "string" && !submission.feedback.startsWith("{") ? submission.feedback : "");
+            const hasFeedback = !!feedbackText || !!submission.revisionRequired || parsed.sentenceFeedbacks?.length > 0;
+            if (!hasFeedback) return null;
 
-              {submission.feedback && (
-                <p className="text-xs text-amber-900/90 dark:text-amber-200/90 whitespace-pre-wrap leading-relaxed">
-                  {submission.feedback}
-                </p>
-              )}
-
-              {submission.revisionRequired && (
-                <div className="pt-3 border-t border-amber-200 dark:border-amber-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                  <div className="text-xs font-semibold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
-                    <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
-                    <span>Giáo viên yêu cầu viết bài sửa (Attempt 2) để khắc phục lỗi được chỉ ra.</span>
+            return (
+              <Card className="mt-3 border border-amber-200/90 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/80 p-4 rounded-xl space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4 text-amber-700 dark:text-amber-400" />
+                    <span className="font-bold text-sm text-amber-950 dark:text-amber-200">
+                      Phản Hồi & Đánh Giá Của Giáo Viên
+                    </span>
                   </div>
-                  <Button
-                    onClick={handleStartRevision}
-                    disabled={isStartingRevision}
-                    className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs gap-1.5 rounded-xl shadow-xs shrink-0"
-                  >
-                    {isStartingRevision ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    ) : (
-                      <Edit3 className="h-3.5 w-3.5" />
-                    )}
-                    <span>Làm bài sửa (Attempt 2)</span>
-                  </Button>
+                  {(submission.primaryErrorCategory || parsed.primaryErrorCategory) && (
+                    <Badge variant="outline" className="bg-amber-100 dark:bg-amber-900/50 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-300 font-bold text-xs">
+                      Lỗi chính: {submission.primaryErrorCategory || parsed.primaryErrorCategory}
+                    </Badge>
+                  )}
                 </div>
-              )}
-            </Card>
+
+                {feedbackText && (
+                  <p className="text-xs text-amber-900/90 dark:text-amber-200/90 whitespace-pre-wrap leading-relaxed">
+                    {feedbackText}
+                  </p>
+                )}
+
+                {submission.revisionRequired && (
+                  <div className="pt-3 border-t border-amber-200 dark:border-amber-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="text-xs font-semibold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
+                      <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                      <span>Giáo viên yêu cầu viết bài sửa (Attempt 2) để khắc phục lỗi được chỉ ra.</span>
+                    </div>
+                    <Button
+                      onClick={handleStartRevision}
+                      disabled={isStartingRevision}
+                      className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs gap-1.5 rounded-xl shadow-xs shrink-0"
+                    >
+                      {isStartingRevision ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Edit3 className="h-3.5 w-3.5" />
+                      )}
+                      <span>Làm bài sửa (Attempt 2)</span>
+                    </Button>
+                  </div>
+                )}
+              </Card>
+            );
+          })()}
+
+          {/* VISUAL DIFF VIEWER (Comparing Attempt 1 vs Attempt 2 if present) */}
+          {diffComparisonData && (
+            <div className="mt-4 space-y-2">
+              <VisualDiffViewer
+                attempt1Text={diffComparisonData.attempt1Text}
+                attempt2Text={diffComparisonData.attempt2Text}
+              />
+            </div>
           )}
 
           <Separator />
