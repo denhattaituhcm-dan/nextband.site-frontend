@@ -824,57 +824,62 @@ Nếu bạn cần tư vấn chi tiết hơn về bài sửa hoặc lộ trình h
                   )}
 
                   <div className="space-y-3">
-                    {detailData.questionBreakdown?.filter((q: any) => q.skill === "listening").map((q: any, idx: number) => (
-                      <div
-                        key={q.id || idx}
-                        className={`p-4 rounded-2xl border text-xs space-y-2.5 ${
-                          q.isCorrect
-                            ? "bg-emerald-500/5 border-emerald-500/20"
-                            : q.studentAnswer != null
-                            ? "bg-destructive/5 border-destructive/20"
-                            : "bg-muted/40 border-border"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-extrabold text-foreground text-sm">
-                            Câu {idx + 1}
-                          </span>
-                          {q.isCorrect ? (
-                            <Badge className="bg-emerald-600 text-white text-[10px] font-bold">
-                              Chính xác (+1)
-                            </Badge>
-                          ) : q.studentAnswer != null ? (
-                            <Badge variant="destructive" className="text-[10px] font-bold">
-                              Chưa chính xác
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="text-[10px] text-muted-foreground">
-                              Chưa làm
-                            </Badge>
-                          )}
-                        </div>
+                    {detailData.questionBreakdown?.filter((q: any) => q.skill === "listening").map((q: any, idx: number) => {
+                      const isMultiBlank = !!q.parentQuestionId;
+                      const hasPrompt = q.prompt && (!isMultiBlank || q.blankIndex === 0);
 
+                      return (
                         <div
-                          className="text-xs text-foreground font-medium leading-relaxed prose prose-sm max-w-none"
-                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.prompt) }}
-                        />
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                          <div className="p-2.5 rounded-xl bg-background border border-border">
-                            <span className="text-[11px] text-muted-foreground block font-semibold">Thí sinh chọn/điền:</span>
-                            <strong className={q.isCorrect ? "text-emerald-600 font-mono text-xs" : "text-destructive font-mono text-xs"}>
-                              {q.studentAnswer != null && typeof q.studentAnswer === "object"
-                                ? JSON.stringify(q.studentAnswer)
-                                : q.studentAnswer ? String(q.studentAnswer) : "(Chưa chọn)"}
-                            </strong>
+                          key={q.id || idx}
+                          className={`p-4 rounded-2xl border text-xs space-y-2.5 ${
+                            q.isCorrect
+                              ? "bg-emerald-500/5 border-emerald-500/20"
+                              : q.studentAnswer != null && q.studentAnswer !== ""
+                              ? "bg-destructive/5 border-destructive/20"
+                              : "bg-muted/40 border-border"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-extrabold text-foreground text-sm">
+                              Câu {idx + 1} {q.blankLabel ? `• ${q.blankLabel}` : ""}
+                            </span>
+                            {q.isCorrect ? (
+                              <Badge className="bg-emerald-600 text-white text-[10px] font-bold">
+                                Chính xác (+1)
+                              </Badge>
+                            ) : q.studentAnswer != null && q.studentAnswer !== "" ? (
+                              <Badge variant="destructive" className="text-[10px] font-bold">
+                                Chưa chính xác
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-[10px] text-muted-foreground">
+                                Chưa làm
+                              </Badge>
+                            )}
                           </div>
-                          <div className="p-2.5 rounded-xl bg-background border border-border">
-                            <span className="text-[11px] text-muted-foreground block font-semibold">Đáp án chuẩn:</span>
-                            <strong className="text-foreground font-mono text-xs">{q.correctAnswer}</strong>
+
+                          {hasPrompt && (
+                            <div
+                              className="text-xs text-foreground font-medium leading-relaxed prose prose-sm max-w-none p-3 rounded-xl bg-background/60 border border-border/50"
+                              dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.prompt) }}
+                            />
+                          )}
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                            <div className="p-2.5 rounded-xl bg-background border border-border">
+                              <span className="text-[11px] text-muted-foreground block font-semibold">Thí sinh điền:</span>
+                              <strong className={q.isCorrect ? "text-emerald-600 font-mono text-xs" : "text-destructive font-mono text-xs"}>
+                                {q.studentAnswer != null && q.studentAnswer !== "" ? String(q.studentAnswer) : "(Chưa điền)"}
+                              </strong>
+                            </div>
+                            <div className="p-2.5 rounded-xl bg-background border border-border">
+                              <span className="text-[11px] text-muted-foreground block font-semibold">Đáp án chuẩn:</span>
+                              <strong className="text-foreground font-mono text-xs">{q.correctAnswer}</strong>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </TabsContent>
 
@@ -904,57 +909,64 @@ Nếu bạn cần tư vấn chi tiết hơn về bài sửa hoặc lộ trình h
 
                     {/* Right Column: Reading Questions */}
                     <div className={detailData.testPayload?.skills?.reading?.passage ? "lg:col-span-6 space-y-3" : "lg:col-span-12 space-y-3"}>
-                      {detailData.questionBreakdown?.filter((q: any) => q.skill === "reading").map((q: any, idx: number) => (
-                        <div
-                          key={q.id || idx}
-                          className={`p-4 rounded-2xl border text-xs space-y-2.5 ${
-                            q.isCorrect
-                              ? "bg-emerald-500/5 border-emerald-500/20"
-                              : q.studentAnswer != null
-                              ? "bg-destructive/5 border-destructive/20"
-                              : "bg-muted/40 border-border"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="font-extrabold text-foreground text-sm">
-                              Câu {idx + 1}
-                            </span>
-                            {q.isCorrect ? (
-                              <Badge className="bg-emerald-600 text-white text-[10px] font-bold">
-                                Chính xác (+1)
-                              </Badge>
-                            ) : q.studentAnswer != null ? (
-                              <Badge variant="destructive" className="text-[10px] font-bold">
-                                Chưa chính xác
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline" className="text-[10px] text-muted-foreground">
-                                Chưa làm
-                              </Badge>
-                            )}
-                          </div>
+                      {detailData.questionBreakdown?.filter((q: any) => q.skill === "reading").map((q: any, idx: number) => {
+                        const isMultiBlank = !!q.parentQuestionId;
+                        const hasPrompt = q.prompt && (!isMultiBlank || q.blankIndex === 0);
 
+                        return (
                           <div
-                            className="text-xs text-foreground font-medium leading-relaxed prose prose-sm max-w-none"
-                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.prompt) }}
-                          />
-
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                            <div className="p-2.5 rounded-xl bg-background border border-border">
-                              <span className="text-[11px] text-muted-foreground block font-semibold">Thí sinh chọn/điền:</span>
-                              <strong className={q.isCorrect ? "text-emerald-600 font-mono text-xs" : "text-destructive font-mono text-xs"}>
-                                {q.studentAnswer != null && typeof q.studentAnswer === "object"
-                                  ? JSON.stringify(q.studentAnswer)
-                                  : q.studentAnswer ? String(q.studentAnswer) : "(Chưa chọn)"}
-                              </strong>
+                            key={q.id || idx}
+                            className={`p-4 rounded-2xl border text-xs space-y-2.5 ${
+                              q.isCorrect
+                                ? "bg-emerald-500/5 border-emerald-500/20"
+                                : q.studentAnswer != null && q.studentAnswer !== ""
+                                ? "bg-destructive/5 border-destructive/20"
+                                : "bg-muted/40 border-border"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-extrabold text-foreground text-sm">
+                                Câu {idx + 1} {q.blankLabel ? `• ${q.blankLabel}` : ""}
+                              </span>
+                              {q.isCorrect ? (
+                                <Badge className="bg-emerald-600 text-white text-[10px] font-bold">
+                                  Chính xác (+1)
+                                </Badge>
+                              ) : q.studentAnswer != null && q.studentAnswer !== "" ? (
+                                <Badge variant="destructive" className="text-[10px] font-bold">
+                                  Chưa chính xác
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-[10px] text-muted-foreground">
+                                  Chưa làm
+                                </Badge>
+                              )}
                             </div>
-                            <div className="p-2.5 rounded-xl bg-background border border-border">
-                              <span className="text-[11px] text-muted-foreground block font-semibold">Đáp án chuẩn:</span>
-                              <strong className="text-foreground font-mono text-xs">{q.correctAnswer}</strong>
+
+                            {hasPrompt && (
+                              <div
+                                className="text-xs text-foreground font-medium leading-relaxed prose prose-sm max-w-none p-3 rounded-xl bg-background/60 border border-border/50"
+                                dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.prompt) }}
+                              />
+                            )}
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                              <div className="p-2.5 rounded-xl bg-background border border-border">
+                                <span className="text-[11px] text-muted-foreground block font-semibold">
+                                  {q.questionType === "fill_blank" ? "Thí sinh điền:" : "Thí sinh chọn:"}
+                                </span>
+                                <strong className={q.isCorrect ? "text-emerald-600 font-mono text-xs" : "text-destructive font-mono text-xs"}>
+                                  {q.studentAnswer != null && q.studentAnswer !== "" ? String(q.studentAnswer) : "(Chưa chọn/điền)"}
+                                </strong>
+                              </div>
+                              <div className="p-2.5 rounded-xl bg-background border border-border">
+                                <span className="text-[11px] text-muted-foreground block font-semibold">Đáp án chuẩn:</span>
+                                <strong className="text-foreground font-mono text-xs">{q.correctAnswer}</strong>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 </TabsContent>
@@ -968,7 +980,7 @@ Nếu bạn cần tư vấn chi tiết hơn về bài sửa hoặc lộ trình h
                         className={`p-4 rounded-2xl border text-xs space-y-2.5 ${
                           q.isCorrect
                             ? "bg-emerald-500/5 border-emerald-500/20"
-                            : q.studentAnswer != null
+                            : q.studentAnswer != null && q.studentAnswer !== ""
                             ? "bg-destructive/5 border-destructive/20"
                             : "bg-muted/40 border-border"
                         }`}
@@ -981,7 +993,7 @@ Nếu bạn cần tư vấn chi tiết hơn về bài sửa hoặc lộ trình h
                             <Badge className="bg-emerald-600 text-white text-[10px] font-bold">
                               Chính xác (+1)
                             </Badge>
-                          ) : q.studentAnswer != null ? (
+                          ) : q.studentAnswer != null && q.studentAnswer !== "" ? (
                             <Badge variant="destructive" className="text-[10px] font-bold">
                               Chưa chính xác
                             </Badge>
@@ -1001,7 +1013,7 @@ Nếu bạn cần tư vấn chi tiết hơn về bài sửa hoặc lộ trình h
                           <div className="p-2.5 rounded-xl bg-background border border-border">
                             <span className="text-[11px] text-muted-foreground block font-semibold">Thí sinh chọn:</span>
                             <strong className={q.isCorrect ? "text-emerald-600 font-mono text-xs" : "text-destructive font-mono text-xs"}>
-                              {q.studentAnswer ? String(q.studentAnswer) : "(Chưa chọn)"}
+                              {q.studentAnswer != null && q.studentAnswer !== "" ? String(q.studentAnswer) : "(Chưa chọn)"}
                             </strong>
                           </div>
                           <div className="p-2.5 rounded-xl bg-background border border-border">
