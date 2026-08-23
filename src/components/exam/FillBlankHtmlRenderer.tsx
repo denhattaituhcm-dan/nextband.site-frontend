@@ -87,7 +87,7 @@ export function FillBlankHtmlRenderer({
         input.type = "text";
         input.placeholder = "...";
         input.className =
-          "inline-block w-28 h-8 border-b-2 border-t-0 border-l-0 border-r-0 border-primary/40 bg-transparent text-center text-sm font-medium focus:outline-none focus:border-primary px-1 mx-1 transition-colors";
+          "inline-flex items-center min-w-[120px] max-w-[200px] h-8 sm:h-9 px-3 mx-1.5 my-0.5 rounded-xl border border-brand-blue/50 bg-background text-foreground text-center text-sm sm:text-base font-bold shadow-2xs focus:outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/25 placeholder:text-muted-foreground/60 transition-all";
         slot.appendChild(input);
       }
 
@@ -166,7 +166,7 @@ export function FillBlankHtmlRenderer({
   return React.createElement("div", {
     ref: containerRef,
     className:
-      "prose prose-sm max-w-none [&_table]:border-collapse [&_table]:w-full [&_td]:border [&_td]:border-border [&_td]:p-2 [&_th]:border [&_th]:border-border [&_th]:p-2 [&_th]:bg-muted/50 [&_th]:font-semibold",
+      "text-sm sm:text-base leading-relaxed text-foreground font-sans [&_h3]:text-base sm:[&_h3]:text-lg [&_h3]:font-extrabold [&_h3]:text-foreground [&_h3]:mb-3.5 [&_h4]:text-sm sm:[&_h4]:text-base [&_h4]:font-bold [&_h4]:text-foreground [&_h4]:mb-2.5 [&_table]:border-collapse [&_table]:w-full [&_table]:my-3.5 [&_table]:rounded-2xl [&_table]:overflow-hidden [&_td]:border [&_td]:border-border [&_td]:p-3.5 sm:[&_td]:p-4 [&_td]:text-sm sm:[&_td]:text-base [&_td]:align-top [&_td]:leading-relaxed [&_th]:border [&_th]:border-border [&_th]:p-3.5 sm:[&_th]:p-4 [&_th]:bg-muted/70 [&_th]:text-xs sm:[&_th]:text-sm [&_th]:font-extrabold [&_th]:text-foreground [&_th]:text-left [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_li]:my-1.5",
     dangerouslySetInnerHTML: { __html: processedHtml },
   });
 }
