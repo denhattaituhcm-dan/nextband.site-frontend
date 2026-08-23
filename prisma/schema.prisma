@@ -36,9 +36,11 @@ model User {
   attendanceMarked  ClassAttendance[] @relation("AttendanceTeacher")
   createdInvitations Invitation[]     @relation("CreatedInvitations")
   createdHomeworks  Homework[]        @relation("CreatedHomeworks")
+  homeworkSubmissions Submission[]     @relation("StudentHomeworkSubmissions")
   auditLogsPerformed EnrollmentAuditLog[] @relation("OperatorAuditLogs")
   notifications     Notification[]   @relation("UserNotifications")
   assignedAssessments AssessmentSession[] @relation("AssignedTeacherAssessments")
+  userBranches      UserBranch[]
 
   @@map("profiles")
 }
@@ -114,6 +116,8 @@ model LessonResource {
 model Class {
   id          String          @id @default(uuid())
   courseId    String?         @map("course_id")
+  branchId    String?         @map("branch_id")
+  roomId      String?         @map("room_id")
   name        String
   description String?
   teacherId   String?         @map("teacher_id")
@@ -127,6 +131,8 @@ model Class {
   updatedAt   DateTime        @default(now()) @updatedAt @map("updated_at")
 
   course      Course?         @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  branch      Branch?         @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  room        Room?           @relation(fields: [roomId], references: [id], onDelete: SetNull)
   teacher     User?           @relation("TeacherClasses", fields: [teacherId], references: [userId], onDelete: SetNull)
   students    ClassStudent[]
   schedules   ClassSchedule[]
@@ -135,6 +141,7 @@ model Class {
   attendance  ClassAttendance[]
   homeworks   Homework[]
 
+  @@index([branchId])
   @@map("classes")
 }
 
@@ -319,6 +326,8 @@ model Exam {
   submissions         ExamSubmission[]
   assessmentSessions  AssessmentSession[]
   homeworks           Homework[]
+  policy              ExamPolicy?
+  examVersions        ExamVersion[]
   course              Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@index([courseId])
@@ -376,8 +385,9 @@ model Question {
   createdAt     DateTime      @default(now()) @map("created_at")
   audioUrl      String?       @map("audio_url")
 
-  group         QuestionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  answers       Answer[]
+  group               QuestionGroup   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  answers             Answer[]
+  versions            QuestionVersion[]
 
   @@index([groupId, orderIndex])
   @@map("questions")
@@ -387,6 +397,7 @@ model ExamSubmission {
   id             String           @id @default(uuid())
   examId         String           @map("exam_id")
   studentId      String           @map("student_id")
+  examVersionId  String?          @map("exam_version_id")
   status         SubmissionStatus @default(IN_PROGRESS)
   startedAt      DateTime?        @default(now()) @map("started_at")
   submittedAt    DateTime?        @map("submitted_at")
@@ -400,6 +411,7 @@ model ExamSubmission {
 
   answers        Answer[]
   exam           Exam             @relation(fields: [examId], references: [id], onDelete: Cascade)
+  examVersion    ExamVersion?     @relation(fields: [examVersionId], references: [id])
   grader         User?            @relation("GraderSubmissions", fields: [gradedBy], references: [userId])
   student        User             @relation("StudentSubmissions", fields: [studentId], references: [userId], onDelete: Cascade)
 
@@ -410,18 +422,21 @@ model ExamSubmission {
 }
 
 model Answer {
-  id           String         @id @default(uuid())
-  submissionId String         @map("submission_id")
-  questionId   String         @map("question_id")
-  answerText   String?        @map("answer_text")
-  audioUrl     String?        @map("audio_url")
-  score        Decimal?
-  feedback     String?
-  createdAt    DateTime       @default(now()) @map("created_at")
-  updatedAt    DateTime       @default(now()) @updatedAt @map("updated_at")
+  id                String                    @id @default(uuid())
+  submissionId      String                    @map("submission_id")
+  questionId        String                    @map("question_id")
+  questionVersionId String?                   @map("question_version_id")
+  answerText        String?                   @map("answer_text")
+  audioUrl          String?                   @map("audio_url")
+  score             Decimal?
+  feedback          String?
+  createdAt         DateTime                  @default(now()) @map("created_at")
+  updatedAt         DateTime                  @default(now()) @updatedAt @map("updated_at")
 
-  question     Question       @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  submission   ExamSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  question          Question                  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionVersion   QuestionVersion?          @relation(fields: [questionVersionId], references: [id])
+  submission        ExamSubmission            @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  evidence          AnswerEvaluationEvidence?
 
   @@unique([submissionId, questionId])
   @@map("answers")
@@ -466,38 +481,67 @@ model SiteSettings {
   @@map("site_settings")
 }
 
-model Notification {
-  id         String           @id @default(uuid())
-  userId     String           @map("user_id")
-  type       NotificationType @default(SYSTEM)
-  title      String
-  message    String
-  link       String?
-  entityType String?          @map("entity_type")
-  entityId   String?          @map("entity_id")
-  isRead     Boolean          @default(false) @map("is_read")
-  createdAt  DateTime         @default(now()) @map("created_at")
-  readAt     DateTime?        @map("read_at")
+model NotificationBroadcast {
+  id            String           @id @default(uuid())
+  title         String
+  message       String
+  type          NotificationType @default(ANNOUNCEMENT)
+  targetType    String           @map("target_type")
+  targetClassId String?          @map("target_class_id")
+  link          String?
+  createdBy     String?          @map("created_by")
+  createdAt     DateTime         @default(now()) @map("created_at")
+  publishedAt   DateTime         @default(now()) @map("published_at")
+  expiresAt     DateTime?        @map("expires_at")
+  deletedAt     DateTime?        @map("deleted_at")
 
-  user       User             @relation("UserNotifications", fields: [userId], references: [userId], onDelete: Cascade)
+  notifications Notification[]   @relation("BroadcastNotifications")
+
+  @@index([deletedAt, createdAt])
+  @@map("notification_broadcasts")
+}
+
+model Notification {
+  id          String                 @id @default(uuid())
+  broadcastId String?                @map("broadcast_id")
+  userId      String                 @map("user_id")
+  type        NotificationType       @default(SYSTEM)
+  title       String
+  message     String
+  link        String?
+  entityType  String?                @map("entity_type")
+  entityId    String?                @map("entity_id")
+  isRead      Boolean                @default(false) @map("is_read")
+  createdAt   DateTime               @default(now()) @map("created_at")
+  readAt      DateTime?              @map("read_at")
+
+  user        User                   @relation("UserNotifications", fields: [userId], references: [userId], onDelete: Cascade)
+  broadcast   NotificationBroadcast? @relation("BroadcastNotifications", fields: [broadcastId], references: [id], onDelete: SetNull)
 
   @@unique([entityType, entityId, userId, type], map: "notifications_idempotency_idx")
+  @@unique([broadcastId, userId], map: "notifications_broadcast_user_idx")
+  @@index([userId, isRead])
+  @@index([broadcastId])
   @@map("notifications")
 }
 
 model ContactLead {
-  id         String     @id @default(uuid())
-  fullName   String     @map("full_name")
-  phone      String
-  email      String?
-  goal       String?
-  source     String     @default("contact_page")
-  status     LeadStatus @default(NEW)
-  assignedTo String?    @map("assigned_to")
-  notes      String?
-  createdAt  DateTime   @default(now()) @map("created_at")
-  updatedAt  DateTime   @default(now()) @updatedAt @map("updated_at")
+  id                String     @id @default(uuid())
+  fullName          String     @map("full_name")
+  phone             String
+  email             String?
+  goal              String?
+  source            String     @default("contact_page")
+  status            LeadStatus @default(NEW)
+  assignedTo        String?    @map("assigned_to")
+  preferredBranchId String?    @map("preferred_branch_id")
+  notes             String?
+  createdAt         DateTime   @default(now()) @map("created_at")
+  updatedAt         DateTime   @default(now()) @updatedAt @map("updated_at")
 
+  preferredBranch   Branch?    @relation(fields: [preferredBranchId], references: [id], onDelete: SetNull)
+
+  @@index([preferredBranchId])
   @@map("contact_leads")
 }
 
@@ -507,6 +551,7 @@ model AssessmentSession {
   fullName           String    @map("full_name")
   phone              String
   targetBand         String?   @map("target_band")
+  branchId           String?   @map("branch_id")
   status             String    @default("ACTIVE") // ACTIVE, SUBMITTED, EXPIRED
   gradingStatus      String    @default("PENDING") @map("grading_status") // PENDING, IN_PROGRESS, GRADED, SENT
   assignedTeacherId  String?   @map("assigned_teacher_id")
@@ -524,11 +569,60 @@ model AssessmentSession {
 
   exam               Exam      @relation(fields: [examId], references: [id], onDelete: Cascade)
   assignedTeacher    User?     @relation("AssignedTeacherAssessments", fields: [assignedTeacherId], references: [userId], onDelete: SetNull)
+  branch             Branch?   @relation(fields: [branchId], references: [id], onDelete: SetNull)
 
   @@index([phone, createdAt])
   @@index([status, expiresAt])
   @@index([gradingStatus, createdAt])
+  @@index([branchId])
   @@map("assessment_sessions")
+}
+
+model Branch {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  address   String
+  phone     String?
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  rooms              Room[]
+  classes            Class[]
+  leads              ContactLead[]
+  userBranches       UserBranch[]
+  assessmentSessions AssessmentSession[]
+
+  @@map("branches")
+}
+
+model Room {
+  id        String   @id @default(uuid())
+  branchId  String   @map("branch_id")
+  name      String
+  capacity  Int      @default(15)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  classes   Class[]
+
+  @@unique([branchId, name])
+  @@map("rooms")
+}
+
+model UserBranch {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  branchId  String   @map("branch_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, branchId])
+  @@map("user_branches")
 }
 
 enum AppRole {
@@ -594,6 +688,8 @@ enum SubmissionStatus {
   IN_PROGRESS @map("in_progress")
   SUBMITTED   @map("submitted")
   GRADED      @map("graded")
+  EXPIRED     @map("expired")
+  ABANDONED   @map("abandoned")
 
   @@map("submission_status")
 }
@@ -646,3 +742,127 @@ enum LeadStatus {
   CANCELLED
   ARCHIVED
 }
+
+enum RetentionType {
+  PLACEMENT
+  HOMEWORK
+  EXAM
+  DRAFT
+}
+
+enum RecordingStatus {
+  UPLOADING
+  ACTIVE
+  EXPIRED
+  PURGED
+}
+
+model SpeakingRecordingAsset {
+  id               String          @id @default(uuid())
+  storagePath      String?         @unique @map("storage_path")
+  referenceType    String          @map("reference_type") // PLACEMENT_SESSION, HOMEWORK_SUBMISSION, EXAM_SUBMISSION, DRAFT
+  referenceId      String          @map("reference_id")
+  questionId       String?         @map("question_id")
+  retentionType    RetentionType   @map("retention_type")
+  status           RecordingStatus @default(UPLOADING)
+  mimeType         String          @default("audio/webm") @map("mime_type")
+  sizeBytes        Int?            @map("size_bytes")
+  durationMs       Int?            @map("duration_ms")
+  uploadedBy       String?         @map("uploaded_by")
+  expiresAt        DateTime        @map("expires_at")
+  purgedAt         DateTime?       @map("purged_at")
+  lastCleanupError String?         @map("last_cleanup_error")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @default(now()) @updatedAt @map("updated_at")
+
+  @@index([status, expiresAt])
+  @@index([referenceType, referenceId])
+  @@map("speaking_recording_assets")
+}
+
+model ExamPolicy {
+  id                     String   @id @default(uuid())
+  examId                 String   @unique @map("exam_id")
+  durationSeconds        Int      @map("duration_seconds")
+  submissionGraceSeconds Int      @default(60) @map("submission_grace_seconds")
+  allowLateSubmission    Boolean  @default(false) @map("allow_late_submission")
+  allowResume            Boolean  @default(true) @map("allow_resume")
+  maxAttempts            Int      @default(3) @map("max_attempts")
+  strictMode             Boolean  @default(true) @map("strict_mode")
+  createdAt              DateTime @default(now()) @map("created_at")
+  updatedAt              DateTime @default(now()) @updatedAt @map("updated_at")
+
+  exam                   Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  @@map("exam_policies")
+}
+
+model QuestionVersion {
+  id              String   @id @default(uuid())
+  questionId      String   @map("question_id")
+  versionNumber   Int      @map("version_number")
+  questionText    String   @map("question_text")
+  questionType    String   @map("question_type")
+  optionsJson     String?  @map("options_json")
+  correctAnswer   String   @map("correct_answer")
+  acceptedAnswers String?  @map("accepted_answers")
+  scoringRuleJson String?  @map("scoring_rule_json")
+  audioUrl        String?  @map("audio_url")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  question        Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  examVersions    ExamVersionItem[]
+  answers         Answer[]
+
+  @@unique([questionId, versionNumber])
+  @@map("question_versions")
+}
+
+model ExamVersion {
+  id            String            @id @default(uuid())
+  examId        String            @map("exam_id")
+  versionNumber Int               @map("version_number")
+  title         String
+  totalPoints   Float             @default(0) @map("total_points")
+  createdAt     DateTime          @default(now()) @map("created_at")
+
+  exam          Exam              @relation(fields: [examId], references: [id], onDelete: Cascade)
+  items         ExamVersionItem[]
+  submissions   ExamSubmission[]
+
+  @@unique([examId, versionNumber])
+  @@map("exam_versions")
+}
+
+model ExamVersionItem {
+  id                String          @id @default(uuid())
+  examVersionId     String          @map("exam_version_id")
+  questionVersionId String          @map("question_version_id")
+  sectionOrder      Int             @default(0) @map("section_order")
+  groupOrder        Int             @default(0) @map("group_order")
+  questionOrder     Int             @default(0) @map("question_order")
+
+  examVersion       ExamVersion     @relation(fields: [examVersionId], references: [id], onDelete: Cascade)
+  questionVersion   QuestionVersion @relation(fields: [questionVersionId], references: [id], onDelete: Cascade)
+
+  @@unique([examVersionId, questionVersionId])
+  @@map("exam_version_items")
+}
+
+model AnswerEvaluationEvidence {
+  id               String   @id @default(uuid())
+  answerId         String   @unique @map("answer_id")
+  evaluatorType    String   @map("evaluator_type")
+  evaluatorVersion String   @default("1.0.0") @map("evaluator_version")
+  rawSubmitted     String?  @map("raw_submitted")
+  normalizedInput  String?  @map("normalized_input")
+  matchedRule      String?  @map("matched_rule")
+  isCorrect        Boolean  @map("is_correct")
+  scoreAwarded     Float    @map("score_awarded")
+  maxScore         Float    @map("max_score")
+  evaluatedAt      DateTime @default(now()) @map("evaluated_at")
+
+  answer           Answer   @relation(fields: [answerId], references: [id], onDelete: Cascade)
+  @@map("answer_evaluation_evidences")
+}
+
+

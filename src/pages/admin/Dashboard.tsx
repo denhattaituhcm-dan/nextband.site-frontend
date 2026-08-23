@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { statsApi, usersApi, coursesApi } from "@/lib/api";
+import { useBranch } from "@/contexts/BranchContext";
 import {
   BookOpen,
   Users,
@@ -23,6 +24,9 @@ import {
   School,
   ArrowRight,
   TrendingUp,
+  Building2,
+  MapPin,
+  Layers,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +38,7 @@ import { AnnouncementBanner } from "@/components/AnnouncementBanner";
 import { AlertWidget } from "@/components/AlertWidget";
 
 export default function AdminDashboard() {
+  const { selectedBranch, setSelectedBranch, currentBranch, branches, canSelectAll } = useBranch();
   const { data: stats } = useQuery({
     queryKey: ["admin-stats"],
     queryFn: () => statsApi.getAdminStats().catch(() => ({ courses: 0, users: 0, exams: 0 })),
@@ -115,11 +120,110 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+      </div>
+
+      {/* Scope Status Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border bg-card/60 backdrop-blur">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            {selectedBranch === "ALL" ? (
+              <Layers className="h-5 w-5" />
+            ) : (
+              <MapPin className="h-5 w-5" />
+            )}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Phạm vi dữ liệu:</span>
+              <Badge variant={selectedBranch === "ALL" ? "secondary" : "default"} className="font-medium text-xs">
+                {selectedBranch === "ALL" ? "Toàn bộ hệ thống" : currentBranch?.name || "Cơ sở"}
+              </Badge>
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {selectedBranch === "ALL"
+                ? `Đang tổng hợp số liệu từ tất cả ${branches.length} chi nhánh hoạt động`
+                : `${currentBranch?.address || "Không có địa chỉ"} ${currentBranch?.phone ? `• Hotline: ${currentBranch.phone}` : ""}`}
+            </p>
+          </div>
+        </div>
+
+        {selectedBranch !== "ALL" && canSelectAll && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSelectedBranch("ALL")}
+            className="text-xs h-8"
+          >
+            <Layers className="h-3.5 w-3.5 mr-1.5 text-primary" />
+            Xem toàn hệ thống
+          </Button>
+        )}
+      </div>
 
       {/* Surface 2 Banner & Surface 4 Widget */}
       <AnnouncementBanner scopeRole="admin" />
       <AlertWidget role="admin" />
+
+      {/* Multi-branch Breakdown when selectedBranch === 'ALL' */}
+      {selectedBranch === "ALL" && branches.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold tracking-tight flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-primary" />
+              Tổng quan các Chi nhánh ({branches.length})
+            </h2>
+            <span className="text-xs text-muted-foreground">
+              Bấm vào chi nhánh để chuyển đổi góc nhìn
+            </span>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {branches.map((b) => (
+              <Card
+                key={b.id}
+                className="hover:border-primary/50 transition-all cursor-pointer hover:shadow-md bg-card/80 group"
+                onClick={() => setSelectedBranch(b.id)}
+              >
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h4 className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">
+                        {b.name}
+                      </h4>
+                      <p className="text-xs text-muted-foreground">{b.code}</p>
+                    </div>
+                    <Badge variant="outline" className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 border-emerald-200">
+                      Hoạt động
+                    </Badge>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 pt-2 border-t text-center">
+                    <div className="bg-muted/40 p-2 rounded-lg">
+                      <p className="text-[10px] text-muted-foreground font-medium">Lớp học</p>
+                      <p className="text-sm font-bold text-foreground mt-0.5">{b._count?.classes || 0}</p>
+                    </div>
+                    <div className="bg-muted/40 p-2 rounded-lg">
+                      <p className="text-[10px] text-muted-foreground font-medium">Phòng</p>
+                      <p className="text-sm font-bold text-foreground mt-0.5">{b._count?.rooms || 0}</p>
+                    </div>
+                    <div className="bg-muted/40 p-2 rounded-lg">
+                      <p className="text-[10px] text-muted-foreground font-medium">Leads</p>
+                      <p className="text-sm font-bold text-primary mt-0.5">{b._count?.leads || 0}</p>
+                    </div>
+                  </div>
+
+                  <div className="text-[11px] text-primary flex items-center justify-end font-medium group-hover:translate-x-0.5 transition-transform">
+                    Xem cơ sở này
+                    <ArrowRight className="h-3 w-3 ml-1" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

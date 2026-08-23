@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { classesApi, usersApi, coursesApi, sessionsApi, generateSessionDates } from "@/lib/api";
+import { classesApi, usersApi, coursesApi, sessionsApi, generateSessionDates, roomsApi } from "@/lib/api";
+import { useBranch } from "@/contexts/BranchContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -56,6 +57,8 @@ import {
   Clock,
   Filter,
   BookOpen,
+  MapPin,
+  Building2,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -80,6 +83,8 @@ const emptyForm = {
   name: "",
   description: "",
   courseId: "",
+  branchId: "",
+  roomId: "",
   teacherId: "",
   startDate: "",
   endDate: "",
@@ -92,6 +97,7 @@ const emptyForm = {
 
 export default function AdminClasses() {
   const { isAdmin } = useAuth();
+  const { selectedBranch, branches } = useBranch();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -122,6 +128,7 @@ export default function AdminClasses() {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: [
       "admin-classes",
+      selectedBranch,
       debouncedSearch,
       sortField,
       sortOrder,
@@ -131,6 +138,7 @@ export default function AdminClasses() {
     queryFn: () =>
       classesApi.list({
         search: debouncedSearch || undefined,
+        branchId: selectedBranch,
         sortBy: sortField,
         sortOrder,
         page,
@@ -207,6 +215,8 @@ export default function AdminClasses() {
         name: body.name,
         description: body.description,
         courseId: body.courseId || null,
+        branchId: body.branchId || null,
+        roomId: body.roomId || null,
         teacherId: body.teacherId || null,
         startDate: body.startDate || null,
         endDate: body.endDate || null,
@@ -268,7 +278,10 @@ export default function AdminClasses() {
 
   const openCreate = () => {
     setEditingClass(null);
-    setForm(emptyForm);
+    setForm({
+      ...emptyForm,
+      branchId: selectedBranch !== "ALL" ? selectedBranch : "",
+    });
     setDialogOpen(true);
   };
 
@@ -278,6 +291,8 @@ export default function AdminClasses() {
       name: cls.name || "",
       description: cls.description || "",
       courseId: cls.courseId || cls.course_id || "",
+      branchId: cls.branchId || cls.branch_id || cls.branch?.id || "",
+      roomId: cls.roomId || cls.room_id || cls.room?.id || "",
       teacherId: cls.teacherId || cls.teacher?.id || "",
       startDate: cls.startDate
         ? new Date(cls.startDate).toISOString().split("T")[0]
@@ -414,6 +429,7 @@ export default function AdminClasses() {
           <TableHeader className="bg-muted/40">
             <TableRow>
               <SortHeader field="name">Lớp học</SortHeader>
+              <TableHead>Cơ sở / Phòng</TableHead>
               <TableHead>Giáo viên</TableHead>
               <TableHead>Học viên</TableHead>
               <TableHead>Homework</TableHead>
@@ -425,7 +441,7 @@ export default function AdminClasses() {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-10">
+                <TableCell colSpan={8} className="text-center py-10">
                   <div className="flex items-center justify-center gap-2 text-muted-foreground">
                     <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
                     Đang tải danh sách lớp học...
@@ -434,7 +450,7 @@ export default function AdminClasses() {
               </TableRow>
             ) : isError ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-10">
+                <TableCell colSpan={8} className="text-center py-10">
                   <div className="flex flex-col items-center justify-center gap-2 text-destructive">
                     <AlertCircle className="h-5 w-5" />
                     <span>Không thể tải danh sách lớp học</span>
@@ -452,7 +468,7 @@ export default function AdminClasses() {
             ) : filteredClasses.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={8}
                   className="text-center py-12 text-muted-foreground"
                 >
                   Không tìm thấy lớp học nào phù hợp
@@ -488,6 +504,23 @@ export default function AdminClasses() {
                           <Badge variant="outline" className="text-xs text-muted-foreground">Tạm dừng</Badge>
                         )}
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      {cls.branch ? (
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                            <MapPin className="h-3 w-3 text-emerald-600" />
+                            {cls.branch.name}
+                          </span>
+                          {cls.room && (
+                            <span className="text-[11px] text-muted-foreground">
+                              {cls.room.name}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground italic">Chưa gán</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       {cls.teacher?.fullName ? (
@@ -604,6 +637,7 @@ export default function AdminClasses() {
         setForm={setForm}
         courses={courses}
         teachers={teachers}
+        branches={branches}
         onSave={handleSave}
         isSaving={createMutation.isPending || updateMutation.isPending}
       />
@@ -628,6 +662,8 @@ interface ClassForm {
   name: string;
   description: string;
   courseId: string;
+  branchId: string;
+  roomId: string;
   teacherId: string;
   startDate: string;
   endDate: string;
@@ -646,6 +682,7 @@ function CreateEditClassDialog({
   setForm,
   courses,
   teachers,
+  branches,
   onSave,
   isSaving,
 }: {
@@ -656,9 +693,17 @@ function CreateEditClassDialog({
   setForm: (f: ClassForm) => void;
   courses: any[];
   teachers: any[];
+  branches: any[];
   onSave: () => void;
   isSaving: boolean;
 }) {
+  const { data: roomsData } = useQuery({
+    queryKey: ["branch-rooms", form.branchId],
+    queryFn: () => roomsApi.list(form.branchId),
+    enabled: !!form.branchId && form.branchId !== "__none__",
+  });
+  const rooms = roomsData || [];
+
   // Preview lịch học – tính realtime khi chọn ngày bắt đầu + thứ
   const previewDates = useMemo(() => {
     if (!form.startDate || form.weekdays.length === 0) return [];
@@ -698,6 +743,63 @@ function CreateEditClassDialog({
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder="VD: IELTS Foundation 01"
             />
+          </div>
+
+          {/* Cơ sở & Phòng học */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1.5 font-semibold text-slate-700">
+                <MapPin className="h-3.5 w-3.5 text-emerald-600" />
+                Cơ sở / Chi nhánh *
+              </Label>
+              <Select
+                value={form.branchId || "__none__"}
+                onValueChange={(v) => {
+                  const val = v === "__none__" ? "" : v;
+                  setForm({ ...form, branchId: val, roomId: "" });
+                }}
+              >
+                <SelectTrigger className="bg-slate-50 border-slate-200">
+                  <SelectValue placeholder="Chọn cơ sở..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">
+                    <span className="text-muted-foreground">— Chọn cơ sở —</span>
+                  </SelectItem>
+                  {branches.map((b: any) => (
+                    <SelectItem key={b.id} value={b.id}>
+                      <span className="font-medium text-slate-800">{b.name}</span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1.5 font-semibold text-slate-700">
+                <School className="h-3.5 w-3.5 text-blue-600" />
+                Phòng học
+              </Label>
+              <Select
+                value={form.roomId || "__none__"}
+                onValueChange={(v) => setForm({ ...form, roomId: v === "__none__" ? "" : v })}
+                disabled={!form.branchId || form.branchId === "__none__"}
+              >
+                <SelectTrigger className="bg-slate-50 border-slate-200">
+                  <SelectValue placeholder={!form.branchId ? "Chọn cơ sở trước" : "Chọn phòng học..."} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">
+                    <span className="text-muted-foreground">— Không gán phòng —</span>
+                  </SelectItem>
+                  {rooms.map((r: any) => (
+                    <SelectItem key={r.id} value={r.id}>
+                      <span>{r.name} {r.capacity ? `(${r.capacity} chỗ)` : ""}</span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Khóa học */}

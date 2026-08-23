@@ -2153,6 +2153,153 @@ export const statsApi = {
 };
 
 // =============================================
+// BRANCHES & ROOMS API
+// =============================================
+export interface Branch {
+  id: string;
+  code: string;
+  name: string;
+  address: string;
+  phone?: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  _count?: {
+    rooms: number;
+    classes: number;
+    leads: number;
+  };
+  rooms?: Room[];
+}
+
+export interface Room {
+  id: string;
+  branchId: string;
+  name: string;
+  capacity: number;
+  isActive: boolean;
+  createdAt?: string;
+  branch?: { id: string; name: string; code: string };
+  _count?: { classes: number };
+}
+
+export const branchesApi = {
+  list: async (): Promise<Branch[]> => {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/branches`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+    if (!res.ok) throw new Error("Không thể tải danh sách chi nhánh");
+    const json = await res.json();
+    return json.data || [];
+  },
+
+  getById: async (id: string): Promise<Branch> => {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/branches/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+    if (!res.ok) throw new Error("Không thể tải thông tin chi nhánh");
+    const json = await res.json();
+    return json.data;
+  },
+
+  create: async (data: { code: string; name: string; address: string; phone?: string }): Promise<Branch> => {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/branches`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.error || "Không thể tạo chi nhánh");
+    }
+    const json = await res.json();
+    return json.data;
+  },
+
+  update: async (id: string, data: { name?: string; address?: string; phone?: string; isActive?: boolean }): Promise<Branch> => {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/branches/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.error || "Không thể cập nhật chi nhánh");
+    }
+    const json = await res.json();
+    return json.data;
+  },
+};
+
+export const roomsApi = {
+  list: async (branchId?: string): Promise<Room[]> => {
+    const token = await getAuthToken();
+    const query = branchId && branchId !== "ALL" ? `?branchId=${branchId}` : "";
+    const res = await fetch(`${API_BASE_URL}/rooms${query}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+    if (!res.ok) throw new Error("Không thể tải danh sách phòng học");
+    const json = await res.json();
+    return json.data || [];
+  },
+
+  create: async (data: { branchId: string; name: string; capacity?: number }): Promise<Room> => {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/rooms`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.error || "Không thể tạo phòng");
+    }
+    const json = await res.json();
+    return json.data;
+  },
+
+  update: async (id: string, data: { name?: string; capacity?: number; isActive?: boolean }): Promise<Room> => {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/rooms/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.error || "Không thể cập nhật phòng");
+    }
+    const json = await res.json();
+    return json.data;
+  },
+};
+
+// =============================================
 // CLASSES API
 // =============================================
 export const classesApi = {
@@ -2160,12 +2307,74 @@ export const classesApi = {
     page?: number;
     limit?: number;
     search?: string;
+    branchId?: string;
+    isActive?: boolean;
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }) => {
+    // 1. Try Fastify backend with full relation embedding and authorization boundary
+    try {
+      const token = await getAuthToken();
+      const queryParams = new URLSearchParams();
+      if (params?.page) queryParams.set("page", String(params.page));
+      if (params?.limit) queryParams.set("limit", String(params.limit));
+      if (params?.search) queryParams.set("search", params.search);
+      if (params?.branchId && params.branchId !== "ALL") queryParams.set("branchId", params.branchId);
+      if (params?.isActive !== undefined) queryParams.set("isActive", String(params.isActive));
+
+      const res = await fetch(`${API_BASE_URL}/classes?${queryParams.toString()}`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.data) {
+          const formatted = json.data.map((c: any) => ({
+            id: c.id,
+            name: c.name,
+            description: c.description || "",
+            courseId: c.courseId || c.course_id,
+            branchId: c.branchId || c.branch_id,
+            roomId: c.roomId || c.room_id,
+            branch: c.branch || null,
+            room: c.room || null,
+            course: c.course || null,
+            teacherId: c.teacherId || c.teacher_id,
+            teacher: c.teacher || null,
+            startDate: c.startDate || c.start_date,
+            endDate: c.endDate || c.end_date,
+            isActive: c.isActive ?? c.is_active ?? true,
+            createdAt: c.createdAt || c.created_at,
+            _count: { students: c._count?.students || 0 },
+            studentCount: c._count?.students || 0,
+          }));
+
+          return {
+            data: formatted,
+            meta: json.meta || {
+              total: formatted.length,
+              page: params?.page || 1,
+              limit: params?.limit || 10,
+              totalPages: 1,
+            },
+          };
+        }
+      }
+    } catch (apiErr) {
+      console.warn("[classesApi] Fastify fetch failed, falling back to Supabase:", apiErr);
+    }
+
+    // 2. Fallback to Supabase direct query
     let query = supabase
       .from("classes")
       .select("*", { count: "exact" });
+
+    if (params?.branchId && params.branchId !== "ALL") {
+      query = query.eq("branch_id", params.branchId);
+    }
 
     if (params?.search) {
       query = query.ilike("name", `%${params.search}%`);

@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 
 import { NotificationBell } from './NotificationBell';
+import { BranchSwitcher } from './BranchSwitcher';
 
 export function AdminHeader() {
   const { user, signOut } = useAuth();
@@ -30,8 +31,10 @@ export function AdminHeader() {
         <div className="flex items-center gap-4">
           <SidebarTrigger className="-ml-1" />
           <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold">Quản trị hệ thống</h2>
-            <Badge variant="secondary" className="text-xs">Admin</Badge>
+            <h2 className="text-lg font-semibold hidden sm:inline-block">Quản trị hệ thống</h2>
+            <Badge variant="secondary" className="text-xs hidden md:inline-flex">Admin</Badge>
+            <div className="h-4 w-px bg-border hidden sm:block" />
+            <BranchSwitcher />
           </div>
         </div>
 

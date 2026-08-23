@@ -14,13 +14,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BookOpen, Users } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { BookOpen, Users, Building2, MapPin, Plus, Phone, School } from "lucide-react";
 import {
   DEFAULT_SITE_SETTINGS,
   normalizeSiteSettings,
   type SiteSettings,
 } from "@/lib/site-settings";
-import { siteSettingsApi } from "@/lib/api";
+import { siteSettingsApi, branchesApi, roomsApi } from "@/lib/api";
 
 export default function AdminSettings() {
   const { toast } = useToast();
@@ -703,6 +711,9 @@ export default function AdminSettings() {
         </CardContent>
       </Card>
 
+      {/* Multi-Branch & Room Management */}
+      <BranchRoomManagement />
+
       <div className="flex justify-end">
         <Button
           onClick={handleSave}
@@ -712,5 +723,231 @@ export default function AdminSettings() {
         </Button>
       </div>
     </div>
+  );
+}
+
+function BranchRoomManagement() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { data: branches = [], refetch } = useQuery({
+    queryKey: ["branches-settings"],
+    queryFn: () => branchesApi.list(),
+  });
+
+  const [createBranchOpen, setCreateBranchOpen] = useState(false);
+  const [createRoomOpen, setCreateRoomOpen] = useState(false);
+  const [selectedBranchId, setSelectedBranchId] = useState("");
+
+  const [branchForm, setBranchForm] = useState({
+    code: "",
+    name: "",
+    address: "",
+    phone: "",
+  });
+
+  const [roomForm, setRoomForm] = useState({
+    name: "",
+    capacity: 15,
+  });
+
+  const createBranchMutation = useMutation({
+    mutationFn: (data: any) => branchesApi.create(data),
+    onSuccess: () => {
+      toast({ title: "Tạo chi nhánh thành công" });
+      setCreateBranchOpen(false);
+      setBranchForm({ code: "", name: "", address: "", phone: "" });
+      queryClient.invalidateQueries({ queryKey: ["branches-settings"] });
+      refetch();
+    },
+    onError: (err: any) => {
+      toast({ title: "Lỗi", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const createRoomMutation = useMutation({
+    mutationFn: (data: any) => roomsApi.create(data),
+    onSuccess: () => {
+      toast({ title: "Tạo phòng học thành công" });
+      setCreateRoomOpen(false);
+      setRoomForm({ name: "", capacity: 15 });
+      queryClient.invalidateQueries({ queryKey: ["branches-settings"] });
+      refetch();
+    },
+    onError: (err: any) => {
+      toast({ title: "Lỗi", description: err.message, variant: "destructive" });
+    },
+  });
+
+  return (
+    <Card className="col-span-full">
+      <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
+        <div>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Building2 className="h-5 w-5 text-primary" />
+            Hệ thống Cơ sở & Phòng học (Multi-Branch)
+          </CardTitle>
+          <CardDescription>
+            Quản lý danh sách các chi nhánh trung tâm và phòng học vật lý
+          </CardDescription>
+        </div>
+        <Button size="sm" onClick={() => setCreateBranchOpen(true)} className="gap-1.5 text-xs">
+          <Plus className="h-4 w-4" />
+          Thêm cơ sở
+        </Button>
+      </CardHeader>
+      <CardContent className="p-6 space-y-6">
+        {branches.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground text-sm">
+            Chưa có cơ sở nào. Bấm "Thêm cơ sở" để thiết lập chi nhánh đầu tiên.
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {branches.map((b) => (
+              <div
+                key={b.id}
+                className="rounded-xl border bg-card p-4 space-y-3 shadow-xs hover:border-primary/40 transition-colors"
+              >
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h4 className="font-bold text-sm text-foreground">{b.name}</h4>
+                    <p className="text-xs text-primary font-medium">{b.code}</p>
+                  </div>
+                  <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold">
+                    Hoạt động
+                  </Badge>
+                </div>
+
+                <div className="space-y-1 text-xs text-muted-foreground">
+                  <p className="flex items-center gap-1.5">
+                    <MapPin className="h-3.5 w-3.5 text-muted-foreground/70 shrink-0" />
+                    <span className="truncate">{b.address}</span>
+                  </p>
+                  {b.phone && (
+                    <p className="flex items-center gap-1.5">
+                      <Phone className="h-3.5 w-3.5 text-muted-foreground/70 shrink-0" />
+                      <span>{b.phone}</span>
+                    </p>
+                  )}
+                </div>
+
+                <div className="pt-2 border-t flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">
+                    {b._count?.rooms || 0} phòng • {b._count?.classes || 0} lớp
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs px-2 gap-1"
+                    onClick={() => {
+                      setSelectedBranchId(b.id);
+                      setCreateRoomOpen(true);
+                    }}
+                  >
+                    <Plus className="h-3 w-3" />
+                    Thêm phòng
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Create Branch Dialog */}
+        <Dialog open={createBranchOpen} onOpenChange={setCreateBranchOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Thêm Cơ Sở Mới</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-1.5">
+                <Label>Mã chi nhánh (Code) *</Label>
+                <Input
+                  placeholder="VD: THU_DUC, QUAN_1"
+                  value={branchForm.code}
+                  onChange={(e) => setBranchForm({ ...branchForm, code: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Tên chi nhánh *</Label>
+                <Input
+                  placeholder="VD: Cơ sở Thủ Đức"
+                  value={branchForm.name}
+                  onChange={(e) => setBranchForm({ ...branchForm, name: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Địa chỉ chi tiết *</Label>
+                <Input
+                  placeholder="VD: 123 Võ Văn Ngân, TP. Thủ Đức"
+                  value={branchForm.address}
+                  onChange={(e) => setBranchForm({ ...branchForm, address: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Số điện thoại Hotline</Label>
+                <Input
+                  placeholder="VD: 0901234567"
+                  value={branchForm.phone}
+                  onChange={(e) => setBranchForm({ ...branchForm, phone: e.target.value })}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setCreateBranchOpen(false)}>Hủy</Button>
+              <Button
+                disabled={!branchForm.code || !branchForm.name || !branchForm.address || createBranchMutation.isPending}
+                onClick={() => createBranchMutation.mutate(branchForm)}
+              >
+                {createBranchMutation.isPending ? "Đang tạo..." : "Tạo cơ sở"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Create Room Dialog */}
+        <Dialog open={createRoomOpen} onOpenChange={setCreateRoomOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Thêm Phòng Học</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-1.5">
+                <Label>Tên phòng học *</Label>
+                <Input
+                  placeholder="VD: Phòng 101, Lab A"
+                  value={roomForm.name}
+                  onChange={(e) => setRoomForm({ ...roomForm, name: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Sức chứa (Số học viên)</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={roomForm.capacity}
+                  onChange={(e) => setRoomForm({ ...roomForm, capacity: Number(e.target.value) || 15 })}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setCreateRoomOpen(false)}>Hủy</Button>
+              <Button
+                disabled={!roomForm.name || !selectedBranchId || createRoomMutation.isPending}
+                onClick={() =>
+                  createRoomMutation.mutate({
+                    branchId: selectedBranchId,
+                    name: roomForm.name,
+                    capacity: roomForm.capacity,
+                  })
+                }
+              >
+                {createRoomMutation.isPending ? "Đang tạo..." : "Tạo phòng"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </CardContent>
+    </Card>
   );
 }

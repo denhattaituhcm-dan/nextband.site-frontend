@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchAllContactLeads, updateContactLead, ContactLead } from "@/lib/contactService";
+import { useBranch } from "@/contexts/BranchContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +37,7 @@ import {
   Edit3,
   Inbox,
   Filter,
+  MapPin,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -78,6 +80,7 @@ const STATUS_CONFIG: Record<
 };
 
 export default function AdminLeads() {
+  const { selectedBranch } = useBranch();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [selectedLead, setSelectedLead] = useState<ContactLead | null>(null);
@@ -89,8 +92,8 @@ export default function AdminLeads() {
   const queryClient = useQueryClient();
 
   const { data: leads = [], isLoading, refetch, isFetching } = useQuery({
-    queryKey: ["admin_leads"],
-    queryFn: fetchAllContactLeads,
+    queryKey: ["admin_leads", selectedBranch],
+    queryFn: () => fetchAllContactLeads({ preferredBranchId: selectedBranch }),
     refetchInterval: 30000, // Auto refresh every 30s
   });
 
@@ -258,6 +261,7 @@ export default function AdminLeads() {
               <TableHeader>
                 <TableRow className="bg-muted/40 hover:bg-muted/40">
                   <TableHead className="font-bold text-xs uppercase tracking-wider">Khách hàng</TableHead>
+                  <TableHead className="font-bold text-xs uppercase tracking-wider">Cơ sở</TableHead>
                   <TableHead className="font-bold text-xs uppercase tracking-wider">Khóa & Ca học quan tâm</TableHead>
                   <TableHead className="font-bold text-xs uppercase tracking-wider">Nguồn</TableHead>
                   <TableHead className="font-bold text-xs uppercase tracking-wider">Thời gian</TableHead>
@@ -293,6 +297,18 @@ export default function AdminLeads() {
                             )}
                           </div>
                         </div>
+                      </TableCell>
+
+                      {/* Preferred Branch */}
+                      <TableCell>
+                        {lead.preferredBranch ? (
+                          <Badge variant="outline" className="gap-1 text-xs font-normal border-primary/20 bg-primary/5">
+                            <MapPin className="h-3 w-3 text-primary" />
+                            {lead.preferredBranch.name}
+                          </Badge>
+                        ) : (
+                          <span className="text-xs text-muted-foreground italic">—</span>
+                        )}
                       </TableCell>
 
                       {/* Course / Shift */}

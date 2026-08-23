@@ -10,6 +10,8 @@ export interface ContactLead {
   source?: string;
   status: "NEW" | "CONTACTED" | "ENROLLED" | "CANCELLED" | "ARCHIVED" | "new" | "contacted" | "enrolled" | "archived";
   assignedTo?: string;
+  preferredBranchId?: string | null;
+  preferredBranch?: { id: string; name: string; code: string } | null;
   notes?: string;
   createdAt: string;
 }
@@ -48,6 +50,7 @@ export interface SubmitLeadParams {
   email?: string;
   course?: string;
   preferredSchedule?: string;
+  preferredBranchId?: string;
   goal?: string;
   message?: string;
   source?: string;
@@ -163,11 +166,12 @@ export async function submitContactLead(
 /**
  * Admin: Get all leads (Backend Server -> Supabase -> Local)
  */
-export async function fetchAllContactLeads(): Promise<ContactLead[]> {
+export async function fetchAllContactLeads(params?: { preferredBranchId?: string }): Promise<ContactLead[]> {
   // 1. Try Backend Server
   try {
     const token = await getAuthToken();
-    const res = await fetch(`${API_BASE_URL}/leads`, {
+    const query = params?.preferredBranchId && params.preferredBranchId !== "ALL" ? `?preferredBranchId=${params.preferredBranchId}` : "";
+    const res = await fetch(`${API_BASE_URL}/leads${query}`, {
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -176,8 +180,9 @@ export async function fetchAllContactLeads(): Promise<ContactLead[]> {
 
     if (res.ok) {
       const result = await res.json();
-      if (Array.isArray(result.data)) {
-        return result.data.map((d: any) => ({
+      const items = Array.isArray(result.data) ? result.data : (result.items || []);
+      if (items.length > 0 || result.success) {
+        return items.map((d: any) => ({
           id: d.id,
           fullName: d.fullName || d.full_name,
           phone: d.phone,
@@ -185,6 +190,10 @@ export async function fetchAllContactLeads(): Promise<ContactLead[]> {
           goal: d.goal || "",
           source: d.source || "contact_page",
           status: d.status || "NEW",
+          preferredBranchId: d.preferredBranchId || d.preferred_branch_id || null,
+          preferredBranch: d.preferredBranch || null,
+          assignedTo: d.assignedTo || d.assigned_to || "",
+          notes: d.notes || "",
           createdAt: d.createdAt || d.created_at,
         }));
       }
@@ -195,10 +204,16 @@ export async function fetchAllContactLeads(): Promise<ContactLead[]> {
 
   // 2. Try Supabase
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from("contact_leads")
       .select("*")
       .order("created_at", { ascending: false });
+
+    if (params?.preferredBranchId && params.preferredBranchId !== "ALL") {
+      query = query.eq("preferred_branch_id", params.preferredBranchId);
+    }
+
+    const { data, error } = await query;
 
     if (!error && data && data.length > 0) {
       return data.map((d: any) => ({
@@ -209,6 +224,7 @@ export async function fetchAllContactLeads(): Promise<ContactLead[]> {
         goal: d.goal || "",
         source: d.source || "contact_page",
         status: d.status || "NEW",
+        preferredBranchId: d.preferred_branch_id || null,
         assignedTo: d.assigned_to || "",
         notes: d.notes || "",
         createdAt: d.created_at,
