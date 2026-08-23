@@ -94,8 +94,9 @@ export function ListeningPanel({
       {/* Questions List */}
       <div className="space-y-4">
         {questions.map((q) => {
-          const isFillBlankWithSlots = q.questionType === "fill_blank" && hasFillBlankPlaceholders(q.prompt);
-          const hasHtml = q.prompt.includes("<") && q.prompt.includes(">");
+          const promptText = q?.prompt || "";
+          const isFillBlankWithSlots = q?.questionType === "fill_blank" && hasFillBlankPlaceholders(promptText);
+          const hasHtml = promptText.includes("<") && promptText.includes(">");
 
           return (
             <div
@@ -105,10 +106,10 @@ export function ListeningPanel({
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-brand-blue uppercase tracking-wide">
-                  {q.sectionTitle}
+                  {q.sectionTitle || "Listening"}
                 </span>
                 <span className="text-xs font-extrabold text-muted-foreground">
-                  {q.blankCount && q.blankCount > 1 ? `${q.blankCount} chỗ trống` : `Câu ${q.orderIndex}`}
+                  {q.blankCount && q.blankCount > 1 ? `${q.blankCount} chỗ trống` : `Câu ${q.orderIndex || 1}`}
                 </span>
               </div>
 
@@ -116,8 +117,8 @@ export function ListeningPanel({
               {isFillBlankWithSlots ? (
                 <div className="pt-1">
                   <FillBlankHtmlRenderer
-                    html={q.prompt}
-                    answers={typeof answers[q.id] === "object" ? answers[q.id] || {} : {}}
+                    html={promptText}
+                    answers={typeof answers?.[q.id] === "object" ? answers[q.id] || {} : {}}
                     questionId={q.id}
                     onAnswerChange={onAnswerChange}
                   />
@@ -127,23 +128,23 @@ export function ListeningPanel({
                   {hasHtml ? (
                     <div
                       className="text-sm sm:text-base font-bold text-foreground leading-relaxed prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.prompt) }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(promptText) }}
                     />
                   ) : (
                     <p className="text-sm sm:text-base font-bold text-foreground leading-relaxed">
-                      {q.prompt}
+                      {promptText}
                     </p>
                   )}
 
                   {/* Multiple Choice Options */}
-                  {(q.questionType === "multiple_choice" || q.questionType === "true_false_not_given") && q.options && (
+                  {(q.questionType === "multiple_choice" || q.questionType === "true_false_not_given") && Array.isArray(q.options) && q.options.length > 0 && (
                     <RadioGroup
-                      value={answers[q.id] || ""}
+                      value={typeof answers?.[q.id] === "string" ? answers[q.id] : ""}
                       onValueChange={(val) => onAnswerChange(q.id, val)}
                       className="space-y-2 pt-1"
                     >
                       {q.options.map((opt, idx) => {
-                        const isChecked = answers[q.id] === opt;
+                        const isChecked = answers?.[q.id] === opt;
                         return (
                           <label
                             key={idx}
@@ -165,7 +166,7 @@ export function ListeningPanel({
                   {q.questionType === "fill_blank" && (
                     <div className="pt-1">
                       <Input
-                        value={typeof answers[q.id] === "string" ? answers[q.id] : ""}
+                        value={typeof answers?.[q.id] === "string" ? answers[q.id] : ""}
                         onChange={(e) => onAnswerChange(q.id, e.target.value)}
                         placeholder={q.placeholder || "Nhập câu trả lời của bạn..."}
                         className="h-11 rounded-2xl border-border font-medium text-sm focus:border-brand-blue"

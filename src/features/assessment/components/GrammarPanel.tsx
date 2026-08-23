@@ -40,7 +40,8 @@ export function GrammarPanel({
 
       <div className="space-y-4">
         {questions.map((q) => {
-          const hasHtml = q.prompt.includes("<") && q.prompt.includes(">");
+          const promptText = q?.prompt || "";
+          const hasHtml = promptText.includes("<") && promptText.includes(">");
 
           return (
             <div
@@ -53,30 +54,30 @@ export function GrammarPanel({
                   {q.sectionTitle || "Chẩn đoán Ngữ pháp & Từ vựng"}
                 </span>
                 <span className="text-xs font-extrabold text-muted-foreground">
-                  Câu {q.orderIndex}
+                  Câu {q.orderIndex || 1}
                 </span>
               </div>
 
               {hasHtml ? (
                 <div
                   className="text-sm sm:text-base font-bold text-foreground leading-relaxed prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.prompt) }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(promptText) }}
                 />
               ) : (
                 <p className="text-sm sm:text-base font-bold text-foreground leading-relaxed">
-                  {q.prompt}
+                  {promptText}
                 </p>
               )}
 
               {/* Multiple Choice Options */}
-              {(q.questionType === "multiple_choice" || q.questionType === "true_false_not_given") && q.options && (
+              {(q.questionType === "multiple_choice" || q.questionType === "true_false_not_given") && Array.isArray(q.options) && q.options.length > 0 && (
                 <RadioGroup
-                  value={answers[q.id] || ""}
+                  value={typeof answers?.[q.id] === "string" ? answers[q.id] : ""}
                   onValueChange={(val) => onAnswerChange(q.id, val)}
                   className="space-y-2 pt-1"
                 >
                   {q.options.map((opt, idx) => {
-                    const isChecked = answers[q.id] === opt;
+                    const isChecked = answers?.[q.id] === opt;
                     return (
                       <label
                         key={idx}

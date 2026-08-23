@@ -113,94 +113,118 @@ export function ReadingPanel({
   const renderHighlightedPassage = useCallback(() => {
     if (!formattedPassageHtml) return null;
 
-    const sortedHls = [...highlights].sort((a, b) => a.startIndex - b.startIndex);
-
-    if (typeof window === "undefined" || typeof DOMParser === "undefined") {
-      return <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(formattedPassageHtml) }} />;
+    // Fast path: if no highlights, render sanitized HTML directly without DOM tree reconstruction
+    if (!highlights || highlights.length === 0) {
+      return (
+        <div
+          className="prose prose-sm max-w-none text-justify select-text"
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(formattedPassageHtml) }}
+        />
+      );
     }
 
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(formattedPassageHtml, "text/html");
-    const body = doc.body;
-
-    let globalOffset = 0;
-
-    const renderNode = (node: ChildNode, pathKey: string): React.ReactNode => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        const text = node.textContent || "";
-        const parts: React.ReactNode[] = [];
-        const start = globalOffset;
-        const end = start + text.length;
-        let cursor = start;
-
-        sortedHls.forEach((h) => {
-          const hStart = Math.max(h.startIndex, start);
-          const hEnd = Math.min(h.endIndex, end);
-          if (hStart >= hEnd) return;
-
-          const safeStart = Math.max(hStart, cursor);
-          if (safeStart > cursor) {
-            parts.push(text.slice(cursor - start, safeStart - start));
-          }
-
-          if (safeStart < hEnd) {
-            parts.push(
-              <mark
-                key={`${h.id}-${safeStart}`}
-                className="bg-yellow-200/90 dark:bg-yellow-400/30 text-stone-900 dark:text-yellow-100 rounded-xs px-0.5 py-0 cursor-pointer font-inherit hover:bg-yellow-300 dark:hover:bg-yellow-400/50 transition-colors shadow-xs"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  // Click highlight to remove it
-                  setHighlights((prev) => prev.filter((item) => item.id !== h.id));
-                }}
-                title="Nhấp để xóa highlight này"
-              >
-                {text.slice(safeStart - start, hEnd - start)}
-              </mark>
-            );
-            cursor = hEnd;
-          }
-        });
-
-        if (cursor < end) {
-          parts.push(text.slice(cursor - start));
-        }
-        globalOffset = end;
-        if (parts.length === 1 && typeof parts[0] === "string") {
-          return parts[0];
-        }
-        return <React.Fragment key={pathKey}>{parts}</React.Fragment>;
+    try {
+      if (typeof window === "undefined" || typeof DOMParser === "undefined") {
+        return (
+          <div
+            className="prose prose-sm max-w-none text-justify select-text"
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(formattedPassageHtml) }}
+          />
+        );
       }
 
-      if (node.nodeType === Node.ELEMENT_NODE) {
-        const el = node as HTMLElement;
-        const children = Array.from(el.childNodes).map((child, idx) => (
-          renderNode(child, `${pathKey}-${idx}`)
-        ));
+      const sortedHls = [...highlights].sort((a, b) => a.startIndex - b.startIndex);
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(formattedPassageHtml, "text/html");
+      const body = doc.body;
 
-        const props: Record<string, any> = {
-          key: pathKey,
-        };
-        Array.from(el.attributes).forEach((attr) => {
-          if (attr.name === "class") {
-            props.className = attr.value;
-          } else {
-            props[attr.name] = attr.value;
+      let globalOffset = 0;
+
+      const renderNode = (node: ChildNode, pathKey: string): React.ReactNode => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const text = node.textContent || "";
+          const parts: React.ReactNode[] = [];
+          const start = globalOffset;
+          const end = start + text.length;
+          let cursor = start;
+
+          sortedHls.forEach((h) => {
+            const hStart = Math.max(h.startIndex, start);
+            const hEnd = Math.min(h.endIndex, end);
+            if (hStart >= hEnd) return;
+
+            const safeStart = Math.max(hStart, cursor);
+            if (safeStart > cursor) {
+              parts.push(text.slice(cursor - start, safeStart - start));
+            }
+
+            if (safeStart < hEnd) {
+              parts.push(
+                <mark
+                  key={`${h.id}-${safeStart}`}
+                  className="bg-yellow-200/90 dark:bg-yellow-400/30 text-stone-900 dark:text-yellow-100 rounded-xs px-0.5 py-0 cursor-pointer font-inherit hover:bg-yellow-300 dark:hover:bg-yellow-400/50 transition-colors shadow-xs"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Click highlight to remove it
+                    setHighlights((prev) => prev.filter((item) => item.id !== h.id));
+                  }}
+                  title="Nhấp để xóa highlight này"
+                >
+                  {text.slice(safeStart - start, hEnd - start)}
+                </mark>
+              );
+              cursor = hEnd;
+            }
+          });
+
+          if (cursor < end) {
+            parts.push(text.slice(cursor - start));
           }
-        });
+          globalOffset = end;
+          if (parts.length === 1 && typeof parts[0] === "string") {
+            return parts[0];
+          }
+          return <React.Fragment key={pathKey}>{parts}</React.Fragment>;
+        }
 
-        const tag = el.tagName.toLowerCase();
-        return React.createElement(tag, props, children);
-      }
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const el = node as HTMLElement;
+          const children = Array.from(el.childNodes).map((child, idx) => (
+            renderNode(child, `${pathKey}-${idx}`)
+          ));
 
-      return null;
-    };
+          const props: Record<string, any> = {
+            key: pathKey,
+          };
+          Array.from(el.attributes).forEach((attr) => {
+            if (attr.name === "class") {
+              props.className = attr.value;
+            } else if (attr.name !== "style" && !attr.name.startsWith("on")) {
+              props[attr.name] = attr.value;
+            }
+          });
 
-    const rendered = Array.from(body.childNodes).map((child, idx) => (
-      renderNode(child, `root-${idx}`)
-    ));
+          const tag = el.tagName.toLowerCase();
+          return React.createElement(tag, props, children);
+        }
 
-    return <>{rendered}</>;
+        return null;
+      };
+
+      const rendered = Array.from(body.childNodes).map((child, idx) => (
+        renderNode(child, `root-${idx}`)
+      ));
+
+      return <>{rendered}</>;
+    } catch (err) {
+      console.warn("[ReadingPanel] Highlight render fallback:", err);
+      return (
+        <div
+          className="prose prose-sm max-w-none text-justify select-text"
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(formattedPassageHtml) }}
+        />
+      );
+    }
   }, [formattedPassageHtml, highlights]);
 
   return (
@@ -212,7 +236,7 @@ export function ReadingPanel({
             <div className="flex items-center justify-between pb-3 border-b border-border gap-2">
               <div className="flex items-center gap-2 text-foreground font-extrabold text-sm sm:text-base">
                 <BookOpen className="w-4 h-4 text-brand-blue shrink-0" />
-                <span>{title}</span>
+                <span>{title || "Reading Passage"}</span>
               </div>
 
               {/* Toolbar: Highlighter Tool positioned to the left of Passage Text Badge */}
@@ -259,7 +283,7 @@ export function ReadingPanel({
               ref={passageContentRef}
               onMouseUp={handleTextSelection}
               onKeyUp={handleTextSelection}
-              className={`text-xs sm:text-sm text-foreground/90 leading-relaxed space-y-4 max-h-[68vh] overflow-y-auto pr-2 prose prose-sm max-w-none text-justify select-text ${
+              className={`text-xs sm:text-sm text-foreground/90 leading-relaxed space-y-4 max-h-[68vh] overflow-y-auto pr-2 text-justify select-text ${
                 isHighlightActive
                   ? "cursor-text ring-2 ring-amber-400/50 rounded-2xl p-3 bg-amber-50/40 dark:bg-amber-950/10 transition-all"
                   : ""
@@ -274,8 +298,9 @@ export function ReadingPanel({
       {/* Right Column: Reading Questions (Strictly sorted by orderIndex) */}
       <div className={hasPassage ? "lg:col-span-6 space-y-4" : "lg:col-span-12 space-y-4"}>
         {sortedQuestions.map((q) => {
-          const isFillBlankWithSlots = q.questionType === "fill_blank" && hasFillBlankPlaceholders(q.prompt);
-          const hasHtml = q.prompt.includes("<") && q.prompt.includes(">");
+          const promptText = q?.prompt || "";
+          const isFillBlankWithSlots = q?.questionType === "fill_blank" && hasFillBlankPlaceholders(promptText);
+          const hasHtml = promptText.includes("<") && promptText.includes(">");
 
           return (
             <div
@@ -285,10 +310,10 @@ export function ReadingPanel({
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-brand-blue uppercase tracking-wide">
-                  {q.sectionTitle}
+                  {q.sectionTitle || "Reading"}
                 </span>
                 <span className="text-xs font-extrabold text-muted-foreground">
-                  {q.blankCount && q.blankCount > 1 ? `${q.blankCount} chỗ trống` : `Câu ${q.orderIndex}`}
+                  {q.blankCount && q.blankCount > 1 ? `${q.blankCount} chỗ trống` : `Câu ${q.orderIndex || 1}`}
                 </span>
               </div>
 
@@ -296,8 +321,8 @@ export function ReadingPanel({
               {isFillBlankWithSlots ? (
                 <div className="pt-1">
                   <FillBlankHtmlRenderer
-                    html={q.prompt}
-                    answers={typeof answers[q.id] === "object" ? answers[q.id] || {} : {}}
+                    html={promptText}
+                    answers={typeof answers?.[q.id] === "object" ? answers[q.id] || {} : {}}
                     questionId={q.id}
                     onAnswerChange={onAnswerChange}
                   />
@@ -307,23 +332,23 @@ export function ReadingPanel({
                   {hasHtml ? (
                     <div
                       className="text-sm sm:text-base font-bold text-foreground leading-relaxed prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.prompt) }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(promptText) }}
                     />
                   ) : (
                     <p className="text-sm sm:text-base font-bold text-foreground leading-relaxed">
-                      {q.prompt}
+                      {promptText}
                     </p>
                   )}
 
                   {/* Multiple Choice & True/False/Not Given Options */}
-                  {(q.questionType === "multiple_choice" || q.questionType === "true_false_not_given") && q.options && (
+                  {(q.questionType === "multiple_choice" || q.questionType === "true_false_not_given") && Array.isArray(q.options) && q.options.length > 0 && (
                     <RadioGroup
-                      value={answers[q.id] || ""}
+                      value={typeof answers?.[q.id] === "string" ? answers[q.id] : ""}
                       onValueChange={(val) => onAnswerChange(q.id, val)}
                       className="space-y-2 pt-1"
                     >
                       {q.options.map((opt, idx) => {
-                        const isChecked = answers[q.id] === opt;
+                        const isChecked = answers?.[q.id] === opt;
                         return (
                           <label
                             key={idx}
@@ -345,7 +370,7 @@ export function ReadingPanel({
                   {q.questionType === "fill_blank" && (
                     <div className="pt-1">
                       <Input
-                        value={typeof answers[q.id] === "string" ? answers[q.id] : ""}
+                        value={typeof answers?.[q.id] === "string" ? answers[q.id] : ""}
                         onChange={(e) => onAnswerChange(q.id, e.target.value)}
                         placeholder={q.placeholder || "Nhập 1 từ chính xác từ bài đọc..."}
                         className="h-11 rounded-2xl border-border font-medium text-sm focus:border-brand-blue"
