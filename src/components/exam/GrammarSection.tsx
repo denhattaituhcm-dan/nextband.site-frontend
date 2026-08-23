@@ -36,17 +36,6 @@ const cleanHtmlText = (html?: string) => {
   return text ? html : "";
 };
 
-function WordCount({ text }: { text: string }) {
-  const count = text.trim() ? text.trim().split(/\s+/).length : 0;
-  return (
-    <div className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground font-semibold pt-1">
-      <span className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full border border-slate-200/60 dark:border-slate-700">
-        📝 {count} từ
-      </span>
-    </div>
-  );
-}
-
 export function GrammarSection({
   section,
   answers,
@@ -126,9 +115,6 @@ export function GrammarSection({
             {(() => {
               let questionCounter = 0;
               return questionGroups.map((group: any, gIndex: number) => {
-                const rawTitle = group.title || "";
-                const hasPartInTitle = /part|phần/i.test(rawTitle);
-                const displayTitle = rawTitle || `Phần ${gIndex + 1}`;
                 const groupInst = cleanHtmlText(group.instructions);
 
                 return (

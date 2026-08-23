@@ -4072,7 +4072,7 @@ export const assessmentAdminApi = {
           const writingLength = typeof answers["writing_response"] === "string" ? answers["writing_response"].trim().length : 0;
           const hasSpeaking = !!answers["speaking_audio_url"] || !!answers["speaking_completed"];
 
-          let gradingStatus = teacherReview.gradingStatus;
+          let gradingStatus = d.grading_status || teacherReview.gradingStatus;
           if (!gradingStatus) {
             gradingStatus = d.status === "SUBMITTED" ? "PENDING" : "IN_PROGRESS";
           }
@@ -4091,7 +4091,7 @@ export const assessmentAdminApi = {
             hasSpeaking,
             gradingStatus,
             assignedTeacher: teacherReview.assignedTeacher || null,
-            teacherNotes: teacherReview.teacherNotes || null,
+            teacherNotes: d.teacher_notes || teacherReview.teacherNotes || null,
             zaloDraftFeedback: teacherReview.zaloDraftFeedback || null,
             startedAt: d.started_at || d.created_at,
             submittedAt: d.submitted_at || null,

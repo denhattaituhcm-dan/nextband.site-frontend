@@ -101,7 +101,6 @@ export function WritingSection({
   );
 
   const primaryQuestionId = allQuestions[0]?.id || section.id;
-  const firstQuestion = allQuestions[0];
   const primaryText = answers[primaryQuestionId] || "";
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);

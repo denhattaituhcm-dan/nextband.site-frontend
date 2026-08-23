@@ -117,7 +117,7 @@ export default function PlacementExamInterface() {
     setIsSubmitting(true);
 
     try {
-      const res = await assessmentApi.submit(sessionId, answers);
+      await assessmentApi.submit(sessionId, answers);
       clearLocalDraft();
       toast.success("Nộp bài khảo thí thành công! Đang chuyển đến Báo cáo năng lực ARIS-7.");
       navigate(`/assessment/result/${sessionId}`);

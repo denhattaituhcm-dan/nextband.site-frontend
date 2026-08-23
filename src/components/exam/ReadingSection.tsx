@@ -436,16 +436,6 @@ export function ReadingSection({
     markRefs,
   ]);
 
-  // Flatten all questions from all groups
-  const allQuestions =
-    questionGroups?.flatMap((group: any, gIdx: number) =>
-      (group.questions || []).map((q: any) => ({
-        ...q,
-        groupTitle: group.title,
-        groupInstructions: group.instructions,
-      })),
-    ) || [];
-
   return (
     <div className="h-full grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x relative">
       {showHighlightMenu && pendingHighlight && (

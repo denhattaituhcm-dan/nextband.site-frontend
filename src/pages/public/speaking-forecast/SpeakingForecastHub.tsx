@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   forecastService,
   Season,
@@ -29,7 +29,6 @@ import {
 import { cn } from '@/lib/utils';
 
 export default function SpeakingForecastHub() {
-  const navigate = useNavigate();
   const [latestSeason, setLatestSeason] = useState<Season | null>(null);
   const [allSeasons, setAllSeasons] = useState<Season[]>([]);
   const [allTopics, setAllTopics] = useState<ForecastTopic[]>([]);

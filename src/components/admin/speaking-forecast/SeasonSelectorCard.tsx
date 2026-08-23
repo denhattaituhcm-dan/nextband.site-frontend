@@ -27,8 +27,6 @@ export const SeasonSelectorCard: React.FC<SeasonSelectorCardProps> = ({
   metrics,
   onOpenNewSeasonModal,
 }) => {
-  const currentSeasonObj = seasons.find((s) => s.id === selectedSeasonId);
-
   return (
     <Card className="border shadow-none bg-card">
       <CardContent className="p-4 sm:p-5">

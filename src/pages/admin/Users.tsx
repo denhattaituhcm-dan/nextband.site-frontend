@@ -425,7 +425,6 @@ export default function AdminUsers() {
             ) : (
               usersList.map((user: any) => {
                 const isSelected = selectedIds.includes(user.id);
-                const mockHealth = 82; // Default mock score
                 const isAccountLocked = user.isActive === false;
 
                 return (

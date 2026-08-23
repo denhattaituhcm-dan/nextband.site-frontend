@@ -374,5 +374,3 @@ export const COURSE_CATALOG: Record<string, CourseData> = {
     },
   },
 };
-
-export const COURSES_LIST = Object.values(COURSE_CATALOG);

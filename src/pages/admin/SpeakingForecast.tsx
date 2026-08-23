@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useSpeakingForecastStore } from '@/components/admin/speaking-forecast/useSpeakingForecastStore';
 import { SeasonSelectorCard } from '@/components/admin/speaking-forecast/SeasonSelectorCard';
 import { TopicFilterBar } from '@/components/admin/speaking-forecast/TopicFilterBar';
@@ -10,7 +10,6 @@ import { Plus, Mic } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SpeakingForecast() {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const {
     seasons,

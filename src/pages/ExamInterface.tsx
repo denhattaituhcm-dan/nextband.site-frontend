@@ -126,7 +126,6 @@ export default function ExamInterface() {
   const localDraftTimerRef = useRef<NodeJS.Timeout | null>(null);
   const draftVersionRef = useRef<number>(0);
   const localDraftRestoredRef = useRef<boolean>(false);
-  const serverHydratedAtRef = useRef<number>(0);
   const answersRef = useRef<Record<string, any>>({});
   answersRef.current = answers;
 
