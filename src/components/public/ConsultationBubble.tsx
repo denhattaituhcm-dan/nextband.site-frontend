@@ -76,8 +76,8 @@ export function ConsultationBubble() {
     {
       id: "assessment",
       icon: <ShieldCheck className="w-4 h-4 text-brand-red" />,
-      title: "Thi thử IELTS 4 Kỹ Năng (60 phút)",
-      subtitle: "Đo lường 4 kỹ năng & định vị Rank ARIS-7",
+      title: "Kiểm tra trình độ tiếng Anh (Entrance Test)",
+      subtitle: "Đánh giá nhanh 4 kỹ năng & định vị lộ trình",
     },
     {
       id: "roadmap",

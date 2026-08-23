@@ -314,20 +314,20 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
             </div>
             <div className="space-y-1.5">
               <h3 className="text-xl sm:text-2xl font-black text-foreground">
-                Đã Sẵn Sàng Vào Phòng Thi!
+                Đã Sẵn Sàng Vào Phòng Kiểm Tra!
               </h3>
               <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed max-w-sm mx-auto">
-                Chào <strong>{fullName}</strong>! Phòng khảo thí đã chuẩn bị sẵn sàng bộ câu hỏi <strong>Chẩn đoán 4 Kỹ Năng &amp; Ngữ Pháp</strong>.
+                Chào <strong>{fullName}</strong>! Phòng kiểm tra đã chuẩn bị sẵn sàng bộ câu hỏi <strong>Chẩn đoán 4 Kỹ Năng &amp; Ngữ Pháp</strong>.
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-muted/60 border border-border/80 text-left space-y-2 text-xs text-foreground/85">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Khảo thí:</span>
-                <span className="font-bold text-foreground">ARIS Diagnostic Assessment (4 Kỹ Năng)</span>
+                <span className="text-muted-foreground">Bài kiểm tra:</span>
+                <span className="font-bold text-foreground">ARIS Placement Assessment (4 Kỹ Năng)</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Thời lượng thi:</span>
+                <span className="text-muted-foreground">Thời lượng:</span>
                 <strong className="text-foreground">60 Phút</strong>
               </div>
               <div className="flex justify-between">
@@ -346,7 +346,7 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
                 className="w-full h-12 rounded-2xl font-black text-sm bg-brand-red hover:bg-brand-red-hover text-white shadow-md gap-2 cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-current" />
-                <span>Bắt Đầu Làm Bài Khảo Thí Ngay</span>
+                <span>Bắt Đầu Làm Bài Kiểm Tra Ngay</span>
                 <ArrowRight className="w-4 h-4" />
               </Button>
 
@@ -362,15 +362,11 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
         ) : (
           <>
             <DialogHeader className="space-y-1.5 text-left">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-red-soft text-brand-red border border-brand-red/20 text-[11px] font-extrabold uppercase tracking-wide w-fit">
-                <FileCheck className="w-3.5 h-3.5" />
-                <span>Khảo Thí Chuẩn Cambridge</span>
-              </div>
               <DialogTitle className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
-                THI THỬ IELTS 4 KỸ NĂNG
+                KIỂM TRA TRÌNH ĐỘ TIẾNG ANH
               </DialogTitle>
               <DialogDescription className="text-xs text-foreground/75 leading-relaxed">
-                Bài test 60 phút gồm <strong>Listening, Reading, Writing, Speaking &amp; Grammar</strong>. Tính điểm tự động và định vị Rank ARIS-7.
+                Bài test chẩn đoán gồm <strong>Listening, Reading, Writing, Speaking &amp; Grammar</strong>. Tính điểm tự động và định vị trình độ phù hợp.
               </DialogDescription>
             </DialogHeader>
 
@@ -453,7 +449,7 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
                   className="w-full h-12 rounded-2xl font-black text-sm bg-brand-red hover:bg-brand-red-hover text-white shadow-sm transition-all gap-2 cursor-pointer"
                 >
                   <Play className="w-4 h-4 fill-current" />
-                  <span>{loading ? "Đang kết nối phòng thi..." : "Vào Làm Bài Test 4 Kỹ Năng"}</span>
+                  <span>{loading ? "Đang khởi tạo phòng thi..." : "Vào Làm Bài Kiểm Tra Trình Độ"}</span>
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>

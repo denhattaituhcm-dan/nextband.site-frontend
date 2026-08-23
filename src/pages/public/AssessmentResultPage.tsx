@@ -70,7 +70,7 @@ export default function AssessmentResultPage() {
         id: "DEMO-SAMPLE",
         candidateName: "Học Viên Mẫu",
         examTitle: "ARIS IELTS Diagnostic Assessment (4 Kỹ Năng & Ngữ Pháp)",
-        sectionType: "IELTS 4 Kỹ Năng & Ngữ Pháp (Chuẩn Cambridge)",
+        sectionType: "Kiểm tra Năng Lực 4 Kỹ Năng & Ngữ Pháp",
         rawScore: 24,
         totalQuestions: 35,
         accuracyPercent: 69,

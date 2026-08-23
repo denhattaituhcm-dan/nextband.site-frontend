@@ -222,7 +222,7 @@ export function buildAssessmentReportFromSubmission(submission: any): Assessment
   }
 
   const displaySectionTitle = isMultiSkill
-    ? "IELTS 4 Kỹ Năng & Ngữ Pháp (Chuẩn Cambridge)"
+    ? "Kiểm Tra Trình Độ 4 Kỹ Năng & Ngữ Pháp"
     : hasReading
       ? "IELTS Reading Academic"
       : "IELTS Cambridge Listening";
