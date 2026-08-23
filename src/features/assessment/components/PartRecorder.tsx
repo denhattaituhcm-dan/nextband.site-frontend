@@ -97,13 +97,26 @@ export function PartRecorder({
         console.warn("[Speaking] Draft registration notice:", regErr);
       }
 
-      // Step 2: Upload new file to Supabase Storage
-      const { error: storageError } = await supabase.storage
-        .from("speaking-recordings")
-        .upload(`${recordingId}.webm`, blob, {
+      // Step 2: Upload new file to Supabase Storage (primary 'exam-assets' with fallback)
+      let storageError: any = null;
+      const { error: primaryErr } = await supabase.storage
+        .from("exam-assets")
+        .upload(newPath, blob, {
           contentType: blob.type || "audio/webm",
-          upsert: false,
+          upsert: true,
         });
+
+      if (primaryErr) {
+        const { error: fallbackErr } = await supabase.storage
+          .from("speaking-recordings")
+          .upload(`${recordingId}.webm`, blob, {
+            contentType: blob.type || "audio/webm",
+            upsert: true,
+          });
+        if (fallbackErr) {
+          storageError = primaryErr;
+        }
+      }
 
       if (storageError) {
         throw new Error(storageError.message || "Tải lên Supabase Storage thất bại");
@@ -129,8 +142,8 @@ export function PartRecorder({
       // Step 4: Delete old file ONLY after new one is confirmed — safe delete
       if (oldPath) {
         try {
-          const oldFileName = oldPath.replace("speaking-recordings/", "");
-          await supabase.storage.from("speaking-recordings").remove([oldFileName]);
+          const oldCleanPath = oldPath.startsWith("/") ? oldPath.slice(1) : oldPath;
+          await supabase.storage.from("exam-assets").remove([oldCleanPath]);
         } catch (delErr) {
           // Non-fatal: old file will expire by storage retention policy
           console.warn("[Speaking] Old file cleanup notice:", delErr);
@@ -185,9 +198,27 @@ export function PartRecorder({
     <div className="border-t border-border/60 pt-4 space-y-3">
       {/* Permission error */}
       {permissionError && (
-        <div className="p-3 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 text-red-600 text-xs font-medium flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{permissionError}</span>
+        <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 text-amber-900 dark:text-amber-200 text-xs font-medium space-y-2">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+            <div>
+              <p className="font-bold text-foreground">Microphone chưa được cấp quyền hoặc không khả dụng</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
+                Vui lòng nhấn vào biểu tượng ổ khóa/cài đặt trên thanh địa chỉ trình duyệt, chọn <strong>Cho phép (Allow) Microphone</strong> rồi bấm Thử lại.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 pt-1">
+            <Button
+              type="button"
+              size="sm"
+              onClick={startRecording}
+              className="h-8 px-3 rounded-xl text-xs font-bold bg-brand-blue hover:bg-brand-blue-hover text-white gap-1.5"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Thử lại cấp quyền</span>
+            </Button>
+          </div>
         </div>
       )}
 

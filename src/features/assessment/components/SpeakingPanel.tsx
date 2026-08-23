@@ -25,9 +25,9 @@ export function SpeakingPanel({
   return (
     <div className="space-y-6">
       {/* Section header */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-emerald-500/10 to-background border border-border shadow-xs flex items-center justify-between">
+      <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-brand-blue-soft/30 to-background border border-border shadow-xs flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+          <div className="w-10 h-10 rounded-2xl bg-brand-blue text-white flex items-center justify-center shadow-xs">
             <Mic className="w-5 h-5" />
           </div>
           <div>
@@ -45,15 +45,15 @@ export function SpeakingPanel({
       {/* ── Part 1 card ── */}
       <div className="p-5 sm:p-6 rounded-3xl bg-card border border-border space-y-3.5 shadow-xs">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">
+          <span className="text-xs font-bold text-brand-blue uppercase tracking-wide">
             Part 1 — Phỏng vấn ngắn
           </span>
-          <span className="text-xs text-muted-foreground">1 – 2 phút</span>
+          <span className="text-xs font-extrabold text-muted-foreground">1 – 2 phút</span>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {part1Questions.map((q, idx) => (
-            <p key={idx} className="text-sm font-bold text-foreground">
+            <p key={idx} className="text-sm sm:text-base font-bold text-foreground leading-relaxed">
               {q}
             </p>
           ))}
@@ -71,13 +71,13 @@ export function SpeakingPanel({
       {/* ── Part 2 card ── */}
       <div className="p-5 sm:p-6 rounded-3xl bg-card border border-border space-y-3.5 shadow-xs">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">
+          <span className="text-xs font-bold text-brand-blue uppercase tracking-wide">
             Part 2 — Trình bày chủ đề
           </span>
-          <span className="text-xs text-muted-foreground">1 – 2.5 phút</span>
+          <span className="text-xs font-extrabold text-muted-foreground">1 – 2.5 phút</span>
         </div>
 
-        <p className="text-base font-extrabold text-foreground">{part2Topic}</p>
+        <p className="text-sm sm:text-base font-bold text-foreground leading-relaxed">{part2Topic}</p>
 
         <div className="p-4 rounded-2xl bg-muted/50 border border-border/80 space-y-1.5 text-xs text-muted-foreground">
           <p className="font-bold text-foreground">You should say:</p>

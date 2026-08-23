@@ -33,9 +33,10 @@ export function WritingPanel({
 
   return (
     <div className="space-y-6">
-      <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-indigo-500/10 to-background border border-border shadow-xs flex items-center justify-between">
+      {/* Section Header Card */}
+      <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-brand-blue-soft/30 to-background border border-border shadow-xs flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+          <div className="w-10 h-10 rounded-2xl bg-brand-blue text-white flex items-center justify-center shadow-xs">
             <PenTool className="w-5 h-5" />
           </div>
           <div>
@@ -49,7 +50,7 @@ export function WritingPanel({
           variant="outline"
           className={`text-xs font-bold ${
             isWordCountMet
-              ? "bg-emerald-50 text-emerald-600 border-emerald-300"
+              ? "bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 border-emerald-300 dark:border-emerald-800"
               : "bg-background text-muted-foreground"
           }`}
         >
@@ -60,8 +61,8 @@ export function WritingPanel({
       {/* Writing Prompt Card */}
       <div className="p-5 sm:p-6 rounded-3xl bg-card border border-border space-y-4 shadow-xs">
         <div className="space-y-2">
-          <span className="text-xs font-bold text-indigo-600 uppercase tracking-wide">
-            Đề bài khảo thí
+          <span className="text-xs font-bold text-brand-blue uppercase tracking-wide">
+            Kỹ Năng Viết (Writing Task 2)
           </span>
           {hasHtml ? (
             <div
@@ -92,11 +93,11 @@ export function WritingPanel({
             onChange={(e) => onChange(e.target.value)}
             placeholder="Type your essay / paragraph response here in English..."
             rows={10}
-            className="w-full rounded-2xl border-border text-sm leading-relaxed p-4 focus:border-indigo-500 font-sans"
+            className="w-full rounded-2xl border-border text-sm leading-relaxed p-4 focus:border-brand-blue font-sans"
           />
           <div className="flex justify-between items-center text-xs text-muted-foreground pt-1">
             <span>Bài viết sẽ được ghi nhận và chuyển cho Giảng viên/AI chấm chuyên sâu.</span>
-            <span className={isWordCountMet ? "text-emerald-600 font-bold" : "text-muted-foreground"}>
+            <span className={isWordCountMet ? "text-emerald-600 dark:text-emerald-400 font-bold" : "text-muted-foreground"}>
               {wordsCount} từ
             </span>
           </div>

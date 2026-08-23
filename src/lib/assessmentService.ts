@@ -202,7 +202,10 @@ export function buildAssessmentReportFromSubmission(submission: any): Assessment
   const strengths: string[] = [];
   const weaknesses: string[] = [];
 
-  if (accuracy >= 75) {
+  if (correctCount === 0) {
+    strengths.push("Chưa đủ dữ liệu để xác nhận điểm mạnh (thí sinh chưa hoàn thành câu trả lời).");
+    weaknesses.push("Chưa có đủ dữ liệu câu trả lời để bóc tách điểm nghẽn chi tiết.");
+  } else if (accuracy >= 75) {
     strengths.push("Nắm vững kỹ năng định vị thông tin (Scanning & Skimming) trong đoạn văn học thuật.");
     strengths.push("Nhận diện chính xác từ đồng nghĩa (Paraphrasing) giữa câu hỏi và bài đọc/nghe.");
     strengths.push("Tốc độ xử lý câu hỏi nhanh, phản xạ ngữ pháp và từ vựng tự nhiên.");
@@ -212,7 +215,7 @@ export function buildAssessmentReportFromSubmission(submission: any): Assessment
     weaknesses.push("Còn lúng túng khi gặp các câu hỏi suy luận logic (Inference / True-False-Not Given).");
     weaknesses.push("Tốc độ đọc/nghe còn chậm ở các đoạn có cấu trúc câu phức và nhiều thuật ngữ.");
   } else {
-    strengths.push("Có tinh thần rèn luyện tốt, kiên trì hoàn thành bài khảo thí.");
+    strengths.push("Đã hoàn thành một phần bài khảo thí chẩn đoán.");
     weaknesses.push("Vốn từ vựng học thuật còn hạn chế, gặp khó khăn khi bài đổi từ đồng nghĩa.");
     weaknesses.push("Chưa làm chủ ngữ pháp câu phức, dễ bị bẫy ở các câu hỏi phủ định và quan hệ logic.");
     weaknesses.push("Cần củng cố lại phương pháp xây nền từ gốc trước khi luyện giải đề Cambridge nâng cao.");

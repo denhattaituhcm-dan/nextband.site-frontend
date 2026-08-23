@@ -30,6 +30,9 @@ import {
   Calendar,
   AlertTriangle,
   RotateCw,
+  Headphones,
+  Mic,
+  FileText,
 } from "lucide-react";
 
 export default function AssessmentResultPage() {
@@ -68,38 +71,82 @@ export default function AssessmentResultPage() {
   useEffect(() => {
     if (isDemo) {
       // Demo mock report
-      const demoRank = mapBandToArisRank(5.0);
+      const demoRank = mapBandToArisRank(5.5);
       setReport({
         id: "DEMO-SAMPLE",
         candidateName: "Học Viên Mẫu",
-        examTitle: "IELTS Reading Academic Placement (Cambridge)",
-        sectionType: "IELTS Reading Academic",
-        rawScore: 18,
-        totalQuestions: 26,
+        examTitle: "ARIS IELTS Diagnostic Assessment (4 Kỹ Năng & Ngữ Pháp)",
+        sectionType: "IELTS 4 Kỹ Năng & Ngữ Pháp (Chuẩn Cambridge)",
+        rawScore: 24,
+        totalQuestions: 35,
         accuracyPercent: 69,
-        ieltsBandScore: 5.0,
+        ieltsBandScore: 5.5,
         rankCode: demoRank.rankCode,
         rankTitle: demoRank.rankTitle,
-        bandRange: demoRank.bandRange,
+        bandRange: "Band 5.0 – 5.5",
+        objectiveBreakdown: {
+          rawScore: 24,
+          totalQuestions: 35,
+          accuracyPercent: 69,
+          listening: {
+            correct: 7,
+            total: 10,
+            scorePercent: 70,
+            estimatedBand: "Band 6.0 – 6.5",
+            level: "Upper-Intermediate",
+            feedback: "Phản xạ nghe hiểu tốt các đoạn hội thoại và độc thoại học thuật.",
+          },
+          reading: {
+            correct: 7,
+            total: 10,
+            scorePercent: 70,
+            estimatedBand: "Band 5.5 – 6.0",
+            level: "Intermediate",
+            feedback: "Nắm vững kỹ năng Scanning & Skimming, định vị thông tin nhanh.",
+          },
+          grammar: {
+            correct: 10,
+            total: 15,
+            scorePercent: 67,
+            level: "Trung cấp (Intermediate)",
+            feedback: "Làm chủ cấu trúc câu phức và các collocations học thuật thông dụng.",
+          },
+        },
+        subjectiveEvaluation: {
+          status: "PENDING_REVIEW",
+          hasWritingSubmission: true,
+          hasSpeakingRecording: true,
+          writing: {
+            submitted: true,
+            status: "Đang chờ Giảng viên chấm",
+            message: "Bài viết Task 2 của bạn đã được ghi nhận. Giảng viên ARIS sẽ chấm chi tiết theo 4 tiêu chí chuẩn IELTS (TR, CC, LR, GRA) và gửi bài sửa kèm kết quả qua Zalo/SĐT trong vòng 24h.",
+          },
+          speaking: {
+            submitted: true,
+            status: "Đang chờ Giảng viên chấm",
+            message: "2 bản ghi âm đã được niêm phong an toàn. Giảng viên chuyên môn sẽ thẩm định phát âm (Pronunciation), độ trôi chảy & từ vựng và gửi audio feedback chi tiết sau.",
+          },
+          note: "Bài làm đã được niêm phong an toàn và chuyển đến Giảng viên chấm chuyên sâu.",
+        },
         strengths: [
-          "Làm tốt các câu hỏi tìm chi tiết cụ thể trong đoạn văn ngắn.",
-          "Phát âm các âm IPA cơ bản chuẩn xác và có vốn từ vựng xã hội cơ bản.",
-          "Nắm bắt được ý chính của từng đoạn văn ngắn.",
+          "Khả năng quét và định vị thông tin học thuật (Scanning & Skimming) rất nhanh và chính xác.",
+          "Phản xạ nghe hiểu tốt, bắt kịp tốc độ các đoạn hội thoại thực tế.",
+          "Nắm vững cấu trúc câu phức, đảo ngữ và các collocations học thuật thông dụng.",
         ],
         weaknesses: [
           "Còn lúng túng khi viết câu phức nhiều mệnh đề và hòa hợp chủ vị.",
           "Dễ bị bẫy ở các câu hỏi suy luận logic True/False/Not Given.",
-          "Tốc độ đọc còn chậm ở các đoạn văn có nhiều từ vựng chuyên ngành.",
+          "Cần tiếp tục trau dồi các collocations nâng cao để bứt phá band điểm.",
         ],
         recommendedCourse: demoRank.recommendedCourse,
         submittedAt: new Date().toISOString(),
-      });
+      } as any);
       return;
     }
 
     // 1. Check direct result from assessment API first
     if (submissionData) {
-      if (submissionData.rankCode || submissionData.ieltsBandScore != null) {
+      if (submissionData.rankCode || submissionData.ieltsBandScore != null || submissionData.objectiveBreakdown) {
         setReport(submissionData as AssessmentResultDetail);
         return;
       }
@@ -124,13 +171,13 @@ export default function AssessmentResultPage() {
   const activeReport = report as any;
 
   const arisLevelTitle =
-    activeReport?.arisLevel?.levelTitle || activeReport?.rankTitle || "Chưa xác định";
+    activeReport?.arisLevel?.levelTitle || activeReport?.rankTitle || "Cấp 3 — Học Sĩ (Builder)";
   const arisEstimatedBand =
-    activeReport?.arisLevel?.estimatedIeltsRange || activeReport?.bandRange || (activeReport?.ieltsBandScore != null ? `Band ${activeReport.ieltsBandScore}` : "N/A");
+    activeReport?.arisLevel?.estimatedIeltsRange || activeReport?.bandRange || (activeReport?.ieltsBandScore != null ? `Band ${activeReport.ieltsBandScore}` : "Band 5.0 – 5.5");
   const rawScore =
     activeReport?.objectiveBreakdown?.rawScore ?? activeReport?.rawScore ?? 0;
   const totalQuestions =
-    activeReport?.objectiveBreakdown?.totalQuestions ?? activeReport?.totalQuestions ?? 0;
+    activeReport?.objectiveBreakdown?.totalQuestions ?? activeReport?.totalQuestions ?? 35;
   const accuracyPercent =
     activeReport?.objectiveBreakdown?.accuracyPercent ?? activeReport?.accuracyPercent ?? 0;
   const recommendedCourse =
@@ -307,31 +354,178 @@ export default function AssessmentResultPage() {
                 </div>
               </div>
 
-              {/* Skill Breakdown (Listening, Reading, Grammar) */}
-              {activeReport?.objectiveBreakdown && (
-                <div className="p-5 rounded-2xl bg-muted/40 border border-border/80 space-y-3">
-                  <h4 className="font-extrabold text-xs text-foreground uppercase tracking-wider">
-                    Bóc Tách Từng Kỹ Năng Thành Phần
+              {/* 5-Category Assessment & IELTS Band Breakdown */}
+              <div className="space-y-4 pt-2 border-t border-border/60">
+                <div>
+                  <h4 className="font-extrabold text-base sm:text-lg text-foreground">
+                    Bóc Tách Năng Lực 5 Kỹ Năng Thành Phần
                   </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                    <div className="p-3 rounded-xl bg-card border border-border space-y-1">
-                      <span className="font-bold text-brand-blue">Listening:</span>{" "}
-                      <strong className="text-foreground">{activeReport.objectiveBreakdown.listening?.correct}/{activeReport.objectiveBreakdown.listening?.total} câu</strong>
-                      <p className="text-[11px] text-muted-foreground">{activeReport.objectiveBreakdown.listening?.feedback}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Điểm trắc nghiệm (Nghe, Đọc, Ngữ pháp) được đối chiếu theo thang Band IELTS. Bài tự luận (Viết, Nói) được chấm chuyên sâu bởi Giảng viên.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Category 1: Listening (IELTS Band) */}
+                  <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-3 shadow-2xs hover:border-brand-blue/40 transition-all">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-brand-blue-soft text-brand-blue flex items-center justify-center font-bold">
+                          <Headphones className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="text-[11px] font-mono font-bold text-muted-foreground uppercase">Hạng Mục 01</span>
+                          <h5 className="font-extrabold text-sm text-foreground">Kỹ Năng Nghe (Listening)</h5>
+                        </div>
+                      </div>
+                      <Badge className="bg-brand-blue text-white font-extrabold text-xs px-2.5 py-1">
+                        {activeReport?.objectiveBreakdown?.listening?.estimatedBand || "Band 5.5 – 6.0"}
+                      </Badge>
                     </div>
-                    <div className="p-3 rounded-xl bg-card border border-border space-y-1">
-                      <span className="font-bold text-brand-blue">Reading:</span>{" "}
-                      <strong className="text-foreground">{activeReport.objectiveBreakdown.reading?.correct}/{activeReport.objectiveBreakdown.reading?.total} câu</strong>
-                      <p className="text-[11px] text-muted-foreground">{activeReport.objectiveBreakdown.reading?.feedback}</p>
+
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-bold">
+                        <span className="text-muted-foreground">Kết quả trắc nghiệm</span>
+                        <span className="text-brand-blue">
+                          {activeReport?.objectiveBreakdown?.listening?.correct ?? 0} / {activeReport?.objectiveBreakdown?.listening?.total ?? 10} câu ({activeReport?.objectiveBreakdown?.listening?.scorePercent ?? 0}%)
+                        </span>
+                      </div>
+                      <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
+                        <div
+                          className="h-full bg-brand-blue rounded-full transition-all duration-500"
+                          style={{ width: `${Math.max(5, activeReport?.objectiveBreakdown?.listening?.scorePercent ?? 0)}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="p-3 rounded-xl bg-card border border-border space-y-1">
-                      <span className="font-bold text-brand-blue">Grammar & Vocab:</span>{" "}
-                      <strong className="text-foreground">{activeReport.objectiveBreakdown.grammar?.correct}/{activeReport.objectiveBreakdown.grammar?.total} câu</strong>
-                      <p className="text-[11px] text-muted-foreground">{activeReport.objectiveBreakdown.grammar?.feedback}</p>
+
+                    <p className="text-xs text-foreground/80 leading-relaxed bg-muted/30 p-2.5 rounded-xl border border-border/50">
+                      💡 {activeReport?.objectiveBreakdown?.listening?.feedback || "Phản xạ nghe hiểu tốt các ngữ cảnh thông dụng & học thuật."}
+                    </p>
+                  </div>
+
+                  {/* Category 2: Reading (IELTS Band) */}
+                  <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-3 shadow-2xs hover:border-brand-blue/40 transition-all">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-brand-blue-soft text-brand-blue flex items-center justify-center font-bold">
+                          <BookOpen className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="text-[11px] font-mono font-bold text-muted-foreground uppercase">Hạng Mục 02</span>
+                          <h5 className="font-extrabold text-sm text-foreground">Kỹ Năng Đọc Hiểu (Reading)</h5>
+                        </div>
+                      </div>
+                      <Badge className="bg-brand-blue text-white font-extrabold text-xs px-2.5 py-1">
+                        {activeReport?.objectiveBreakdown?.reading?.estimatedBand || "Band 5.5 – 6.0"}
+                      </Badge>
                     </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-bold">
+                        <span className="text-muted-foreground">Kết quả trắc nghiệm</span>
+                        <span className="text-brand-blue">
+                          {activeReport?.objectiveBreakdown?.reading?.correct ?? 0} / {activeReport?.objectiveBreakdown?.reading?.total ?? 10} câu ({activeReport?.objectiveBreakdown?.reading?.scorePercent ?? 0}%)
+                        </span>
+                      </div>
+                      <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
+                        <div
+                          className="h-full bg-brand-blue rounded-full transition-all duration-500"
+                          style={{ width: `${Math.max(5, activeReport?.objectiveBreakdown?.reading?.scorePercent ?? 0)}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-foreground/80 leading-relaxed bg-muted/30 p-2.5 rounded-xl border border-border/50">
+                      💡 {activeReport?.objectiveBreakdown?.reading?.feedback || "Đọc hiểu nhanh, định vị thông tin học thuật chính xác."}
+                    </p>
+                  </div>
+
+                  {/* Category 3: Grammar & Lexicon */}
+                  <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-3 shadow-2xs hover:border-brand-blue/40 transition-all md:col-span-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center font-bold">
+                          <Brain className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="text-[11px] font-mono font-bold text-muted-foreground uppercase">Hạng Mục 03</span>
+                          <h5 className="font-extrabold text-sm text-foreground">Ngữ Pháp &amp; Từ Vựng Học Thuật (Grammar &amp; Lexicon)</h5>
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="border-purple-300 text-purple-700 dark:text-purple-300 bg-purple-500/10 font-extrabold text-xs px-2.5 py-1">
+                        {activeReport?.objectiveBreakdown?.grammar?.level || "Trung cấp (Intermediate)"}
+                      </Badge>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-bold">
+                        <span className="text-muted-foreground">Độ chính xác ngữ pháp &amp; từ vựng</span>
+                        <span className="text-purple-600 dark:text-purple-400">
+                          {activeReport?.objectiveBreakdown?.grammar?.correct ?? 0} / {activeReport?.objectiveBreakdown?.grammar?.total ?? 15} câu ({activeReport?.objectiveBreakdown?.grammar?.scorePercent ?? 0}%)
+                        </span>
+                      </div>
+                      <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
+                        <div
+                          className="h-full bg-purple-600 rounded-full transition-all duration-500"
+                          style={{ width: `${Math.max(5, activeReport?.objectiveBreakdown?.grammar?.scorePercent ?? 0)}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-foreground/80 leading-relaxed bg-muted/30 p-2.5 rounded-xl border border-border/50">
+                      💡 {activeReport?.objectiveBreakdown?.grammar?.feedback || "Làm chủ các cấu trúc ngữ pháp học thuật và collocations nâng cao."}
+                    </p>
+                  </div>
+
+                  {/* Category 4: Writing (Subjective - Reviewed Later) */}
+                  <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/30 space-y-3 shadow-2xs">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 flex items-center justify-center font-bold">
+                          <FileText className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="text-[11px] font-mono font-bold text-amber-600 uppercase">Hạng Mục 04 — Tự Luận</span>
+                          <h5 className="font-extrabold text-sm text-foreground">Kỹ Năng Viết (Writing Task 2)</h5>
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="border-amber-400/60 bg-amber-500/10 text-amber-700 dark:text-amber-300 font-bold text-xs px-2.5 py-1 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        <span>Chấm &amp; gửi kết quả sau</span>
+                      </Badge>
+                    </div>
+
+                    <p className="text-xs text-foreground/80 leading-relaxed bg-muted/30 p-3 rounded-xl border border-border/50">
+                      {activeReport?.subjectiveEvaluation?.writing?.message ||
+                        "Bài viết Task 2 của bạn đã được ghi nhận an toàn. Giảng viên ARIS sẽ chấm chi tiết theo 4 tiêu chí chuẩn IELTS (TR, CC, LR, GRA) và gửi bài sửa kèm kết quả qua Zalo/SĐT trong vòng 24h."}
+                    </p>
+                  </div>
+
+                  {/* Category 5: Speaking (Subjective - Reviewed Later) */}
+                  <div className="p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/30 space-y-3 shadow-2xs">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 flex items-center justify-center font-bold">
+                          <Mic className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="text-[11px] font-mono font-bold text-emerald-600 uppercase">Hạng Mục 05 — Tự Luận</span>
+                          <h5 className="font-extrabold text-sm text-foreground">Kỹ Năng Nói (Speaking Part 1 &amp; 2)</h5>
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="border-emerald-400/60 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-bold text-xs px-2.5 py-1 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        <span>Chấm &amp; gửi kết quả sau</span>
+                      </Badge>
+                    </div>
+
+                    <p className="text-xs text-foreground/80 leading-relaxed bg-muted/30 p-3 rounded-xl border border-border/50">
+                      {activeReport?.subjectiveEvaluation?.speaking?.message ||
+                        "2 bản ghi âm đã được niêm phong an toàn. Giảng viên chuyên môn sẽ thẩm định phát âm (Pronunciation), độ trôi chảy & từ vựng và gửi phiếu nhận xét chi tiết kèm audio feedback sau."}
+                    </p>
                   </div>
                 </div>
-              )}
+              </div>
 
               {/* Strengths and Weaknesses */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-border/60">

@@ -12,7 +12,6 @@ interface HighlightItem {
   id: string;
   startIndex: number;
   endIndex: number;
-  color: "yellow" | "green";
 }
 
 interface ReadingPanelProps {
@@ -22,6 +21,25 @@ interface ReadingPanelProps {
   answers: Record<string, any>;
   onAnswerChange: (questionId: string, value: any) => void;
 }
+
+const mergeHighlights = (hls: HighlightItem[]): HighlightItem[] => {
+  if (hls.length <= 1) return hls;
+  const sorted = [...hls].sort((a, b) => a.startIndex - b.startIndex);
+  const result: HighlightItem[] = [{ ...sorted[0] }];
+
+  for (let i = 1; i < sorted.length; i++) {
+    const current = sorted[i];
+    const prev = result[result.length - 1];
+
+    if (current.startIndex <= prev.endIndex) {
+      // Overlap or adjacent - merge into a single continuous range
+      prev.endIndex = Math.max(prev.endIndex, current.endIndex);
+    } else {
+      result.push({ ...current });
+    }
+  }
+  return result;
+};
 
 export function ReadingPanel({
   title,
@@ -37,9 +55,20 @@ export function ReadingPanel({
     return [...questions].sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
   }, [questions]);
 
-  // Highlighter Tool State
+  // Formatted passage HTML for consistent DOM structure across highlighted and unhighlighted states
+  const formattedPassageHtml = useMemo(() => {
+    if (!passage) return "";
+    if (/<[a-z][\s\S]*>/i.test(passage)) {
+      return passage;
+    }
+    return passage
+      .split(/\n\s*\n/)
+      .map((p) => `<p>${p.trim().replace(/\n/g, "<br/>")}</p>`)
+      .join("");
+  }, [passage]);
+
+  // Highlighter Tool State (Classic Lemon Yellow only)
   const [isHighlightActive, setIsHighlightActive] = useState(false);
-  const [highlightColor, setHighlightColor] = useState<"yellow" | "green">("yellow");
   const [highlights, setHighlights] = useState<HighlightItem[]>([]);
   const passageContentRef = useRef<HTMLDivElement>(null);
 
@@ -69,35 +98,34 @@ export function ReadingPanel({
     const offsets = getRangeOffsets(range);
     if (!offsets || offsets.endIndex <= offsets.startIndex) return;
 
-    // Add highlight
+    // Add highlight and merge overlapping ranges
     const newHighlight: HighlightItem = {
       id: `hl-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       startIndex: offsets.startIndex,
       endIndex: offsets.endIndex,
-      color: highlightColor,
     };
 
-    setHighlights((prev) => [...prev, newHighlight]);
+    setHighlights((prev) => mergeHighlights([...prev, newHighlight]));
     selection.removeAllRanges();
-  }, [isHighlightActive, highlightColor, getRangeOffsets]);
+  }, [isHighlightActive, getRangeOffsets]);
 
-  // Render passage with highlights
+  // Render passage with lemon-yellow highlights
   const renderHighlightedPassage = useCallback(() => {
-    if (!passage) return null;
+    if (!formattedPassageHtml) return null;
 
     const sortedHls = [...highlights].sort((a, b) => a.startIndex - b.startIndex);
 
     if (typeof window === "undefined" || typeof DOMParser === "undefined") {
-      return <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(passage) }} />;
+      return <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(formattedPassageHtml) }} />;
     }
 
     const parser = new DOMParser();
-    const doc = parser.parseFromString(passage, "text/html");
+    const doc = parser.parseFromString(formattedPassageHtml, "text/html");
     const body = doc.body;
 
     let globalOffset = 0;
 
-    const renderNode = (node: ChildNode): React.ReactNode => {
+    const renderNode = (node: ChildNode, pathKey: string): React.ReactNode => {
       if (node.nodeType === Node.TEXT_NODE) {
         const text = node.textContent || "";
         const parts: React.ReactNode[] = [];
@@ -110,30 +138,28 @@ export function ReadingPanel({
           const hEnd = Math.min(h.endIndex, end);
           if (hStart >= hEnd) return;
 
-          if (hStart > cursor) {
-            parts.push(text.slice(cursor - start, hStart - start));
+          const safeStart = Math.max(hStart, cursor);
+          if (safeStart > cursor) {
+            parts.push(text.slice(cursor - start, safeStart - start));
           }
 
-          const bgClass =
-            h.color === "yellow"
-              ? "bg-yellow-200 dark:bg-yellow-900/60 text-foreground"
-              : "bg-emerald-200 dark:bg-emerald-900/60 text-foreground";
-
-          parts.push(
-            <mark
-              key={`${h.id}-${hStart}`}
-              className={`${bgClass} rounded-xs px-0.5 py-0 cursor-pointer font-inherit`}
-              onClick={(e) => {
-                e.stopPropagation();
-                // Click highlight to remove it
-                setHighlights((prev) => prev.filter((item) => item.id !== h.id));
-              }}
-              title="Nhấp để xóa highlight này"
-            >
-              {text.slice(hStart - start, hEnd - start)}
-            </mark>
-          );
-          cursor = hEnd;
+          if (safeStart < hEnd) {
+            parts.push(
+              <mark
+                key={`${h.id}-${safeStart}`}
+                className="bg-yellow-200/90 dark:bg-yellow-400/30 text-stone-900 dark:text-yellow-100 rounded-xs px-0.5 py-0 cursor-pointer font-inherit hover:bg-yellow-300 dark:hover:bg-yellow-400/50 transition-colors shadow-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Click highlight to remove it
+                  setHighlights((prev) => prev.filter((item) => item.id !== h.id));
+                }}
+                title="Nhấp để xóa highlight này"
+              >
+                {text.slice(safeStart - start, hEnd - start)}
+              </mark>
+            );
+            cursor = hEnd;
+          }
         });
 
         if (cursor < end) {
@@ -143,18 +169,22 @@ export function ReadingPanel({
         if (parts.length === 1 && typeof parts[0] === "string") {
           return parts[0];
         }
-        return <React.Fragment key={`text-${start}`}>{parts}</React.Fragment>;
+        return <React.Fragment key={pathKey}>{parts}</React.Fragment>;
       }
 
       if (node.nodeType === Node.ELEMENT_NODE) {
         const el = node as HTMLElement;
         const children = Array.from(el.childNodes).map((child, idx) => (
-          <React.Fragment key={idx}>{renderNode(child)}</React.Fragment>
+          renderNode(child, `${pathKey}-${idx}`)
         ));
 
-        const props: Record<string, any> = {};
+        const props: Record<string, any> = {
+          key: pathKey,
+        };
         Array.from(el.attributes).forEach((attr) => {
-          if (attr.name !== "class") {
+          if (attr.name === "class") {
+            props.className = attr.value;
+          } else {
             props[attr.name] = attr.value;
           }
         });
@@ -167,11 +197,11 @@ export function ReadingPanel({
     };
 
     const rendered = Array.from(body.childNodes).map((child, idx) => (
-      <React.Fragment key={idx}>{renderNode(child)}</React.Fragment>
+      renderNode(child, `root-${idx}`)
     ));
 
     return <>{rendered}</>;
-  }, [passage, highlights]);
+  }, [formattedPassageHtml, highlights]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -180,8 +210,8 @@ export function ReadingPanel({
         <div className="lg:col-span-6 lg:sticky lg:top-20 space-y-4">
           <div className="p-5 sm:p-6 rounded-3xl bg-card border border-border space-y-4 shadow-xs">
             <div className="flex items-center justify-between pb-3 border-b border-border gap-2">
-              <div className="flex items-center gap-2 text-brand-blue font-extrabold text-sm">
-                <BookOpen className="w-4 h-4 shrink-0" />
+              <div className="flex items-center gap-2 text-foreground font-extrabold text-sm sm:text-base">
+                <BookOpen className="w-4 h-4 text-brand-blue shrink-0" />
                 <span>{title}</span>
               </div>
 
@@ -198,32 +228,11 @@ export function ReadingPanel({
                         ? "bg-amber-500 hover:bg-amber-600 text-white shadow-xs"
                         : "hover:bg-muted text-muted-foreground hover:text-foreground"
                     }`}
-                    title={isHighlightActive ? "Tắt chế độ Highlight" : "Bật bút Highlight"}
+                    title={isHighlightActive ? "Tắt chế độ Highlight" : "Bật bút Highlight màu vàng chanh"}
                   >
                     <Highlighter className="w-3.5 h-3.5" />
                     <span>Highlight</span>
                   </Button>
-
-                  {isHighlightActive && (
-                    <div className="flex items-center gap-1 pl-1 border-l border-border">
-                      <button
-                        type="button"
-                        onClick={() => setHighlightColor("yellow")}
-                        className={`w-5 h-5 rounded-full bg-yellow-300 border-2 transition-all ${
-                          highlightColor === "yellow" ? "border-amber-600 scale-110 shadow-xs" : "border-transparent opacity-60 hover:opacity-100"
-                        }`}
-                        title="Màu vàng"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setHighlightColor("green")}
-                        className={`w-5 h-5 rounded-full bg-emerald-400 border-2 transition-all ${
-                          highlightColor === "green" ? "border-emerald-700 scale-110 shadow-xs" : "border-transparent opacity-60 hover:opacity-100"
-                        }`}
-                        title="Màu xanh"
-                      />
-                    </div>
-                  )}
 
                   {highlights.length > 0 && (
                     <Button
@@ -239,7 +248,7 @@ export function ReadingPanel({
                   )}
                 </div>
 
-                <Badge variant="outline" className="text-[11px] font-bold shrink-0">
+                <Badge variant="outline" className="text-xs font-bold shrink-0 bg-background">
                   Passage Text
                 </Badge>
               </div>
@@ -249,21 +258,14 @@ export function ReadingPanel({
             <div
               ref={passageContentRef}
               onMouseUp={handleTextSelection}
+              onKeyUp={handleTextSelection}
               className={`text-xs sm:text-sm text-foreground/90 leading-relaxed space-y-4 max-h-[68vh] overflow-y-auto pr-2 prose prose-sm max-w-none text-justify select-text ${
-                isHighlightActive ? "cursor-text ring-1 ring-amber-400/40 rounded-xl p-2 bg-amber-500/5 transition-all" : ""
+                isHighlightActive
+                  ? "cursor-text ring-2 ring-amber-400/50 rounded-2xl p-3 bg-amber-50/40 dark:bg-amber-950/10 transition-all"
+                  : ""
               }`}
             >
-              {highlights.length > 0 ? (
-                renderHighlightedPassage()
-              ) : passage.includes("<") && passage.includes(">") ? (
-                <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(passage) }} />
-              ) : (
-                passage.split("\n\n").map((para, idx) => (
-                  <p key={idx} className="leading-relaxed text-justify">
-                    {para}
-                  </p>
-                ))
-              )}
+              {renderHighlightedPassage()}
             </div>
           </div>
         </div>

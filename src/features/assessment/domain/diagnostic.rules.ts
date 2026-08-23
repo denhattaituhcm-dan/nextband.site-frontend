@@ -81,6 +81,17 @@ export const ARIS_DIAGNOSTIC_LEVELS: Record<number, ArisDiagnosticLevel> = {
   },
 };
 
+export function calculateEstimatedSkillBand(correct: number, total: number): { band: string; level: string } {
+  if (total <= 0) return { band: "Band 2.5 – 3.5", level: "Starter (Khởi nền)" };
+  const pct = Math.round((correct / total) * 100);
+  if (pct >= 90) return { band: "Band 7.5 – 8.5", level: "Advanced (Xuất sắc)" };
+  if (pct >= 75) return { band: "Band 6.5 – 7.0", level: "Upper-Intermediate (Giỏi)" };
+  if (pct >= 55) return { band: "Band 5.5 – 6.0", level: "Intermediate (Khá)" };
+  if (pct >= 40) return { band: "Band 4.5 – 5.0", level: "Pre-Intermediate (Trung bình)" };
+  if (pct >= 25) return { band: "Band 3.5 – 4.0", level: "Elementary (Sơ cấp)" };
+  return { band: "Band 2.5 – 3.0", level: "Starter (Khởi nền)" };
+}
+
 export function getArisDiagnosticLevel(rawCorrect: number, totalQuestions: number = 35): ArisDiagnosticLevel {
   const percentage = Math.round((rawCorrect / Math.max(1, totalQuestions)) * 100);
   if (percentage < 25) return ARIS_DIAGNOSTIC_LEVELS[1];

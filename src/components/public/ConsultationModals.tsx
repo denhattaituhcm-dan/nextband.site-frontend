@@ -328,7 +328,7 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Thời lượng thi:</span>
-                <strong className="text-foreground">45 Phút</strong>
+                <strong className="text-foreground">60 Phút</strong>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Mục tiêu Band:</span>
@@ -370,7 +370,7 @@ export function AssessmentRegistrationModal({ isOpen, onOpenChange }: ModalBaseP
                 THI THỬ IELTS 4 KỸ NĂNG
               </DialogTitle>
               <DialogDescription className="text-xs text-foreground/75 leading-relaxed">
-                Bài test 40 phút gồm <strong>Listening, Reading, Writing, Speaking &amp; Grammar</strong>. Tính điểm tự động và định vị Rank ARIS-7.
+                Bài test 60 phút gồm <strong>Listening, Reading, Writing, Speaking &amp; Grammar</strong>. Tính điểm tự động và định vị Rank ARIS-7.
               </DialogDescription>
             </DialogHeader>
 

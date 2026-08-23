@@ -20,9 +20,10 @@ export function GrammarPanel({
 }: GrammarPanelProps) {
   return (
     <div className="space-y-6">
-      <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-amber-500/10 to-background border border-border shadow-xs flex items-center justify-between">
+      {/* Section Header Card */}
+      <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-brand-blue-soft/30 to-background border border-border shadow-xs flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-xs">
+          <div className="w-10 h-10 rounded-2xl bg-brand-blue text-white flex items-center justify-center shadow-xs">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
@@ -47,7 +48,10 @@ export function GrammarPanel({
               id={`question-${q.id}`}
               className="p-5 sm:p-6 rounded-3xl bg-card border border-border space-y-3.5 shadow-xs"
             >
-              <div className="flex items-center justify-end">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-brand-blue uppercase tracking-wide">
+                  {q.sectionTitle || "Chẩn đoán Ngữ pháp & Từ vựng"}
+                </span>
                 <span className="text-xs font-extrabold text-muted-foreground">
                   Câu {q.orderIndex}
                 </span>
@@ -78,7 +82,7 @@ export function GrammarPanel({
                         key={idx}
                         className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer text-xs sm:text-sm font-medium ${
                           isChecked
-                            ? "bg-amber-50 dark:bg-amber-950/40 border-amber-500/60 text-amber-900 dark:text-amber-300 font-bold shadow-xs"
+                            ? "bg-brand-blue-soft border-brand-blue/60 text-brand-blue font-bold shadow-xs"
                             : "bg-muted/40 border-border hover:bg-muted/70 text-foreground"
                         }`}
                       >

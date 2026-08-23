@@ -86,6 +86,15 @@ export interface ArisDiagnosticLevel {
   };
 }
 
+export interface SkillScoreItem {
+  correct: number;
+  total: number;
+  scorePercent: number;
+  estimatedBand?: string;
+  level?: string;
+  feedback: string;
+}
+
 export interface AssessmentResultScorecard {
   sessionId: string;
   candidateName: string;
@@ -96,14 +105,24 @@ export interface AssessmentResultScorecard {
     rawScore: number;
     totalQuestions: number;
     accuracyPercent: number;
-    listening: { correct: number; total: number; scorePercent: number; feedback: string };
-    reading: { correct: number; total: number; scorePercent: number; feedback: string };
-    grammar: { correct: number; total: number; scorePercent: number; feedback: string };
+    listening: SkillScoreItem;
+    reading: SkillScoreItem;
+    grammar: SkillScoreItem;
   };
   subjectiveEvaluation: {
     status: "NONE" | "PENDING_REVIEW" | "REVIEWED";
     hasWritingSubmission: boolean;
     hasSpeakingRecording: boolean;
+    writing?: {
+      submitted: boolean;
+      status: string;
+      message: string;
+    };
+    speaking?: {
+      submitted: boolean;
+      status: string;
+      message: string;
+    };
     note: string;
   };
   strengths: string[];

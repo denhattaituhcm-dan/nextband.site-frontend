@@ -76,7 +76,7 @@ export function ConsultationBubble() {
     {
       id: "assessment",
       icon: <ShieldCheck className="w-4 h-4 text-brand-red" />,
-      title: "Thi thử IELTS 4 Kỹ Năng (40 phút)",
+      title: "Thi thử IELTS 4 Kỹ Năng (60 phút)",
       subtitle: "Đo lường 4 kỹ năng & định vị Rank ARIS-7",
     },
     {

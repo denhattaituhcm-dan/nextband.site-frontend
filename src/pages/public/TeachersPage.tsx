@@ -126,7 +126,7 @@ export default function TeachersPage() {
           </h2>
 
           <p className="text-base sm:text-lg lg:text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
-            Bắt đầu bằng việc làm bài đánh giá năng lực 45 phút để nhận phân tích chi tiết từ ban học thuật.
+            Bắt đầu bằng việc làm bài đánh giá năng lực 60 phút để nhận phân tích chi tiết từ ban học thuật.
           </p>
 
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">

@@ -25,6 +25,25 @@ export function ListeningPanel({
   onAnswerChange,
 }: ListeningPanelProps) {
   const totalItemCount = questions.reduce((acc, q) => acc + (q.blankCount && q.blankCount > 1 ? q.blankCount : 1), 0);
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
+  const maxPlayTimeRef = React.useRef<number>(0);
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      if (audioRef.current.currentTime > maxPlayTimeRef.current) {
+        maxPlayTimeRef.current = audioRef.current.currentTime;
+      }
+    }
+  };
+
+  const handleSeeking = () => {
+    if (audioRef.current) {
+      // If user tries to seek, snap back to max continuously played time
+      if (audioRef.current.currentTime !== maxPlayTimeRef.current) {
+        audioRef.current.currentTime = maxPlayTimeRef.current;
+      }
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -38,18 +57,34 @@ export function ListeningPanel({
               </div>
               <div>
                 <h3 className="font-extrabold text-base text-foreground">{title}</h3>
-                <p className="text-xs text-muted-foreground">Nghe đoạn audio và trả lời các câu hỏi bên dưới</p>
+                <p className="text-xs text-muted-foreground">
+                  Nghe đoạn audio và trả lời các câu hỏi bên dưới (Audio phát 1 lần theo tiến độ)
+                </p>
               </div>
             </div>
-            <Badge variant="outline" className="text-xs font-bold bg-background">
-              {totalItemCount} Câu hỏi
-            </Badge>
+            <div className="flex items-center gap-2">
+              <span className="hidden sm:inline-block px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                Không tua
+              </span>
+              <Badge variant="outline" className="text-xs font-bold bg-background">
+                {totalItemCount} Câu hỏi
+              </Badge>
+            </div>
           </div>
 
-          {/* HTML5 Audio Player */}
+          {/* HTML5 Audio Player with Seek Prevention */}
           <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-inner flex items-center gap-3">
             <Volume2 className="w-5 h-5 text-brand-blue shrink-0" />
-            <audio controls src={formatStorageUrl(audioUrl)} className="w-full h-10 outline-hidden" preload="auto">
+            <audio
+              ref={audioRef}
+              controls
+              controlsList="nodownload noplaybackrate"
+              onTimeUpdate={handleTimeUpdate}
+              onSeeking={handleSeeking}
+              src={formatStorageUrl(audioUrl)}
+              className="w-full h-10 outline-hidden"
+              preload="auto"
+            >
               Trình duyệt của bạn không hỗ trợ phát âm thanh HTML5.
             </audio>
           </div>

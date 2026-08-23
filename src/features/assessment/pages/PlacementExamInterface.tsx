@@ -44,7 +44,7 @@ export default function PlacementExamInterface() {
   }, [sessionId, answers]);
 
   const { formattedTime, isUrgent } = useAssessmentTimer(
-    session?.remainingSeconds || 2700,
+    session?.remainingSeconds || 3600,
     handleTimeUp,
   );
 

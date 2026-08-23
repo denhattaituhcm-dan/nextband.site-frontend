@@ -210,13 +210,26 @@ export function QuestionRecorder({
         console.warn("[Speaking] Draft register notice:", regErr);
       }
 
-      // 2. Direct Upload to Supabase Storage
-      const { error: storageErr } = await supabase.storage
-        .from("speaking-recordings")
-        .upload(`${recordingId}.webm`, blob, {
+      // 2. Direct Upload to Supabase Storage (primary 'exam-assets' with fallback)
+      let storageErr: any = null;
+      const { error: primaryErr } = await supabase.storage
+        .from("exam-assets")
+        .upload(storagePath, blob, {
           contentType: blob.type || "audio/webm",
           upsert: true,
         });
+
+      if (primaryErr) {
+        const { error: fallbackErr } = await supabase.storage
+          .from("speaking-recordings")
+          .upload(`${recordingId}.webm`, blob, {
+            contentType: blob.type || "audio/webm",
+            upsert: true,
+          });
+        if (fallbackErr) {
+          storageErr = primaryErr;
+        }
+      }
 
       if (storageErr) {
         throw new Error(storageErr.message || "Tải lên Supabase Storage thất bại");
