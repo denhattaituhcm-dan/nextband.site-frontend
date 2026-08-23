@@ -32,6 +32,36 @@ interface NotificationBellProps {
   scope?: "admin" | "teacher" | "student";
 }
 
+/**
+ * Phân giải đường dẫn điều hướng chuẩn xác từ Entity (Source of Truth) hoặc fallback về link.
+ */
+export function resolveNotificationLink(
+  item?: NotificationItem | null,
+  scope?: string
+): string | null {
+  if (!item) return null;
+  if (
+    item.entityType &&
+    item.entityId &&
+    item.entityType !== "SYSTEM" &&
+    item.entityId !== "GLOBAL"
+  ) {
+    const type = item.entityType.toUpperCase();
+    if (type === "SUBMISSION") {
+      return scope === "student"
+        ? `/app/submissions/${item.entityId}`
+        : `/admin/submissions/${item.entityId}`;
+    }
+    if (type === "ASSESSMENT_SESSION" || type === "ASSESSMENT") {
+      return `/admin/assessments/${item.entityId}`;
+    }
+    if (type === "CLASS") {
+      return `/classes/${item.entityId}`;
+    }
+  }
+  return item.link || null;
+}
+
 export function NotificationBell({ scope: _scope }: NotificationBellProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -57,17 +87,18 @@ export function NotificationBell({ scope: _scope }: NotificationBellProps) {
           queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] });
           queryClient.invalidateQueries({ queryKey: ["notifications-list"] });
 
+          const resolvedLink = resolveNotificationLink(newNotif, _scope);
           if (newNotif?.title) {
             toast.info(newNotif.title, {
               description: newNotif.message,
-              action: newNotif.link
+              action: resolvedLink
                 ? {
                     label: "Xem ngay",
                     onClick: () => {
-                      if (newNotif.link!.startsWith("http://") || newNotif.link!.startsWith("https://")) {
-                        window.open(newNotif.link!, "_blank", "noopener,noreferrer");
+                      if (resolvedLink.startsWith("http://") || resolvedLink.startsWith("https://")) {
+                        window.open(resolvedLink, "_blank", "noopener,noreferrer");
                       } else {
-                        navigate(newNotif.link!);
+                        navigate(resolvedLink);
                       }
                     },
                   }
@@ -82,7 +113,7 @@ export function NotificationBell({ scope: _scope }: NotificationBellProps) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, queryClient, navigate]);
+  }, [user?.id, queryClient, navigate, _scope]);
 
   // 1. Unread Count Query
   const {
@@ -370,32 +401,35 @@ export function NotificationBell({ scope: _scope }: NotificationBellProps) {
                 </div>
 
                 <DialogFooter className="gap-2 sm:gap-2 pt-2 border-t border-border/60">
-                  {selectedNotification.link ? (
-                    <>
+                  {(() => {
+                    const targetLink = resolveNotificationLink(selectedNotification, _scope);
+                    return targetLink ? (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedNotification(null)}
+                        >
+                          Đóng
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleActionClick(targetLink)}
+                          className="gap-1.5"
+                        >
+                          Xem chi tiết <ExternalLink className="h-3.5 w-3.5" />
+                        </Button>
+                      </>
+                    ) : (
                       <Button
-                        variant="outline"
                         size="sm"
                         onClick={() => setSelectedNotification(null)}
+                        className="w-full sm:w-auto"
                       >
-                        Đóng
+                        Đã rõ
                       </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => handleActionClick(selectedNotification.link!)}
-                        className="gap-1.5"
-                      >
-                        Xem chi tiết <ExternalLink className="h-3.5 w-3.5" />
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      size="sm"
-                      onClick={() => setSelectedNotification(null)}
-                      className="w-full sm:w-auto"
-                    >
-                      Đã rõ
-                    </Button>
-                  )}
+                    );
+                  })()}
                 </DialogFooter>
               </>
             );

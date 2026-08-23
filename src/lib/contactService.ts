@@ -13,6 +13,10 @@ export interface ContactLead {
   preferredBranchId?: string | null;
   preferredBranch?: { id: string; name: string; code: string } | null;
   notes?: string;
+  createdByUserId?: string | null;
+  createdByUser?: { id: string; userId: string; fullName?: string } | null;
+  convertedUserId?: string | null;
+  convertedUser?: { id: string; userId: string; fullName?: string; email?: string } | null;
   createdAt: string;
 }
 
@@ -238,14 +242,62 @@ export async function fetchAllContactLeads(params?: { preferredBranchId?: string
 }
 
 /**
- * Admin: Update lead status / notes / assigned staff
+ * Admin / Staff: Create lead manually (Walk-in, Hotline, Referral, etc.)
+ */
+export interface ManualLeadParams {
+  fullName: string;
+  phone: string;
+  email?: string;
+  goal?: string;
+  source?: string;
+  preferredBranchId?: string | null;
+  notes?: string;
+}
+
+export async function createManualContactLead(
+  params: ManualLeadParams
+): Promise<{ success: boolean; data?: ContactLead; message?: string; error?: string }> {
+  try {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/leads/manual`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        fullName: params.fullName.trim(),
+        phone: params.phone.trim().replace(/\s+/g, ""),
+        email: params.email?.trim() || undefined,
+        goal: params.goal?.trim() || undefined,
+        source: params.source || "offline_walkin",
+        preferredBranchId: params.preferredBranchId || null,
+        notes: params.notes?.trim() || undefined,
+      }),
+    });
+
+    const json = await res.json();
+    if (res.ok && json.success) {
+      return { success: true, data: json.data, message: json.message };
+    }
+    return { success: false, error: json.error || json.message || "Không thể tạo thông tin tư vấn" };
+  } catch (err: any) {
+    console.error("[ContactService] createManualContactLead error:", err);
+    return { success: false, error: err?.message || "Lỗi kết nối máy chủ" };
+  }
+}
+
+/**
+ * Admin: Update lead status / notes / assigned staff / convertedUserId
  */
 export async function updateContactLead(
   id: string,
   params: {
     status?: "NEW" | "CONTACTED" | "ENROLLED" | "CANCELLED" | "ARCHIVED";
     assignedTo?: string | null;
+    preferredBranchId?: string | null;
     notes?: string | null;
+    convertedUserId?: string | null;
   }
 ): Promise<{ success: boolean; data?: any; error?: string }> {
   // 1. Try Backend Server
@@ -273,7 +325,9 @@ export async function updateContactLead(
     const payload: any = {};
     if (params.status) payload.status = params.status;
     if (params.assignedTo !== undefined) payload.assigned_to = params.assignedTo;
+    if (params.preferredBranchId !== undefined) payload.preferred_branch_id = params.preferredBranchId;
     if (params.notes !== undefined) payload.notes = params.notes;
+    if (params.convertedUserId !== undefined) payload.converted_user_id = params.convertedUserId;
 
     const { data, error } = await supabase
       .from("contact_leads")
@@ -303,5 +357,86 @@ export async function updateContactLead(
   }
 
   return { success: false, error: "Không thể cập nhật lead" };
+}
+
+/**
+ * Admin: Check duplicate leads by phone
+ */
+export async function checkDuplicateLeadPhone(
+  phone: string
+): Promise<Array<{ id: string; fullName: string; phone: string; status: string; source: string; createdAt: string; preferredBranch?: { name: string } | null; convertedUserId?: string | null }>> {
+  const cleanPhone = phone.trim().replace(/\s+/g, "");
+  if (!cleanPhone || cleanPhone.length < 5) return [];
+
+  try {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/leads/check-phone?phone=${encodeURIComponent(cleanPhone)}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+
+    if (res.ok) {
+      const json = await res.json();
+      return json.duplicates || [];
+    }
+  } catch (err) {
+    console.warn("[ContactService] checkDuplicateLeadPhone error:", err);
+  }
+
+  // Local fallback
+  const localLeads = getLocalLeads();
+  return localLeads
+    .filter((l) => l.phone.includes(cleanPhone))
+    .slice(0, 5)
+    .map((l) => ({
+      id: l.id,
+      fullName: l.fullName,
+      phone: l.phone,
+      status: l.status,
+      source: l.source || "contact_page",
+      createdAt: l.createdAt,
+      preferredBranch: l.preferredBranch ? { name: l.preferredBranch.name } : null,
+      convertedUserId: l.convertedUserId,
+    }));
+}
+
+/**
+ * Admin: Convert lead to LMS student user atomically
+ */
+export interface ConvertLeadParams {
+  email: string;
+  fullName?: string;
+  phone?: string;
+  branchId?: string | null;
+  password?: string;
+  status?: string;
+}
+
+export async function convertLeadToStudent(
+  leadId: string,
+  params: ConvertLeadParams
+): Promise<{ success: boolean; data?: any; error?: string; message?: string }> {
+  try {
+    const token = await getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/leads/${leadId}/convert`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(params),
+    });
+
+    const json = await res.json();
+    if (res.ok && json.success) {
+      return { success: true, data: json.data, message: json.message };
+    }
+    return { success: false, error: json.error || json.message || "Không thể chuyển đổi khách tư vấn" };
+  } catch (err: any) {
+    console.error("[ContactService] convertLeadToStudent error:", err);
+    return { success: false, error: err?.message || "Lỗi kết nối máy chủ" };
+  }
 }
 

@@ -190,4 +190,58 @@ describe("🔔 NotificationBell Component & Client Contract Tests", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Thử lại")).toBeInTheDocument();
   });
+
+  describe("🎯 Entity Resolution & Link Fallback Tests", () => {
+    it("resolves SUBMISSION entity to /admin/submissions/:id for teacher/admin scope", async () => {
+      const { resolveNotificationLink } = await import("../components/navigation/NotificationBell");
+      const item = {
+        id: "notif-sub-1",
+        userId: "teacher-1",
+        type: "NEW_SUBMISSION",
+        title: "Bài nộp mới",
+        message: "Bài làm mới",
+        entityType: "SUBMISSION",
+        entityId: "sub-999",
+        isRead: false,
+        createdAt: new Date().toISOString(),
+      };
+      expect(resolveNotificationLink(item, "teacher")).toBe("/admin/submissions/sub-999");
+      expect(resolveNotificationLink(item, "admin")).toBe("/admin/submissions/sub-999");
+      expect(resolveNotificationLink(item, "student")).toBe("/app/submissions/sub-999");
+    });
+
+    it("resolves ASSESSMENT_SESSION entity to /admin/assessments/:id", async () => {
+      const { resolveNotificationLink } = await import("../components/navigation/NotificationBell");
+      const item = {
+        id: "notif-ass-1",
+        userId: "admin-1",
+        type: "NEW_SUBMISSION",
+        title: "Test mới",
+        message: "Khảo thí mới",
+        entityType: "ASSESSMENT_SESSION",
+        entityId: "session-abc",
+        isRead: false,
+        createdAt: new Date().toISOString(),
+      };
+      expect(resolveNotificationLink(item, "admin")).toBe("/admin/assessments/session-abc");
+    });
+
+    it("falls back to item.link when entity is generic SYSTEM", async () => {
+      const { resolveNotificationLink } = await import("../components/navigation/NotificationBell");
+      const item = {
+        id: "notif-sys-1",
+        userId: "user-1",
+        type: "SYSTEM",
+        title: "Thông báo hệ thống",
+        message: "Bảo trì",
+        link: "/maintenance-info",
+        entityType: "SYSTEM",
+        entityId: "GLOBAL",
+        isRead: false,
+        createdAt: new Date().toISOString(),
+      };
+      expect(resolveNotificationLink(item)).toBe("/maintenance-info");
+    });
+  });
 });
+
