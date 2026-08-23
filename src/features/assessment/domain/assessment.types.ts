@@ -52,6 +52,7 @@ export interface AssessmentTestStructure {
       prompt: string;
       guidelines: string[];
       minWords: number;
+      maxWords?: number;
     };
     speaking: {
       title: string;

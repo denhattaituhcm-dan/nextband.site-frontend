@@ -1,5 +1,5 @@
 import React from "react";
-import { PenTool } from "lucide-react";
+import { PenTool, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { sanitizeHtml } from "@/lib/sanitize";
@@ -8,7 +8,7 @@ interface WritingPanelProps {
   title: string;
   prompt: string;
   guidelines: string[];
-  minWords: number;
+  maxWords?: number;
   value: string;
   onChange: (text: string) => void;
 }
@@ -17,7 +17,7 @@ export function WritingPanel({
   title,
   prompt,
   guidelines,
-  minWords,
+  maxWords = 350,
   value,
   onChange,
 }: WritingPanelProps) {
@@ -28,7 +28,7 @@ export function WritingPanel({
         .filter((w) => w.length > 0).length
     : 0;
 
-  const isWordCountMet = wordsCount >= minWords;
+  const isOverLimit = wordsCount > maxWords;
   const hasHtml = prompt && prompt.includes("<") && prompt.includes(">");
 
   return (
@@ -42,19 +42,25 @@ export function WritingPanel({
           <div>
             <h3 className="font-extrabold text-base text-foreground">{title}</h3>
             <p className="text-xs text-muted-foreground">
-              Viết đoạn văn ngắn (100–150 từ) để chuyên gia và AI đánh giá lập luận phản biện
+              Viết đoạn văn ngắn (khuyến nghị 100–150 từ, tối đa {maxWords} từ). Thí sinh có thể làm bài hoặc bỏ qua nếu chưa tự tin.
             </p>
           </div>
         </div>
         <Badge
           variant="outline"
           className={`text-xs font-bold ${
-            isWordCountMet
+            isOverLimit
+              ? "bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 border-red-300 dark:border-red-800"
+              : wordsCount > 0
               ? "bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 border-emerald-300 dark:border-emerald-800"
               : "bg-background text-muted-foreground"
           }`}
         >
-          {wordsCount} / {minWords} từ
+          {isOverLimit
+            ? `Vượt giới hạn: ${wordsCount}/${maxWords} từ`
+            : wordsCount > 0
+            ? `${wordsCount} từ (Tối đa ${maxWords})`
+            : `0 / tối đa ${maxWords} từ`}
         </Badge>
       </div>
 
@@ -78,27 +84,61 @@ export function WritingPanel({
 
         {/* Guidelines */}
         <div className="p-4 rounded-2xl bg-muted/50 border border-border/80 space-y-2">
-          <h5 className="text-xs font-extrabold text-foreground">Gợi ý phát triển ý tưởng:</h5>
+          <h5 className="text-xs font-extrabold text-foreground">Gợi ý phát triển ý tưởng & Quy định độ dài:</h5>
           <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4">
             {guidelines.map((g, i) => (
               <li key={i}>{g}</li>
             ))}
+            <li className="font-semibold text-foreground/80">
+              Độ dài khuyến nghị: <strong>100 – 150 từ</strong> (Không bắt buộc số từ tối thiểu, giới hạn tối đa {maxWords} từ để tránh spam).
+            </li>
           </ul>
         </div>
 
-        {/* Writing Textarea */}
+        {/* Writing Textarea with Anti-spam Length Limit */}
         <div className="space-y-2 pt-2">
           <Textarea
             value={value || ""}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="Type your essay / paragraph response here in English..."
+            placeholder="Type your essay / paragraph response here in English (Hoặc để trống nếu chưa làm)..."
             rows={10}
-            className="w-full rounded-2xl border-border text-sm leading-relaxed p-4 focus:border-brand-blue font-sans"
+            maxLength={3500}
+            className={`w-full rounded-2xl border text-sm leading-relaxed p-4 font-sans transition-all ${
+              isOverLimit
+                ? "border-red-400 focus:border-red-500 ring-1 ring-red-400/30 bg-red-50/10"
+                : "border-border focus:border-brand-blue"
+            }`}
           />
+
+          {/* Warning / Feedback Bar */}
+          {isOverLimit && (
+            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 text-red-700 dark:text-red-300 text-xs font-medium">
+              <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+              <span>
+                Bài viết đang vượt quá {wordsCount - maxWords} từ so với giới hạn tối đa ({maxWords} từ). Vui lòng cô đọng lại để bài viết hợp lệ.
+              </span>
+            </div>
+          )}
+
           <div className="flex justify-between items-center text-xs text-muted-foreground pt-1">
-            <span>Bài viết sẽ được ghi nhận và chuyển cho Giảng viên/AI chấm chuyên sâu.</span>
-            <span className={isWordCountMet ? "text-emerald-600 dark:text-emerald-400 font-bold" : "text-muted-foreground"}>
-              {wordsCount} từ
+            <span>
+              {wordsCount === 0
+                ? "Thí sinh có thể để trống phần này nếu chưa tự tin về kỹ năng viết."
+                : isOverLimit
+                ? "Vui lòng rút ngắn nội dung trước khi nộp bài."
+                : "Bài viết sẽ được ghi nhận và chuyển cho Giảng viên/AI chấm chuyên sâu."}
+            </span>
+            <span
+              className={
+                isOverLimit
+                  ? "text-red-600 dark:text-red-400 font-extrabold"
+                  : wordsCount > 0
+                  ? "text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1"
+                  : "text-muted-foreground"
+              }
+            >
+              {wordsCount > 0 && !isOverLimit && <CheckCircle2 className="w-3.5 h-3.5" />}
+              {wordsCount} / {maxWords} từ
             </span>
           </div>
         </div>

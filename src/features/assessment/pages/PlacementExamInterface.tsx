@@ -87,7 +87,7 @@ export default function PlacementExamInterface() {
       counts.grammar = calcSkill(testPayload.skills.grammar.questions);
 
       counts.writing.answered =
-        answers["writing_response"] && String(answers["writing_response"]).trim().length >= 30 ? 1 : 0;
+        answers["writing_response"] && String(answers["writing_response"]).trim().length > 0 ? 1 : 0;
       counts.speaking.answered =
         (answers["speaking_part1_audio_url"] ? 1 : 0) +
         (answers["speaking_part2_audio_url"] ? 1 : 0);
@@ -230,7 +230,7 @@ export default function PlacementExamInterface() {
               title={testPayload.skills.writing.title}
               prompt={testPayload.skills.writing.prompt}
               guidelines={testPayload.skills.writing.guidelines}
-              minWords={testPayload.skills.writing.minWords}
+              maxWords={testPayload.skills.writing.maxWords || 350}
               value={answers["writing_response"] || ""}
               onChange={(val) => setAnswer("writing_response", val)}
             />

@@ -3954,7 +3954,7 @@ export const assessmentApi = {
   },
 
   getResult: async (sessionId: string, customToken?: string) => {
-    const token = customToken || getAssessmentToken();
+    const token = customToken || getAssessmentToken(sessionId);
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
