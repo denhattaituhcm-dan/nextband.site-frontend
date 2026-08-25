@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npx vite --force",
+    "dev": "vite",
     "build": "node scripts/build.mjs",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",

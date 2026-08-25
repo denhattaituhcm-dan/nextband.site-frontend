@@ -4,9 +4,22 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  root: path.resolve(__dirname, "."),
   server: {
     host: "0.0.0.0",
     port: 3000,
+    proxy: {
+      "/api": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/uploads": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   plugins: [react()],
   resolve: {
@@ -16,6 +29,8 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
+    outDir: path.resolve(__dirname, "./dist"),
+    emptyOutDir: true,
     reportCompressedSize: false,
     chunkSizeWarningLimit: 1000,
   },
