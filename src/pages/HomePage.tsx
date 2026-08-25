@@ -15,6 +15,8 @@ import {
   formatDeadlineCountdown,
   sortStudentActionQueue,
 } from "@/lib/homeworkStatusHelper";
+import { getHuanCoState } from "@/lib/huanCoState";
+import { HuanCoMascot } from "@/components/mascot/HuanCoMascot";
 import {
   BookOpen,
   ArrowRight,
@@ -147,6 +149,18 @@ export default function HomePage() {
 
     return sortStudentActionQueue(formatted);
   }, [rawLessons, userSubmissions]);
+
+  // Trạng thái sư phạm của Huyền Cơ Lão Nhân (Pure rule engine)
+  const huanCoState = useMemo(() => {
+    return getHuanCoState({
+      actionQueue,
+      submittedCount,
+      gradedCount,
+      pendingCount,
+      enrolledClassName: activeClassName,
+      courseTitle,
+    });
+  }, [actionQueue, submittedCount, gradedCount, pendingCount, activeClassName, courseTitle]);
 
   // ── State machine render ─────────────────────────────────────────────────────
   return (
@@ -458,6 +472,9 @@ export default function HomePage() {
                 ))}
               </div>
             </Card>
+
+            {/* HUYỀN CƠ LÃO NHÂN FLOATING MASCOT */}
+            <HuanCoMascot state={huanCoState} />
           </div>
         )}
       </div>
